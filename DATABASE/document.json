@@ -1,0 +1,114 @@
+{
+  "phone_id": 1,
+  "technolygy" : {
+    "screen" : [
+      {
+        "screen technology" : "" ,
+        "resolution" : "",
+        "widescreen" : ""
+      }
+    ],
+    "rear_camera" : [
+      {
+        "resolution" : "",
+        "film" : [
+          {
+            
+          }  
+        ],
+        "flash light" : "",
+        "feature" : [
+          {
+            
+          }
+        ]
+      }
+    ],
+    "front_camera" : [
+      {
+        "resolution" : "",
+        "videocall" : [
+          {
+            
+          }  
+        ],
+        "feature" : [
+          {
+            
+          }
+        ]
+      }  
+    ],
+    "OS_CPU" : [
+      {
+        "RAM" : "",
+        "internal_memory" : ""
+      }  
+    ],
+    "connect" : [
+      {
+        "mobile_network" : "",
+        "SIM" : "",
+        "wifi" : [
+          {
+            
+          }
+        ],
+        "GPS" : [
+          {
+            
+          }
+        ],
+        "bluetooth" : [
+          {
+            
+          }
+        ],
+        "connector" : "",
+        "headphone_jack" : "",
+        "another" : ""
+      }
+    ],
+    "design_weight" : [
+      {
+        "design" : "",
+        "material" : "",
+        "size" : "",
+        "weight" : ""
+      }
+    ],
+    "battery_charging" : [
+      {
+        "type" : "",
+        "capacity" : "",
+        "technology" : [
+          {
+            
+          }
+        ]
+      }
+    ],
+    "utilities" : [
+      {
+        "advanced_security" : "",
+        "special_features" : [
+          {
+            
+          }
+        ],
+        "recording" : "",
+        "watch_movie" : [
+          {
+            
+          }
+        ],
+        "music" : [
+          {
+            
+          }  
+        ]
+      }
+    ]
+  },
+  "other_information" : ""
+}
