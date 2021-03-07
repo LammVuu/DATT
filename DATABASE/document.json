@@ -5,64 +5,59 @@
       {
         "screen technology" : "" ,
         "resolution" : "",
-        "widescreen" : ""
+        "widescreen" : "",
+        "touch_glass" : ""
       }
     ],
     "rear_camera" : [
       {
         "resolution" : "",
         "film" : [
-          {
-            
-          }  
+          ""
         ],
         "flash light" : "",
         "feature" : [
-          {
-            
-          }
+          ""
         ]
       }
     ],
     "front_camera" : [
       {
         "resolution" : "",
-        "videocall" : [
-          {
-            
-          }  
-        ],
+        "videocall" : "",
         "feature" : [
-          {
-            
-          }
+          ""
         ]
       }  
     ],
     "OS_CPU" : [
       {
-        "RAM" : "",
-        "internal_memory" : ""
+        "OS" : "",
+        "CPU" : "",
+        "CPU_speed" : "",
+        "GPU" : ""
       }  
+    ],
+    "memory_storage" : [
+      {
+        "RAM" : "",
+        "internal_memory" : "",
+        "remaining_memory " : "",
+        "external_memory_card" : ""
+      }
     ],
     "connect" : [
       {
         "mobile_network" : "",
         "SIM" : "",
         "wifi" : [
-          {
-            
-          }
+          ""
         ],
         "GPS" : [
-          {
-            
-          }
+          ""
         ],
         "bluetooth" : [
-          {
-            
-          }
+          ""
         ],
         "connector" : "",
         "headphone_jack" : "",
@@ -82,30 +77,24 @@
         "type" : "",
         "capacity" : "",
         "technology" : [
-          {
-            
-          }
+          ""
         ]
       }
     ],
     "utilities" : [
       {
-        "advanced_security" : "",
+        "advanced_security" : [
+          ""
+        ],
         "special_features" : [
-          {
-            
-          }
+          ""
         ],
         "recording" : "",
         "watch_movie" : [
-          {
-            
-          }
+          ""
         ],
         "music" : [
-          {
-            
-          }  
+          ""
         ]
       }
     ]
