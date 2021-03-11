@@ -1,93 +1,111 @@
 {
   "phone_id": 1,
   "technolygy" : {
-    "screen" : [
-      {
+    "screen" : {
         "screen technology" : "" ,
         "resolution" : "",
         "widescreen" : "",
         "touch_glass" : ""
-      }
-    ],
-    "rear_camera" : [
-      {
+      },
+    "rear_camera" :{
         "resolution" : "",
-        "film" : [
-          ""
-        ],
+        "video" :[
+          {
+            "quality": ""
+          },
+          {
+            "quality": ""
+          }
+          ],
         "flash light" : "",
         "feature" : [
-          ""
+          {
+            "name": ""
+          },
+          {
+            "name": ""
+          }
         ]
-      }
-    ],
-    "front_camera" : [
-      {
+      },
+    "front_camera" :{
         "resolution" : "",
         "videocall" : "",
         "feature" : [
           ""
         ]
-      }  
-    ],
-    "OS_CPU" : [
-      {
+      },
+    "OS_CPU" :{
         "OS" : "",
         "CPU" : "",
         "CPU_speed" : "",
         "GPU" : ""
-      }  
-    ],
-    "memory_storage" : [
-      {
+      },
+    "memory_storage" :{
         "RAM" : "",
         "internal_memory" : "",
         "remaining_memory " : "",
         "external_memory_card" : ""
-      }
-    ],
-    "connect" : [
-      {
+      },
+    "connect" :{
         "mobile_network" : "",
         "SIM" : "",
         "wifi" : [
-          ""
+          {
+            "name" : ""
+          },
+          {
+            "name" : ""
+          }
         ],
         "GPS" : [
-          ""
+           {
+            "name" : ""
+          },
+          {
+            "name" : ""
+          }
         ],
         "bluetooth" : [
-          ""
+           {
+            "name" : ""
+          },
+          {
+            "name" : ""
+          }
         ],
         "connector" : "",
         "headphone_jack" : "",
         "another" : ""
-      }
-    ],
-    "design_weight" : [
-      {
+      },
+    "design_weight" :{
         "design" : "",
         "material" : "",
         "size" : "",
         "weight" : ""
-      }
-    ],
-    "battery_charging" : [
-      {
+      },
+    "battery_charging" :{
         "type" : "",
         "capacity" : "",
         "technology" : [
           ""
         ]
-      }
-    ],
-    "utilities" : [
-      {
+      },
+    "utilities" :{
         "advanced_security" : [
-          ""
+          {
+            "name" : ""
+          },
+          {
+            "name" : ""
+          }
         ],
         "special_features" : [
-          ""
+          {
+            "name" : ""
+          },
+          {
+            "name" : ""
+          }
         ],
         "recording" : "",
         "watch_movie" : [
@@ -97,7 +115,6 @@
           ""
         ]
       }
-    ]
   },
   "other_information" : ""
 }
