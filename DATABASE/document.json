@@ -4,7 +4,7 @@
     "man_hinh" : {
         "cong_nghe_mh" : "" ,
         "do_phan_giai" : "",
-        "ty_le_mh" : """,
+        "ty_le_mh" : "",
         "kinh_cam_ung" : ""
       },
     "camera_sau" :{
@@ -108,10 +108,7 @@
         "cong_nghe" :""
       },
     "tien_ich" :{
-        "bao_mat" :{
-          ""
-          
-        }
+        "bao_mat" :"",
     "tinh_nang_khac" : [
           {
             "name" : ""
@@ -127,7 +124,7 @@
           }
         ],
         "ghi_am" : "",
-        "xem_phim" :""
+        "xem_phim" :"",
         "nghe_nhac" :""
       }
   },
