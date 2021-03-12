@@ -1,55 +1,68 @@
 {
-  "phone_id": 1,
-  "technolygy" : {
-    "screen" : {
-        "screen technology" : "" ,
-        "resolution" : "",
-        "widescreen" : "",
-        "touch_glass" : ""
+  "id": 1,
+  "thong_so_ky_thuat" : {
+    "man_hinh" : {
+        "cong_nghe_mh" : "" ,
+        "do_phan_giai" : "",
+        "ty_le_mh" : """,
+        "kinh_cam_ung" : ""
       },
-    "rear_camera" :{
-        "resolution" : "",
+    "camera_sau" :{
+        "do_phan_giai" : "",
         "video" :[
           {
-            "quality": ""
+            "chat_luong": ""
           },
           {
-            "quality": ""
+            "chat_luong": ""
+          },
+          {
+             "chat_luong": ""
+          },
+          {
+             "chat_luong": ""
           }
           ],
-        "flash light" : "",
-        "feature" : [
+        "den_flash" : "",
+        "tinh_nang" : [
           {
             "name": ""
           },
           {
             "name": ""
+          },
+          {
+             "name": ""
           }
         ]
       },
-    "front_camera" :{
-        "resolution" : "",
-        "videocall" : "",
-        "feature" : [
-          ""
+    "camera_truoc" :{
+        "do_phan_giai" : "",
+        "tinh_nang" : [
+          {
+            "name": ""
+          }
         ]
       },
-    "OS_CPU" :{
-        "OS" : "",
+    "HDH_CPU" :{
+        "HDH" : "",
         "CPU" : "",
         "CPU_speed" : "",
         "GPU" : ""
       },
-    "memory_storage" :{
+    "luu_tru" :{
         "RAM" : "",
-        "internal_memory" : "",
-        "remaining_memory " : "",
-        "external_memory_card" : ""
+        "bo_nho_trong" : "",
+        "bo_nho_con_lai " : "",
+        "the_nho" : ""
       },
-    "connect" :{
-        "mobile_network" : "",
+    "ket_noi" :{
+        "mang_mobile" : "",
         "SIM" : "",
         "wifi" : [
+          {
+            "name" : ""
+          },
           {
             "name" : ""
           },
@@ -63,6 +76,9 @@
           },
           {
             "name" : ""
+          },
+          {
+            "name" : ""
           }
         ],
         "bluetooth" : [
@@ -71,50 +87,49 @@
           },
           {
             "name" : ""
-          }
-        ],
-        "connector" : "",
-        "headphone_jack" : "",
-        "another" : ""
-      },
-    "design_weight" :{
-        "design" : "",
-        "material" : "",
-        "size" : "",
-        "weight" : ""
-      },
-    "battery_charging" :{
-        "type" : "",
-        "capacity" : "",
-        "technology" : [
-          ""
-        ]
-      },
-    "utilities" :{
-        "advanced_security" : [
-          {
-            "name" : ""
           },
           {
             "name" : ""
           }
         ],
-        "special_features" : [
+        "cong_sac" : "",
+        "jack_tai_nghe" : "",
+        "ket_noi_khac" : ""
+      },
+    "thiet_ke_trong_luong" :{
+        "thiet_ke" : "",
+        "chat_lieu" : "",
+        "kich_thuoc" : "",
+        "khoi_luong" : ""
+      },
+    "pin" :{
+        "loai" : "",
+        "dung_luong" : "",
+        "cong_nghe" :""
+      },
+    "tien_ich" :{
+        "bao_mat" :{
+          ""
+          
+        }
+    "tinh_nang_khac" : [
           {
             "name" : ""
           },
           {
             "name" : ""
+          },
+          {
+            "name" : ""
+          },
+          {
+             "name" : ""
           }
         ],
-        "recording" : "",
-        "watch_movie" : [
-          ""
-        ],
-        "music" : [
-          ""
-        ]
+        "ghi_am" : "",
+        "xem_phim" :""
+        "nghe_nhac" :""
       }
   },
-  "other_information" : ""
+  "thong_tin_khac" : ""
 }
