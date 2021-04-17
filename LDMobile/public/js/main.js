@@ -48,16 +48,6 @@ $(function() {
     /*=====  End of product quantity  ======*/
     
     
-    
-    /*=============================================
-    =              Nice Select                    =
-    =============================================*/
-
-	$('select').niceSelect();
-    
-    /*=====  End of   ======*/    
-    
-    
     /*=============================================
     =                Mobile Menu                  =
     =============================================*/
@@ -1251,12 +1241,221 @@ $(function() {
         ]
     });
     
+    //=======================================================================================================================
+
+    // hiển thị giỏ hàng trên header
+    var cartFlag = 0;
+    $('.head-cart').on('click', function(){
+        openHeadCart();
+    });
+
+    // đóng giỏ hàng
+    $('.head-btn-close-cart').on('click', function(){
+        openHeadCart()
+    });
+
+    function openHeadCart(){
+        if(cartFlag == 0){
+            $('.head-cart-box').css('display', 'block');
+            cartFlag = 1;
+            return;
+        } else {
+            $('.head-cart-box').css('display', 'none');
+            cartFlag = 0;
+            return;
+        }
+    }
+
+    // slide hình ảnh khác của sản phẩm
+    $('#detail-carousel').owlCarousel({
+        stagePadding: 10,
+        nav: false,
+        rewind: true,
+        dots: false,
+        responsiveClass:true,
+        responsive: {
+            0: {
+                items: 4
+            },
+            600: {
+                items: 4
+            },
+            1000: {
+                items: 4
+            }
+        }
+    });
+
+    // chuyển đổi hình ảnh khác
+    var owl = $('#detail-carousel');
+    owl.owlCarousel();
+
+    $('#prev-owl-carousel').on('click', function(){
+        owl.trigger('prev.owl.carousel', [300]);
+    });
+
+    $('#next-owl-carousel').on('click', function(){
+        owl.trigger('next.owl.carousel');
+    });
+
+    // slide logo các hãng
+    $('#logo-carousel').owlCarousel({
+        items:4,
+        loop:true,
+        dots:false,
+        nav: false,
+        autoplay:true,
+        autoplayTimeout:1500,
+        autoplayHoverPause:true,
+        smartSpeed: 1000,
+    });
+
+    // hiển thị button cuộn lên đầu
+    $(window).scroll(function(e){
+        var scrollTop = $(window).scrollTop();
+        var docHeight = $(document).height();
+        var winHeight = $(window).height();
+        var scrollPercent = (scrollTop) / (docHeight - winHeight);
+        var scrollPercentRounded = Math.round(scrollPercent*100);
+
+        if(scrollPercentRounded >= 20){
+            $('.btn-scroll-top').css({
+                
+                '-ms-transform' : 'translateY(0)',
+                'transform' : 'translateY(0)',
+            });
+        } else {
+            $('.btn-scroll-top').css({
+                
+                '-ms-transform' : 'translateY(100px)',
+                'transform' : 'translateY(100px)',
+            });
+        }
+    });
+
+    // xử lý cuộn lên đầu trang
+    $('.btn-scroll-top').on('click', function(){
+        $(this).scrollTop();
+    })
+
+    // danh sách các chi nhánh
+    $('#city').on('change', function(){
+        var option = $(this).val();
+        if(option != 0){
+            $(".detail-branch-list").hide();
+        }
+    });
     
+    $('#address').on('change', function(){
+        var option = $(this).val();
+        if(option != 0){
+            $('.detail-branch-list').show('blind', 250);
+        } else {
+            $(".detail-branch-list").hide();
+        }
+    });
+
+    // giảm số lượng sản phẩm trong giỏ hàng
+    $('.minus').off('click').on('click', function(e){
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        var qty = parseInt($('#qty_' + id).text());
+        if(qty == 0) {
+            return;
+        } else  {
+            $('#qty_' + id).text(--qty);
+            $('.qty_' + id).text(qty);
+        }
+    });
+
+    // tăng số lượng sản phẩm trong giỏ hàng
+    $('.plus').off('click').on('click', function(){
+        var id = $(this).data('id');
+        var qty = parseInt($('#qty_' + id).text());
+        $('#qty_' + id).text(++qty);
+        $('.qty_' + id).text(qty);
+    })
+
+    // kiểm tra nơi nhận hàng
+    $('#TaiCuaHang').on('click', function(){
+        $('.atStore').css('display', 'block');
+        $('.atHome').css('display', 'none');
+    });
+
+    $('#TaiNha').on('click', function(){
+        $('.atHome').css('display', 'block');
+        $('.atStore').css('display', 'none');
+    });
+
+    // đảo ngược button
+    $('.checkout-btn-collapse-cart').on('click', function(){
+        if($(this).attr('aria-expanded') == 'true'){
+            $(this).css({
+                '-ms-transform' : 'rotate(0)',
+                'transform' : 'rotate(0)',
+            });
+        } else {
+            $(this).css({
+                '-ms-transform' : 'rotate(180deg)',
+                'transform' : 'rotate(180deg)',
+            });
+        }
+    })
     
-    
-    
-    
-    
+    // hiển thị offcanvas
+    $('#show-offcanvas').on('click', function(){
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.head-offcanvas-box').css({
+                'width' : '40%',
+            });
+            $('.backdrop').css('display', 'block');
+            $(this).attr('aria-expanded', 'true');
+        } else {
+            $('.head-offcanvas-box').css({
+                'width' : '0',
+            });
+            $('.backdrop').css('display', 'none');
+            $(this).attr('aria-expanded', 'false');
+        }
+    });
+
+    // nút đóng offcanvas
+    $('#btn-close-offcanvas').on('click', function(){
+        $('.head-offcanvas-box').css({
+            'width' : '0',
+        });
+        $('.backdrop').css('display', 'none');
+        $('#show-offcanvas').attr('aria-expanded', 'false');
+    });
+
+    // đóng offcanvas theo kích thước màn hình
+    $(window).resize(function(){
+        if($(window).width() > 1100) {
+            $('.backdrop').css({
+                'display' : 'none',
+            });
+            $('.head-offcanvas-box').css({
+                'width' : '0',
+            });
+            $('#show-offcanvas').attr('aria-expanded', 'false');
+        }
+    });
+
+    // dropdown tài khoản trong offcanvas
+    $('.head-offcanvas-account').on('click', function(){
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.head-offcanvas-account-option').css({
+                'display' : 'block',
+            });
+            $(this).attr('aria-expanded', 'true');
+        } else {
+            $('.head-offcanvas-account-option').css({
+                'display' : 'none',
+            });
+            $(this).attr('aria-expanded', 'false');
+        }
+    });
 });
 
 

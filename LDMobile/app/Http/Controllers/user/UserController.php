@@ -13,14 +13,14 @@ class UserController extends Controller
         $this->user='user/content/';
     }
     //
-    public function Login(){
-        return view($this->user."login");
+    public function DangNhap(){
+        return view($this->user."dang-nhap");
     }
-    public function Signup(){
-        return view($this->user."signup");
+    public function DangKy(){
+        return view($this->user."dang-ky");
     }
-    public function Account(){
-        return view($this->user."account");
+    public function TaiKhoan(){
+        return view($this->user."tai-khoan");
     }
     
 }

@@ -13,7 +13,7 @@ class CartController extends Controller
         $this->viewprefix='user.pages.';
         $this->user='user/content/';
     }
-    public function MyCart(){
-        return view($this->user."cart");
+    public function GioHang(){
+        return view($this->user."gio-hang");
     }
 }

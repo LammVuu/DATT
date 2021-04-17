@@ -1,594 +1,379 @@
-<div class="navigation">
-        <header class="navbar-style-7 position-relative">
-            <div class="container">
-                <!-- navbar mobile Start -->
-                <div class="navbar-mobile d-lg-none">
-                    <div class="row align-items-center">
-                        <div class="col-3">
-                            <!-- navbar cart start -->
-                            <div class="navbar-toggle icon-text-btn">
-                                <a class="icon-btn primary-icon-text mobile-menu-open-7" href="javascript:void(0)">
-                                    <i class="mdi mdi-menu"></i>
-                                </a>
-                            </div>
-                            <!-- navbar cart Ends -->
-                        </div>
-                        <div class="col-6">
-                            <!-- desktop logo Start -->
-                            <div class="mobile-logo text-center">
-                                <a href="index.html"><img src="images/logo.svg" alt="Logo"></a>
-                            </div>
-                            <!-- desktop logo Ends -->
-                        </div>
-                        <div class="col-3">
-                            <!-- navbar cart start -->
-                            <div class="navbar-cart">
-                                <a class="icon-btn primary-icon-text icon-text-btn" href="javascript:void(0)">
-                                    <img src="images/icon-svg/cart-1.svg" alt="Icon">
-                                    <span class="icon-text text-style-1">88</span>
-                                </a>
-    
-                                <div class="navbar-cart-dropdown">
-                                    <div class="checkout-style-2">
-                                        <div class="checkout-header d-flex justify-content-between">
-                                            <h6 class="title">Shopping Cart</h6>
-                                        </div>
-    
-                                        <div class="checkout-table table-responsive">
-                                            <table class="table">
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="checkout-product">
-                                                            <div class="product-cart d-flex">
-                                                                <div class="product-thumb">
-                                                                    <img src="images/product-cart/product-1.png"
-                                                                        alt="Product">
-                                                                </div>
-                                                                <div class="product-content media-body">
-                                                                    <h5 class="title">
-                                                                        <a href="product-details-page.html">Hollow Port</a>
-                                                                    </h5>
-                                                                    <ul>
-                                                                        <li><span>Brown</span></li>
-                                                                        <li><span>XL</span></li>
-                                                                        <li>
-                                                                            <a class="delete" href="javascript:void(0)">
-                                                                                <i class="mdi mdi-delete"></i>
-                                                                            </a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-quantity">
-                                                            <div class="product-quantity d-inline-flex">
-                                                                <button type="button" id="sub" class="sub">
-                                                                    <i class="mdi mdi-minus"></i>
-                                                                </button>
-                                                                <input type="text" value="1">
-                                                                <button type="button" id="add" class="add">
-                                                                    <i class="mdi mdi-plus"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-price">
-                                                            <p class="price">$36.00</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="checkout-product">
-                                                            <div class="product-cart d-flex">
-                                                                <div class="product-thumb">
-                                                                    <img src="images/product-cart/product-2.png"
-                                                                        alt="Product">
-                                                                </div>
-                                                                <div class="product-content media-body">
-                                                                    <h5 class="title">
-                                                                        <a href="product-details-page.html">Mist Black Triblend</a>
-                                                                    </h5>
-                                                                    <ul>
-                                                                        <li><span>Brown</span></li>
-                                                                        <li><span>XL</span></li>
-                                                                        <li>
-                                                                            <a class="delete" href="javascript:void(0)">
-                                                                                <i class="mdi mdi-delete"></i>
-                                                                            </a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-quantity">
-                                                            <div class="product-quantity d-inline-flex">
-                                                                <button type="button" id="sub" class="sub">
-                                                                    <i class="mdi mdi-minus"></i>
-                                                                </button>
-                                                                <input type="text" value="1">
-                                                                <button type="button" id="add" class="add">
-                                                                    <i class="mdi mdi-plus"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-price">
-                                                            <p class="price">$36.00</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="checkout-product">
-                                                            <div class="product-cart d-flex">
-                                                                <div class="product-thumb">
-                                                                    <img src="images/product-cart/product-3.png"
-                                                                        alt="Product">
-                                                                </div>
-                                                                <div class="product-content media-body">
-                                                                    <h5 class="title">
-                                                                        <a href="product-details-page.html">Realm Bone</a>
-                                                                    </h5>
-                                                                    <ul>
-                                                                        <li><span>Brown</span></li>
-                                                                        <li><span>XL</span></li>
-                                                                        <li>
-                                                                            <a class="delete" href="javascript:void(0)">
-                                                                                <i class="mdi mdi-delete"></i>
-                                                                            </a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-quantity">
-                                                            <div class="product-quantity d-inline-flex">
-                                                                <button type="button" id="sub" class="sub">
-                                                                    <i class="mdi mdi-minus"></i>
-                                                                </button>
-                                                                <input type="text" value="1">
-                                                                <button type="button" id="add" class="add">
-                                                                    <i class="mdi mdi-plus"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-price">
-                                                            <p class="price">$36.00</p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="checkout-product">
-                                                            <div class="product-cart d-flex">
-                                                                <div class="product-thumb">
-                                                                    <img src="images/product-cart/product-4.png"
-                                                                        alt="Product">
-                                                                </div>
-                                                                <div class="product-content media-body">
-                                                                    <h5 class="title">
-                                                                        <a href="product-details-page.html">Circular Sienna</a></h5>
-                                                                    <ul>
-                                                                        <li><span>Brown</span></li>
-                                                                        <li><span>XL</span></li>
-                                                                        <li>
-                                                                            <a class="delete" href="javascript:void(0)">
-                                                                                <i class="mdi mdi-delete"></i>
-                                                                            </a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-quantity">
-                                                            <div class="product-quantity d-inline-flex">
-                                                                <button type="button" id="sub" class="sub">
-                                                                    <i class="mdi mdi-minus"></i>
-                                                                </button>
-                                                                <input type="text" value="1">
-                                                                <button type="button" id="add" class="add">
-                                                                    <i class="mdi mdi-plus"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                        <td class="checkout-price">
-                                                            <p class="price">$36.00</p>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-    
-                                        <div class="checkout-footer">
-                                            <div class="checkout-sub-total d-flex justify-content-between">
-                                                <p class="value">Subtotal Price:</p>
-                                                <p class="price">$144</p>
-                                            </div>
-                                            <div class="checkout-btn">
-                                                <a href="cart-page.html" class="main-btn primary-btn-border">View Cart</a>
-                                                <a href="checkout-page.html" class="main-btn primary-btn">Checkout</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- navbar cart Ends -->
-                        </div>
-                    </div>
-                    <!-- navbar search start -->
-                    <div class="navbar-search mt-15 search-style-5">
-                        <div class="search-select">
-                            <select>
-                                <option value="">All</option>
-                                <option value="1">option 01</option>
-                                <option value="2">option 02</option>
-                                <option value="3">option 03</option>
-                                <option value="4">option 04</option>
-                                <option value="5">option 05</option>
-                            </select>
-                        </div>
-                        <div class="search-input">
-                            <input type="text" placeholder="Search">
-                        </div>
-                        <div class="search-btn">
-                            <button><i class="lni lni-search-alt"></i></button>
-                        </div>
-                    </div>
-                    <!-- navbar search Ends -->
-                </div>
-                <!-- navbar mobile Start -->
+
+<div class="head-bg pt-10 pb-10">
+    <div class="container-fluid">
+        <div class='d-flex justify-content-between align-items-center'>
+            {{-- Logo --}}
+            <a href="{{route('user/index')}}" class='head-brand'>
+                <img src="images/logo/LDMobile-logo.png" alt="Logo">
+            </a>
+
+            <div class='head-offcanvas'>
+                <a href="#" id='show-offcanvas' aria-expanded="false"><i class="fas fa-bars white fz-30"></i></a>
             </div>
-    
-            <div class="navbar-container navbar-sidebar-7">
-                <!-- navbar close  Ends -->
-                <div class="navbar-close d-lg-none">
-                    <a class="close-mobile-menu-7" href="javascript:void(0)"><i class="mdi mdi-close"></i></a>
-                </div>
-                <!-- navbar close  Ends -->
-    
-                <!-- navbar top Start -->
-                <div class="navbar-top-wrapper">
-                    <div class="container-lg">
-                        <div class="navbar-top d-lg-flex justify-content-between">
-                            <!-- navbar top left Start -->
-                            <div class="navbar-top-left">
-                                <ul class="navbar-top-link">
-                                    <li><a href="about-page.html">About</a></li>
-                                    <li><a href="contact-page.html">Contact</a></li>
-                                    <li>
-                                        <a href="javascript:void(0)">
-                                            <i class="mdi mdi-phone-in-talk"></i>
-                                            +8801234567890
-                                        </a>
-                                    </li>
-                                </ul>
+            
+            
+            {{-- sdt --}}
+            <div class='head-item'>
+                <a href="#" class="d-flex flex-column white">
+                    <span><i class="fas fa-phone mr-5"></i>077 9792000</span>
+                    <span><i class="fas fa-phone mr-5"></i>038 4151501</span>
+                </a>
+            </div>
+
+            {{-- điện thoại --}}
+            <div class='head-item head-drop pt-15 pb-15'>
+                <a href="{{route('user/san-pham')}}" class='white'>Điện thoại<i class="fas fa-caret-down ml-10"></i></a>
+                <div class='head-drop-content p-50 box-shadow'>
+                    <div class='row'>
+                        <div class='col-md-12'>
+                            <div class='row'>
+                                {{-- Apple --}}
+                                <div class='col-md-2'>
+                                    <div class='d-flex flex-column'>
+                                        <a href="#" class='black font-weight-600 fz-20'>Apple</a>
+                                        <div class='pt-10'>
+                                            <a href="#" class='black'>iPhone 12 Series</a>
+                                            <a href="#" class='black'>iPhone 11 Series</a>
+                                            <a href="#" class='black'>iPhone SE 2020</a>
+                                            <a href="#" class='black'>iPhone XR | XS</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Samsung --}}
+                                <div class='col-md-2'>
+                                    <div class='d-flex flex-column'>
+                                        <a href="#" class='black font-weight-600 fz-20'>Samsung</a>
+                                        <div class='pt-10'>
+                                            <a href="#" class='black'>Galaxy Note</a>
+                                            <a href="#" class='black'>Galaxy S</a>
+                                            <a href="#" class='black'>Galaxy A</a>
+                                            <a href="#" class='black'>Galaxy Z</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- xiaomi --}}
+                                <div class='col-md-2'>
+                                    <div class='d-flex flex-column'>
+                                        <a href="#" class='black font-weight-600 fz-20'>Xiaomi</a>
+                                        <div class='pt-10'>
+                                            <a href="#" class='black'>Redmi</a>
+                                            <a href="#" class='black'>Mi</a>
+                                            <a href="#" class='black'>POCO</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- oppo --}}
+                                <div class='col-md-2'>
+                                    <div class='d-flex flex-column'>
+                                        <a href="#" class='black font-weight-600 fz-20'>Oppo</a>
+                                        <div class='pt-10'>
+                                            <a href="#" class='black'>Oppo A</a>
+                                            <a href="#" class='black'>Oppo Reno</a>
+                                            <a href="#" class='black'>Oppo FindX</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- vivo --}}
+                                <div class='col-md-2'>
+                                    <div class='d-flex flex-column'>
+                                        <a href="#" class='black font-weight-600 fz-20'>Vivo</a>
+                                        <div class='pt-10'>
+                                            <a href="#" class='black'>Vivo V</a>
+                                            <a href="#" class='black'>Vivo Y</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- logo --}}
+                                <div class='col-md-2'>
+                                    <img src="images/logo/LDMobile-logo.png" alt="">
+                                </div>
                             </div>
-                            <!-- navbar top left Ends -->
-                            <!-- navbar top right Start -->
-                            <div class="navbar-top-right">
-                                <ul class="navbar-top-link">
-                                    <li>
-                                        <select>
-                                            <option value="0">$ USD</option>
-                                            <option value="1">€ EURO</option>
-                                            <option value="2">$ CAD</option>
-                                            <option value="3">₹ INR</option>
-                                            <option value="4">¥ CNY</option>
-                                            <option value="5">৳ BDT</option>
-                                        </select>
-                                    </li>
-                                    <li>
-                                        <select>
-                                            <option value="0">English</option>
-                                            <option value="1">Español</option>
-                                            <option value="2">Filipino</option>
-                                            <option value="3">Français</option>
-                                            <option value="4">العربية</option>
-                                            <option value="5">हिन्दी</option>
-                                            <option value="6">বাংলা</option>
-                                        </select>
-                                    </li>
-                                    <li><a href="login-page.html"><i class="mdi mdi-account"></i>Login</a></li>
-                                </ul>
-                            </div>
-                            <!-- navbar top right Ends -->
                         </div>
                     </div>
                 </div>
-                <!-- navbar top Ends -->
-    
-                <!-- main navbar Start -->
-                <div class="navbar-wrapper">
-                    <div class="container-lg">
-                        <nav class="main-navbar d-lg-flex justify-content-between align-items-center">
-                            <!-- desktop logo Start -->
-                            <div class="desktop-logo d-none d-lg-block">
-                                <a href="index.html"><img src="images/logo.svg" alt="Logo"></a>
-                            </div>
-                            <!-- desktop logo Ends -->
-                            <!-- navbar menu Start -->
-                            <div class="navbar-menu">
-                                <ul class="main-menu">
-                                    <li class="position-static menu-item-has-children">
-                                        <a href="#">Womans</a>
-                                        <!-- sub mega dropdown Start -->
-                                        <ul class="sub-mega-dropdown">
-                                            <li>
-                                                <div class="mega-dropdown-menu">
-                                                    <ul class="container mega-dropdown d-flex flex-wrap">
-                                                        <li class="mega-dropdown-list menu-item-has-children">
-                                                            <h6 class="heading-6 font-weight-500 mega-title">New Arrivals
-                                                            </h6>
-                                                            <ul>
-                                                                <li><a href="category.html">Dresses</a></li>
-                                                                <li><a href="category.html">Jackets</a></li>
-                                                                <li><a href="category.html">Hoodies & Sweatshirts</a></li>
-                                                                <li><a href="category.html">Sweaters</a></li>
-                                                                <li><a href="category.html">Tops & Tees</a></li>
-                                                                <li><a href="category.html">Party Dresses</a></li>
-                                                            </ul>
-                                                        </li>
-                                                        <li class="mega-dropdown-list menu-item-has-children">
-                                                            <h6 class="heading-6 font-weight-500 mega-title">Trending</h6>
-                                                            <ul>
-                                                                <li><a href="category.html">Dresses</a></li>
-                                                                <li><a href="category.html">Jackets</a></li>
-                                                                <li><a href="category.html">Hoodies & Sweatshirts</a></li>
-                                                                <li><a href="category.html">Sweaters</a></li>
-                                                                <li><a href="category.html">Tops & Tees</a></li>
-                                                                <li><a href="category.html">Party Dresses</a></li>
-                                                            </ul>
-                                                        </li>
-                                                        <li class="mega-dropdown-list menu-item-has-children">
-                                                            <h6 class="heading-6 font-weight-500 mega-title">Accessories
-                                                            </h6>
-                                                            <ul>
-                                                                <li><a href="category.html">Hoodies & Sweatshirts</a></li>
-                                                                <li><a href="category.html">Jackets & Coats</a></li>
-                                                                <li><a href="category.html">Pants</a></li>
-                                                                <li><a href="category.html">Jeans</a></li>
-                                                                <li><a href="category.html">Tops & Tees</a></li>
-                                                                <li><a href="category.html">Casual Shorts</a></li>
-                                                            </ul>
-                                                        </li>
-                                                        <li class="mega-dropdown-list">
-                                                            <img src="images/menu-slider-1.png" alt="">
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <!-- sub mega dropdown Ends -->
-                                    </li>
-                                    <li><a href="category.html">mens</a></li>
-                                    <li><a href="category.html">Kids</a></li>
-                                    <li><a href="category.html">Accessories</a></li>
-                                    <li class="menu-item-has-children">
-                                        <a href="#">Pages</a>
-                                        <!-- sub menu Start -->
-                                        <ul class="sub-menu">
-                                            <li><a href="about-page.html">About Page</a></li>
-                                            <li><a href="account-page.html">Account Page</a></li>
-                                            <li><a href="cart-page.html">Cart Page</a></li>
-                                            <li><a href="category.html">Category Page</a></li>
-                                            <li><a href="checkout-page.html">Checkout Page</a></li>
-                                            <li><a href="contact-page.html">Contact Page</a></li>
-                                            <li><a href="login-page.html">Log In Page</a></li>
-                                            <li><a href="product-details-page.html">Product Details Page</a></li>
-                                            <li><a href="signup-page.html">Sign Up Page</a></li>
-                                        </ul>
-                                        <!-- sub menu Ends -->
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- navbar menu Ends -->
-                            <div class="navbar-search-cart d-none d-lg-flex">
-                                <!-- navbar search start -->
-                                <div class="navbar-search search-style-5">
-                                    <div class="search-select">
-                                        <select>
-                                            <option value="">All</option>
-                                            <option value="1">option 01</option>
-                                            <option value="2">option 02</option>
-                                            <option value="3">option 03</option>
-                                            <option value="4">option 04</option>
-                                            <option value="5">option 05</option>
-                                        </select>
-                                    </div>
-                                    <div class="search-input">
-                                        <input type="text" placeholder="Search">
-                                    </div>
-                                    <div class="search-btn">
-                                        <button><i class="lni lni-search-alt"></i></button>
-                                    </div>
+            </div>
+            
+            {{-- về chúng tôi --}}
+            <div class='head-item'>
+                <a href="#" class="white">Về chúng tôi</a>
+            </div>
+
+            {{-- liên hệ --}}
+            <div class='head-item'>
+                <a href="#" class="white">Liên hệ</a>
+            </div>
+
+            {{-- tìm kiếm --}}
+            <div class='head-item'>
+                <div class="head-input-grp">
+                    <input type="text" class='head-search-input' placeholder="Tìm kiếm">
+                    <span class='input-icon-right'><i class="fal fa-search"></i></span>
+                </div>
+            </div>
+
+            {{-- giỏ hàng --}}
+            <div class='head-item'>
+                <a href="#" class='head-cart white'>
+                    <i class="fas fa-shopping-cart" style='font-size: 32px'></i>
+                    <span class='head-qty-cart'>10</span>
+                </a>
+                
+            </div>
+
+            {{-- tài khoản --}}
+            <div class='head-item pl-40 pr-20'>
+                <div class='d-flex'>
+                    <img src="images/profile-photo.png" alt="avatar" class="head-brand mr-10">
+                    <div class='d-flex flex-column justify-content-end'>
+                        <i class='white fz-14'>Xin Chào!</i>
+                        <div class='head-account'>Vũ hoàng lâm<i class="fas fa-caret-down ml-5"></i>
+                            <div class='head-account-dropdown p-20'>
+                                <div class='pt-10 pb-10'>
+                                    <a href="#" class='black'><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
                                 </div>
-                                <!-- navbar search Ends -->
-                                <!-- navbar cart start -->
-                                <div class="navbar-cart">
-                                    <a class="icon-btn primary-icon-text icon-text-btn" href="javascript:void(0)">
-                                        <img src="images/icon-svg/cart-1.svg" alt="Icon">
-                                        <span class="icon-text text-style-1">88</span>
+                                <div class='pt-10 pb-10'>
+                                    <a href="#" class='d-flex align-items-center black'>
+                                        <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
+                                        <div class='head-number fz-12'>50</div>
                                     </a>
-    
-                                    <div class="navbar-cart-dropdown">
-                                        <div class="checkout-style-2">
-                                            <div class="checkout-header d-flex justify-content-between">
-                                                <h6 class="title">Shopping Cart</h6>
-                                            </div>
-    
-                                            <div class="checkout-table">
-                                                <table class="table">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="checkout-product">
-                                                                <div class="product-cart d-flex">
-                                                                    <div class="product-thumb">
-                                                                        <img src="images/product-cart/product-1.png"
-                                                                            alt="Product">
-                                                                    </div>
-                                                                    <div class="product-content media-body">
-                                                                        <h5 class="title">
-                                                                            <a href="product-details-page.html">Hollow Port</a>
-                                                                        </h5>
-                                                                        <ul>
-                                                                            <li><span>Brown</span></li>
-                                                                            <li><span>XL</span></li>
-                                                                            <li>
-                                                                                <a class="delete" href="javascript:void(0)">
-                                                                                    <i class="mdi mdi-delete"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-quantity">
-                                                                <div class="product-quantity d-inline-flex">
-                                                                    <button type="button" id="sub" class="sub">
-                                                                        <i class="mdi mdi-minus"></i>
-                                                                    </button>
-                                                                    <input type="text" value="1">
-                                                                    <button type="button" id="add" class="add">
-                                                                        <i class="mdi mdi-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-price">
-                                                                <p class="price">$36.00</p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="checkout-product">
-                                                                <div class="product-cart d-flex">
-                                                                    <div class="product-thumb">
-                                                                        <img src="images/product-cart/product-2.png"
-                                                                            alt="Product">
-                                                                    </div>
-                                                                    <div class="product-content media-body">
-                                                                        <h5 class="title">
-                                                                            <a href="product-details-page.html">Mist Black Triblend</a>
-                                                                        </h5>
-                                                                        <ul>
-                                                                            <li><span>Brown</span></li>
-                                                                            <li><span>XL</span></li>
-                                                                            <li>
-                                                                                <a class="delete" href="javascript:void(0)">
-                                                                                    <i class="mdi mdi-delete"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-quantity">
-                                                                <div class="product-quantity d-inline-flex">
-                                                                    <button type="button" id="sub" class="sub">
-                                                                        <i class="mdi mdi-minus"></i>
-                                                                    </button>
-                                                                    <input type="text" value="1">
-                                                                    <button type="button" id="add" class="add">
-                                                                        <i class="mdi mdi-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-price">
-                                                                <p class="price">$36.00</p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="checkout-product">
-                                                                <div class="product-cart d-flex">
-                                                                    <div class="product-thumb">
-                                                                        <img src="images/product-cart/product-3.png"
-                                                                            alt="Product">
-                                                                    </div>
-                                                                    <div class="product-content media-body">
-                                                                        <h5 class="title">
-                                                                            <a href="product-details-page.html">Realm Bone</a>
-                                                                        </h5>
-                                                                        <ul>
-                                                                            <li><span>Brown</span></li>
-                                                                            <li><span>XL</span></li>
-                                                                            <li>
-                                                                                <a class="delete" href="javascript:void(0)">
-                                                                                    <i class="mdi mdi-delete"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-quantity">
-                                                                <div class="product-quantity d-inline-flex">
-                                                                    <button type="button" id="sub" class="sub">
-                                                                        <i class="mdi mdi-minus"></i>
-                                                                    </button>
-                                                                    <input type="text" value="1">
-                                                                    <button type="button" id="add" class="add">
-                                                                        <i class="mdi mdi-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-price">
-                                                                <p class="price">$36.00</p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="checkout-product">
-                                                                <div class="product-cart d-flex">
-                                                                    <div class="product-thumb">
-                                                                        <img src="images/product-cart/product-4.png"
-                                                                            alt="Product">
-                                                                    </div>
-                                                                    <div class="product-content media-body">
-                                                                        <h5 class="title">
-                                                                            <a href="product-details-page.html">Circular Sienna</a>
-                                                                        </h5>
-                                                                        <ul>
-                                                                            <li><span>Brown</span></li>
-                                                                            <li><span>XL</span></li>
-                                                                            <li>
-                                                                                <a class="delete" href="javascript:void(0)">
-                                                                                    <i class="mdi mdi-delete"></i>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-quantity">
-                                                                <div class="product-quantity d-inline-flex">
-                                                                    <button type="button" id="sub" class="sub">
-                                                                        <i class="mdi mdi-minus"></i>
-                                                                    </button>
-                                                                    <input type="text" value="1">
-                                                                    <button type="button" id="add" class="add">
-                                                                        <i class="mdi mdi-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                            <td class="checkout-price">
-                                                                <p class="price">$36.00</p>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-    
-                                            <div class="checkout-footer">
-                                                <div class="checkout-sub-total d-flex justify-content-between">
-                                                    <p class="value">Subtotal Price:</p>
-                                                    <p class="price">$144</p>
-                                                </div>
-                                                <div class="checkout-btn">
-                                                    <a href="cart-page.html" class="main-btn primary-btn-border">View
-                                                        Cart</a>
-                                                    <a href="checkout-page.html" class="main-btn primary-btn">Checkout</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
-                                <!-- navbar cart Ends -->
+                                <div class='pt-10 pb-10'>
+                                    <a href="#" class='d-flex align-items-center black'>
+                                        <span><i class="fas fa-truck mr-10"></i>Đơn hàng của tôi</span>
+                                        <div><div class='head-number fz-12'>50</div></div>
+                                    </a>
+                                </div>
+                                <div class='pt-10 pb-10'>
+                                    <a href="#" class='price-color'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
+                                </div>
                             </div>
-                        </nav>
+                        </div>
                     </div>
                 </div>
-                <!-- main navbar Ends -->
             </div>
-            <div class="overlay-7"></div>
-        </header>
+
+            
+            {{-- <div class='head-item'>
+                <a href="#" class='white'><i class="fas fa-user mr-10"></i>Đăng nhập</a>
+            </div>
+
+            
+            <div class='head-item'>
+                <a href="#" class='head-btn-signup'>Đăng ký</a>
+            </div> --}}
+        </div>
     </div>
+</div>
+
+
+{{-- giỏ hàng box --}}
+<div class='head-cart-box box-shadow'>
+    <table class='table'>
+        <thead>
+            <th colspan="4">
+                <div class='d-flex justify-content-between pl-10 pr-10'>
+                    Giỏ hàng
+                    <button type='button' class='head-btn-close-cart'><i class="far fa-times"></i></button>
+                </div>
+            </th>
+        </thead>
+        <tbody>
+            <?php for($i = 0; $i < 2; $i++) : ?>
+            <tr>
+                <td class='center-td d-flex flex-row'>
+                    <img class='cart-img-pro' src="images/iphone/iphone_11_black.jpg">
+                    <div class='cart-pro-info'>
+                        <a href="#" style='color:black'><b>iPhone 11 PRO MAX</b></a>
+                        <i>Màu sắc: Đen</i>
+                        <i>Dung lượng: 128GB</i>
+                    </div>
+                </td>
+                <td class='center-td'>
+                    <div>
+                        <div class='cart-qty-input d-flex justify-content-between'>
+                            <button type='button' data-id='<?php echo $i ?>' class='minus'><i class="fas fa-minus"></i></button>
+                            <b id=<?php echo 'qty_' . $i ?>>1</b>
+                            <button type='button' data-id='<?php echo $i ?>' class='plus'><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </td>
+                <td class='center-td'><b>25.000.000 <sup>đ</sup></b></td>
+                <td class='center-td'><a href="#" style='font-size: 20px; color: red'><i class="fas fa-trash"></i></a></td>
+            </tr>
+            <?php endfor ?>
+        </tbody>
+    </table>
+    <div class='d-flex flex-column pt-20 pb-20 pl-20 pr-20'>
+        <div class='cart-total d-flex flex-row align-items-center justify-content-between'>
+            <h4>TỔNG TIỀN</h4>
+            <h4>50.000.000 <sup>đ</sup></h4>
+        </div>
+        <div class='d-flex flex-row'>
+            <a href={{route('user/gio-hang')}} class='btn-view-cart'>Xem giỏ hàng</a>
+            <a href="#" class='btn-checkout'>Thanh Toán</a>
+        </div>
+    </div>  
+</div>
+
+<div class='backdrop'></div>
+<div class="head-offcanvas-box">
+    {{-- nút đóng  --}}
+    <div class='d-flex justify-content-end p-10'><a href="#" id='btn-close-offcanvas'><i class="fas fa-times fz-30 gray-1"></i></a></div>
+
+    <div class='row'>
+        <div class='col-md-10 mx-auto p-20'>
+            <div class='d-flex flex-column justify-content-center'>
+                <img src="images/logo/LDMobile-logo.png" class='head-offcanvas-img'><hr>
+
+                 {{-- đăng nhập/ đăng ký --}}
+                <div class='d-flex justify-content-center align-items-center'>
+                    <div class='head-offcanvas-avatar mr-20'>
+                        <img src="images/profile-photo.png" alt="">
+                    </div>
+                    <div class='d-flex align-items-center'>
+                        <div class='head-offcanvas-account' aria-expanded="false">
+                            <b>Vũ Hoàng Lâm</b><i class="fas fa-caret-down ml-10"></i>
+                            <div class='head-offcanvas-account-option'>
+                                <div class='d-flex flex-column fz-14'>
+                                    <a href="#" class='options black'><i class="fas fa-user mr-10"></i>Xem tài khoản</a>
+                                    <a href="#" class='d-flex align-items-center options black'>
+                                        <span><i class="fas fa-truck mr-10"></i>Đơn hàng của tôi</span>
+                                        <div><div class='head-number fz-12'>50</div></div>
+                                    </a>
+                                    <a href="#" class="d-flex align-items-center options black">
+                                        <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
+                                        <div class='head-number fz-12'>5</div>
+                                    </a>
+                                    <hr class='m-0'>
+                                    <a href="#" class='options price-color'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><hr>
+
+                {{-- <div class='d-flex justify-content-center align-items-center'>
+                    <i class="fas fa-user mr-10"></i>
+                    <a href="#" class='black font-weight-600'>Đăng nhập</a>
+                    <b class='ml-10 mr-10'>|</b>
+                    <a href="#" class='head-offcanvas-btn-signup'>Đăng ký</a>
+                </div><hr> --}}
+                
+                {{-- tìm kiếm --}}
+                <div class='d-flex justify-content-center'>
+                    <div class="head-input-grp pb-20" style='width: 95%;'>
+                        <input type="text" class='head-search-input' placeholder="Tìm kiếm" style='border: 1px solid #dcdcdc'>
+                        <span class='input-icon-right'><i class="fal fa-search"></i></span>
+                    </div>
+                </div>
+                
+            
+                {{-- điện thoại --}}
+                <div class='head-drop-2 head-offcanvas-item text-center pb-20'>
+                    <a href="{{route('user/san-pham')}}">Điện thoại<i class="fas fa-caret-right ml-5"></i></a>
+                    <div class='head-drop-content-2 box-shadow pt-50 pb-50 pl-50 pr-50 fz-16'>
+                            {{-- Apple --}}
+                            <div>
+                                <div class='d-flex flex-column'>
+                                    <a href="#" class='black font-weight-600 fz-20'>Apple</a>
+                                    <div class='d-flex flex-column pt-10'>
+                                        <a href="#" class='black'>iPhone 12 Series</a>
+                                        <a href="#" class='black'>iPhone 11 Series</a>
+                                        <a href="#" class='black'>iPhone SE 2020</a>
+                                        <a href="#" class='black'>iPhone XR | XS</a>
+                                    </div>
+                                </div><hr>
+                            </div>
+            
+                            {{-- Samsung --}}
+                            <div>
+                                <div class='d-flex flex-column'>
+                                    <a href="#" class='black font-weight-600 fz-20'>Samsung</a>
+                                    <div class='d-flex flex-column pt-10'>
+                                        <a href="#" class='black'>Galaxy Note</a>
+                                        <a href="#" class='black'>Galaxy S</a>
+                                        <a href="#" class='black'>Galaxy A</a>
+                                        <a href="#" class='black'>Galaxy Z</a>
+                                    </div>
+                                </div><hr>
+                            </div>
+            
+                            {{-- xiaomi --}}
+                            <div>
+                                <div class='d-flex flex-column'>
+                                    <a href="#" class='black font-weight-600 fz-20'>Xiaomi</a>
+                                    <div class='d-flex flex-column pt-10'>
+                                        <a href="#" class='black'>Redmi</a>
+                                        <a href="#" class='black'>Mi</a>
+                                        <a href="#" class='black'>POCO</a>
+                                    </div>
+                                </div><hr>
+                            </div>
+            
+                            {{-- oppo --}}
+                            <div>
+                                <div class='d-flex flex-column'>
+                                    <a href="#" class='black font-weight-600 fz-20'>Oppo</a>
+                                    <div class='d-flex flex-column pt-10'>
+                                        <a href="#" class='black'>Oppo A</a>
+                                        <a href="#" class='black'>Oppo Reno</a>
+                                        <a href="#" class='black'>Oppo FindX</a>
+                                    </div>
+                                </div><hr>
+                            </div>
+            
+                            {{-- vivo --}}
+                            <div>
+                                <div class='d-flex flex-column'>
+                                    <a href="#" class='black font-weight-600 fz-20'>Vivo</a>
+                                    <div class='d-flex flex-column pt-10'>
+                                        <a href="#" class='black'>Vivo V</a>
+                                        <a href="#" class='black'>Vivo Y</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- giỏ hàng --}}
+                <div class='head-offcanvas-item pb-20'>
+                    <div class='d-flex align-items-center justify-content-center'>
+                        <a href="{{route('user/gio-hang')}}">
+                            <div class='d-flex align-items-center'>Giỏ hàng
+                                <div class='head-number'>5</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- về chúng tôi --}}
+                <div class='head-offcanvas-item text-center pb-20'>
+                    <a href="#">Về chúng tôi</a>
+                </div>
+
+               {{-- liên hệ --}}
+               <div class='head-offcanvas-item text-center'>
+                    <a href="#">Liên hệ</a>
+                </div><hr>
+
+                {{-- gọi tư vấn --}}
+                <div class='d-flex justify-content-start'>
+                    <div class='d-flex flex-column pt-20'>
+                        <b>Gọi tư vấn:</b>
+                        <div class='d-flex flex-column mt-10 ml-30'>
+                            <span><i class="fas fa-phone mr-5"></i>077 9792000</span>
+                            <span><i class="fas fa-phone mr-5"></i>038 4151501</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    

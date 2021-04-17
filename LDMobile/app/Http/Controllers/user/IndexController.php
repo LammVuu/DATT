@@ -15,13 +15,16 @@ class IndexController extends Controller
     public function Index(){
         return view($this->user."index");
     }
-    public function Detail(){
-        return view($this->user."detail_product");
+
+    public function SanPham(){
+        return view($this->user."san-pham");
     }
-    public function Checkout(){
-        return view($this->user."checkout");
+
+    public function ChiTiet(){
+        return view($this->user."chi-tiet-san-pham");
     }
-    public function Shop(){
-        return view($this->user."shop");
+
+    public function ThanhToan(){
+        return view($this->user."thanh-toan");
     }
 }

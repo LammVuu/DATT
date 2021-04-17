@@ -14,19 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     Route::get("/","IndexController@Index")->name("user/index");
-    Route::get("detail","IndexController@Detail")->name("user/detail");
-    Route::get("checkout","IndexController@Checkout")->name("user/checkout");
-    Route::get("shop","IndexController@Shop")->name("user/shop");
-    Route::get("login","UserController@Login")->name("user/login");
-    Route::get("signup","UserController@Signup")->name("user/signup");
-    Route::get("account","UserController@Account")->name("user/account");
-    Route::get("cart","CartController@MyCart")->name("user/MyCart");
+    Route::get("chitiet","IndexController@ChiTiet")->name("user/chi-tiet");
+    Route::get("thanhtoan","IndexController@ThanhToan")->name("user/thanh-toan");
+    Route::get("sanpham","IndexController@SanPham")->name("user/san-pham");
+    Route::get("dangnhap","UserController@DangNhap")->name("user/dang-nhap");
+    Route::get("dangky","UserController@DangKy")->name("user/dang-ky");
+    Route::get("taikhoan","UserController@TaiKhoan")->name("user/tai-khoan");
+    Route::get("giohang","CartController@GioHang")->name("user/gio-hang");
 });
-// Route::get('/', function () {
-//     return view('user/content/index');
-   
-// });
-// Route::get('/detail', function () {
-//     return view('user/content/detail_product');
-   
-// });

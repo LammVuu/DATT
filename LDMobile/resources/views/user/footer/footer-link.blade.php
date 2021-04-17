@@ -1,0 +1,13 @@
+<script src='https://unpkg.com/@popperjs/core@2'></script>
+<script src="js/bootstrap.min.js"></script>
+<script src='js/jquery-3.6.0.min.js'></script>
+<script src='js/owl.carousel.min.js'></script>
+<script src="js/vendor/modernizr-3.7.1.min.js"></script>
+<script src="js/slick.min.js"></script>
+<script src="js/jquery-vj-accordion-steps.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/jquery.form-validator.min.js"></script>
+<script src="js/jquery.formatter.min.js"></script>
+<script src="js/count-up.min.js"></script>
+<script src='fonts/font-awesome/js/all.js'></script>
+<script src="js/main.js"></script>

@@ -4,17 +4,17 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-5 col-md-7 col-sm-10">
                         <div class="footer-logo text-center">
-                            <a href="index.html">
-                                <img src="images/logo.svg" alt="">
+                            <a href={{route('user/index')}}>
+                                <img src="images/logo/LDMobile-logo.png" alt="logo" width="80px">
                             </a>
                         </div>
                         <h5 class="heading-5 text-center mt-30">Follow Us</h5>
                         <ul class="footer-follow text-center">
-                            <li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="lni lni-twitter-filled"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="lni lni-whatsapp"></i></a></li>
+                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+                            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fab fa-whatsapp"></i></li>
                         </ul>
                     </div>
                 </div>
