@@ -22,3 +22,17 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     Route::get("taikhoan","UserController@TaiKhoan")->name("user/tai-khoan");
     Route::get("giohang","CartController@GioHang")->name("user/gio-hang");
 });
+Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
+    Route::resource('dashboard', DashboardController::class);
+    Route::resource('hinhanh', HinhAnhController::class);
+    Route::resource('banner', BannerController::class);
+    Route::resource('slideshow', SlideshowController::class);
+    Route::resource('mausanpham', MauSanPhamController::class);
+    Route::resource('sanpham', SanPhamController::class);
+    Route::resource('nhacungcap', NhaCungCapController::class);
+    Route::resource('danhgia', DanhGiaController::class);
+    Route::resource('khuyenmai', KhuyenMaiController::class);
+    Route::resource('donhang', DonHangController::class);
+    Route::resource('baohanh', BaoHanhController::class);
+    Route::resource('taikhoan', TaiKhoanController::class);
+});
