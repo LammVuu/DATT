@@ -16,11 +16,12 @@
                             </div>
                         </div>
                         <a href="index.html">
-                            <img class="img-fluid" src="../admin/images/logo.png" alt="Theme-Logo" />
+                            <img class="img-fluid" src="../images/logo/LDMobile-logo.png" width="40px" alt="Theme-Logo" />
                         </a>
                         <a class="mobile-options waves-effect waves-light">
                             <i class="ti-more"></i>
                         </a>
+                        <p class="logo">Admin</p>
                     </div>
                     <div class="navbar-container container-fluid">
                         <ul class="nav-left">
