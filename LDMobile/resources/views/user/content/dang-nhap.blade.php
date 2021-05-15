@@ -35,16 +35,22 @@
                     </div>
 
                     <!-- đăng nhập khác -->
-                    <div style='margin-top: 50px'>
-                        <div class='text-center'>
-                            <p class="login">Chưa có tài khoản? <a href={{route('user/dang-ky')}} style='margin-left: 20px'>Đăng ký</a></p>
+                    <div class='mt-50'>
+                        <div class='d-flex flex-column align-items-center'>
+                            <p class="login ml-20">Chưa có tài khoản? <a href={{route('user/dang-ky')}}>Đăng ký</a></p>
                             <p class="account mt-25">Đăng nhập với</p><br>
 
-                            <a href="#" class='login-signup-with' style='background-color: #1877f2; color: white'>
-                                <img src="images/icon/facebook-icon-white.png" alt='fb-icon' class='icon-btn-login-signup'> Đăng nhập với Facebook
+                            <a href="#" class='login-signup-with box-shadow d-flex'>
+                                <div class='pl-50 pr-20'>
+                                    <img src="images/icon/facebook-icon.png" alt='fb-icon' class='icon-btn-login-signup'>
+                                </div>
+                                <span>Đăng nhập với Facebook</span>
                             </a>
-                            <a href="#" class='login-signup-with' style='background-color: white; color: black; box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.2)'>
-                                <img src="images/icon/google-icon.png" alt='gg-icon' class='icon-btn-login-signup'> Đăng nhập với Google
+                            <a href="#" class='login-signup-with box-shadow d-flex'>
+                                <div class='pl-50 pr-20'>
+                                    <img src="images/icon/google-icon.png" alt='gg-icon' class='icon-btn-login-signup'>
+                                </div>
+                                <span>Đăng nhập với Google</span>
                             </a>
                         </div>
                     </div>

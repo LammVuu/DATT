@@ -4,7 +4,7 @@
 @section("direct")SẢN PHẨM @stop
 @include("user.content.section.sec-thanh-dieu-huong")
 
-<section class="category-wrapper pt-50">
+<section class="pt-50">
     <div class="container">
         <div class="row">
             <div class="row">
@@ -105,17 +105,20 @@
                                             </div>
                                             <div class='pb-20 text-center d-flex flex-column'>
                                                 <b class='mb-10'>iPhone 11 PRO MAX</b>
-                                                <span><b class='price-color'>36.000.000 VND</b>&nbsp; <strike>39.000.000 VND </strike></span>
-                                                <span>
+                                                <div>
+                                                    <span class='font-weight-600 price-color'>36.000.000<sup>đ</sup></span>
+                                                    <span class='ml-5 text-strike'>39.000.000<sup>đ</sup></span>
+                                                </div>
+                                                <div>
                                                     <div class='flex-row'>
                                                         <i class="fas fa-star checked"></i>
                                                         <i class="fas fa-star checked"></i>
                                                         <i class="fas fa-star checked"></i>
                                                         <i class="fas fa-star checked"></i>
-                                                        <i class="fas fa-star uncheck"></i>&nbsp;
-                                                        <i class='shop-vote-text'>21 đánh giá</i>
+                                                        <i class="fas fa-star uncheck"></i>
+                                                        <span class='fz-12 ml-10'>21 đánh giá</span>
                                                     </div>
-                                                </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -14,13 +14,39 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     Route::get("/","IndexController@Index")->name("user/index");
+
     Route::get("chitiet","IndexController@ChiTiet")->name("user/chi-tiet");
+
     Route::get("thanhtoan","IndexController@ThanhToan")->name("user/thanh-toan");
+
     Route::get("sanpham","IndexController@SanPham")->name("user/san-pham");
+    
     Route::get("dangnhap","UserController@DangNhap")->name("user/dang-nhap");
+    
     Route::get("dangky","UserController@DangKy")->name("user/dang-ky");
+    
     Route::get("taikhoan","UserController@TaiKhoan")->name("user/tai-khoan");
+    
+    Route::get("taikhoan/thongbao","UserController@ThongBao")->name("user/tai-khoan-thong-bao");
+    
+    Route::get("taikhoan/donhang","UserController@DonHang")->name("user/tai-khoan-don-hang");
+    
+    Route::get("taikhoan/chitietdonhang","UserController@ChiTietDonHang")->name("user/tai-khoan-chi-tiet-don-hang");
+    
+    Route::get("taikhoan/yeuthich","UserController@YeuThich")->name("user/tai-khoan-yeu-thich");
+    
+    Route::get("taikhoan/voucher","UserController@Voucher")->name("user/tai-khoan-voucher");
+    
     Route::get("giohang","CartController@GioHang")->name("user/gio-hang");
+
+    route::get("sosanh", "IndexController@SoSanh")->name('user/so-sanh');
+
+    route::get("thanhcong", "IndexController@ThanhCong");
+
+    route::post('test', 'IndexController@test');
+
+    route::post('test2', 'IndexController@test2');
+    
 });
 Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
     Route::resource('dashboard', DashboardController::class);

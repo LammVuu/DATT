@@ -4,8 +4,8 @@
 
 @include("user.content.index.sec-banner")
 
-@include("user.content.index.sec-san-pham-moi")
-@include("user.content.index.sec-san-pham-ban-chay")
+@include("user.content.index.sec-khuyen-mai-hot")
+@include("user.content.index.sec-san-pham-noi-bat")
 
 @include('user.content.section.sec-logo')
 @include('user.content.section.sec-dang-ky')

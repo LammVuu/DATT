@@ -12,9 +12,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th colspan="2">
+                                <th>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <a href={{route('user/san-pham')}} class='cart-back-shop'><i class="fas fa-chevron-left mr-5"></i>Xem sản phẩm khác</a>
+                                        <a href={{route('user/san-pham')}} class="main-color-text font-weight-300"><i class="fas fa-chevron-left mr-5"></i>Xem sản phẩm khác</a>
                                         <div class='cart-title'>Giỏ hàng</div> 
                                     </div>                                    
                                 </th>
@@ -23,96 +23,141 @@
                         <tbody>
                             <?php for($i = 0; $i < 3; $i++) : ?>
                             <tr>
-                                <td class='cart-img-td'>
-                                    <img src="images/iphone/iphone_12_red.jpg" class='pt-10'>
-                                </td>
-                                <td class='cart-pro-info-td'>
-                                    <div class='d-flex flex-column pr-10 pt-10 pb-10'>
-                                        {{-- tên & giá --}}
-                                        <div class='d-flex justify-content-between mbot-5'>
-                                            <div class='d-flex flex-column'>
-                                                <b class='fz-18'>iPhone 12</b>
-                                                <div class='fz-12'>Dung lượng: 128GB</div>
-                                                <div class='fz-12'>Màu sắc: Đỏ</div>
+                                <td class="d-flex">
+                                    <div class='w-30'>
+                                        <img src="images/iphone/iphone_12_red.jpg" class='pt-10'>
+                                    </div>
+                                    <div class='w-70'>
+                                        <div class='d-flex flex-column pr-10 pt-10 pb-10'>
+                                            {{-- tên & giá --}}
+                                            <div class='d-flex justify-content-between mb-5'>
+                                                <div class='d-flex flex-column'>
+                                                    <b class='fz-18'>iPhone 12</b>
+                                                    <div class='fz-12'>Dung lượng: 128GB</div>
+                                                    <div class='fz-12'>Màu sắc: Đỏ</div>
+                                                </div>
+                                                <div class='font-weight-600 price-color fz-18'>29.000.000<sup>đ</sup></div>
                                             </div>
-                                            <div class='font-weight-600 price-color fz-18'>29.000.000 VND</div>
-                                        </div>
-                                        
-                                        {{-- giảm giá --}}
-                                        <div class='cart-promotion p-10 mb-10 d-flex align-items-center'>
-                                            <a href="#" class="black fz-18" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample_<?php echo $i ?>" aria-expanded="false" aria-controls="collapseExample">
-                                                <i class="fal fa-info-circle mr-10 fz-18"></i>
-                                            </a>
-                                            Giảm<b class='ml-5 mr-5'>3.000.000</b>còn lại<b class='price-color ml-5'>26.000.000</b>
-  
-                                        </div>
-                                        <div class="collapse" id="collapseExample_<?php echo $i ?>">
-                                            <div class="card card-body">
-                                                <div class='main-color-text font-weight-600'><i class="fas fa-check-circle mr-5"></i>Giảm 10% cho sinh viên năm cuối</div>
-                                                <div class='detail-promotion-content'>
-                                                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam qui accusamus corrupti esse doloribus ab, tempora cumque cupiditate odio nam quo, culpa voluptatibus mollitia natus alias quis atque excepturi inventore!
+                                            
+                                            {{-- giảm giá --}}
+                                            <div class='cart-promotion p-10 mb-10 d-flex align-items-center'>
+                                                <a href="#" class="black fz-18" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample_<?php echo $i ?>" aria-expanded="false" aria-controls="collapseExample">
+                                                    <i class="fal fa-info-circle mr-10 fz-18"></i>
+                                                </a>
+                                                Giảm<b class='ml-5 mr-5'>3.000.000<sup>đ</sup></b>còn lại<b class='price-color ml-5'>26.000.000<sup>đ</sup></b>
+      
+                                            </div>
+                                            <div class="collapse" id="collapseExample_<?php echo $i ?>">
+                                                <div class="card card-body">
+                                                    <div class='main-color-text font-weight-600'><i class="fas fa-check-circle mr-5"></i>Giảm 10% cho sinh viên năm cuối</div>
+                                                    <div class='detail-promotion-content'>
+                                                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam qui accusamus corrupti esse doloribus ab, tempora cumque cupiditate odio nam quo, culpa voluptatibus mollitia natus alias quis atque excepturi inventore!
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        
-                                        {{-- số lượng --}}
-                                        <div class='d-flex flex-row justify-content-end align-items-center mt-10'>
-                                            <a href="#" class='cart-remove-item mr-10'><i class="fas fa-trash mr-5"></i></a>
-                                            <div class='cart-qty-input'>
-                                                <button type='button' data-id='<?php echo $i ?>' class='minus'><i class="fas fa-minus"></i></button>
-                                                <b class='<?php echo 'qty_' . $i; ?>'>1</b>
-                                                <button type='button' data-id='<?php echo $i ?>' class='plus'><i class="fas fa-plus"></i></button>
+                                            
+                                            {{-- số lượng --}}
+                                            <div class='d-flex flex-row justify-content-end align-items-center mt-10'>
+                                                <div class='cart-qty-input'>
+                                                    <button type='button' data-id='<?php echo $i ?>' class='plus'><i class="fas fa-plus"></i></button>
+                                                    <b class='<?php echo 'qty_' . $i; ?>'>1</b>
+                                                    <button type='button' data-id='<?php echo $i ?>' class='minus'><i class="fas fa-minus"></i></button>
+                                                </div>
+                                                <a href="#" class='price-color fz-18 ml-20'><i class="fas fa-trash mr-5"></i></a>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                             <?php endfor ?>
+                            {{-- mã giảm giá --}}
                             <tr>
-                                <td colspan="2">
-                                    <div class='p-20'>
-                                        <form action="#">
-                                            <div class="d-flex align-items-center">
-                                                <b class='mr-10'>Mã giảm giá:</b>
-                                                <input type="text" class='cart-voucher-input mr-10'>
-                                                <a href="#" class='cart-btn-voucher'>Áp dụng</a>
-                                            </div>
-                                            
-                                        </form>
+                                <td class="p-0 d-flex">
+                                    <div class='w-30 p-20 bg-gray-4 d-flex justify-content-center align-items-center'>
+                                        <b></i>Mã khuyến mãi</b>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="d-flex flex-column p-20">
-                                        <div class='d-flex flex-column mb-20'>
-                                            <div class='d-flex justify-content-between mb-10'>
-                                                <span>Tạm tính (3 sản phẩm):</span>
-                                                <b>100.000.000 <sup>đ</sup></b> 
+                                    <div class="w-70 p-10 d-flex justify-content-center">
+                                        {{-- mã --}}
+                                        <div class="w-70">
+                                            <div class='account-voucher'>
+                                                {{-- số phần trăm giảm --}}
+                                                <div class='voucher-left-small w-20 p-30'>
+                                                    <div class='voucher-left-small-content fz-18'>-10%</div>
+                                                </div>
+                                                {{-- nội dung --}}
+                                                <div class='voucher-right-small w-80 d-flex align-items-center justify-content-between p-10'>
+                                                    {{-- icon xem chi tiết --}}
+                                                    <div>Giảm 10%...</div>
+                                                    <div class="relative promotion-info-icon">
+                                                        <i class="fal fa-info-circle main-color-text fz-20"></i>
+                                                        <div class='voucher-content box-shadow p-20 '>
+                                                            <table class='table'>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td class='account-td-40'>Mã</td>
+                                                                        <td><b>ABCDEF</b></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class='account-td-40'>Hạn sử dụng</td>
+                                                                        <td>31/12/2021</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" class='account-td-40'>
+                                                                            <div class='d-flex flex-column'>
+                                                                                <span>Điều kiện:</span>
+                                                                                <ul class='mt-10'>
+                                                                                    <li>Áp dụng cho đơn hàng từ 5.000.000 VND</li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="main-btn p-5">Bỏ chọn</div>
+                                                </div>
                                             </div>
-                                            <div class='d-flex justify-content-between mb-10'>
-                                                <span>Giảm:</span>
-                                                <b>-9.000.000 <sup>đ</sup></b> 
-                                            </div>  
-                                            <div class='d-flex justify-content-between mb-10'>
-                                                <span>Mã giảm giá:</span>
-                                                <b>-9.000.000 <sup>đ</sup></b> 
-                                            </div>  
                                         </div>
+
+                                        {{-- chọn khuyến mãi --}}
+                                        {{-- <span class="pointer-cs main-color-text" data-bs-toggle="modal" data-bs-target="#modal-promotion">
+                                            <i class="fas fa-ticket-alt mr-10"></i>Chọn Mã khuyến mãi
+                                        </span> --}}
                                     </div>
                                 </td>
                             </tr>
+                            {{-- tính tiền --}}
                             <tr>
-                                <td colspan="2">
+                                <td>
+                                    <div class="d-flex flex-column p-20">
+                                        <div class='d-flex justify-content-between mb-10'>
+                                            <span>Tạm tính (3 sản phẩm):</span>
+                                            <b>100.000.000 <sup>đ</sup></b> 
+                                        </div>
+                                        <div class='d-flex justify-content-between mb-10'>
+                                            <span>Giảm:</span>
+                                            <b>-9.000.000 <sup>đ</sup></b> 
+                                        </div>  
+                                        <div class='d-flex justify-content-between'>
+                                            <span>Mã giảm giá:</span>
+                                            <b class="main-color-text">-9.000.000 <sup>đ</sup></b> 
+                                        </div>  
+                                    </div>
+                                </td>
+                            </tr>
+                            {{-- thành tiền --}}
+                            <tr>
+                                <td>
                                     <div class='d-flex justify-content-between p-10'>
-                                        <b>Tổng tiền:</b>
-                                        <b class='price-color'>91.000.000 <sup>đ</sup></b> 
+                                        <span>Thành tiền:</span>
+                                        <b class='price-color fz-22'>91.000.000 <sup>đ</sup></b> 
                                     </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2">
-                                    <a href="#" class='cart-btn-checkout main-color-bg mt-10 mb-10'>THANH TOÁN</a>
+                                <td>
+                                    <a href="#" class='checkout-btn p-10 w-100 mt-10 mb-10'>Tiến hành đặt hàng</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -122,5 +167,127 @@
         </div>
     </div>
 </section>
+
+{{-- modal chọn khuyến mãi --}}
+<div class="modal fade" id="modal-promotion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between p-20">
+                    <h4>Mã khuyến mãi của tôi</h4>
+                    <button type='button' class="btn-close" data-bs-dismiss='modal'></button>
+                </div>
+                <div class="cart-list-pro pl-50 pr-50 mt-20">
+                    @for ($i = 0; $i < 5; $i++)
+                        <div class="pb-30">
+                            <div class='account-voucher'>
+                                {{-- số phần trăm giảm --}}
+                                <div class='voucher-left w-20 p-70'>
+                                    <div class='voucher-left-content fz-40'>-10%</div>
+                                </div>
+                                {{-- nội dung --}}
+                                <div class='voucher-right w-80'>
+                                    <div class="d-flex flex-column justify-content-between h-100 pt-10 pr-10 pb-10 pl-20">
+                                        {{-- icon xem chi tiết --}}
+                                        <div class="d-flex justify-content-end">
+                                            <div class="relative promotion-info-icon">
+                                                <i class="fal fa-info-circle fz-20"></i>
+                                                <div class='voucher-content box-shadow p-20 '>
+                                                    <table class='table'>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class='account-td-40'>Mã</td>
+                                                                <td><b>ABCDEF</b></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class='account-td-40'>Hạn sử dụng</td>
+                                                                <td>31/12/2021</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2" class='account-td-40'>
+                                                                    <div class='d-flex flex-column'>
+                                                                        <span>Điều kiện:</span>
+                                                                        <ul class='mt-10'>
+                                                                            <li>Áp dụng cho đơn hàng từ 5.000.000 VND</li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- nội dung --}}
+                                        <div class="flex-fill">
+                                            <span>Áp dụng cho đơn hàng từ 5.000.000 VND</span>
+                                        </div>
+                                        {{-- hạn sử dụng --}}
+                                        <div class="d-flex justify-content-between">
+                                            <span class="d-flex align-items-end">HSD: 31/12/2021</span>
+                                            <div class="main-btn p-5">Áp dụng</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endfor
+                    <div class="pb-30">
+                        <div class='account-voucher'>
+                            {{-- số phần trăm giảm --}}
+                            <div class='dis-voucher-left w-20 p-70'>
+                                <div class='dis-voucher-left-content fz-40'>-10%</div>
+                            </div>
+                            {{-- nội dung --}}
+                            <div class='dis-voucher-right w-80'>
+                                <div class="d-flex flex-column justify-content-between h-100 pt-10 pr-10 pb-10 pl-20">
+                                    {{-- icon xem chi tiết --}}
+                                    <div class="d-flex justify-content-end">
+                                        <div class="relative dis-promotion-info-icon">
+                                            <i class="fal fa-info-circle fz-20"></i>
+                                            <div class='voucher-content box-shadow p-20 '>
+                                                <table class='table'>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class='account-td-40'>Mã</td>
+                                                            <td><b>ABCDEF</b></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class='account-td-40'>Hạn sử dụng</td>
+                                                            <td>31/12/2021</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="2" class='account-td-40'>
+                                                                <div class='d-flex flex-column'>
+                                                                    <span>Điều kiện:</span>
+                                                                    <ul class='mt-10'>
+                                                                        <li>Áp dụng cho đơn hàng từ 5.000.000 VND</li>
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- nội dung --}}
+                                    <div class="flex-fill">
+                                        <span>Áp dụng cho đơn hàng từ 5.000.000 VND</span>
+                                    </div>
+                                    {{-- hạn sử dụng --}}
+                                    <div class="d-flex justify-content-between">
+                                        <span class="d-flex align-items-end">HSD: 31/12/2021</span>
+                                        <div class="dis-condition-tag">Chưa thỏa điều kiện</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @stop

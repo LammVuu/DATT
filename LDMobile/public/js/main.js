@@ -1,1274 +1,567 @@
 
 //===== Preloader
-window.onload = function () {
-    window.setTimeout(fadeout, 200);
-}
-
-function fadeout() {
-    document.querySelector('.preloader').style.opacity = '0';
-    document.querySelector('.preloader').style.display = 'none';
-}
+// $(window).on('load', function(){
+//     $('.loader').fadeOut(250);
+// });
 
 
 $(function() {
-    
-    "use strict";
 
-    /*=============================================
-    =                  Sticky                     =
-    =============================================*/
-
-	$(window).on('scroll', function(event) {    
-        var scroll = $(window).scrollTop();
-        if (scroll < 110) {
-            $(".navigation").removeClass("sticky");
-        } else{
-            $(".navigation").addClass("sticky");
-        }
-    });
-    
-    /*=====  End of Sticky  ======*/
-    
-    
-    /*=============================================
-    =            product quantity                =
-    =============================================*/
-
-	$('.add').click(function () {
-        if ($(this).prev().val()) {
-            $(this).prev().val(+$(this).prev().val() + 1);
-        }
-    });
-    $('.sub').click(function () {
-        if ($(this).next().val() > 1) {
-            if ($(this).next().val() > 1) $(this).next().val(+$(this).next().val() - 1);
-        }
-    });
-    
-    /*=====  End of product quantity  ======*/
-    
-    
-    /*=============================================
-    =                Mobile Menu                  =
-    =============================================*/
-
-    /*-------- Mobile Menu Sidebar 1 --------*/
-    
-    $('.mobile-menu-open-1').on('click', function(){
-        $('.navbar-sidebar-1').addClass('open')
-        $('.overlay-1').addClass('open')
-    });
-    
-    $('.close-mobile-menu-1').on('click', function(){
-        $('.navbar-sidebar-1').removeClass('open')
-        $('.overlay-1').removeClass('open')
-    });
-    
-    $('.overlay-1').on('click', function(){
-        $('.navbar-sidebar-1').removeClass('open')
-        $('.overlay-1').removeClass('open')
-    });
-    
-    
-    /*-------- Mobile Menu Dark Sidebar 1 --------*/
-    
-    $('.mobile-menu-dark-open-1').on('click', function(){
-        $('.navbar-sidebar-dark-1').addClass('open')
-        $('.overlay-dark-1').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-1').on('click', function(){
-        $('.navbar-sidebar-dark-1').removeClass('open')
-        $('.overlay-dark-1').removeClass('open')
-    });
-    
-    $('.overlay-dark-1').on('click', function(){
-        $('.navbar-sidebar-dark-1').removeClass('open')
-        $('.overlay-dark-1').removeClass('open')
-    });
-    
-
-    /*-------- Mobile Menu Sidebar 2 --------*/
-    
-    $('.mobile-menu-open-2').on('click', function(){
-        $('.navbar-sidebar-2').addClass('open')
-        $('.overlay-2').addClass('open')
-    });
-    
-    $('.close-mobile-menu-2').on('click', function(){
-        $('.navbar-sidebar-2').removeClass('open')
-        $('.overlay-2').removeClass('open')
-    });
-    
-    $('.overlay-2').on('click', function(){
-        $('.navbar-sidebar-2').removeClass('open')
-        $('.overlay-2').removeClass('open')
-    });
-    
-
-    /*-------- Mobile Menu Dark Sidebar 2 --------*/
-    
-    $('.mobile-menu-open-dark-2').on('click', function(){
-        $('.navbar-sidebar-dark-2').addClass('open')
-        $('.overlay-dark-2').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-2').on('click', function(){
-        $('.navbar-sidebar-dark-2').removeClass('open')
-        $('.overlay-dark-2').removeClass('open')
-    });
-    
-    $('.overlay-dark-2').on('click', function(){
-        $('.navbar-sidebar-dark-2').removeClass('open')
-        $('.overlay-dark-2').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Sidebar 3 --------*/
-    
-    $('.mobile-menu-open-3').on('click', function(){
-        $('.navbar-sidebar-3').addClass('open')
-        $('.overlay-3').addClass('open')
-    });
-    
-    $('.close-mobile-menu-3').on('click', function(){
-        $('.navbar-sidebar-3').removeClass('open')
-        $('.overlay-3').removeClass('open')
-    });
-    
-    $('.overlay-3').on('click', function(){
-        $('.navbar-sidebar-3').removeClass('open')
-        $('.overlay-3').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Dark Sidebar 3 --------*/
-    
-    $('.mobile-menu-open-dark-3').on('click', function(){
-        $('.navbar-sidebar-dark-3').addClass('open')
-        $('.overlay-dark-3').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-3').on('click', function(){
-        $('.navbar-sidebar-dark-3').removeClass('open')
-        $('.overlay-dark-3').removeClass('open')
-    });
-    
-    $('.overlay-dark-3').on('click', function(){
-        $('.navbar-sidebar-dark-3').removeClass('open')
-        $('.overlay-dark-3').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Sidebar 4 --------*/
-    
-    $('.mobile-menu-open-4').on('click', function(){
-        $('.navbar-sidebar-4').addClass('open')
-        $('.overlay-4').addClass('open')
-    });
-    
-    $('.close-mobile-menu-4').on('click', function(){
-        $('.navbar-sidebar-4').removeClass('open')
-        $('.overlay-4').removeClass('open')
-    });
-    
-    $('.overlay-4').on('click', function(){
-        $('.navbar-sidebar-4').removeClass('open')
-        $('.overlay-4').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar 4 --------*/
-    
-    $('.mobile-menu-open-dark-4').on('click', function(){
-        $('.navbar-sidebar-dark-4').addClass('open')
-        $('.overlay-dark-4').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-4').on('click', function(){
-        $('.navbar-sidebar-dark-4').removeClass('open')
-        $('.overlay-dark-4').removeClass('open')
-    });
-    
-    $('.overlay-dark-4').on('click', function(){
-        $('.navbar-sidebar-dark-4').removeClass('open')
-        $('.overlay-dark-4').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Sidebar 5 --------*/
-    
-    $('.mobile-menu-open-5').on('click', function(){
-        $('.navbar-sidebar-5').addClass('open')
-        $('.overlay-5').addClass('open')
-    });
-    
-    $('.close-mobile-menu-5').on('click', function(){
-        $('.navbar-sidebar-5').removeClass('open')
-        $('.overlay-5').removeClass('open')
-    });
-    
-    $('.overlay-5').on('click', function(){
-        $('.navbar-sidebar-5').removeClass('open')
-        $('.overlay-5').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar 5 --------*/
-    
-    $('.mobile-menu-open-dark-5').on('click', function(){
-        $('.navbar-sidebar-dark-5').addClass('open')
-        $('.overlay-dark-5').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-5').on('click', function(){
-        $('.navbar-sidebar-dark-5').removeClass('open')
-        $('.overlay-dark-5').removeClass('open')
-    });
-    
-    $('.overlay-dark-5').on('click', function(){
-        $('.navbar-sidebar-dark-5').removeClass('open')
-        $('.overlay-dark-5').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Sidebar 6 --------*/
-    
-    $('.mobile-menu-open-6').on('click', function(){
-        $('.navbar-sidebar-6').addClass('open')
-        $('.overlay-6').addClass('open')
-    });
-    
-    $('.close-mobile-menu-6').on('click', function(){
-        $('.navbar-sidebar-6').removeClass('open')
-        $('.overlay-6').removeClass('open')
-    });
-    
-    $('.overlay-6').on('click', function(){
-        $('.navbar-sidebar-6').removeClass('open')
-        $('.overlay-6').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar  6 --------*/
-    
-    $('.mobile-menu-open-dark-6').on('click', function(){
-        $('.navbar-sidebar-dark-6').addClass('open')
-        $('.overlay-dark-6').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-6').on('click', function(){
-        $('.navbar-sidebar-dark-6').removeClass('open')
-        $('.overlay-dark-6').removeClass('open')
-    });
-    
-    $('.overlay-dark-6').on('click', function(){
-        $('.navbar-sidebar-dark-6').removeClass('open')
-        $('.overlay-dark-6').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Sidebar 7 --------*/
-    
-    $('.mobile-menu-open-7').on('click', function(){
-        $('.navbar-sidebar-7').addClass('open')
-        $('.overlay-7').addClass('open')
-    });
-    
-    $('.close-mobile-menu-7').on('click', function(){
-        $('.navbar-sidebar-7').removeClass('open')
-        $('.overlay-7').removeClass('open')
-    });
-    
-    $('.overlay-7').on('click', function(){
-        $('.navbar-sidebar-7').removeClass('open')
-        $('.overlay-7').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar  7 --------*/
-
-    $('.mobile-menu-open-dark-7').on('click', function(){
-        $('.navbar-sidebar-dark-7').addClass('open')
-        $('.overlay-dark-7').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-7').on('click', function(){
-        $('.navbar-sidebar-dark-7').removeClass('open')
-        $('.overlay-dark-7').removeClass('open')
-    });
-    
-    $('.overlay-dark-7').on('click', function(){
-        $('.navbar-sidebar-dark-7').removeClass('open')
-        $('.overlay-dark-7').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Sidebar 8 --------*/
-    
-    $('.mobile-menu-open-8').on('click', function(){
-        $('.navbar-sidebar-8').addClass('open')
-        $('.overlay-8').addClass('open')
-    });
-    
-    $('.close-mobile-menu-8').on('click', function(){
-        $('.navbar-sidebar-8').removeClass('open')
-        $('.overlay-8').removeClass('open')
-    });
-    
-    $('.overlay-8').on('click', function(){
-        $('.navbar-sidebar-8').removeClass('open')
-        $('.overlay-8').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar 8 --------*/
-
-    $('.mobile-menu-open-dark-8').on('click', function(){
-        $('.navbar-sidebar-dark-8').addClass('open')
-        $('.overlay-dark-8').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-8').on('click', function(){
-        $('.navbar-sidebar-dark-8').removeClass('open')
-        $('.overlay-dark-8').removeClass('open')
-    });
-    
-    $('.overlay-dark-8').on('click', function(){
-        $('.navbar-sidebar-dark-8').removeClass('open')
-        $('.overlay-dark-8').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Sidebar 9--------*/
-    
-    $('.mobile-menu-open-9').on('click', function(){
-        $('.navbar-sidebar-9').addClass('open')
-        $('.overlay-9').addClass('open')
-    });
-    
-    $('.close-mobile-menu-9').on('click', function(){
-        $('.navbar-sidebar-9').removeClass('open')
-        $('.overlay-9').removeClass('open')
-    });
-    
-    $('.overlay-9').on('click', function(){
-        $('.navbar-sidebar-9').removeClass('open')
-        $('.overlay-9').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar 9 --------*/
-
-    $('.mobile-menu-open-dark-9').on('click', function(){
-        $('.navbar-sidebar-dark-9').addClass('open')
-        $('.overlay-dark-9').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-9').on('click', function(){
-        $('.navbar-sidebar-dark-9').removeClass('open')
-        $('.overlay-dark-9').removeClass('open')
-    });
-    
-    $('.overlay-dark-9').on('click', function(){
-        $('.navbar-sidebar-dark-9').removeClass('open')
-        $('.overlay-dark-9').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Sidebar 10--------*/
-    
-    $('.mobile-menu-open-10').on('click', function(){
-        $('.navbar-sidebar-10').addClass('open')
-        $('.overlay-10').addClass('open')
-    });
-    
-    $('.close-mobile-menu-10').on('click', function(){
-        $('.navbar-sidebar-10').removeClass('open')
-        $('.overlay-10').removeClass('open')
-    });
-    
-    $('.overlay-10').on('click', function(){
-        $('.navbar-sidebar-10').removeClass('open')
-        $('.overlay-10').removeClass('open')
-    });
-    
-    /*-------- Mobile Menu Dark Sidebar 10 --------*/
-
-    $('.mobile-menu-open-dark-10').on('click', function(){
-        $('.navbar-sidebar-dark-10').addClass('open')
-        $('.overlay-dark-10').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-10').on('click', function(){
-        $('.navbar-sidebar-dark-10').removeClass('open')
-        $('.overlay-dark-10').removeClass('open')
-    });
-    
-    $('.overlay-dark-10').on('click', function(){
-        $('.navbar-sidebar-dark-10').removeClass('open')
-        $('.overlay-dark-10').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Sidebar 11--------*/
-    
-    $('.mobile-menu-open-11').on('click', function(){
-        $('.navbar-sidebar-11').addClass('open')
-        $('.overlay-11').addClass('open')
-    });
-    
-    $('.close-mobile-menu-11').on('click', function(){
-        $('.navbar-sidebar-11').removeClass('open')
-        $('.overlay-11').removeClass('open')
-    });
-    
-    $('.overlay-11').on('click', function(){
-        $('.navbar-sidebar-11').removeClass('open')
-        $('.overlay-11').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar 11 --------*/
-
-    $('.mobile-menu-open-dark-11').on('click', function(){
-        $('.navbar-sidebar-dark-11').addClass('open')
-        $('.overlay-dark-11').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-11').on('click', function(){
-        $('.navbar-sidebar-dark-11').removeClass('open')
-        $('.overlay-dark-11').removeClass('open')
-    });
-    
-    $('.overlay-dark-11').on('click', function(){
-        $('.navbar-sidebar-dark-11').removeClass('open')
-        $('.overlay-dark-11').removeClass('open')
-    });
-
-
-    /*-------- Mobile Menu Sidebar 12 --------*/
-    
-    $('.mobile-menu-open-12').on('click', function(){
-        $('.navbar-sidebar-12').addClass('open')
-        $('.overlay-12').addClass('open')
-    });
-    
-    $('.close-mobile-menu-12').on('click', function(){
-        $('.navbar-sidebar-12').removeClass('open')
-        $('.overlay-12').removeClass('open')
-    });
-    
-    $('.overlay-12').on('click', function(){
-        $('.navbar-sidebar-12').removeClass('open')
-        $('.overlay-12').removeClass('open')
-    });
-
-    /*-------- Mobile Menu Dark Sidebar 12 --------*/
-
-    $('.mobile-menu-open-dark-12').on('click', function(){
-        $('.navbar-sidebar-dark-12').addClass('open')
-        $('.overlay-dark-12').addClass('open')
-    });
-    
-    $('.close-mobile-menu-dark-12').on('click', function(){
-        $('.navbar-sidebar-dark-12').removeClass('open')
-        $('.overlay-dark-12').removeClass('open')
-    });
-    
-    $('.overlay-dark-12').on('click', function(){
-        $('.navbar-sidebar-dark-12').removeClass('open')
-        $('.overlay-dark-12').removeClass('open')
-    });
-
-    
-    /*-------- Navbar Menu Vertical Toggle 2 Function --------*/
-
-    $("#toggle-menu").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu").on('click', function() {
-        $('.menu-vertical').slideToggle();
-    });
-    
-    /*-------- Navbar Menu Vertical Dark Toggle 2 Function --------*/
-
-    $("#toggle-menu-dark").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark").on('click', function() {
-        $('.menu-vertical-dark').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 3 Function --------*/
-
-    $("#toggle-menu-2").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-2").on('click', function() {
-        $('.menu-vertical-2').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Dark Toggle 3 Function --------*/
-
-    $("#toggle-menu-dark-2").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-2").on('click', function() {
-        $('.menu-vertical-dark-2').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 4 Function --------*/
-
-    $("#toggle-menu-4").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-4").on('click', function() {
-        $('.menu-vertical-4').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Dark Toggle 4 Function --------*/
-
-    $("#toggle-menu-dark-4").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-4").on('click', function() {
-        $('.menu-vertical-dark-4').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 5 Function --------*/
-
-    $("#toggle-menu-5").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-5").on('click', function() {
-        $('.menu-vertical-5').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Dark Toggle 5 Function --------*/
-
-    $("#toggle-menu-dark-5").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-5").on('click', function() {
-        $('.menu-vertical-dark-5').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 6 Function --------*/
-
-    $("#toggle-menu-6").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-6").on('click', function() {
-        $('.menu-vertical-6').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Dark Toggle 6 Function --------*/
-
-    $("#toggle-menu-dark-6").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-6").on('click', function() {
-        $('.menu-vertical-dark-6').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 8 Function --------*/
-
-    $("#toggle-menu-8").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-8").on('click', function() {
-        $('.menu-vertical-8').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 8 Function --------*/
-
-    $("#toggle-menu-dark-8").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-8").on('click', function() {
-        $('.menu-vertical-dark-8').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 10 Function --------*/
-
-    $("#toggle-menu-10").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-10").on('click', function() {
-        $('.menu-vertical-10').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 10 Function --------*/
-
-    $("#toggle-menu-dark-10").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-10").on('click', function() {
-        $('.menu-vertical-dark-10').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 11 Function --------*/
-
-    $("#toggle-menu-11").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-11").on('click', function() {
-        $('.menu-vertical-11').slideToggle();
-    });
-
-    /*-------- Navbar Menu Vertical Toggle 11 Function --------*/
-
-    $("#toggle-menu-dark-11").on('click', function() {
-        $(this).toggleClass('active');
-    });
-    $("#toggle-menu-dark-11").on('click', function() {
-        $('.menu-vertical-dark-11').slideToggle();
-    });
-
-
-    /*-------- Window Resize javascript Responsive Function --------*/
-    
-    let body = document.querySelector('body');
-    function displayWindowSize(){
-       var w = document.documentElement.clientWidth;
-
-       if (w > 991) {
-           // YOUR CODE...
-           $('.main-navbar').removeClass('mobile-menu');
-           $('.mega-dropdown-menu').removeClass('mobile-menu-dropdown');
-
-           /*-------- Mobile Menu javascript Function --------*/
-    
-            /*Variables*/
-            var $offCanvasNav = $('.mobile-menu');
-            var $offCanvasNavSubMenu = $offCanvasNav.find('.sub-mega-dropdown, .sub-menu, .mega-dropdown-list ul');
-
-            /*Add Toggle Button With Off Canvas Sub Menu*/
-            $offCanvasNavSubMenu.parent().prepend('<span class="d-none"></span>');
-
-            /*Close Off Canvas Sub Menu*/
-            $offCanvasNavSubMenu.slideDown();
-
-            /*Category Sub Menu Toggle*/
-            $offCanvasNav.on('click', 'li a, li .menu-expand, .mega-dropdown-list .mega-title', function (e) {
-                var $this = $(this);
-                if (($this.parent().attr('class').match(('menu-item-has-children')))) {
-                    
-                    if ($this.siblings('ul:visible').length) {
-                        e.preventDefault();
-                            $this.parent('li').removeClass('active');
-                            $this.siblings('ul').slideDown();
-                        } else {
-                            $this.parent('li').addClass('active');
-                            $this.closest('li').siblings('li').find('ul:visible').slideDown();
-                            $this.closest('li').siblings('li').removeClass('active');
-                            $this.siblings('ul').slideUp();
-                        }
-                }
+    // hiển thị button cuộn lên đầu
+    $(window).scroll(function(e){
+        var scrollTop = $(window).scrollTop();
+        var docHeight = $(document).height();
+        var winHeight = $(window).height();
+        var scrollPercent = (scrollTop) / (docHeight - winHeight);
+        var scrollPercentRounded = Math.round(scrollPercent*100);
+
+        if(scrollPercentRounded >= 20){
+            $('#btn-scroll-top').css({
+                '-ms-transform' : 'translateY(0)',
+                'transform' : 'translateY(0)',
             });
-       }
-       else{
-           // YOUR CODE...
-           $('.main-navbar').addClass('mobile-menu');
-           $('.mega-dropdown-menu').addClass('mobile-menu-dropdown');
-
-           /*-------- Mobile Menu javascript Function --------*/
-    
-            /*Variables*/
-            var $offCanvasNav = $('.mobile-menu');
-            var $offCanvasNavSubMenu = $offCanvasNav.find('.sub-mega-dropdown, .sub-menu, .mega-dropdown-list ul');
-
-            /*Add Toggle Button With Off Canvas Sub Menu*/
-            $offCanvasNavSubMenu.parent().prepend('<span class="menu-expand d-lg-none"></span>');
-
-            /*Close Off Canvas Sub Menu*/
-            $offCanvasNavSubMenu.slideUp();
-
-            /*Category Sub Menu Toggle*/
-            $offCanvasNav.on('click', 'li a, li .menu-expand, .mega-dropdown-list .mega-title', function (e) {
-                var $this = $(this);
-                if (($this.parent().attr('class').match(('menu-item-has-children')))) {
-                    
-                    if ($this.siblings('ul:visible').length) {
-                        e.preventDefault();
-                            $this.parent('li').removeClass('active');
-                            $this.siblings('ul').slideUp();
-                        } else {
-                            $this.parent('li').addClass('active');
-                            $this.closest('li').siblings('li').find('ul:visible').slideUp();
-                            $this.closest('li').siblings('li').removeClass('active');
-                            $this.siblings('ul').slideDown();
-                        }
-                }
+        } else {
+            $('#btn-scroll-top').css({ 
+                '-ms-transform' : 'translateY(100px)',
+                'transform' : 'translateY(100px)',
             });
-       }
-    } 
-    window.addEventListener("resize", displayWindowSize);
-    displayWindowSize();    
-	
-    
-    /*=====  End of Mobile Menu  ======*/
-    
-    
-    /*=============================================
-    =              Form Validate                  =
-    =============================================*/
-
-	$.validate({
-        lang: 'es',
-    });
-    
-    /*=====  End of Form Validate  ======*/
-    
-    
-    /*=============================================
-    =          Toggle Password Show               =
-    =============================================*/
-
-	 $(".toggle-password").click(function() {
-
-      $(this).toggleClass("mdi-eye-outline mdi-eye-off-outline");
-        
-      var input = $($(this).attr("toggle"));
-      if (input.attr("type") == "password") {
-        input.attr("type", "text");
-      } else {
-        input.attr("type", "password");
-      }
-    });
-    
-    /*=====  End of   ======*/ 
-    
-    
-    /*=============================================
-    =              Accordion Steps                =
-    =============================================*/
-
-     /*-------- Checkout Steps --------*/
-
-    $('#checkout-steps').vjaccordionsteps({
-
-    });
-
-    /*-------- Checkout Steps Dark --------*/
-
-    $('#checkout-steps-dark').vjaccordionsteps({
-
-    });
-    
-    /*=====  End of Accordion Steps  ======*/
-    
-    
-    /*=============================================
-    =                  Formatter                  =
-    =============================================*/
-
-	$('#credit-input').formatter({
-        'pattern': '{{9999}} {{9999}} {{9999}} {{9999}}',
-    });
-    
-    /*=====  End of Formatter  ======*/
-
-
-    /*=============================================
-    =           Product Size Active               =
-    =============================================*/
-
-	$('.filter-size ul li').on("click", function() {
-		$(this).siblings(this).removeClass('active').end().addClass('active');
-	});
-    
-    /*=====  End of Product Size Active ======*/
-    
-    
-    /*=============================================
-    =                 Price Range                 =
-    =============================================*/
-
-     /*-------- Slider Range --------*/
-
-	$( "#slider-range" ).slider({
-        range: true,
-        min: 0,
-        max: 2000,
-        values: [ 300, 1200 ],
-        slide: function( event, ui ) {
-            $( "#minAmount" ).val( "$" + ui.values[ 0 ] );
-            $( "#maxAmount" ).val( "$" + ui.values[ 1 ] );
         }
     });
 
-    $( "#minAmount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) );
-    $( "#maxAmount" ).val( "$" + $( "#slider-range" ).slider( "values", 1 ) );
+    // xử lý cuộn lên đầu trang
+    $('#btn-scroll-top').on('click', function(){
+        $(window).scrollTop(0);
+    });
 
+    // slide logo các hãng
+    $('#logo-carousel').owlCarousel({
+        items:4,
+        loop:true,
+        dots:false,
+        nav: false,
+        autoplay:true,
+        autoplayTimeout:1500,
+        autoplayHoverPause:true,
+        smartSpeed: 1000,
+    });
 
-    /*-------- Slider Range 2 --------*/
+    //===================================================== Header ============================================================
 
-	$( "#slider-range2" ).slider({
-        range: true,
-        min: 0,
-        max: 2000,
-        values: [ 300, 1200 ],
-        slide: function( event, ui ) {
-            $( "#minAmount2" ).val( "$" + ui.values[ 0 ] );
-            $( "#maxAmount2" ).val( "$" + ui.values[ 1 ] );
+    // hiển thị offcanvas
+    $('#show-offcanvas').on('click', function(){
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.head-offcanvas-box').css({
+                'width' : '50%',
+            });
+            $('.backdrop').fadeIn();
+            $(this).attr('aria-expanded', 'true');
+        } else {
+            $('.head-offcanvas-box').css({
+                'width' : '0',
+            });
+            $('.backdrop').fadeOut();
+            $(this).attr('aria-expanded', 'false');
         }
     });
-    $( "#minAmount2" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) );
-    $( "#maxAmount2" ).val( "$" + $( "#slider-range" ).slider( "values", 1 ) );
 
-
-    /*-------- Slider Range Dark --------*/
-
-    $( "#slider-range-dark" ).slider({
-        range: true,
-        min: 0,
-        max: 2000,
-        values: [ 300, 1200 ],
-        slide: function( event, ui ) {
-            $( "#minAmountDark" ).val( "$" + ui.values[ 0 ] );
-            $( "#maxAmountDark" ).val( "$" + ui.values[ 1 ] );
-        }
-    });
-    $( "#minAmountDark" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) );
-    $( "#maxAmountDark" ).val( "$" + $( "#slider-range" ).slider( "values", 1 ) );
-
-
-    /*-------- Slider Range Dark 2 --------*/
-
-    $( "#slider-range-dark2" ).slider({
-        range: true,
-        min: 0,
-        max: 2000,
-        values: [ 300, 1200 ],
-        slide: function( event, ui ) {
-            $( "#minAmountDark2" ).val( "$" + ui.values[ 0 ] );
-            $( "#maxAmountDark2" ).val( "$" + ui.values[ 1 ] );
-        }
-    });
-    $( "#minAmountDark2" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) );
-    $( "#maxAmountDark2" ).val( "$" + $( "#slider-range" ).slider( "values", 1 ) );
-    
-    /*=====  End of Price Range  ======*/
-
-
-    /*=============================================
-    =           Slick product Active  1           =
-    =============================================*/
-
-    $('.product-active').slick({
-        dots: false,
-        infinite: false,
-        arrows: true,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        speed: 800,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
-
-
-
-    /*=====  End of Slick Collection Active  ======*/
-
-
-    /*=============================================
-    =           Product Item Active               =
-    =============================================*/
-
-	$('.items-wrapper .single-item').on("click", function() {
-		$(this).siblings(this).removeClass('active').end().addClass('active');
-	});
-    
-    /*=====  End of Product Size Active ======*/
-
-
-    /*=============================================
-    =           Product size Active               =
-    =============================================*/
-
-	$('.size-select li').on("click", function() {
-		$(this).siblings(this).removeClass('active').end().addClass('active');
-	});
-    
-    /*=====  End of Product Size Active ======*/
-
-
-    /*=============================================
-    =           Product Country Active               =
-    =============================================*/
-
-	$('.country-select li').on("click", function() {
-		$(this).siblings(this).removeClass('active').end().addClass('active');
-	});
-    
-    /*=====  End of Product Size Active ======*/
-
-    
-    /*=============================================
-    =           Product Color Active               =
-    =============================================*/
-
-    $('.color-select li').each(function() {
-		var get_color = $(this).attr('data-color');
-		$(this).css("background-color", get_color);
-    });
-    
-	$('.color-select li').on("click", function() {
-		$(this).siblings(this).removeClass('active').end().addClass('active');
-    });
-    
-    /*=====  End of Product Size Active ======*/
-    
-    
-    /*=============================================
-    =        slick Slider Product Details         =
-    =============================================*/
-
-    /*-------- Product Details 1 --------*/
-
-    $('.product-image-active-1').slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-        dots: false,
-        fade: true,
-        asNavFor: '.product-thumb-image-active-1',
-        speed: 600,
-    });
-
-    
-    
-    $('.product-thumb-image-active-1').slick({
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        asNavFor: '.product-image-active-1',
-        dots: false,
-        arrows: true,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-up"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-down"></i></span>',
-        focusOnSelect: true,
-        vertical: true,
-        speed: 600,
-    });
-
-    /*-------- Product Details 2 --------*/
-
-    $('.product-image-active-2').slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-        dots: false,
-        fade: true,
-        asNavFor: '.product-thumb-image-active-2',
-        speed: 600,
-    });
-    
-    $('.product-thumb-image-active-2').slick({
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        asNavFor: '.product-image-active-2',
-        dots: false,
-        arrows: true,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        focusOnSelect: true,
-        speed: 600,
-    });
-    
-    /*=====  End of slick Slider Product Details ======*/
-
-    /*=============================================
-    =     slick Slider Content Card Style 3       =
-    =============================================*/
-
-    $('.content-preview-active').slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: true,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        dots: false,
-        fade: true,
-        asNavFor: '.content-thumb-active',
-        speed: 400,
-    });
-    
-    $('.content-thumb-active').slick({
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        asNavFor: '.content-preview-active',
-        dots: false,
-        infinite: false,
-        arrows: false,
-        focusOnSelect: true,
-        speed: 400,
-    });
-
-    /*=====  End of slick Slider Content Card Style 3 ======*/
-    
-    /*=============================================
-    =               Content Active                =
-    =============================================*/
-
-	$('.content-active').slick({
-        dots: true,
-        infinite: false,
-        autoplay: true,
-        arrows: false,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        speed: 800,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
-    
-    /*=====  End of Content Active  ======*/
-
-    /*=============================================
-    =            Header Items Active              =
-    =============================================*/
-
-	$('.header-items-active').slick({
-        dots: true,
-        infinite: false,
-        autoplay: true,
-        arrows: false,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        speed: 800,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
-    
-    /*=====  End of Header Items Active ======*/
-
-    /*=============================================
-    =          Header 4 Slider Active             =
-    =============================================*/
-
-	$('.header-4-active').slick({
-        dots: true,
-        infinite: false,
-        autoplay: true,
-        arrows: false,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        speed: 800,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
-    
-    /*=====  End of Header Items Active ======*/
-
-    /*=============================================
-    =          Header 5 Slider Active             =
-    =============================================*/
-
-	$('.header-5-active').slick({
-        dots: true,
-        infinite: false,
-        autoplay: true,
-        arrows: false,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        speed: 800,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
-    
-    /*=====  End of Header Items Active ======*/
-
-    /*=============================================
-    =          Header 7 Slider Active             =
-    =============================================*/
-
-	$('.header-7-active').slick({
-        dots: true,
-        infinite: false,
-        autoplay: true,
-        arrows: false,
-        prevArrow:'<span class="prev"><i class="mdi mdi-chevron-left"></i></span>',
-        nextArrow: '<span class="next"><i class="mdi mdi-chevron-right"></i></span>',
-        speed: 800,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
-    
-    /*=====  End of Header Items Active ======*/
-
-    /*=============================================
-    =               Rating Active                 =
-    =============================================*/
-
-    /*-------- Rating 1 --------*/
-
-    /* 1. Visualizing things on Hover - See next part for action on click */
-    $('#stars li').on('mouseover', function(){
-        var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
-        
-        // Now highlight all the stars that's not after the current hovered star
-        $(this).parent().children('li.star').each(function(e){
-            if (e < onStar) {
-                $(this).addClass('hover');
-            }
-            else {
-                $(this).removeClass('hover');
-            }
+    // nút đóng offcanvas
+    $('#btn-close-offcanvas').on('click', function(){
+        $('.head-offcanvas-box').css({
+            'width' : '0',
         });
-        
-    }).on('mouseout', function(){
-        $(this).parent().children('li.star').each(function(e){
-            $(this).removeClass('hover');
-        });
+        $('.backdrop').css('display', 'none');
+        $('#show-offcanvas').attr('aria-expanded', 'false');
     });
-    
-    
-    /* 2. Action to perform on click */
-    var spansCounts =  $('#stars li').length
-    $('#stars li').on('click', function(e) {
-        console.log($(this).index())
-        $('#stars li').removeClass('selected');
 
-        for(var i=0 ; i < $(this).index() + 1; i++){
-            $('#stars li').eq(i).addClass('selected')
+    // đóng offcanvas theo kích thước màn hình
+    $(window).resize(function(){
+        if($(window).width() >= 1091) {
+            $('.backdrop').fadeOut();
+            $('.head-offcanvas-box').css({
+                'width' : '0',
+            });
+            $('#show-offcanvas').attr('aria-expanded', 'false');
         }
-    })    
-
-
-    /*-------- Rating 2 --------*/
-
-    /* 1. Visualizing things on Hover - See next part for action on click */
-    $('#stars2 li').on('mouseover', function(){
-        var onStar = parseInt($(this).data('value'), 10); // The star currently mouse on
-        
-        // Now highlight all the stars that's not after the current hovered star
-        $(this).parent().children('li.star').each(function(e){
-            if (e < onStar) {
-                $(this).addClass('hover');
-            }
-            else {
-                $(this).removeClass('hover');
-            }
-        });
-        
-    }).on('mouseout', function(){
-        $(this).parent().children('li.star').each(function(e){
-            $(this).removeClass('hover');
-        });
     });
-    
-    
-    /* 2. Action to perform on click */
-    var spansCounts =  $('#stars2 li').length
-    $('#stars2 li').on('click', function(e) {
-        console.log($(this).index())
-        $('#stars2 li').removeClass('selected');
 
-        for(var i=0 ; i < $(this).index() + 1; i++){
-            $('#stars2 li').eq(i).addClass('selected')
-        }
-    })    
+    // dropdown tài khoản trong offcanvas
+    $('.head-offcanvas-account').hover(function(){
+            $('.head-offcanvas-account-option').css('display', 'block');
+    },function(){
+            $('.head-offcanvas-account-option').css('display' ,'none');
+    });
 
-    /*=====  End of Rating Active ======*/
-    
-    /*=============================================
-    =                                    =
-    =============================================*/
-
-	
-    
-    /*=====  End of   ======*/
-    
-    
-    
-    
-    //====== counter up 
-    var cu = new counterUp({
-        start: 0,
-        duration: 2000,
-        intvalues: true,
-        interval: 100,
-        append: '+'
+    // dropdown điện thoại
+    $('.head-phone-drop').hover(function(){
+       $('.head-phone-drop-content').css('display', 'block'); 
+    }, function(){
+       $('.head-phone-drop-content').css('display', 'none'); 
     });
-    cu.start();
-    
-    
-    
-    // client-logo-active 
-    $('.client-logo-active').slick({
-        dots: false,
-        infinite: false,
-        autoplay: true,
-        arrows: false,
-        speed: 800,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 3,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                }
-            },
-            {
-                breakpoint: 500,
-                settings: {
-                    slidesToShow: 1,
-                }
-            },
-        ]
-    });
-    
-    // client-logo-active 
-    $('.three-column-slider').slick({
-        dots: true,
-        infinite: false,
-        autoplay: false,
-        arrows: false,
-        speed: 800,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 2,
-                }
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 1,
-                }
-            },
-        ]
-    });
-    
-    //=======================================================================================================================
 
     // hiển thị giỏ hàng trên header
-    var cartFlag = 0;
-    $('.head-cart').on('click', function(){
-        openHeadCart();
+    $('.head-cart').hover(function(){
+        $('.head-cart-box').css('display', 'block');
+    }, function(){
+        $('.head-cart-box').css('display', 'none');
     });
 
-    // đóng giỏ hàng
-    $('.head-btn-close-cart').on('click', function(){
-        openHeadCart()
+    // thanh tìm kiếm
+    $('.head-search-input').focus(function(){
+        $('.backdrop').fadeIn();
     });
-
-    function openHeadCart(){
-        if(cartFlag == 0){
-            $('.head-cart-box').css('display', 'block');
-            cartFlag = 1;
-            return;
+    $('.head-search-input').focusout(function(){
+        $('.backdrop').fadeOut();
+        $('.head-search-result').css('display', 'none');
+    })
+    $('.head-search-input').keyup(function(){
+        if($(this).val() == ''){
+            $('.head-search-result').css('display', 'none');
         } else {
-            $('.head-cart-box').css('display', 'none');
-            cartFlag = 0;
-            return;
+            $('.head-search-result').css('display', 'block');
+        }
+    });
+
+    //===================================================== Index ============================================================
+
+    $('#index-promotion-carousel').owlCarousel({
+        nav: false,
+        rewind: true,
+        dots: false,
+        responsiveClass:true,
+        responsive: {
+            0: {
+                items: 5
+            },
+            600: {
+                items: 2
+            },
+            1000: {
+                items: 4
+            },
+            1200: {
+                items: 5
+            }
+        }
+    });
+
+    var owl_promotion = $('#index-promotion-carousel');
+    owl_promotion.owlCarousel();
+
+    $('#prev-owl-carousel').on('click', function(){
+        owl_promotion.trigger('prev.owl.carousel', [300]);
+    });
+
+    $('#next-owl-carousel').on('click', function(){
+        owl_promotion.trigger('next.owl.carousel');
+    });
+
+    //===================================================== Account ============================================================
+
+    //============================== thông tin tài khoản ===============================
+    var modal_avt = $('#change-avt');
+    var modal_cover = $('#change-cover');
+    var typeModal;
+    var image;
+    var cropper_avt;
+    var cropper_cover;
+    var zoom_range = document.getElementById('zoom-range');
+    var zoom_in = 0, zoom_out = 0;
+
+    // thay đổi ảnh đại diện
+    $('#btn-change-avt').click(function(){
+        $('#change-avt-inp').trigger('click');
+    });
+
+    // thay đổi ảnh bìa
+    $('#btn-change-cover').click(function(){
+        $('#change-cover-inp').trigger('click');
+    });
+
+    // hiển thị modal tiến hành cắt ảnh dại diện
+    $('#change-avt-inp').change(function(e){
+        typeModal = $(this).data('modal');
+        image = document.getElementById('pre-avt-big');
+        startCropImg(cropper_avt, e);
+    });
+
+    // hiển thị modal tiến hành cắt ảnh bìa
+    $('#change-cover-inp').change(function(e){
+        typeModal = $(this).data('modal');
+        image = document.getElementById('pre-cover-big');
+        startCropImg(cropper_cover, e);
+    });
+
+    function startCropImg(cropper, e){
+        var files = e.target.files;
+
+        var modal;
+        // gán biến modal = modal_avt nếu loại modal = avt và ngược lại
+        typeModal == 'avt' ? modal = modal_avt : modal = modal_cover;
+
+
+        // hiển thị hình ảnh
+        if(files && files.length > 0){
+            var reader = new FileReader();
+            reader.onload = function(){
+                if(cropper != null){
+                    cropper.replace(reader.result);
+                    return;
+                } else {
+                    image.src = reader.result;
+                    modal.modal('show');
+                }
+            };
+            reader.readAsDataURL(files[0]); 
         }
     }
 
+    // xử lý tạo mới cropper khi modal avt hiển thị
+    modal_avt.on('shown.bs.modal', function(){    
+        cropper_avt = new Cropper(image, {
+            aspectRatio: 1/1,
+            viewMode: 1,
+            responsive: true,
+            dragMode: 'move',
+            preview: '.preview-avt',
+            zoomOnWheel: false,
+            toggleDragModeOnDblclick: false,
+        });
+    }).on('hidden.bs.modal', function(){
+        cropper_avt.destroy();
+        cropper_avt = null;
+        $('#change-avt-inp').val(null);
+    }); // xử lý hủy cropper khi modal avt ẩn
+
+    // xử lý tạo mới cropper khi modal cover hiển thị
+    modal_cover.on('shown.bs.modal', function(){    
+        cropper_cover = new Cropper(image, {
+            viewMode: 1,
+            responsive: true,
+            preview: '.preview-cover',
+            zoomOnWheel: false,
+            toggleDragModeOnDblclick: false,
+            cropBoxResizable: false,
+            movable: false,
+            dragMode: 'none',
+            ready(){
+                cropper_cover.setCropBoxData({
+                    "left":0, "top":0,"width":800,"height":150
+                });
+            }
+        });
+    }).on('hidden.bs.modal', function(){
+        cropper_cover.destroy();
+        cropper_cover = null;
+        $('#change-cover-inp').val(null);
+    }); // xử lý hủy cropper khi modal cover ẩn
+
+    // reset crop img avt
+    $('#reset-canvas').click(function(){
+        cropper_avt.reset();
+        refreshZoomVal();
+    });
+
+    // chọn ảnh khác
+    $('.reselect-img').click(function(){
+        var type_modal = $(this).data('modal');
+
+        if(type_modal == 'avt'){
+            $('#change-avt-inp').trigger('click');
+            // modal_avt.modal('hide');
+        } else {
+            $('#change-cover-inp').trigger('click');
+            // modal_cover.modal('hide');
+        }
+        
+        refreshZoomVal();
+    });
+
+    // cắt ảnh
+    $(".crop-img").click(function(){
+        // cắt avt/cover img
+        var type = $(this).data('crop');
+        var canvas, modal, cropper;
+        
+        if(type == 'avt'){
+            modal = $('#change-avt');
+            cropper = cropper_avt;
+            canvas = cropper_avt.getCroppedCanvas({
+                width: 320,
+                height: 320
+            });
+        } else {
+            modal = $('#change-cover');
+            cropper = cropper_cover;
+            canvas = cropper_cover.getCroppedCanvas({
+                width: 800,
+                height: 250
+            });
+        }
+
+        canvas.toBlob(function(blob){
+            url = URL.createObjectURL(blob);
+            var reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = function(){
+                var base64data = reader.result;
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/test',
+                    type: 'POST',
+                    cache: false,
+                    data: {'image':base64data},
+                    success:function(data){
+                        modal.modal('hide');
+                        if(type == 'avt'){
+                            $('#avt-img').attr('src', data);
+                            showToast('#avt-toast', closeToast);
+                            refreshZoomVal();
+                        } else {
+                            $('.account-cover-img').css('background-image', 'url(' + data + ')');
+                            showToast('#cover-toast', closeToast);
+                        }
+                    }
+                });
+            };
+        });
+    });
+
+    // thanh thu/phóng
+    if($("#zoom-range").length){
+        zoom_range.oninput = function(){
+            var val = this.valueAsNumber;
+    
+            if(val == 0){
+                // đang phóng lớn
+                if(zoom_in == 0){
+                    cropper_avt.zoom(0.1);
+                    zoom_out = 0;
+                } else { // đang thu nhỏ
+                    cropper_avt.zoom(-0.1);
+                    zoom_in = 0;
+                }
+            } else if(val < 0){ // thu nhỏ
+                zoom_in = 0;
+                if(zoom_out > val){
+                    zoom_out = val;
+                    cropper_avt.zoom(-0.1);
+                } else {
+                    zoom_out = val;
+                    cropper_avt.zoom(0.1);
+                }
+            } else { // phóng lớn
+                if(zoom_in < val){
+                    zoom_in = val;
+                    cropper_avt.zoom(0.1);
+                } else {
+                    zoom_in = val;
+                    cropper_avt.zoom(-0.1);
+                }
+            }
+        }   
+    }
+
+    // hàm gán lại giá trị ban đầu của biến
+    function refreshZoomVal(){
+        $('#zoom-range').val(0);
+        zoom_in = 0, zoom_out = 0;
+    }
+
+    // nút đóng toast
+    $('.btn-close-toast').click(function(){
+        $('.alert-toast').css({
+            'transform': 'translateY(100px)'
+        });
+    });
+
+    // hiển thị toast
+    function showToast(id, close){
+        $(id).css({
+            'transform': 'translateY(0)'
+        });
+        close();
+    }
+
+    // hàm callback tự động đóng toast sau 5s
+    function closeToast(){
+        setTimeout(function(){
+            $('.alert-toast').css({
+                'transform': 'translateY(100px)'
+            });
+        }, 5000);
+    }
+
+    // hiển thị form đổi mật khẩu
+    $('#btn-change-pw').click(function(){
+        $('#btn-close-change-pw').show();
+        $('#change-pw-div').show('blind', 250);
+    });
+
+    // đóng form đổi mật khẩu
+    $('#btn-close-change-pw').click(function(){
+        $(this).hide();
+        $('#change-pw-div').hide('blind', 250);
+    });
+
+    $('#btn-change-info').click(function(){
+        $('#change-info').modal('show');
+    });
+
+    //============================== thông báo ===============================
+
+    // đánh dấu đã đọc
+    $('.noti-btn-read').click(function(){
+        var id = $(this).data('id');
+        var td_content = '#noti-content-' + id;
+
+        $(td_content).removeClass('w-70');
+        $(td_content).parent().addClass('account-noti-checked').removeClass('account-noti-wait');
+        $(td_content).attr('colspan', '2');
+
+        // xóa nút "đánh dấu đã đọc"
+        $(this).parent('td').remove();
+    });
+
+    // xóa thông báo
+    $('.noti-btn-delete').click(function(){
+        $(this).parent().parent().remove();    
+    });
+
+    // đánh dấu đọc tất cả
+    $('#noti-btn-read-all').click(function(){
+        $('.noti-btn-read').each(function(){
+            $(this).trigger('click');
+        });
+    });
+
+    // xóa tất cả thông báo
+    $('#noti-btn-delete-all').click(function(){
+        $('.noti-btn-delete').each(function(){
+            $(this).trigger('click');
+        });
+    });
+
+    // nút 3 chấm trang tài khoản - thông báo
+    $('.account-btn-option').on('click', function(){
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.account-option-div').css('display', 'block');
+            $(this).attr('aria-expanded', 'true');
+        } else {
+            $('.account-option-div').css('display', 'none');
+            $(this).attr('aria-expanded', 'false');
+        }
+    });
+
+    //============================== điện thoại yêu thích ===============================
+
+    // xóa điện thoại yêu thích
+    $('.fav-btn-delete').click(function(){
+        $(this).parent().parent().parent().hide('drop');
+
+        setTimeout(() => {
+            $(this).parent().parent().parent().remove();
+        }, 500);
+    });
+
+    // xóa tất cả điện thoại yêu thích
+    $('#fav-btn-delete-all').click(function(){
+        $('.fav-btn-delete').each(function(){
+            $(this).trigger('click');
+        });
+    });
+
+    //============================== đơn hàng ===============================
+
+    // xem chi tiết sản phẩm theo mã hóa đơn
+    $('.show-order-list-pro').off('click').on('click', function(e){
+        e.preventDefault();
+
+        var id = $(this).data('id');
+        if($(this).attr('aria-expanded') == 'true'){
+            $('#temp_' + id).css({
+                'visibility' : 'hidden',
+            });
+            $(this).html('Ẩn bớt');
+        } else {
+            $('#temp_' + id).css({
+                'visibility' : 'visible',
+            });
+            $(this).html('Xem thêm');
+        }
+    })
+
+    //============================== chi tiết đơn hàng ===============================
+
+    // tùy chỉnh độ cao
+    if($('#DCNN-div').length){
+       var height = $('#DCNN-div').height();
+       $('#HTGH-div').css('height', height);
+       $('#HTTT-div').css('height', height);
+    }
+
+    //===================================================== Shop ============================================================
+    
+    // nút hiển thị bộ lọc
+    $('#btn-show-filter').click(function(){
+        // nếu sắp xếp đang mở thì ẩn
+        if($('#btn-show-sort').attr('aria-expanded') == 'true'){
+            $('.shop-sort-box').hide();
+            $('#btn-show-sort').attr('aria-expanded', 'false');
+        }
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.shop-filter-box').show('blind', 250);
+            $(this).attr('aria-expanded', 'true');
+        } else {
+            $('.shop-filter-box').hide('blind', 250);
+            $(this).attr('aria-expanded', 'false');
+        }
+    });
+
+    // nút hiển thị sắp xếp
+    $('#btn-show-sort').click(function(){
+        if($('#btn-show-filter').attr('aria-expanded') == 'true'){
+            $('.shop-filter-box').hide();
+            $('#btn-show-filter').attr('aria-expanded', 'false');
+        }
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.shop-sort-box').show('blind', 250);
+            $(this).attr('aria-expanded', 'true');
+        } else {
+            $('.shop-sort-box').hide('blind', 250);
+            $(this).attr('aria-expanded', 'false');
+        }
+    });
+
+    // ẩn/hiện nút xem kết quả lọc
+    $('input[name="checkbox-filter"]').click(function(){
+        var count = $('#flag').val();
+        if($(this).prop('checked') == true){
+            $('#flag').val(++count);
+            $('.shop-btn-see-result').css('display', 'block');
+        } else {
+            $('#flag').val(--count);
+        }
+        if(count == 0){
+            $('.shop-btn-see-result').css('display', 'none');
+        }
+    })
+
+    // gỡ bỏ chọn tất cả checkbox bộ lọc
+    $('.shop-btn-remove-filter').click(function(){
+        $('input[name="checkbox-filter"]').each(function(){
+            this.checked = false;
+            $('.shop-btn-see-result').css('display', 'none');
+            $('#flag').val(0);
+        });
+    });
+
+    //===================================================== Chi tiết ============================================================
+    
     // slide hình ảnh khác của sản phẩm
     $('#detail-carousel').owlCarousel({
-        stagePadding: 10,
+        stagePadding: 5,
         nav: false,
         rewind: true,
         dots: false,
@@ -1287,73 +580,268 @@ $(function() {
     });
 
     // chuyển đổi hình ảnh khác
-    var owl = $('#detail-carousel');
-    owl.owlCarousel();
+    var owl_detail = $('#detail-carousel');
+    owl_detail.owlCarousel();
 
     $('#prev-owl-carousel').on('click', function(){
-        owl.trigger('prev.owl.carousel', [300]);
+        owl_detail.trigger('prev.owl.carousel', [300]);
     });
 
     $('#next-owl-carousel').on('click', function(){
-        owl.trigger('next.owl.carousel');
+        owl_detail.trigger('next.owl.carousel');
     });
 
-    // slide logo các hãng
-    $('#logo-carousel').owlCarousel({
-        items:4,
-        loop:true,
-        dots:false,
-        nav: false,
-        autoplay:true,
-        autoplayTimeout:1500,
-        autoplayHoverPause:true,
-        smartSpeed: 1000,
+    $('.another-img').click(function(){
+        var data = $(this).attr('src');
+        $('#main-img').attr('src', data);
     });
 
-    // hiển thị button cuộn lên đầu
-    $(window).scroll(function(e){
-        var scrollTop = $(window).scrollTop();
-        var docHeight = $(document).height();
-        var winHeight = $(window).height();
-        var scrollPercent = (scrollTop) / (docHeight - winHeight);
-        var scrollPercentRounded = Math.round(scrollPercent*100);
+    // hiển thị đánh giá sản phẩm
+    if($('#total-rating').length){
+        var total_rating = parseInt($('#total-rating').val());
 
-        if(scrollPercentRounded >= 20){
-            $('.btn-scroll-top').css({
-                
-                '-ms-transform' : 'translateY(0)',
-                'transform' : 'translateY(0)',
-            });
+        // tổng số lượng đánh giá từng sao
+        var total_star_5 = 5 * parseInt($('#percent-5-star').data('id'));
+        var total_star_4 = 4 * parseInt($('#percent-4-star').data('id'));
+        var total_star_3 = 3 * parseInt($('#percent-3-star').data('id'));
+        var total_star_2 = 2 * parseInt($('#percent-2-star').data('id'));
+        var total_star_1 = 1 * parseInt($('#percent-1-star').data('id'));
+
+        // tính sao trung bình = tổng của tổng số lượng đánh giá từng sao / tổng số đánh giá
+        var avg_star = (total_star_5 + total_star_4 + total_star_3 + total_star_2 + total_star_1) / total_rating;
+        avg_star = String(avg_star);
+        // console.log(avg_star);
+
+        // nếu như là số lẻ thì làm tròn 1 chữ số
+        if(avg_star.search('.') != -1){
+            var round = String(avg_star.split('.')[1]);
+            var num_1 = round.charAt(0);
+            if(round.length > 1){
+                var num_2 = round.charAt(1);
+                if(num_2 >= 5){
+                    num_1++;
+                }
+            }
+            avg_star = String(avg_star).split('.')[0] + '.' + num_1;
+        }
+
+        $('.detail-vote-avg').text(avg_star);
+
+        // hiển thị chi tiết số lượng đánh giá của từng sao
+        for(var i = 1; i <= 5; i++){
+            var element = '#percent-' + i + '-star';
+            var qtyOfStar = $(element).data('id');
+            var total = total_rating;
+            var id = '#percent-' + i + '-star';
+            ratingStar(id, qtyOfStar, total);
+        }
+    }
+
+    // hàm hiển thị phần trăm thanh progress
+    function ratingStar(id, qtyOfStar, total){
+        var avg = (qtyOfStar / total) * 100 + '%';
+        $(id).css('width', avg);
+    }
+
+    // đánh giá sao sản phẩm
+    $('.star-rating').hover(
+        // mouse enter
+        function(){
+            $('.star-rating').removeAttr('style');
+            var star = $(this).data('id');
+            for(var i = 1; i <= star; i++){
+                $('#star-' + i).css('color' , 'orange');
+            }
+        }, 
+        // mouse leave
+        function(){
+            $('.star-rating').removeAttr('style');
+            var star = $('#star-rating').val();
+            if(star != 0){
+                for(var i = 1; i <= star; i++){
+                    $('#star-' + i).css('color' , 'orange');
+                }
+            } else {
+                $('.star-rating').removeAttr('style');
+            }
+        }
+    );
+
+    // chọn sao
+    $('.star-rating').click(function(){
+        var star = $(this).data('id');
+        $('#star-rating').val(star);
+
+        $('.star-rating').removeAttr('style');
+
+        for(var i = 1; i <= star; i++){
+            $('#star-' + i).css('color' , 'orange');
+        }
+    });
+
+    $('.detail-upload-link').click(function(){
+        $('.upload-inp').trigger('click');
+    });
+
+    $('.btn-expanded-evaluate').click(function(){
+        if($(this).attr('aria-expanded') == 'true'){
+            $('.evaluate-img-div').hide('blind', 250);
+            $(this).attr('aria-expanded', 'false');
+            $('.expand-icon').css('transform' , 'rotate(180deg)');
         } else {
-            $('.btn-scroll-top').css({
-                
-                '-ms-transform' : 'translateY(100px)',
-                'transform' : 'translateY(100px)',
-            });
+            $('.evaluate-img-div').show('blind', 250);
+            $(this).attr('aria-expanded', 'true');
+            $('.expand-icon').css('transform' , 'rotate(0)');
         }
     });
 
-    // xử lý cuộn lên đầu trang
-    $('.btn-scroll-top').on('click', function(){
-        $(this).scrollTop();
-    })
+    // xem trước hình ảnh
+    function readURL(input, idIMG) { 
+        if (input.files && input.files[0]) { 
+        var reader = new FileReader(); 
+        reader.onload = function(e) { 
+            $(idIMG).attr('src', e.target.result); 
+        } 
+        reader.readAsDataURL(input.files[0]); 
+        }       
+    }
 
-    // danh sách các chi nhánh
-    $('#city').on('change', function(){
-        var option = $(this).val();
-        if(option != 0){
-            $(".detail-branch-list").hide();
+    // thêm hình đánh giá
+    $('.upload-inp').change(function(){
+        //số lượng hình upload
+        var count = this.files.length;
+
+        // tổng số lượng hình hiện tại
+        var qty_img = parseInt($('#qty-img').val());
+
+        // nếu không chọn hình nào thì thoát 
+        if(count == 0){
+            return;
         }
+
+        $('.btn-expanded-evaluate').css('display', 'block');
+        $('.evaluate-img-div').css({
+            'display': 'flex',
+            'flex-wrap': 'wrap',
+        });
+        $('.btn-remove-all').css('display', 'block');
+
+        // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
+        if(count > 3){
+            $('#modal-warning-1').modal('show');
+        }
+
+        // tạo thẻ div, nút xóa, hình đánh giá
+        for(var i = 0; i < count; i++){
+            // nếu số lượng hình > 3 thì hiển thị modal thông báo
+            if(qty_img >= 3){
+                $('#modal-warning-1').modal('show');
+                break;
+            }
+
+            var id = (qty_img + i) + 1;
+            var id_div = '#img-rating-' + id;
+
+            // thẻ div chứa hình và nút xóa
+            var div = $('<div>',{
+                id: id_div,
+                class: "img-rating",
+            });
+            div.appendTo('.evaluate-img-div');
+
+            // nút xóa hình
+            var btn_remove = $('<div>',{
+                class: 'btn-remove-single-img',
+            });
+            btn_remove.appendTo(div);
+
+            // icon xóa
+            var icon_remove = $('<i class="far fa-times-circle fz-20">');
+            icon_remove.appendTo(btn_remove);
+
+            // hình ảnh
+            var img = $('<img>', {
+                class: 'w-100',
+                src: URL.createObjectURL(this.files[i]),
+            });
+            img.appendTo(div);
+
+            qty_img++;
+        }
+
+        $('#qty-img').val(qty_img);
+
+        // hiển thị số lượng hình ảnh đang có
+        $('.qty-img').html('(' + qty_img + ')');
     });
     
-    $('#address').on('change', function(){
-        var option = $(this).val();
-        if(option != 0){
-            $('.detail-branch-list').show('blind', 250);
-        } else {
-            $(".detail-branch-list").hide();
-        }
+    // xóa từng hình
+    $('.evaluate-img-div').bind('DOMSubtreeModified', function(){
+        $('.btn-remove-single-img').off('click').click(function(){
+            // tổng số lượng hình hiện tại
+            var qty_img = parseInt($('#qty-img').val());
+
+            // số lượng hình -1
+            qty_img--;
+
+            // cập nhật hiển thị số lượng
+            $('.qty-img').html('(' + qty_img + ')');
+
+            $(this).parent('div').remove();
+            $('#qty-img').val(qty_img);
+
+            if($('#qty-img').val() == 0){
+                hideEvaluateDiv();
+            }
+        });
     });
+    
+    // xóa tất cả hình ảnh đánh giá
+    $('.btn-remove-all').click(function(){
+        hideEvaluateDiv();
+    });
+
+    function hideEvaluateDiv(){
+        $('.evaluate-img-div').html('');
+        $('#qty-img').val(0);
+
+        // ẩn các nút
+        $('.btn-expanded-evaluate').css('display', 'none');
+        $('.evaluate-img-div').css('display', 'none');
+        $('.btn-remove-all').css('display', 'none');
+    }
+
+    $('.reply-cmt').click(function(){
+        var id = $(this).data('id');
+
+        var replyDiv = $('<div id="reply-' + id + '" class="d-flex flex-column pl-70 pt-10 pb-10">' + 
+                            '<div class="row">' + 
+                                '<div class="col-md-1">' + 
+                                    '<img src="images/avt1620997169.jpg" class="circle-img" alt="">' + 
+                                '</div>' + 
+                                '<div class="col-md-11">'+
+                                    '<textarea name="" id="" class="form-control" rows="3" placeholder="Viết câu trả lời"></textarea>'+
+                                    '<div class="d-flex justify-content-end align-items-center pt-10">'+
+                                        '<div class="remove-reply pointer-cs price-color"><i class="fal fa-times-circle mr-5"></i>Hủy</div>'+
+                                        '<div class="pl-10 pr-10">|</div>'+
+                                        '<div class="pointer-cs main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>');
+
+        $(this).parent().parent().after(replyDiv);
+    });
+
+    $('#list-comment').bind('DOMSubtreeModified', function(){
+        $('.remove-reply').off('click').click(function(){
+            var id = $(this).parent().parent().parent().parent().attr('id');
+            $(id).remove();
+        });
+    });
+    
+
+    //===================================================== Giỏ hàng ============================================================
 
     // giảm số lượng sản phẩm trong giỏ hàng
     $('.minus').off('click').on('click', function(e){
@@ -1375,9 +863,21 @@ $(function() {
         var qty = parseInt($('#qty_' + id).text());
         $('#qty_' + id).text(++qty);
         $('.qty_' + id).text(qty);
-    })
+    });
+
+    //===================================================== Thanh toán ============================================================
 
     // kiểm tra nơi nhận hàng
+    if($('input[name="receive-method"]').is(':checked')){
+        var method = $('input[name="receive-method"]:checked').val();
+        if(method == 'atHome'){
+            $('.atStore').css('display', 'none');
+            $('.atHome').css('display', 'block');
+        } else {
+            $('.atStore').css('display', 'block');
+            $('.atHome').css('display', 'none');
+        }
+    }
     $('#TaiCuaHang').on('click', function(){
         $('.atStore').css('display', 'block');
         $('.atHome').css('display', 'none');
@@ -1388,7 +888,318 @@ $(function() {
         $('.atStore').css('display', 'none');
     });
 
-    // đảo ngược button
+    $('#btn-confirm-checkout').click(function(){
+        var hoTen = $('#HoTen');
+        var SDT = $('#SDT');
+
+        var receciveMethod = $('input[name="receive-method"]:checked').val();
+
+        var arrInp, arrSelect;
+        
+        if(receciveMethod == 'atHome'){
+            var quanHuyen = $('#QuanHuyen-name');
+            var phuongXa = $('#PhuongXa-name');
+            var diaChi = $('#address-inp');
+
+            arrInp = [hoTen, SDT, diaChi];
+            arrSelect = [quanHuyen, phuongXa];
+            receciveMethod = validateDeliveryAddress(arrSelect);
+        } else {
+            var area = $('#area-name');
+            var branchInp = $('input[name="branch"]');
+
+            arrInp = [hoTen, SDT];
+            receciveMethod = validateReceiveAtStore(area, branchInp);
+        }
+
+        if(validateInput(arrInp) && receciveMethod){
+            
+        } else {
+            $(window).scrollTop(0);
+        }
+    });
+
+    // kiểm tra thẻ input thông tin thanh toán có trống không
+    function validateInput(arrInp){
+        var flag = true;
+        for(var i = 0; i < arrInp.length; i++){
+            var element = arrInp[i];
+            if(element.val() == ''){
+                element.addClass('required');
+                element.next().show();
+                flag = false;
+            }
+        }
+
+        return flag;
+    }
+
+    // kiểm tra địa chỉ giao hàng có trống không
+    function validateDeliveryAddress(arrSelect){
+        var flag = true;
+        for(var i = 0; i < arrSelect.length; i++){
+            var element = arrSelect[i];
+            if(element.attr('data-flag') == null){
+                element.parent().addClass('required');
+                element.parent().next().show();
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
+    // kiểm tra nhận tại cửa hàng có trống không
+    function validateReceiveAtStore(areaSelected, storeSelected){   
+        if(areaSelected.attr('data-flag') == null){
+            areaSelected.parent().addClass('required');
+            areaSelected.parent().next().show();
+            return false;
+        } if(!storeSelected.is(':checked')){
+            storeSelected.parent().parent().addClass('required');
+            storeSelected.parent().parent().next().show();
+            return false; 
+        }
+
+        return true;
+    }
+
+    $('input[name="checkout-inp"]').keyup(function(){
+        $(this).removeClass('required');
+        $(this).next().hide();
+    });
+
+    //================================ giao hàng tận nhà ==========================
+
+    // hiển thị tỉnh thành
+    $('#TinhThanh-selected').click(function(){
+        $('#TinhThanh-box').toggle('blind', 250);
+        $('#QuanHuyen-box').hide('blind', 250);
+        $('#PhuongXa-box').hide('blind', 250);
+    });
+
+    // hiển thị quận huyện
+    $('#QuanHuyen-selected').click(function(){
+        $('#QuanHuyen-box').toggle('blind', 250);
+        $('#TinhThanh-box').hide('blind', 250);
+        $('#PhuongXa-box').hide('blind', 250);
+    });
+
+    // hiển thị phường xã
+    $('#PhuongXa-selected').click(function(){
+        if($(this).attr('class') == 'select-disable'){
+            return;
+        }
+        $('#PhuongXa-box').toggle('blind', 250);
+        $('#QuanHuyen-box').hide('blind', 250);
+        $('#TinhThanh-box').hide('blind', 250);
+    });
+
+    // tìm kiếm tỉnh/thành
+    $('#search-tinh-thanh').keyup(function(){
+        var val = $(this).val();
+        var selectBox = $('#list-tinh-thanh');
+        
+        searchPlace(val, selectBox);
+    });
+
+    // tìm kiếm quận huyện
+    $('#search-quan-huyen').keyup(function(){
+        var val = $(this).val();
+        var selectBox = $('#list-quan-huyen');
+        
+        searchPlace(val, selectBox);
+    });
+
+    // tìm kiếm phường xã
+    $('#search-phuong-xa').keyup(function(){
+        var val = $(this).val();
+        var selectBox = $('#list-phuong-xa');
+        
+        searchPlace(val, selectBox);
+    });
+
+    function searchPlace(val, selectBox){
+        if(val == ''){
+            selectBox.children().show();    
+            return;
+        }
+
+        val = val.toLocaleLowerCase();
+
+        var count = selectBox.children().length;
+        
+        for(var i = 0; i < count; i++){
+            var element = selectBox.children()[i];
+            var name = $(element).data('type').split('/')[0].toLocaleLowerCase();
+            
+            if(!name.includes(val)){
+                $(element).hide();
+            } else {
+                $(element).show();
+            }
+        }
+    }
+
+    // thay đổi tỉnh/thành
+    $('.option-tinhthanh').click(function(){
+        var id = $(this).attr('id');
+        var name = $(this).data('type').split('/')[0];
+        var type = $(this).data('type').split('/')[1];
+
+        choosePlace(id, name, type);
+    });
+
+    // thay đổi quận, huyện
+    $('.option-quanhuyen').click(function(){
+        var id = $(this).attr('id');
+        var name = $(this).data('type').split('/')[0];
+        var type = $(this).data('type').split('/')[1];
+
+        choosePlace(id, name, type);
+    });
+
+    $('#list-quan-huyen').bind('DOMSubtreeModified', function(){
+        $('.option-quanhuyen').off('click').click(function(){
+            var id = $(this).attr('id');
+            var name = $(this).data('type').split('/')[0];
+            var type = $(this).data('type').split('/')[1];
+            choosePlace(id, name, type);
+        });
+    });
+
+    // thay đổi phường, xã
+    $('#list-phuong-xa').bind('DOMSubtreeModified', function(){
+        $('.option-phuongxa').off('click').click(function(){
+            var id = $(this).attr('id');
+            var name = $(this).data('type').split('/')[0];
+            var type = $(this).data('type').split('/')[1];
+            choosePlace(id, name, type);
+        });
+    });
+
+    function choosePlace(id, name, type){
+        if(type == 'TinhThanh'){
+            $('#TinhThanh-name').text(name);
+            $('#TinhThanh-box').toggle('blind', 250);
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: '/test2',
+                type: 'POST',
+                cache: false,
+                data: {'type':type,'id':id},
+                success:function(data){
+                    $('#QuanHuyen-box').toggle('blind', 250);
+                    $('#list-quan-huyen').children().remove();
+                    for(var i = 0; i < data.length; i++){
+                        var div = $('<div>',{
+                            id: data[i]['ID'],
+                            'data-type': data[i]['Name'] + '/QuanHuyen',
+                            class: 'option-quanhuyen select-single-option',
+                            text: data[i]['Name']
+                        });
+                        div.appendTo($('#list-quan-huyen'));
+                    }
+                }
+            });
+        } else if(type == 'QuanHuyen') {
+            $('#QuanHuyen-name').text(name);
+            $('#QuanHuyen-name').attr('data-flag', '1');
+            if($('#QuanHuyen-name').parent().hasClass('required')){
+                $('#QuanHuyen-name').parent().removeClass('required');
+                $('#QuanHuyen-name').parent().next().hide();
+            }
+            $('#QuanHuyen-box').toggle('blind', 250);
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: '/test2',
+                type: 'POST',
+                cache: false,
+                data: {'type':type,'id':id},
+                success:function(data){
+                    $('#PhuongXa-selected').addClass('select-selected').removeClass('select-disable');
+                    $('#PhuongXa-box').toggle('blind', 250);
+                    $('#list-phuong-xa').children().remove();
+                    for(var i = 0; i < data.length; i++){
+                        var div = $('<div>',{
+                            id: data[i]['ID'],
+                            'data-type': data[i]['Name'] + '/PhuongXa',
+                            class: 'option-phuongxa select-single-option',
+                            text: data[i]['Name']
+                        });
+                        div.appendTo($('#list-phuong-xa'));
+                    }
+                }
+            });
+        } else {
+            $('#PhuongXa-name').text(name);
+            $('#PhuongXa-name').attr('data-flag', '1');
+            if($('#PhuongXa-name').parent().hasClass('required')){
+                $('#PhuongXa-name').parent().removeClass('required');
+                $('#PhuongXa-name').parent().next().hide();
+            }
+            $('#PhuongXa-box').toggle('blind', 250);
+            $('#address-inp').focus();
+        }
+    }
+    
+    $('#address-inp').focus(function(){
+        $('#TinhThanh-box').hide('blind', 250);
+        $('#QuanHuyen-box').hide('blind', 250);
+        $('#PhuongXa-box').hide('blind', 250);
+    });
+
+    $('#area-selected').click(function(){
+        $('#area-box').toggle('blind', 250);
+    });
+
+    //================================ nhận tại cửa hàng ==========================
+
+    $('.option-area').click(function(){
+        var areaID = $(this).data('area');
+        var name = $(this).text();
+
+        $('#area-box').toggle('blind', 250);
+
+        loadBranchList(areaID, name);
+    });
+
+    function loadBranchList(areaID, name){
+        $('#area-name').text(name);
+        if($('#area-name').parent().hasClass('required')){
+            $('#area-name').parent().removeClass('required');
+            $('#area-name').parent().next().hide();
+        }
+        $('#area-name').attr('data-flag', '1');
+
+        var parent = $('.list-branch');
+        var count = parent.children().length;
+        
+        for(var i = 0; i < count; i++){
+            var element = $(parent.children()[i]);
+            if(element.data('area') == areaID){
+                element.show();
+            } else {
+                element.hide();
+            }
+        }
+
+        $('.list-branch').show('blind', 250);
+    }
+
+    $('input[name="branch"]').click(function(){
+        if($(this).parent().parent().hasClass('required')){
+            $(this).parent().parent().removeClass('required');
+            $(this).parent().parent().next().hide();
+        }
+    });
+
+    // đảo ngược button đóng/ mở giỏ hàng trang Thanh toán
     $('.checkout-btn-collapse-cart').on('click', function(){
         if($(this).attr('aria-expanded') == 'true'){
             $(this).css({
@@ -1401,60 +1212,31 @@ $(function() {
                 'transform' : 'rotate(180deg)',
             });
         }
-    })
+    });
+
+    if($('#success-img').length){
+        setTimeout(() => {
+            $('#success-checkout').css('opacity', '1');
+        },1000);
+    }
     
-    // hiển thị offcanvas
-    $('#show-offcanvas').on('click', function(){
-        if($(this).attr('aria-expanded') == 'false'){
-            $('.head-offcanvas-box').css({
-                'width' : '40%',
-            });
-            $('.backdrop').css('display', 'block');
-            $(this).attr('aria-expanded', 'true');
-        } else {
-            $('.head-offcanvas-box').css({
-                'width' : '0',
-            });
-            $('.backdrop').css('display', 'none');
-            $(this).attr('aria-expanded', 'false');
+
+    //===================================================== Compare ============================================================
+    
+    // tìm kiếm điện thoại để so sánh
+    $('#compare-search-phone').keyup(function(){
+        var data = $(this).val();
+        if(data == ''){
+            $('.compare-list-search-phone').css('display', 'none');
+        } else{
+            $('.compare-list-search-phone').css('display', 'block');
         }
     });
 
-    // nút đóng offcanvas
-    $('#btn-close-offcanvas').on('click', function(){
-        $('.head-offcanvas-box').css({
-            'width' : '0',
-        });
-        $('.backdrop').css('display', 'none');
-        $('#show-offcanvas').attr('aria-expanded', 'false');
-    });
-
-    // đóng offcanvas theo kích thước màn hình
-    $(window).resize(function(){
-        if($(window).width() > 1100) {
-            $('.backdrop').css({
-                'display' : 'none',
-            });
-            $('.head-offcanvas-box').css({
-                'width' : '0',
-            });
-            $('#show-offcanvas').attr('aria-expanded', 'false');
-        }
-    });
-
-    // dropdown tài khoản trong offcanvas
-    $('.head-offcanvas-account').on('click', function(){
-        if($(this).attr('aria-expanded') == 'false'){
-            $('.head-offcanvas-account-option').css({
-                'display' : 'block',
-            });
-            $(this).attr('aria-expanded', 'true');
-        } else {
-            $('.head-offcanvas-account-option').css({
-                'display' : 'none',
-            });
-            $(this).attr('aria-expanded', 'false');
-        }
+    // nút xem so sánh cấu hình chi tiết
+    $('.compare-btn-see-detail').click(function(){
+        $(this).css('display', 'none');
+        $('.compare-detail').css('display', 'table-row');
     });
 });
 

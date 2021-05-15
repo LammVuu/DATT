@@ -1,5 +1,5 @@
 <section>
-    <div class="container bg-primary-4 pt-70 pb-70">
+    <div class="container main-color-bg pt-70 pb-70">
         <div class="row">
             <div class="col-lg-6 mx-auto">
                 <div class="heading text-center">
