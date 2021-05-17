@@ -1,6 +1,43 @@
 @extends("admin.layout")
 @section("content")
 <div class="pcoded-main-container">
+    <div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Thêm Sản Phẩm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" id="edit_id" />
+                        <div class="form-group">
+                            <label class="control-label"></label>
+                            <input id="edit_tenloai" class="form-control" />
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label"></label>
+                            <select  id="" class="form-control" ></select>
+                            <span  class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label  class="control-label"></label>
+                            <input  id="" class="form-control" />
+                            <span class="text-danger"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" name="btn_update_loaisanpham" class="btn btn-success">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
                 <div class="pcoded-wrapper">
                     <nav class="pcoded-navbar">
                         <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
@@ -22,83 +59,75 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="p-15 p-b-0">
-                                <form class="form-material">
-                                    <div class="form-group form-primary">
-                                        <input type="text" name="footer-email" class="form-control">
-                                        <span class="form-bar"></span>
-                                        <label class="float-label"><i class="fa fa-search m-r-10"></i>Search Friend</label>
-                                    </div>
-                                </form>
-                            </div>
+                            
                             <div class="pcoded-navigation-label">Navigation</div>
                             <ul class="pcoded-item pcoded-left-item">
                                 <li>
                                     <a href="{{route('dashboard.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-home"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Bảng Điều Khiển</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('hinhanh.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-image"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Hình Ảnh</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('banner.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-ad"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Banner</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('slideshow.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-images"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Slideshow</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{route('mausanpham.index')}} class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                    <a href="{{route('mausanpham.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-th-list"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Mẫu Sản Phẩm</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li class="active">
                                     <a href="#" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-mobile-alt"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Sản Phẩm</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('nhacungcap.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-building"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Nhà Cung Cấp</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('danhgia.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-star"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Đánh Giá</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('khuyenmai.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-gift"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Khuyến Mãi</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('donhang.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-file-alt"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Đơn Hàng</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
@@ -106,14 +135,14 @@
                                 
                                 <li>
                                     <a href="{{route('baohanh.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-shield-alt"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Bảo Hành</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('taikhoan.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-user"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Tài Khoản</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
@@ -292,7 +321,8 @@
                         <!-- Page-header end -->
                         <div class="pcoded-inner-content">
                             <!-- Main-body start -->
-                           
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AddModal">Thêm</button>
+                                <br/>
                         </div>
                     </div>
                 </div>

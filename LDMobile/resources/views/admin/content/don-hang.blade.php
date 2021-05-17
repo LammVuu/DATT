@@ -22,83 +22,75 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="p-15 p-b-0">
-                                <form class="form-material">
-                                    <div class="form-group form-primary">
-                                        <input type="text" name="footer-email" class="form-control">
-                                        <span class="form-bar"></span>
-                                        <label class="float-label"><i class="fa fa-search m-r-10"></i>Search Friend</label>
-                                    </div>
-                                </form>
-                            </div>
+                     
                             <div class="pcoded-navigation-label">Navigation</div>
                             <ul class="pcoded-item pcoded-left-item">
                                 <li>
                                     <a href="{{route('dashboard.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-home"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Bảng Điều Khiển</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('hinhanh.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-image"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Hình Ảnh</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('banner.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-ad"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Banner</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('slideshow.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-images"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Slideshow</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{route('mausanpham.index')}} class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                    <a href="{{route('mausanpham.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-th-list"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Mẫu Sản Phẩm</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a ref="{{route('sanpham.index')}} class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                    <a href="{{route('sanpham.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-mobile-alt"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Sản Phẩm</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('nhacungcap.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-building"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Nhà Cung Cấp</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('danhgia.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-star"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Đánh Giá</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('khuyenmai.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-gift"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Khuyến Mãi</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li class="active">
                                     <a href="#" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-file-alt"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Đơn Hàng</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
@@ -106,14 +98,14 @@
                                 
                                 <li>
                                     <a href="{{route('baohanh.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-shield-alt"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Bảo Hành</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{route('taikhoan.index')}}" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-micon"><i class="fas fa-user"></i><b>D</b></span>
                                         <span class="pcoded-mtext">Tài Khoản</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
@@ -206,10 +198,88 @@
                             </ul>
                             <div class="pcoded-navigation-label">Tables</div>
                             <ul class="pcoded-item pcoded-left-item">
-                                <li class="">
-                                    <a href="bs-basic-table.html" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-receipt"></i><b>B</b></span>
-                                        <span class="pcoded-mtext">Table</span>
+                                <li>
+                                    <a href="{{route('dashboard.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-home"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Bảng Điều Khiển</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('hinhanh.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-image"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Hình Ảnh</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('banner.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-ad"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Banner</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('slideshow.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-images"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Slideshow</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('mausanpham.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-th-list"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Mẫu Sản Phẩm</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('sanpham.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-mobile-alt"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Sản Phẩm</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('nhacungcap.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-building"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Nhà Cung Cấp</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('danhgia.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-star"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Đánh Giá</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('khuyenmai.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-gift"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Khuyến Mãi</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="#" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-file-alt"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Đơn Hàng</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                
+                                <li>
+                                    <a href="{{route('baohanh.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-shield-alt"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Bảo Hành</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('taikhoan.index')}}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="fas fa-user"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Tài Khoản</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
