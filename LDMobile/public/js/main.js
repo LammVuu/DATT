@@ -695,17 +695,6 @@ $(function() {
         }
     });
 
-    // xem trước hình ảnh
-    function readURL(input, idIMG) { 
-        if (input.files && input.files[0]) { 
-        var reader = new FileReader(); 
-        reader.onload = function(e) { 
-            $(idIMG).attr('src', e.target.result); 
-        } 
-        reader.readAsDataURL(input.files[0]); 
-        }       
-    }
-
     // thêm hình đánh giá
     $('.upload-inp').change(function(){
         //số lượng hình upload
@@ -814,6 +803,10 @@ $(function() {
     $('.reply-cmt').click(function(){
         var id = $(this).data('id');
 
+        if($('#reply-' + id).length){
+            return;
+        }
+
         var replyDiv = $('<div id="reply-' + id + '" class="d-flex flex-column pl-70 pt-10 pb-10">' + 
                             '<div class="row">' + 
                                 '<div class="col-md-1">' + 
@@ -834,9 +827,12 @@ $(function() {
     });
 
     $('#list-comment').bind('DOMSubtreeModified', function(){
+        // xóa reply
         $('.remove-reply').off('click').click(function(){
-            var id = $(this).parent().parent().parent().parent().attr('id');
-            $(id).remove();
+            $(this).parent().parent().parent().parent().hide('blind', 250);
+            setTimeout(() => {
+                $(this).parent().parent().parent().parent().remove();
+            }, 250);
         });
     });
     
@@ -886,86 +882,6 @@ $(function() {
     $('#TaiNha').on('click', function(){
         $('.atHome').css('display', 'block');
         $('.atStore').css('display', 'none');
-    });
-
-    $('#btn-confirm-checkout').click(function(){
-        var hoTen = $('#HoTen');
-        var SDT = $('#SDT');
-
-        var receciveMethod = $('input[name="receive-method"]:checked').val();
-
-        var arrInp, arrSelect;
-        
-        if(receciveMethod == 'atHome'){
-            var quanHuyen = $('#QuanHuyen-name');
-            var phuongXa = $('#PhuongXa-name');
-            var diaChi = $('#address-inp');
-
-            arrInp = [hoTen, SDT, diaChi];
-            arrSelect = [quanHuyen, phuongXa];
-            receciveMethod = validateDeliveryAddress(arrSelect);
-        } else {
-            var area = $('#area-name');
-            var branchInp = $('input[name="branch"]');
-
-            arrInp = [hoTen, SDT];
-            receciveMethod = validateReceiveAtStore(area, branchInp);
-        }
-
-        if(validateInput(arrInp) && receciveMethod){
-            
-        } else {
-            $(window).scrollTop(0);
-        }
-    });
-
-    // kiểm tra thẻ input thông tin thanh toán có trống không
-    function validateInput(arrInp){
-        var flag = true;
-        for(var i = 0; i < arrInp.length; i++){
-            var element = arrInp[i];
-            if(element.val() == ''){
-                element.addClass('required');
-                element.next().show();
-                flag = false;
-            }
-        }
-
-        return flag;
-    }
-
-    // kiểm tra địa chỉ giao hàng có trống không
-    function validateDeliveryAddress(arrSelect){
-        var flag = true;
-        for(var i = 0; i < arrSelect.length; i++){
-            var element = arrSelect[i];
-            if(element.attr('data-flag') == null){
-                element.parent().addClass('required');
-                element.parent().next().show();
-                flag = false;
-            }
-        }
-        return flag;
-    }
-
-    // kiểm tra nhận tại cửa hàng có trống không
-    function validateReceiveAtStore(areaSelected, storeSelected){   
-        if(areaSelected.attr('data-flag') == null){
-            areaSelected.parent().addClass('required');
-            areaSelected.parent().next().show();
-            return false;
-        } if(!storeSelected.is(':checked')){
-            storeSelected.parent().parent().addClass('required');
-            storeSelected.parent().parent().next().show();
-            return false; 
-        }
-
-        return true;
-    }
-
-    $('input[name="checkout-inp"]').keyup(function(){
-        $(this).removeClass('required');
-        $(this).next().hide();
     });
 
     //================================ giao hàng tận nhà ==========================
@@ -1199,6 +1115,86 @@ $(function() {
         }
     });
 
+    $('#btn-confirm-checkout').click(function(){
+        var hoTen = $('#HoTen');
+        var SDT = $('#SDT');
+
+        var receciveMethod = $('input[name="receive-method"]:checked').val();
+
+        var arrInp, arrSelect;
+        
+        if(receciveMethod == 'atHome'){
+            var quanHuyen = $('#QuanHuyen-name');
+            var phuongXa = $('#PhuongXa-name');
+            var diaChi = $('#address-inp');
+
+            arrInp = [hoTen, SDT, diaChi];
+            arrSelect = [quanHuyen, phuongXa];
+            receciveMethod = validateDeliveryAddress(arrSelect);
+        } else {
+            var area = $('#area-name');
+            var branchInp = $('input[name="branch"]');
+
+            arrInp = [hoTen, SDT];
+            receciveMethod = validateReceiveAtStore(area, branchInp);
+        }
+
+        if(validateInput(arrInp) && receciveMethod){
+            
+        } else {
+            $(window).scrollTop(0);
+        }
+    });
+
+    // kiểm tra thẻ input thông tin thanh toán có trống không
+    function validateInput(arrInp){
+        var flag = true;
+        for(var i = 0; i < arrInp.length; i++){
+            var element = arrInp[i];
+            if(element.val() == ''){
+                element.addClass('required');
+                element.next().show();
+                flag = false;
+            }
+        }
+
+        return flag;
+    }
+
+    // kiểm tra địa chỉ giao hàng có trống không
+    function validateDeliveryAddress(arrSelect){
+        var flag = true;
+        for(var i = 0; i < arrSelect.length; i++){
+            var element = arrSelect[i];
+            if(element.attr('data-flag') == null){
+                element.parent().addClass('required');
+                element.parent().next().show();
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
+    // kiểm tra nhận tại cửa hàng có trống không
+    function validateReceiveAtStore(areaSelected, storeSelected){   
+        if(areaSelected.attr('data-flag') == null){
+            areaSelected.parent().addClass('required');
+            areaSelected.parent().next().show();
+            return false;
+        } if(!storeSelected.is(':checked')){
+            storeSelected.parent().parent().addClass('required');
+            storeSelected.parent().parent().next().show();
+            return false; 
+        }
+
+        return true;
+    }
+
+    $('input[name="checkout-inp"]').keyup(function(){
+        $(this).removeClass('required');
+        $(this).next().hide();
+    });
+
     // đảo ngược button đóng/ mở giỏ hàng trang Thanh toán
     $('.checkout-btn-collapse-cart').on('click', function(){
         if($(this).attr('aria-expanded') == 'true'){
@@ -1237,6 +1233,33 @@ $(function() {
     $('.compare-btn-see-detail').click(function(){
         $(this).css('display', 'none');
         $('.compare-detail').css('display', 'table-row');
+    });
+
+    //===================================================== Check IMEI ============================================================
+
+    $('#imei-inp').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).removeClass('required');
+            $('.required-text').hide();
+        }
+    });
+
+    $('#btn-check-imei').click(function(){
+        var IMEI = $('#imei-inp').val();
+
+        if(IMEI == ''){
+            $('#imei-inp').addClass('required');
+            $('#imei-inp').next().show();
+            return;
+        }
+
+        $('#check-imei').hide();
+        $('#valid-imei').removeAttr('class');
+    });
+
+    $('#btn-check-imei-2').click(function(){
+        $('#check-imei').show();
+        $('#valid-imei').addClass('none-dp');
     });
 });
 

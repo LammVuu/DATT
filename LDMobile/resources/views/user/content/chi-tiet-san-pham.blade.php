@@ -214,7 +214,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <button class='main-btn w-100 p-10 fz-16' data-bs-toggle="modal" data-bs-target="#specifications-modal">Xem thêm</button>
+                                    <div class='main-btn w-100 p-10 fz-16' data-bs-toggle="modal" data-bs-target="#specifications-modal">Xem thêm</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -354,7 +354,7 @@
                                                         </div>
                                                         <div class="btn-remove-all mr-40"><i class="far fa-times-circle mr-5"></i>Xóa tất cả ảnh</div>
                                                     </div>
-                                                    <button type='submit' class='main-btn p-10'>Gửi đánh giá</button>
+                                                    <div class='main-btn p-10'>Gửi đánh giá</div>
                                                 </div>
                                             </div>
                                         </div>

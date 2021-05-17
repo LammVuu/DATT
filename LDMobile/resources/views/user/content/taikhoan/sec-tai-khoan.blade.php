@@ -203,7 +203,7 @@
                         <div class="row mb-3">
                             <div class="d-flex justify-content-end">
                                 <button class="cancel-btn p-5 mr-10" data-bs-dismiss="modal">Hủy</button>
-                                <button class="main-btn p-5">Cập nhật</button>
+                                <div class="main-btn p-5">Cập nhật</div>
                             </div>
                         </div>
                         

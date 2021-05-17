@@ -7,7 +7,7 @@
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
-}
+} 
 
 /* Track */
 ::-webkit-scrollbar-track {
@@ -332,17 +332,16 @@ textarea{
 
 .main-btn {
   cursor: pointer;
-  border: 2px solid #078FD8;
   border-radius: 5px;
-  background-color: #078FD8;
+  background-color: #38b1f1;
   color: white;
   text-align: center;
   transition: .2s;
 }
 
 .main-btn:hover{
-  background-color: white;
-  color: #078FD8
+  background-color: #078FD8;
+  color: white;
 }
 
 .main-btn-2{
@@ -580,6 +579,7 @@ textarea{
 /*============ warning input =================*/
 .required{
   border: 2px solid red !important;
+  background-color: #ffe7e7 !important;
 }
 
 .required-text{
@@ -807,6 +807,10 @@ textarea{
 .vl{
   border-right: 1px solid #dcdcdc;
   height: 100%;
+}
+
+.none-style{
+  list-style-type: none;
 }
 
 /*====================================== Toast ===================================*/
@@ -2542,5 +2546,4 @@ textarea{
 }
 
 /*===================================================== Checkout ===========================================================*/
-
 

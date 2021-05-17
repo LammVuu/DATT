@@ -273,6 +273,11 @@ class IndexController extends Controller
         return view($this->user.'thanh-cong');
     }
 
+    public function TraCuu()
+    {
+        return view($this->user.'tra-cuu');
+    }
+
     public function test(Request $request){
         if($request->ajax()){    
             $data = $request->image;
