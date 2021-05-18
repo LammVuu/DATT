@@ -1244,6 +1244,7 @@ $(function() {
         }
     });
 
+    // 
     $('#btn-check-imei').click(function(){
         var IMEI = $('#imei-inp').val();
 
@@ -1258,6 +1259,7 @@ $(function() {
     });
 
     $('#btn-check-imei-2').click(function(){
+        $('#imei-inp').val('');
         $('#check-imei').show();
         $('#valid-imei').addClass('none-dp');
     });

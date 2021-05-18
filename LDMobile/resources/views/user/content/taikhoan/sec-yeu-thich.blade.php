@@ -30,7 +30,7 @@
                     <td class="block-dp">
                         <div class='d-flex justify-content-between'>
                             <div class="d-flex p-20">
-                                <img src="images/iphone/iphone_12_black.jpg" alt="" width="150px">
+                                <img src="images/phone/iphone/iphone_12_black.jpg" alt="" width="150px">
                                 <div class='d-flex flex-column'>
                                     <a href="#" class="font-weight-600 black">iPhone 12 PRO MAX</a>
                                     <div class='d-flex mt-10'>

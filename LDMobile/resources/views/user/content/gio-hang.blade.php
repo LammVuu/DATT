@@ -25,7 +25,7 @@
                             <tr>
                                 <td class="d-flex">
                                     <div class='w-30'>
-                                        <img src="images/iphone/iphone_12_red.jpg" class='pt-10'>
+                                        <img src="images/phone/iphone/iphone_12_red.jpg" class='pt-10'>
                                     </div>
                                     <div class='w-70'>
                                         <div class='d-flex flex-column pr-10 pt-10 pb-10'>

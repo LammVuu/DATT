@@ -25,16 +25,16 @@
                 <div class='d-flex flex-column'>
                     {{-- ảnh sản phẩm --}}
                     <div class='detail-product-image-div'>
-                        <img id='main-img' src="images/iphone/iphone_11_black.jpg" alt="product-image">
+                        <img id='main-img' src="images/phone/iphone/iphone_11_black.jpg" alt="product-image">
                     </div>
                     {{-- ảnh khác --}}
                     <div class='detail-another-div'>
                         <div id='detail-carousel' class="owl-carousel owl-theme">
                             @for ($i = 0; $i < 2; $i++)
-                                <img class="another-img" src="images/iphone/iphone_12_black.jpg">
-                                <img class="another-img" src="images/iphone/iphone_12_red.jpg">
-                                <img class="another-img" src="images/iphone/iphone_12_blue.jpg">
-                                <img class="another-img" src="images/iphone/iphone_12_green.jpg">
+                                <img class="another-img" src="images/phone/iphone/iphone_12_black.jpg">
+                                <img class="another-img" src="images/phone/iphone/iphone_12_red.jpg">
+                                <img class="another-img" src="images/phone/iphone/iphone_12_blue.jpg">
+                                <img class="another-img" src="images/phone/iphone/iphone_12_green.jpg">
                             @endfor
                         </div>
                         <div style='display: flex'>
@@ -147,11 +147,11 @@
                 <div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="images/iphone/iphone_12_red.jpg" class="d-block w-100" alt="...">
+                            <img src="images/phone/iphone/iphone_12_red.jpg" class="d-block w-100" alt="...">
                         </div>
                         @for ($i = 0; $i < 9; $i++)
                         <div class="carousel-item">
-                            <img src="images/iphone/iphone_12_red.jpg" class="d-block w-100" alt="...">
+                            <img src="images/phone/iphone/iphone_12_red.jpg" class="d-block w-100" alt="...">
                         </div>
                         @endfor
                     </div>
@@ -231,7 +231,7 @@
                     <div class='col-md-3 col-sm-3 pt-30 pb-30'>
                         <div class='d-flex flex-column fz-14'>
                             {{-- hình ảnh --}}
-                            <img src="images/iphone/iphone_12_black.jpg" class='w-70' alt="">
+                            <img src="images/phone/iphone/iphone_12_black.jpg" class='w-70' alt="">
                             {{-- tên điện thoại --}}
                             <div class='pt-20'>
                                 <a href="#" class='font-weight-600 black'>iPhone 12 PRO MAX 128GB</a>
@@ -533,10 +533,10 @@
                 <div class='pt-40 pb-40'>
                     <div class='row'>
                         <div class='col-md-6'>
-                            <img src="images/iphone/iphone_12_black.jpg" alt="">
+                            <img src="images/phone/iphone/iphone_12_black.jpg" alt="">
                         </div>
                         <div class='col-md-6'>
-                            <img src="images/iphone/iphone_12_black.jpg" alt="">
+                            <img src="images/phone/iphone/iphone_12_black.jpg" alt="">
                         </div>
                     </div>
                 </div>

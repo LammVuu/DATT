@@ -73,7 +73,7 @@
                     <tr>
                         <td class='account-td-40'>
                             <div class='d-flex flex-row'>
-                                <img src="images/iphone/iphone_12_red.jpg" alt="" width="100px">
+                                <img src="images/phone/iphone/iphone_12_red.jpg" alt="" width="100px">
                                 <div class='d-flex flex-column fz-14'>
                                     <a href='#' class="black font-weight-600">iPhone 12 PRO MAX</a>
                                     <span>Dung Lượng: 128GB</span>

@@ -225,7 +225,7 @@
                                             <div
                                                 class='d-flex flex-row align-items-center justify-content-between fz-14'>
                                                 <div class='d-flex'>
-                                                    <img src="images/iphone/iphone_12_red.jpg" alt="" width="80px">
+                                                    <img src="images/phone/iphone/iphone_12_red.jpg" alt="" width="80px">
                                                     <div class='d-flex flex-column ml-5 fz-12'>
                                                         <b>iPhone 12 PRO MAX</b>
                                                         <span>Dung lượng: 128GB</span>

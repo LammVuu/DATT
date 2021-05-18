@@ -42,7 +42,7 @@
                         <div class='pt-15 pb-15'>
                             <div class='d-flex justify-content-between align-items-end'>
                                 <div id=<?php echo 'temp_' . $i ?> class='d-flex'>
-                                    <img src="images/iphone/iphone_12_red.jpg" alt="" width="60px">
+                                    <img src="images/phone/iphone/iphone_12_red.jpg" alt="" width="60px">
                                     <div class="d-flex flex-column fz-14">
                                         <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
                                         <span>Dung lượng: 128GB</span>
@@ -56,7 +56,7 @@
                                 <?php for($j = 0; $j < 5; $j++) : ?>
                                 <div class='d-flex justify-content-between align-items-end pt-10 pb-10'>
                                     <div class='d-flex'>
-                                        <img src="images/iphone/iphone_12_red.jpg" alt="" width="60px">
+                                        <img src="images/phone/iphone/iphone_12_red.jpg" alt="" width="60px">
                                         <div class="d-flex flex-column fz-14">
                                             <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
                                             <span>Dung lượng: 128GB</span>

@@ -51,7 +51,7 @@
                                             <div class='row'>  
                                                 {{-- hình --}}
                                                 <div class='col-md-2 pt-20 pr-5 pt-20 pl-5'>
-                                                    <img src="images/iphone/iphone_11_black.jpg" class='shop-product-img-card' style='width: 90%'>
+                                                    <img src="images/phone/iphone/iphone_11_black.jpg" class='shop-product-img-card' style='width: 90%'>
                                                 </div>
                                                 {{-- thông tin sản phẩm --}}
                                                 <div class='col-md-10 pt-20 pb-20'>
@@ -101,7 +101,7 @@
                                         {{-- thông tin sản phẩm --}}
                                         <div>
                                             <div class='pt-20 pb-20'>
-                                                <img src="images/iphone/iphone_11_black.jpg" class='shop-product-img-card'>
+                                                <img src="images/phone/iphone/iphone_11_black.jpg" class='shop-product-img-card'>
                                             </div>
                                             <div class='pb-20 text-center d-flex flex-column'>
                                                 <b class='mb-10'>iPhone 11 PRO MAX</b>

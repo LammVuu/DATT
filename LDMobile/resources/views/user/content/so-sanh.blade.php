@@ -16,7 +16,7 @@
                             {{-- tên --}}
                             <div class="border p-10">iPhone 12</div>
                             {{-- hình --}}
-                            <img src="images/iphone/iphone_12_red.jpg" alt="" class='w-80 center-img pt-20 pb-10'>
+                            <img src="images/phone/iphone/iphone_12_red.jpg" alt="" class='w-80 center-img pt-20 pb-10'>
                             {{-- giá & đánh giá --}}
                             <div class='pt-10 pb-10'>
                                 <b class="price-color">25.000.000<sup>đ</sup></b>
@@ -33,11 +33,11 @@
                             <hr>
                             <div class="d-flex">
                                 <div class="w-20">
-                                    <img src="images/iphone/iphone_12_black.jpg" alt="" >
+                                    <img src="images/phone/iphone/iphone_12_black.jpg" alt="" >
                                     <div class='text-center mt-5 fz-14'>Đen</div>
                                 </div>
                                 <div class="w-20">
-                                    <img src="images/iphone/iphone_12_blue.jpg" alt="" >
+                                    <img src="images/phone/iphone/iphone_12_blue.jpg" alt="" >
                                     <div class='text-center mt-5 fz-14'>Xanh lam</div>
                                 </div>
                             </div>
@@ -50,7 +50,7 @@
                                 <a href="#" class="d-flex align-items-center gray-1"><i class="fal fa-times-circle fz-22"></i></a>
                             </div>
                             {{-- hình --}}
-                            <img src="images/iphone/iphone_12_red.jpg" alt="" class='w-80 center-img pt-20 pb-10'>
+                            <img src="images/phone/iphone/iphone_12_red.jpg" alt="" class='w-80 center-img pt-20 pb-10'>
                             {{-- giá & đánh giá --}}
                             <div class='pt-10 pb-10'>
                                 <b class="price-color">25.000.000<sup>đ</sup></b>
@@ -67,11 +67,11 @@
                             <hr>
                             <div class="d-flex">
                                 <div class="w-20">
-                                    <img src="images/iphone/iphone_12_white.jpg" alt="" >
+                                    <img src="images/phone/iphone/iphone_12_white.jpg" alt="" >
                                     <div class='text-center mt-5 fz-14'>Trắng</div>
                                 </div>
                                 <div class="w-20">
-                                    <img src="images/iphone/iphone_12_green.jpg" alt="" >
+                                    <img src="images/phone/iphone/iphone_12_green.jpg" alt="" >
                                     <div class='text-center mt-5 fz-14'>Xanh lá</div>
                                 </div>
                             </div>
