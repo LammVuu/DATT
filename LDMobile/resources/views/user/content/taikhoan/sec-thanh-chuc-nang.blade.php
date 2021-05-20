@@ -8,6 +8,9 @@
     <a href="{{route('user/tai-khoan-don-hang')}}" class='account-sidebar-tag @yield('acc-order-active')'>
         <i class="fas fa-box mr-20"></i>Quản lý đơn hàng
     </a>
+    <a href="{{route('user/tai-khoan-dia-chi')}}" class='account-sidebar-tag @yield('acc-address-active')'>
+        <i class="fas fa-map-marker-alt mr-20"></i>Sổ địa chỉ
+    </a>
     <a href="{{route('user/tai-khoan-yeu-thich')}}" class='account-sidebar-tag @yield('acc-favorite-active')'>
         <i class="fas fa-heart mr-20"></i>Sản phẩm yêu thích
     </a>

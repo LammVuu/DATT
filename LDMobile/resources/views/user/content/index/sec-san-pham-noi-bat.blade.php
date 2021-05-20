@@ -23,7 +23,7 @@
             <a href='#' class="index-promotion-phone w-20 relative">
                 {{-- khuyến mãi tag --}}
                 <div class='shop-promotion-tag'><span class='shop-promotion-text'>-15%</span></div>
-                <img src="images/phone/iphone/iphone_11_black.jpg">
+                <img src="images/phone/iphone_11_black.jpg">
                 <div class='pt-10 font-weight-600 black'>iPhone 12 PRO MAX</div>
                 <div class="pt-10">
                     <span class="price-color font-weight-600">21.000.000<sup>đ</sup></span>

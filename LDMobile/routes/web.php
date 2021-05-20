@@ -30,6 +30,8 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     Route::get("taikhoan/thongbao","UserController@ThongBao")->name("user/tai-khoan-thong-bao");
     
     Route::get("taikhoan/donhang","UserController@DonHang")->name("user/tai-khoan-don-hang");
+
+    Route::get("taikhoan/diachi","UserController@DiaChi")->name("user/tai-khoan-dia-chi");
     
     Route::get("taikhoan/chitietdonhang","UserController@ChiTietDonHang")->name("user/tai-khoan-chi-tiet-don-hang");
     

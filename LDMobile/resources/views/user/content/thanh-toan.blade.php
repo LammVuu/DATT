@@ -11,23 +11,9 @@
                 <h3>Thông tin mua hàng</h3>
                 <hr>
                 <div class='pb-20'>
-                    {{-- tên & sdt --}}
-                    <div class='row mb-20'>
-                        <div class='col-md-6'>
-                            <label for="HoTen" class='font-weight-600 mb-5'>Họ và tên (Bắt buộc)</label>
-                            <input type="text" id='HoTen' name='checkout-inp' required>
-                            <span class="required-text">Vui lòng nhập họ và tên</span>
-                        </div>
-                        <div class='col-md-6'>
-                            <label for="SDT" class='font-weight-600 mb-5'>Số điện thoại đặt hàng (Bắt buộc)</label>
-                            <input type="tel" id='SDT' name='checkout-inp'pattern="[0-9]{3}[0-9]{3}[0-9]{4}" required>
-                            <span class="required-text">Vui lòng nhập số diện thoại</span>
-                        </div>
-                    </div>
-
                     {{-- cách thức nhận hàng --}}
                     <div class='row'>
-                        <div class='col-md-10 mb-20'>
+                        <div class='col-md-10 col-sm-12 mb-20'>
                             <label for="CachThucNhanHang" class='form-label font-weight-600'>Chọn cách thức nhận hàng</label>
                             <div id='CachThucNhanHang' class='d-flex'>
                                 <div class='mr-20'>
@@ -42,7 +28,7 @@
 
                             {{-- giao hàng tận nơi --}}
                             <div class='atHome p-20 mt-10'>
-                                <div class='row'>
+                                <!--<div class='row'>
                                     <div class='col-md-12'>
                                         <label for="DiaChi" class='form-label font-weight-600'>Chọn địa chỉ giao hàng</label>
                                         <div class='row' id='DiaChi'>
@@ -124,11 +110,49 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>-->
+                                <div class="col-md-12 white-bg p-20 border">
+                                    {{-- họ tên --}}
+                                    <div class="d-flex justify-content-between pb-10">
+                                        <div class="d-flex">
+                                            <b class="text-uppercase">Vũ Hoàng Lâm</b>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div id='btn-change-address-delivery' class="pointer-cs main-color-text">Thay đổi</div>
+                                            {{-- <div id='btn-remove-address' class="price-color ml-20">Xóa</div> --}}
+                                        </div>
+                                    </div>
+                        
+                                    {{-- địa chỉ --}}
+                                    <div class="d-flex mb-5">
+                                        <div class="gray-1">Địa chỉ:</div>
+                                        <div class="ml-5 black">403/10, Lê Văn sỹ, Phường 2, Quận Tân Bình, Hồ Chí Minh</div>
+                                    </div>
+                        
+                                    {{-- SĐT --}}
+                                    <div class="d-flex">
+                                        <div class="gray-1">Điện thoại:</div>
+                                        <div class="ml-5 black">0779792000</div>
+                                    </div>
                                 </div>
                             </div>
 
                             {{-- nhận tại cửa hàng --}}
                             <div class='atStore p-20 mt-10'>
+                                {{-- tên & sdt & địa chỉ --}}
+                                <div class='row mb-3'>
+                                    <div class='col-md-6'>
+                                        <label for="HoTen" class='font-weight-600 mb-5'>Họ và tên (Bắt buộc)</label>
+                                        <input type="text" id='HoTen' name='checkout-inp' required>
+                                        <span class="required-text">Vui lòng nhập họ và tên</span>
+                                    </div>
+                                    <div class='col-md-6'>
+                                        <label for="SDT" class='font-weight-600 mb-5'>Số điện thoại đặt hàng (Bắt buộc)</label>
+                                        <input type="tel" id='SDT' name='checkout-inp'pattern="[0-9]{3}[0-9]{3}[0-9]{4}" maxlength="10" required>
+                                        <span class="required-text">Vui lòng nhập số diện thoại</span>
+                                        <span class="required-text">Số diện thoại không hợp lệ</span>
+                                    </div>
+                                </div>
                                 <div class='row'>
                                     <div class='col-md-6'>
                                         <div class="select">
@@ -225,7 +249,7 @@
                                             <div
                                                 class='d-flex flex-row align-items-center justify-content-between fz-14'>
                                                 <div class='d-flex'>
-                                                    <img src="images/phone/iphone/iphone_12_red.jpg" alt="" width="80px">
+                                                    <img src="images/phone/iphone_12_red.jpg" alt="" width="80px">
                                                     <div class='d-flex flex-column ml-5 fz-12'>
                                                         <b>iPhone 12 PRO MAX</b>
                                                         <span>Dung lượng: 128GB</span>
@@ -447,6 +471,192 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- modal thay đổi địa chỉ giao hàng --}}
+<div class="modal fade" id="change-address-delivery-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="p-20">
+                    <h3>Địa chỉ giao hàng</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="list-address pt-20 pr-40 pb-20 pl-40">
+                    <div class="col-md-12 white-bg p-20 border-success mb-50">
+                        {{-- họ tên --}}
+                        <div class="d-flex justify-content-between pb-10">
+                            <div class="d-flex">
+                                <b class="text-uppercase">Vũ Hoàng Lâm</b>
+                                <div class="d-flex align-items-center success-color-2 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
+                            </div>
+                        </div>
+            
+                        {{-- địa chỉ --}}
+                        <div class="d-flex mb-5">
+                            <div class="gray-1">Địa chỉ:</div>
+                            <div class="ml-5 black">403/10, Lê Văn sỹ, Phường 2, Quận Tân Bình, Hồ Chí Minh</div>
+                        </div>
+            
+                        {{-- SĐT --}}
+                        <div class="d-flex mb-10">
+                            <div class="gray-1">Điện thoại:</div>
+                            <div class="ml-5 black">0779792000</div>
+                        </div>
+
+                        {{-- button --}}
+                        <div class="d-flex">
+                            <div class="main-btn p-5 mr-10">Giao đến địa chỉ này</div>
+                            <div class="cancel-btn p-5">Sửa</div>
+                        </div>
+                    </div>
+
+                    @for ($i = 0; $i < 5; $i++)
+                    <div class="col-md-12 white-bg p-20 border mb-20">
+                        {{-- họ tên --}}
+                        <div class="d-flex justify-content-between pb-10">
+                            <div class="d-flex">
+                                <b class="text-uppercase">Vũ Hoàng Lâm</b>
+                            </div>
+                        </div>
+            
+                        {{-- địa chỉ --}}
+                        <div class="d-flex mb-5">
+                            <div class="gray-1">Địa chỉ:</div>
+                            <div class="ml-5 black">403/10, Lê Văn sỹ, Phường 2, Quận Tân Bình, Hồ Chí Minh</div>
+                        </div>
+            
+                        {{-- SĐT --}}
+                        <div class="d-flex mb-10">
+                            <div class="gray-1">Điện thoại:</div>
+                            <div class="ml-5 black">0779792000</div>
+                        </div>
+
+                        {{-- button --}}
+                        <div class="d-flex">
+                            <div class="main-btn p-5 mr-10">Giao đến địa chỉ này</div>
+                            <div class="cancel-btn p-5 mr-10">Sửa</div>
+                            <div class="cancel-btn p-5">Xóa</div>
+                        </div>
+                    </div>
+                    @endfor
+
+                    <div class="d-flex">
+                        Bạn muốn giao hàng đến địa chỉ khác?
+                        <div id='btn-new-address-checkout' class="pointer-cs main-color-text ml-10">Thêm địa chỉ giao hàng mới</div>
+                    </div>
+                    <div id='new-address-div' class="row none-dp pt-20 pb-20">
+                        <div  class="col-md-10 mx-auto box-shadow p-20">
+                            <form action="#">
+                                @csrf
+                                <div class="row mb-3">
+                                    <label for="HoTen" class="col-md-2 col-form-label">Họ Tên</label>
+                                    <div class="col-md-10">
+                                        <input type="text" id="Hoten" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label for="SDT" class="col-md-2 col-form-label">SĐT</label>
+                                    <div class="col-md-10">
+                                        <input type="text" id="SDT" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label for="DiaChi" class="col-md-2 col-form-label">Địa chỉ</label>
+                                    <div class="col-md-10">
+                                        <div class="row">
+                                            {{-- chọn tỉnh thành --}}
+                                            <div class='col-md-6 mb-3'>
+                                                <div class="select">
+                                                    <div id='TinhThanh-selected' class="select-selected">
+                                                        <div id='TinhThanh-name'>
+                                                            <?php echo $lstTinhThanh[0]['Name'] ?>
+                                                        </div>
+                                                        <i class="far fa-chevron-down fz-14"></i>
+                                                    </div>
+                                                    <div id='TinhThanh-box' class="select-box">
+                                                        {{-- tìm kiếm --}}
+                                                        <div class="select-search">
+                                                            <input id='search-tinh-thanh' type="text" class="select-search-inp" placeholder="Nhập tên Tỉnh / Thành">
+                                                            <i class="select-search-icon far fa-search"></i>
+                                                        </div>
+
+                                                        {{-- option --}}
+                                                        <div id='list-tinh-thanh' class="select-option">
+                                                            @foreach($lstTinhThanh as $lst)
+                                                            <div id='<?php echo $lst['ID'] ?>' data-type='<?php echo $lst['Name'] . '/TinhThanh' ?>' class="option-tinhthanh select-single-option"><?php echo $lst['Name'] ?></div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{-- chọn quận huyện --}}
+                                            <div class='col-md-6 mb-3'>
+                                                <div class="select">
+                                                    <div id='QuanHuyen-selected' class="select-selected">
+                                                        <div id='QuanHuyen-name'>Chọn Quận / Huyện</div>
+                                                        <i class="far fa-chevron-down fz-14"></i>
+                                                    </div>
+                                                    <div id='QuanHuyen-box' class="select-box">
+                                                        {{-- tìm kiếm --}}
+                                                        <div class="select-search">
+                                                            <input id='search-quan-huyen' type="text" class="select-search-inp" placeholder="Nhập tên Quận / Huyện">
+                                                            <i class="select-search-icon far fa-search"></i>
+                                                        </div>
+
+                                                        {{-- option --}}
+                                                        <div id='list-quan-huyen' class="select-option">
+                                                            @foreach($lstQuanHuyen as $lst)
+                                                            <div id='<?php echo $lst['ID'] ?>' data-type='<?php echo $lst['Name'] . '/QuanHuyen' ?>' class="option-quanhuyen select-single-option"><?php echo $lst['Name'] ?></div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{-- chọn phường xã --}}
+                                            <div class='col-md-6'>
+                                                <div class="select">
+                                                    <div id='PhuongXa-selected' class="select-disable">
+                                                        <div id="PhuongXa-name">Chọn Phường / Xã</div>
+                                                        <i class="far fa-chevron-down fz-14"></i>
+                                                    </div>
+                                                    <div id='PhuongXa-box' class="select-box">
+                                                        {{-- tìm kiếm --}}
+                                                        <div class="select-search">
+                                                            <input id='search-phuong-xa' type="text" class="select-search-inp" placeholder="Nhập tên Phường / Xã">
+                                                            <i class="select-search-icon far fa-search"></i>
+                                                        </div>
+
+                                                        {{-- option --}}
+                                                        <div id='list-phuong-xa' class="select-option"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{-- số nhà, tên đường --}}
+                                            <div class='col-md-6'>
+                                                <input id='address-inp' type="text" class='form-control'
+                                                    placeholder="Số nhà, tên đường" required>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="col-md-10 offset-2 mb-3">
+                                    <input type="checkbox" id='set-default-address'>
+                                    <label for="set-default-address">Đặt làm địa chỉ mặc định</label>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="d-flex justify-content-end">
+                                        <div id='btn-close-add-new-address' class="cancel-btn p-5 mr-10">Hủy</div>
+                                        <div class="main-btn p-5">Cập nhật</div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

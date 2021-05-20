@@ -157,7 +157,9 @@ $(function() {
 
     //===================================================== Account ============================================================
 
+    //==================================================================================
     //============================== thông tin tài khoản ===============================
+    //==================================================================================
     var modal_avt = $('#change-avt');
     var modal_cover = $('#change-cover');
     var typeModal;
@@ -405,11 +407,199 @@ $(function() {
         $('#change-pw-div').hide('blind', 250);
     });
 
+    
+    // thay đổi thông tin tài khoản
     $('#btn-change-info').click(function(){
         $('#change-info').modal('show');
     });
 
+    // hiển thị tỉnh thành
+    $('#TinhThanh-selected').click(function(){
+        $('#TinhThanh-box').toggle('blind', 250);
+        $('#QuanHuyen-box').hide('blind', 250);
+        $('#PhuongXa-box').hide('blind', 250);
+    });
+
+    // hiển thị quận huyện
+    $('#QuanHuyen-selected').click(function(){
+        $('#QuanHuyen-box').toggle('blind', 250);
+        $('#TinhThanh-box').hide('blind', 250);
+        $('#PhuongXa-box').hide('blind', 250);
+    });
+
+    // hiển thị phường xã
+    $('#PhuongXa-selected').click(function(){
+        if($(this).attr('class') == 'select-disable'){
+            return;
+        }
+        $('#PhuongXa-box').toggle('blind', 250);
+        $('#QuanHuyen-box').hide('blind', 250);
+        $('#TinhThanh-box').hide('blind', 250);
+    });
+
+    // tìm kiếm tỉnh/thành
+    $('#search-tinh-thanh').keyup(function(){
+        var val = $(this).val();
+        var selectBox = $('#list-tinh-thanh');
+        
+        searchPlace(val, selectBox);
+    });
+
+    // tìm kiếm quận huyện
+    $('#search-quan-huyen').keyup(function(){
+        var val = $(this).val();
+        var selectBox = $('#list-quan-huyen');
+        
+        searchPlace(val, selectBox);
+    });
+
+    // tìm kiếm phường xã
+    $('#search-phuong-xa').keyup(function(){
+        var val = $(this).val();
+        var selectBox = $('#list-phuong-xa');
+        
+        searchPlace(val, selectBox);
+    });
+
+    function searchPlace(val, selectBox){
+        if(val == ''){
+            selectBox.children().show();    
+            return;
+        }
+
+        val = val.toLocaleLowerCase();
+
+        var count = selectBox.children().length;
+        
+        for(var i = 0; i < count; i++){
+            var element = selectBox.children()[i];
+            var name = $(element).data('type').split('/')[0].toLocaleLowerCase();
+            
+            if(!name.includes(val)){
+                $(element).hide();
+            } else {
+                $(element).show();
+            }
+        }
+    }
+
+    // thay đổi tỉnh/thành
+    $('.option-tinhthanh').click(function(){
+        var id = $(this).attr('id');
+        var name = $(this).data('type').split('/')[0];
+        var type = $(this).data('type').split('/')[1];
+
+        choosePlace(id, name, type);
+    });
+
+    // thay đổi quận, huyện
+    $('.option-quanhuyen').click(function(){
+        var id = $(this).attr('id');
+        var name = $(this).data('type').split('/')[0];
+        var type = $(this).data('type').split('/')[1];
+
+        choosePlace(id, name, type);
+    });
+
+    $('#list-quan-huyen').bind('DOMSubtreeModified', function(){
+        $('.option-quanhuyen').off('click').click(function(){
+            var id = $(this).attr('id');
+            var name = $(this).data('type').split('/')[0];
+            var type = $(this).data('type').split('/')[1];
+            choosePlace(id, name, type);
+        });
+    });
+
+    // thay đổi phường, xã
+    $('#list-phuong-xa').bind('DOMSubtreeModified', function(){
+        $('.option-phuongxa').off('click').click(function(){
+            var id = $(this).attr('id');
+            var name = $(this).data('type').split('/')[0];
+            var type = $(this).data('type').split('/')[1];
+            choosePlace(id, name, type);
+        });
+    });
+
+    function choosePlace(id, name, type){
+        if(type == 'TinhThanh'){
+            $('#TinhThanh-name').text(name);
+            $('#TinhThanh-box').toggle('blind', 250);
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: '/test2',
+                type: 'POST',
+                cache: false,
+                data: {'type':type,'id':id},
+                success:function(data){
+                    $('#QuanHuyen-box').toggle('blind', 250);
+                    $('#list-quan-huyen').children().remove();
+                    for(var i = 0; i < data.length; i++){
+                        var div = $('<div>',{
+                            id: data[i]['ID'],
+                            'data-type': data[i]['Name'] + '/QuanHuyen',
+                            class: 'option-quanhuyen select-single-option',
+                            text: data[i]['Name']
+                        });
+                        div.appendTo($('#list-quan-huyen'));
+                    }
+                }
+            });
+        } else if(type == 'QuanHuyen') {
+            $('#QuanHuyen-name').text(name);
+            $('#QuanHuyen-name').attr('data-flag', '1');
+            if($('#QuanHuyen-name').parent().hasClass('required')){
+                $('#QuanHuyen-name').parent().removeClass('required');
+                $('#QuanHuyen-name').parent().next().hide();
+            }
+            $('#QuanHuyen-box').toggle('blind', 250);
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: '/test2',
+                type: 'POST',
+                cache: false,
+                data: {'type':type,'id':id},
+                success:function(data){
+                    $('#PhuongXa-selected').addClass('select-selected').removeClass('select-disable');
+                    $('#PhuongXa-box').toggle('blind', 250);
+                    $('#list-phuong-xa').children().remove();
+                    for(var i = 0; i < data.length; i++){
+                        var div = $('<div>',{
+                            id: data[i]['ID'],
+                            'data-type': data[i]['Name'] + '/PhuongXa',
+                            class: 'option-phuongxa select-single-option',
+                            text: data[i]['Name']
+                        });
+                        div.appendTo($('#list-phuong-xa'));
+                    }
+                }
+            });
+        } else {
+            $('#PhuongXa-name').text(name);
+            $('#PhuongXa-name').attr('data-flag', '1');
+            if($('#PhuongXa-name').parent().hasClass('required')){
+                $('#PhuongXa-name').parent().removeClass('required');
+                $('#PhuongXa-name').parent().next().hide();
+            }
+            $('#PhuongXa-box').toggle('blind', 250);
+            $('#address-inp').focus();
+        }
+    }
+    
+    $('#address-inp').focus(function(){
+        $('#TinhThanh-box').hide('blind', 250);
+        $('#QuanHuyen-box').hide('blind', 250);
+        $('#PhuongXa-box').hide('blind', 250);
+    });
+
+    //========================================================================
     //============================== thông báo ===============================
+    //========================================================================
 
     // đánh dấu đã đọc
     $('.noti-btn-read').click(function(){
@@ -454,7 +644,9 @@ $(function() {
         }
     });
 
+    //===================================================================================
     //============================== điện thoại yêu thích ===============================
+    //===================================================================================
 
     // xóa điện thoại yêu thích
     $('.fav-btn-delete').click(function(){
@@ -472,7 +664,9 @@ $(function() {
         });
     });
 
+    //=======================================================================
     //============================== đơn hàng ===============================
+    //=======================================================================
 
     // xem chi tiết sản phẩm theo mã hóa đơn
     $('.show-order-list-pro').off('click').on('click', function(e){
@@ -492,7 +686,9 @@ $(function() {
         }
     })
 
+    //================================================================================
     //============================== chi tiết đơn hàng ===============================
+    //================================================================================
 
     // tùy chỉnh độ cao
     if($('#DCNN-div').length){
@@ -500,6 +696,26 @@ $(function() {
        $('#HTGH-div').css('height', height);
        $('#HTTT-div').css('height', height);
     }
+
+    //=========================================================================
+    //============================== sổ địa chỉ ===============================
+    //=========================================================================
+
+    // thêm địa chỉ giao hàng mới
+    $('.btn-new-address').click(function(){
+        $('#new-address-modal').modal('show');
+    });
+
+    $('#new-address-modal').on('hidden.bs.modal', function(){
+        $('#TinhThanh-box').hide();
+        $('#QuanHuyen-box').hide();
+        $('#PhuongXa-box').hide();
+    });
+
+    // xóa 1 địa chỉ
+    $('.btn-remove-address').click(function(){
+        $('#confirm-modal').modal('show');
+    });
 
     //===================================================== Shop ============================================================
     
@@ -884,198 +1100,30 @@ $(function() {
         $('.atStore').css('display', 'none');
     });
 
-    //================================ giao hàng tận nhà ==========================
-
-    // hiển thị tỉnh thành
-    $('#TinhThanh-selected').click(function(){
-        $('#TinhThanh-box').toggle('blind', 250);
-        $('#QuanHuyen-box').hide('blind', 250);
-        $('#PhuongXa-box').hide('blind', 250);
+    // thay đổi địa chỉ giao hàng
+    $('#btn-change-address-delivery').click(function(){
+        $('#change-address-delivery-modal').modal('show');
     });
 
-    // hiển thị quận huyện
-    $('#QuanHuyen-selected').click(function(){
-        $('#QuanHuyen-box').toggle('blind', 250);
-        $('#TinhThanh-box').hide('blind', 250);
-        $('#PhuongXa-box').hide('blind', 250);
+    // thêm mới địa chỉ giao hàng
+    $('#btn-new-address-checkout').click(function(){
+        $('#new-address-div').show();
+        $('.list-address').animate({scrollTop: ($('.list-address').height() + 1000)}, '250');
     });
 
-    // hiển thị phường xã
-    $('#PhuongXa-selected').click(function(){
-        if($(this).attr('class') == 'select-disable'){
-            return;
-        }
-        $('#PhuongXa-box').toggle('blind', 250);
-        $('#QuanHuyen-box').hide('blind', 250);
-        $('#TinhThanh-box').hide('blind', 250);
-    });
-
-    // tìm kiếm tỉnh/thành
-    $('#search-tinh-thanh').keyup(function(){
-        var val = $(this).val();
-        var selectBox = $('#list-tinh-thanh');
-        
-        searchPlace(val, selectBox);
-    });
-
-    // tìm kiếm quận huyện
-    $('#search-quan-huyen').keyup(function(){
-        var val = $(this).val();
-        var selectBox = $('#list-quan-huyen');
-        
-        searchPlace(val, selectBox);
-    });
-
-    // tìm kiếm phường xã
-    $('#search-phuong-xa').keyup(function(){
-        var val = $(this).val();
-        var selectBox = $('#list-phuong-xa');
-        
-        searchPlace(val, selectBox);
-    });
-
-    function searchPlace(val, selectBox){
-        if(val == ''){
-            selectBox.children().show();    
-            return;
-        }
-
-        val = val.toLocaleLowerCase();
-
-        var count = selectBox.children().length;
-        
-        for(var i = 0; i < count; i++){
-            var element = selectBox.children()[i];
-            var name = $(element).data('type').split('/')[0].toLocaleLowerCase();
-            
-            if(!name.includes(val)){
-                $(element).hide();
-            } else {
-                $(element).show();
-            }
-        }
-    }
-
-    // thay đổi tỉnh/thành
-    $('.option-tinhthanh').click(function(){
-        var id = $(this).attr('id');
-        var name = $(this).data('type').split('/')[0];
-        var type = $(this).data('type').split('/')[1];
-
-        choosePlace(id, name, type);
-    });
-
-    // thay đổi quận, huyện
-    $('.option-quanhuyen').click(function(){
-        var id = $(this).attr('id');
-        var name = $(this).data('type').split('/')[0];
-        var type = $(this).data('type').split('/')[1];
-
-        choosePlace(id, name, type);
-    });
-
-    $('#list-quan-huyen').bind('DOMSubtreeModified', function(){
-        $('.option-quanhuyen').off('click').click(function(){
-            var id = $(this).attr('id');
-            var name = $(this).data('type').split('/')[0];
-            var type = $(this).data('type').split('/')[1];
-            choosePlace(id, name, type);
-        });
-    });
-
-    // thay đổi phường, xã
-    $('#list-phuong-xa').bind('DOMSubtreeModified', function(){
-        $('.option-phuongxa').off('click').click(function(){
-            var id = $(this).attr('id');
-            var name = $(this).data('type').split('/')[0];
-            var type = $(this).data('type').split('/')[1];
-            choosePlace(id, name, type);
-        });
-    });
-
-    function choosePlace(id, name, type){
-        if(type == 'TinhThanh'){
-            $('#TinhThanh-name').text(name);
-            $('#TinhThanh-box').toggle('blind', 250);
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/test2',
-                type: 'POST',
-                cache: false,
-                data: {'type':type,'id':id},
-                success:function(data){
-                    $('#QuanHuyen-box').toggle('blind', 250);
-                    $('#list-quan-huyen').children().remove();
-                    for(var i = 0; i < data.length; i++){
-                        var div = $('<div>',{
-                            id: data[i]['ID'],
-                            'data-type': data[i]['Name'] + '/QuanHuyen',
-                            class: 'option-quanhuyen select-single-option',
-                            text: data[i]['Name']
-                        });
-                        div.appendTo($('#list-quan-huyen'));
-                    }
-                }
-            });
-        } else if(type == 'QuanHuyen') {
-            $('#QuanHuyen-name').text(name);
-            $('#QuanHuyen-name').attr('data-flag', '1');
-            if($('#QuanHuyen-name').parent().hasClass('required')){
-                $('#QuanHuyen-name').parent().removeClass('required');
-                $('#QuanHuyen-name').parent().next().hide();
-            }
-            $('#QuanHuyen-box').toggle('blind', 250);
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/test2',
-                type: 'POST',
-                cache: false,
-                data: {'type':type,'id':id},
-                success:function(data){
-                    $('#PhuongXa-selected').addClass('select-selected').removeClass('select-disable');
-                    $('#PhuongXa-box').toggle('blind', 250);
-                    $('#list-phuong-xa').children().remove();
-                    for(var i = 0; i < data.length; i++){
-                        var div = $('<div>',{
-                            id: data[i]['ID'],
-                            'data-type': data[i]['Name'] + '/PhuongXa',
-                            class: 'option-phuongxa select-single-option',
-                            text: data[i]['Name']
-                        });
-                        div.appendTo($('#list-phuong-xa'));
-                    }
-                }
-            });
-        } else {
-            $('#PhuongXa-name').text(name);
-            $('#PhuongXa-name').attr('data-flag', '1');
-            if($('#PhuongXa-name').parent().hasClass('required')){
-                $('#PhuongXa-name').parent().removeClass('required');
-                $('#PhuongXa-name').parent().next().hide();
-            }
-            $('#PhuongXa-box').toggle('blind', 250);
-            $('#address-inp').focus();
-        }
-    }
-    
-    $('#address-inp').focus(function(){
-        $('#TinhThanh-box').hide('blind', 250);
-        $('#QuanHuyen-box').hide('blind', 250);
-        $('#PhuongXa-box').hide('blind', 250);
-    });
-
-    $('#area-selected').click(function(){
-        $('#area-box').toggle('blind', 250);
+    // đóng thêm mới địa chỉ giao hàng
+    $('#btn-close-add-new-address').click(function(){
+        $('#new-address-div').hide();
     });
 
     //================================ nhận tại cửa hàng ==========================
 
+    // hiển thị khu vực
+    $('#area-selected').click(function(){
+        $('#area-box').toggle('blind', 250);
+    });
+
+    // chọn khu vực
     $('.option-area').click(function(){
         var areaID = $(this).data('area');
         var name = $(this).text();
@@ -1116,66 +1164,27 @@ $(function() {
     });
 
     $('#btn-confirm-checkout').click(function(){
-        var hoTen = $('#HoTen');
-        var SDT = $('#SDT');
-
         var receciveMethod = $('input[name="receive-method"]:checked').val();
-
-        var arrInp, arrSelect;
         
-        if(receciveMethod == 'atHome'){
-            var quanHuyen = $('#QuanHuyen-name');
-            var phuongXa = $('#PhuongXa-name');
-            var diaChi = $('#address-inp');
+        if(receciveMethod == 'atStore'){
+            var fullName = $('input[id="HoTen"]');
+            var tel = $('#SDT');
+            var areaSelected = $('#area-name');
+            var storeSelected = $('input[name="branch"]');
 
-            arrInp = [hoTen, SDT, diaChi];
-            arrSelect = [quanHuyen, phuongXa];
-            receciveMethod = validateDeliveryAddress(arrSelect);
-        } else {
-            var area = $('#area-name');
-            var branchInp = $('input[name="branch"]');
-
-            arrInp = [hoTen, SDT];
-            receciveMethod = validateReceiveAtStore(area, branchInp);
+            var valiName = validateFullname(fullName);
+            var valiPhone = validatePhoneNumber(tel);
+            var valiSelect = validateReceiveAtStore(areaSelected, storeSelected);
         }
 
-        if(validateInput(arrInp) && receciveMethod){
+        if(valiName && valiSelect){
             
         } else {
             $(window).scrollTop(0);
         }
     });
 
-    // kiểm tra thẻ input thông tin thanh toán có trống không
-    function validateInput(arrInp){
-        var flag = true;
-        for(var i = 0; i < arrInp.length; i++){
-            var element = arrInp[i];
-            if(element.val() == ''){
-                element.addClass('required');
-                element.next().show();
-                flag = false;
-            }
-        }
-
-        return flag;
-    }
-
-    // kiểm tra địa chỉ giao hàng có trống không
-    function validateDeliveryAddress(arrSelect){
-        var flag = true;
-        for(var i = 0; i < arrSelect.length; i++){
-            var element = arrSelect[i];
-            if(element.attr('data-flag') == null){
-                element.parent().addClass('required');
-                element.parent().next().show();
-                flag = false;
-            }
-        }
-        return flag;
-    }
-
-    // kiểm tra nhận tại cửa hàng có trống không
+    // kiểm tra nhận tại cửa hàng có rỗng không
     function validateReceiveAtStore(areaSelected, storeSelected){   
         if(areaSelected.attr('data-flag') == null){
             areaSelected.parent().addClass('required');
@@ -1185,6 +1194,39 @@ $(function() {
             storeSelected.parent().parent().addClass('required');
             storeSelected.parent().parent().next().show();
             return false; 
+        }
+
+        return true;
+    }
+
+    // kiểm tra họ tên
+    function validateFullname(fullName){
+        if(fullName.val() == ''){
+            fullName.addClass('required');
+            fullName.next().show();
+            return false;
+        }
+
+        return true;
+    }
+
+    // kiểm tra số điện thoại
+    function validatePhoneNumber(tel){
+        var length = tel.val().length;
+        var phoneno = /^\d{10}$/;
+
+        if(tel.length == 0){
+            tel.addClass('required');
+            tel.next().show();
+            return false;
+        } else if(!tel.val().match(phoneno)){
+            tel.addClass('required');
+            tel.next().next().show();
+            return false;
+        } else if(length < 10){
+            tel.addClass('required');
+            tel.next().next().show();
+            return false;
         }
 
         return true;
@@ -1262,6 +1304,7 @@ $(function() {
         $('#imei-inp').val('');
         $('#check-imei').show();
         $('#valid-imei').addClass('none-dp');
+        $(window).scrollTop(0);
     });
 });
 

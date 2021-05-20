@@ -813,6 +813,10 @@ textarea{
   list-style-type: none;
 }
 
+.border-success{
+  border: 3px dashed #15c41e;
+}
+
 /*====================================== Toast ===================================*/
 .alert-toast{
   position: fixed;
@@ -1893,6 +1897,17 @@ textarea{
   z-index: 100;
 }
 
+.btn-new-address{
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px dashed #dcdcdc;
+  font-size: 22px;
+  cursor: pointer;
+}
+
 
 /*===================================================== Shop ===========================================================*/
 
@@ -2495,6 +2510,12 @@ textarea{
 .atStore, .atHome{
   display: none;
   background-color: #f5f5f5;
+}
+
+.list-address{
+  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .list-branch{

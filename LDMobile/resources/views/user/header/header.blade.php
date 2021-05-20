@@ -100,7 +100,7 @@
                         <a href="#" class="head-single-result black fz-14">
                             <div class="d-flex">
                                 <div class="w-25 p-10">
-                                    <img src="images/phone/iphone/iphone_12_red.jpg" alt="">
+                                    <img src="images/phone/iphone_12_red.jpg" alt="">
                                 </div>
                                 <div class="d-flex flex-column w-75 p-10">
                                     <b>iPhone 12 PRO MAX 128GB</b>
@@ -133,7 +133,7 @@
                                     <?php for($i = 0; $i < 2; $i++) : ?>
                                     <tr>
                                         <td class='center-td d-flex flex-row'>
-                                            <img class='cart-img-pro' src="images/phone/iphone/iphone_11_black.jpg">
+                                            <img class='cart-img-pro' src="images/phone/iphone_11_black.jpg">
                                             <div class='cart-pro-info'>
                                                 <a href="#" style='color:black'><b>iPhone 11 PRO MAX</b></a>
                                                 <i>Màu sắc: Đen</i>
@@ -274,7 +274,7 @@
                         <a href="#" class="head-single-result black fz-14">
                             <div class="d-flex">
                                 <div class="w-25 p-10">
-                                    <img src="images/phone/iphone/iphone_12_red.jpg" alt="">
+                                    <img src="images/phone/iphone_12_red.jpg" alt="">
                                 </div>
                                 <div class="d-flex flex-column w-75 p-10">
                                     <b>iPhone 12 PRO MAX 128GB</b>

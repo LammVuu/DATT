@@ -12,7 +12,7 @@
             <div id='index-promotion-carousel' class="owl-carousel owl-theme m-0">
                 @for ($i = 0; $i < 10; $i++)
                 <a href='#' class="index-promotion-phone">
-                    <img src="images/phone/iphone/iphone_11_black.jpg">
+                    <img src="images/phone/iphone_11_black.jpg">
                     <div class='pt-20 font-weight-600 black'>iPhone 12 PRO MAX</div>
                     <div class="pt-20">
                         <div class='index-sale-tag'>SALE 10%</div>

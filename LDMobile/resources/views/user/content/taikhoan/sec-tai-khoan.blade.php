@@ -87,7 +87,7 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-3 offset-9">
-                                    <button type='submit' class="main-btn p-5 w-100">Cập nhật</button>
+                                    <div class="main-btn p-5 w-100">Cập nhật</div>
                                 </div>
                             </div>
                         </form>

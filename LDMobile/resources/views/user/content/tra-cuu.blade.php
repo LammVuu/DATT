@@ -22,7 +22,7 @@
         <div id='valid-imei' class="none-dp">
             <div class="col-md-3 mx-auto">
                 {{-- hình điện thoại --}}
-                <img src="images/phone/iphone/iphone_12_red.jpg" alt="">
+                <img src="images/phone/iphone_12_red.jpg" alt="">
                 <div class="text-center">
                     {{-- thông tin nhanh điện thoại --}}
                     <div class="fz-26 font-weight-600 pt-20 pb-20">iPhone 12 PRO MAX</div>

@@ -57,6 +57,27 @@ class UserController extends Controller
         return view ($this->user."tai-khoan")->with($array);
     }
 
+    public function DiaChi()
+    {
+        $json_file = file_get_contents('TinhThanh.json');
+        $tinhThanh = json_decode($json_file, true);
+
+        $json_file = file_get_contents('QuanHuyen.json');
+        $quanHuyen = json_decode($json_file, true);
+
+        $tinhThanhID_0 = $tinhThanh[0]['ID'];
+
+        $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
+        
+        $array = [
+            'page' => 'sec-dia-chi',
+            'lstTinhThanh' => $tinhThanh,
+            'lstQuanHuyen' => $lstQuanHuyen,
+        ];
+
+        return view($this->user."tai-khoan")->with($array);
+    }
+
     public function ChiTietDonHang(){
         $array = [
             'page' => 'sec-chi-tiet-don-hang',
