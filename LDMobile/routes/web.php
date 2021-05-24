@@ -75,3 +75,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
     Route::resource('baohanh', BaoHanhController::class);
     Route::resource('taikhoan', TaiKhoanController::class);
 });
+
+/*
+GET	    /product	        		index	product.index
+GET	    /product/create	    		create	product.create
+POST	/product					store	product.store
+GET		/product/{product}			show	product.show
+GET		/product/{product}/edit		edit	product.edit
+PUT/PATCH	/product/{product}		update	product.update
+DELETE	/ product/{product}			destroy	product.destroy
+*/
