@@ -76,9 +76,9 @@
                                     <div class='w-30 p-20 bg-gray-4 d-flex justify-content-center align-items-center'>
                                         <b></i>Mã khuyến mãi</b>
                                     </div>
-                                    <div class="w-70 p-10 d-flex justify-content-center">
+                                    <div class="w-70 p-10 d-flex justify-content-center align-items-center">
                                         {{-- mã --}}
-                                        <div class="w-70">
+                                        <!--<div class="w-70">
                                             <div class='account-voucher'>
                                                 {{-- số phần trăm giảm --}}
                                                 <div class='voucher-left-small w-20 p-30'>
@@ -118,12 +118,12 @@
                                                     <div class="main-btn p-5">Bỏ chọn</div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>-->
 
                                         {{-- chọn khuyến mãi --}}
-                                        {{-- <span class="pointer-cs main-color-text" data-bs-toggle="modal" data-bs-target="#modal-promotion">
+                                        <span class="pointer-cs main-color-text" data-bs-toggle="modal" data-bs-target="#modal-promotion">
                                             <i class="fas fa-ticket-alt mr-10"></i>Chọn Mã khuyến mãi
-                                        </span> --}}
+                                        </span>
                                     </div>
                                 </td>
                             </tr>

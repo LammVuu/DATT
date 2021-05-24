@@ -318,11 +318,15 @@ $(function() {
                         modal.modal('hide');
                         if(type == 'avt'){
                             $('#avt-img').attr('src', data);
-                            showToast('#avt-toast', closeToast);
+                            var toast = $('<div id="avt-toast" class="alert-toast"><div class="d-flex align-items-center"><span>Cập nhật ảnh đại diện thành công</span></div></div>');
+                            $("#toast").after(toast);
+                            showToast('#avt-toast');
                             refreshZoomVal();
                         } else {
                             $('.account-cover-img').css('background-image', 'url(' + data + ')');
-                            showToast('#cover-toast', closeToast);
+                            var toast = $('<div id="cover-toast" class="alert-toast"><div class="d-flex align-items-center"><span>Cập nhật ảnh bìa thành công</span></div></div>');
+                            $("#toast").after(toast);
+                            showToast('#cover-toast');
                         }
                     }
                 });
@@ -379,20 +383,23 @@ $(function() {
     });
 
     // hiển thị toast
-    function showToast(id, close){
-        $(id).css({
-            'transform': 'translateY(0)'
-        });
-        close();
-    }
-
-    // hàm callback tự động đóng toast sau 5s
-    function closeToast(){
-        setTimeout(function(){
-            $('.alert-toast').css({
-                'transform': 'translateY(100px)'
+    function showToast(id){
+        setTimeout(() => {
+            setTimeout(() => {
+                // xóa toast
+                setTimeout(() => {
+                    $(id).remove();
+                },100);
+    
+                $(id).css({
+                    'transform': 'translateY(100px)'
+                });
+            }, 3000);
+    
+            $(id).css({
+                'transform': 'translateY(0)'
             });
-        }, 5000);
+        }, 200);
     }
 
     // hiển thị form đổi mật khẩu
@@ -407,7 +414,6 @@ $(function() {
         $('#change-pw-div').hide('blind', 250);
     });
 
-    
     // thay đổi thông tin tài khoản
     $('#btn-change-info').click(function(){
         $('#change-info').modal('show');
@@ -721,33 +727,15 @@ $(function() {
     
     // nút hiển thị bộ lọc
     $('#btn-show-filter').click(function(){
-        // nếu sắp xếp đang mở thì ẩn
-        if($('#btn-show-sort').attr('aria-expanded') == 'true'){
-            $('.shop-sort-box').hide();
-            $('#btn-show-sort').attr('aria-expanded', 'false');
-        }
-        if($(this).attr('aria-expanded') == 'false'){
-            $('.shop-filter-box').show('blind', 250);
-            $(this).attr('aria-expanded', 'true');
-        } else {
-            $('.shop-filter-box').hide('blind', 250);
-            $(this).attr('aria-expanded', 'false');
-        }
+        $('.shop-filter-box').toggle('blind', 250);
+        $('.shop-sort-box').hide();
     });
+    
 
     // nút hiển thị sắp xếp
     $('#btn-show-sort').click(function(){
-        if($('#btn-show-filter').attr('aria-expanded') == 'true'){
-            $('.shop-filter-box').hide();
-            $('#btn-show-filter').attr('aria-expanded', 'false');
-        }
-        if($(this).attr('aria-expanded') == 'false'){
-            $('.shop-sort-box').show('blind', 250);
-            $(this).attr('aria-expanded', 'true');
-        } else {
-            $('.shop-sort-box').hide('blind', 250);
-            $(this).attr('aria-expanded', 'false');
-        }
+        $('.shop-sort-box').toggle('blind', 250);
+        $('.shop-filter-box').hide();
     });
 
     // ẩn/hiện nút xem kết quả lọc
@@ -810,6 +798,48 @@ $(function() {
     $('.another-img').click(function(){
         var data = $(this).attr('src');
         $('#main-img').attr('src', data);
+    });
+
+    // yêu thích sản phẩm
+    $('.favorite-tag').click(function(){
+        // kiểm tra nếu chưa yêu thích sản phẩm
+        if($(this).attr('data-flag') == null){
+            if($('#add-favorite').length){
+                alert('Vui lòng thao tác chậm');
+                return;
+            }
+            
+            // gắn cờ
+            $(this).attr('data-flag', 1);
+
+            // thay đổi icon
+            $(this).children().remove();
+            var heartClicked = $('<i class="fas fa-heart"></i>');
+            heartClicked.appendTo($(this));            
+
+            // hiển thị toast
+            var toast = $('<div id="add-favorite" class="alert-toast"><div id="toast-message" class="d-flex align-items-center"><span>Đã thêm <b>iPhone 12 PRO MAX</b> vào danh sách yêu thích</span></div></div>');
+            $(this).after(toast);
+            showToast('#add-favorite');
+            
+        } else { // hủy yêu thích
+            if($('#add-favorite').length){
+                alert('Vui lòng thao tác chậm');
+                return;
+            } 
+            // xóa cờ
+            $(this).removeAttr('data-flag');
+
+            // thay đổi icon
+            $(this).children().remove();
+            var heartClicked = $('<i class="far fa-heart"></i>');
+            heartClicked.appendTo($(this));
+
+            // hiển thị toast
+            var toast = $('<div id="add-favorite" class="alert-toast"><div id="toast-message" class="d-flex align-items-center"><span>Đã xóa <b>iPhone 12 PRO MAX</b> khỏi danh sách yêu thích</span></div></div>');
+            $(this).after(toast);
+            showToast('#add-favorite');
+        }
     });
 
     // hiển thị đánh giá sản phẩm
@@ -895,20 +925,8 @@ $(function() {
         }
     });
 
-    $('.detail-upload-link').click(function(){
+    $('#btn-photo-attached').click(function(){
         $('.upload-inp').trigger('click');
-    });
-
-    $('.btn-expanded-evaluate').click(function(){
-        if($(this).attr('aria-expanded') == 'true'){
-            $('.evaluate-img-div').hide('blind', 250);
-            $(this).attr('aria-expanded', 'false');
-            $('.expand-icon').css('transform' , 'rotate(180deg)');
-        } else {
-            $('.evaluate-img-div').show('blind', 250);
-            $(this).attr('aria-expanded', 'true');
-            $('.expand-icon').css('transform' , 'rotate(0)');
-        }
     });
 
     // thêm hình đánh giá
@@ -924,12 +942,13 @@ $(function() {
             return;
         }
 
-        $('.btn-expanded-evaluate').css('display', 'block');
+        // số lượng hình
+        $('.qty-img').show();
+
+        // hiển thị div chứa hình ảnh
         $('.evaluate-img-div').css({
             'display': 'flex',
-            'flex-wrap': 'wrap',
         });
-        $('.btn-remove-all').css('display', 'block');
 
         // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
         if(count > 3){
@@ -1000,22 +1019,14 @@ $(function() {
             }
         });
     });
-    
-    // xóa tất cả hình ảnh đánh giá
-    $('.btn-remove-all').click(function(){
-        hideEvaluateDiv();
-    });
 
     function hideEvaluateDiv(){
-        $('.evaluate-img-div').html('');
+        $('.evaluate-img-div').children().remove();;
         $('#qty-img').val(0);
-
-        // ẩn các nút
-        $('.btn-expanded-evaluate').css('display', 'none');
-        $('.evaluate-img-div').css('display', 'none');
-        $('.btn-remove-all').css('display', 'none');
+        $('.qty-img').hide();
     }
 
+    // phản hồi
     $('.reply-cmt').click(function(){
         var id = $(this).data('id');
 
@@ -1029,7 +1040,7 @@ $(function() {
                                     '<img src="images/avt1620997169.jpg" class="circle-img" alt="">' + 
                                 '</div>' + 
                                 '<div class="col-md-11">'+
-                                    '<textarea name="" id="" class="form-control" rows="3" placeholder="Viết câu trả lời"></textarea>'+
+                                    '<textarea name="" id="" rows="3" placeholder="Viết câu trả lời"></textarea>'+
                                     '<div class="d-flex justify-content-end align-items-center pt-10">'+
                                         '<div class="remove-reply pointer-cs price-color"><i class="fal fa-times-circle mr-5"></i>Hủy</div>'+
                                         '<div class="pl-10 pr-10">|</div>'+
@@ -1135,11 +1146,11 @@ $(function() {
 
     function loadBranchList(areaID, name){
         $('#area-name').text(name);
-        if($('#area-name').parent().hasClass('required')){
-            $('#area-name').parent().removeClass('required');
-            $('#area-name').parent().next().hide();
+        if($('#area-selected').hasClass('required')){
+            $('#area-selected').removeClass('required');
+            $('#area-selected').next().remove();
         }
-        $('#area-name').attr('data-flag', '1');
+        $('#area-selected').attr('data-flag', '1');
 
         var parent = $('.list-branch');
         var count = parent.children().length;
@@ -1156,43 +1167,93 @@ $(function() {
         $('.list-branch').show('blind', 250);
     }
 
+    // xóa required ở chọn cửa hàng
     $('input[name="branch"]').click(function(){
-        if($(this).parent().parent().hasClass('required')){
-            $(this).parent().parent().removeClass('required');
-            $(this).parent().parent().next().hide();
+        if($('.list-branch').hasClass('required')){
+            $('.list-branch').removeClass('required');
+            $('.list-branch').next().remove();
         }
     });
 
+    // xác nhận thanh toán
     $('#btn-confirm-checkout').click(function(){
         var receciveMethod = $('input[name="receive-method"]:checked').val();
         
         if(receciveMethod == 'atStore'){
             var fullName = $('input[id="HoTen"]');
             var tel = $('#SDT');
-            var areaSelected = $('#area-name');
+            var areaSelected = $('#area-selected');
             var storeSelected = $('input[name="branch"]');
 
             var valiName = validateFullname(fullName);
             var valiPhone = validatePhoneNumber(tel);
             var valiSelect = validateReceiveAtStore(areaSelected, storeSelected);
+
+            // nếu chưa đủ thông tin hoặc thông tin không hợp lệ
+            if(!valiName && !valiSelect && !valiPhone){
+                $(window).scrollTop(0);
+            } else { // tiến hành thanh toán
+                pay();
+            }
         }
 
-        if(valiName && valiSelect){
-            
-        } else {
-            $(window).scrollTop(0);
-        }
+        Pay();
     });
 
+    function Pay(){
+        var paymentMethod = $('input[name="payment-method"]:checked').val();
+        
+        // thanh toán khi nhận hàng
+        if(paymentMethod == 'cash'){
+
+        } else { // thanh toán zalopay
+            $('#checkout-form').submit();
+            // $.ajax({
+            //     headers: {
+            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     },
+            //     url: '/test3',
+            //     type: 'POST',
+            //     success:function(data){
+            //         console.log(data);
+            //         if(data['return_code'] == 1){
+            //             $.ajax({
+            //                 headers: {
+            //                     'contentType' : 'application/x-www-form-urlencoded'
+            //                 },
+            //                 url: data['order_url'],
+            //                 type: 'POST',
+            //                 success:function(data){
+            //                     console.log('ok');
+            //                 }
+            //             });
+            //         }
+            //     },
+                
+            // })
+        }
+    }
+
     // kiểm tra nhận tại cửa hàng có rỗng không
-    function validateReceiveAtStore(areaSelected, storeSelected){   
+    function validateReceiveAtStore(areaSelected, storeSelected){
+        var required;
+        var parent = storeSelected.parent().parent();
+
+        // nếu đã kiểm tra rồi thì return
+        if(areaSelected.hasClass('required') || parent.hasClass('required')){
+            return;
+        }
+
+        // nếu chưa chọn khu vực
         if(areaSelected.attr('data-flag') == null){
-            areaSelected.parent().addClass('required');
-            areaSelected.parent().next().show();
+            required = $('<span class="required-text">Vui lòng chọn khu vực</span>');
+            areaSelected.addClass('required');
+            areaSelected.after(required);
             return false;
-        } if(!storeSelected.is(':checked')){
-            storeSelected.parent().parent().addClass('required');
-            storeSelected.parent().parent().next().show();
+        } if(!storeSelected.is(':checked')){ // nếu chưa chọn cửa hàng
+            required = $('<span class="required-text">Vui lòng chọn cửa hàng để nhận hàng</span>')
+            parent.addClass('required');
+            parent.after(required);
             return false; 
         }
 
@@ -1201,9 +1262,16 @@ $(function() {
 
     // kiểm tra họ tên
     function validateFullname(fullName){
+        // nếu đã kiểm tra rồi thì return
+        if(fullName.hasClass('required')){
+            return;
+        }
+
+        // nếu chưa nhập họ tên
         if(fullName.val() == ''){
+            var required = $('<span class="required-text">Vui lòng nhập họ và tên</span>');
             fullName.addClass('required');
-            fullName.next().show();
+            fullName.after(required);
             return false;
         }
 
@@ -1212,29 +1280,61 @@ $(function() {
 
     // kiểm tra số điện thoại
     function validatePhoneNumber(tel){
+        // nếu đã kiểm tra rồi thì return
+        if(tel.hasClass('required')){
+            return;
+        }
+
         var length = tel.val().length;
         var phoneno = /^\d{10}$/;
+        var required;
 
-        if(tel.length == 0){
+        // chưa nhập
+        if(length == 0){
             tel.addClass('required');
-            tel.next().show();
+            required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
+            tel.after(required);
             return false;
-        } else if(!tel.val().match(phoneno)){
+        } else if(!tel.val().match(phoneno)){ // không đúng định dạng
+            required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');
             tel.addClass('required');
-            tel.next().next().show();
-            return false;
-        } else if(length < 10){
-            tel.addClass('required');
-            tel.next().next().show();
+            tel.after(required);
             return false;
         }
 
         return true;
     }
 
-    $('input[name="checkout-inp"]').keyup(function(){
+    $('input[id="HoTen"]').keyup(function(){
         $(this).removeClass('required');
-        $(this).next().hide();
+        $(this).next().remove();
+    });
+
+    // kiểm tra nhập số diện thoại
+    $('input[id="SDT"]').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).next().remove();
+        }
+
+        var phoneno = /^\d{10}$/;
+        var required; 
+
+        // chưa nhập
+        if($(this).val() == ''){
+            required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
+            $(this).addClass('required');
+            $(this).after(required);
+        } else if(!$(this).val().match(phoneno) || $(this).val().charAt(0) != 0){ // không đúng định dạng | ký tự đầu k phải số 0
+            if($(this).next().hasClass('required-text')){
+                return;
+            }
+            required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');    
+            $(this).addClass('required');
+            $(this).after(required);
+        } else { // xóa required
+            $(this).removeClass('required');
+            $(this).next().remove();
+        }
     });
 
     // đảo ngược button đóng/ mở giỏ hàng trang Thanh toán
@@ -1289,14 +1389,20 @@ $(function() {
     // 
     $('#btn-check-imei').click(function(){
         var IMEI = $('#imei-inp').val();
+        var required;
 
+        // nếu chưa nhập IMEI
         if(IMEI == ''){
+            required = $('<span class="required-text">Số IMEI không được bỏ trống</span>');
             $('#imei-inp').addClass('required');
-            $('#imei-inp').next().show();
+            $('#imei-inp').after(required);
             return;
         }
 
         $('#check-imei').hide();
+        $('#imei-inp').next().remove();
+
+        // hiển thị điện thoại hợp lệ
         $('#valid-imei').removeAttr('class');
     });
 

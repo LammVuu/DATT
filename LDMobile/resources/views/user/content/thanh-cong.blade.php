@@ -18,14 +18,14 @@
                                 <div class="d-flex">
                                     <div class="order-id">123456</div>
                                 </div>
-                                <div class="fz-14">Bạn có thể xem lại <a href="#">Đơn hàng của tôi</a></div>
+                                <div class="fz-14">Bạn có thể xem lại <a href={{route('user/tai-khoan-don-hang')}}>Đơn hàng của tôi</a></div>
                             </div>
                             <div class="col-md-2 d-flex justify-content-center">
                                 <div class="vl"></div>
                             </div>
                             <div class="col-md-5 d-flex justify-content-center align-items-center">
                                 
-                                <a href="#" class="main-btn p-5 w-100">Tiếp tục mua sắm</a>
+                                <a href={{route('user/san-pham')}} class="main-btn p-10 w-100">Tiếp tục mua sắm</a>
                             </div>
                         </div>
                     </div>

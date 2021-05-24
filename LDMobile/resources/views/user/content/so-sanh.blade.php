@@ -486,7 +486,6 @@
     </div>
 </div>
 
-@include('user.content.section.sec-dang-ky')
 @include('user.content.section.sec-logo')
 
 @stop

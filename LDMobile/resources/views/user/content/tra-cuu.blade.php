@@ -11,8 +11,8 @@
         <div id='check-imei' class="col-md-4 col-sm-6 mx-auto">
             <h3 class="text-center mb-10">Nhập số IMEI điện thoại</h3>
             <input type="text" id="imei-inp" class="text-center">
-            <span class="required-text">Số IMEI không được bỏ trống</span>
-            <span id='imei-error' class="required-text">Số IMEI không hợp lệ, vui lòng kiểm tra lại</span>
+            
+            {{-- <span id='imei-error' class="required-text">Số IMEI không hợp lệ, vui lòng kiểm tra lại</span> --}}
             <div class="d-flex justify-content-center mt-10">
                 <div id='btn-check-imei' class="pointer-cs main-btn p-10 w-40">Tra cứu</div>
             </div>            
@@ -57,7 +57,6 @@
     </div>
 </section>
 
-@include('user.content.section.sec-dang-ky')
 @include('user.content.section.sec-logo')
 
 @stop

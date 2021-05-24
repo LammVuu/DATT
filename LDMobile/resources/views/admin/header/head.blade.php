@@ -6,25 +6,17 @@
 
     <meta name="keywords" content="bootstrap, bootstrap ../admin template, ../admin theme, ../admin dashboard, dashboard template, ../admin template, responsive" />
     <meta name="author" content="Codedthemes" />
-    <base href="{{asset("admin/")}}/">
+    <base href="{{asset("admin_src/")}}/">
     <!-- Favicon icon -->
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <!-- Google font-->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
-    <!-- waves.css -->
-    <link rel="stylesheet" href="pages/waves/css/waves.min.css" type="text/css" media="all">
-    <!-- Required Fremwork -->
-    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap.min.css">
-    <!-- waves.css -->
-    <link rel="stylesheet" href="pages/waves/css/waves.min.css" type="text/css" media="all">
-    <!-- themify icon -->
-    <link rel="stylesheet" type="text/css" href="icon/themify-icons/themify-icons.css">
-    <!-- font-awesome-n -->
-    <link rel="stylesheet" type="text/css" href="css/font-awesome-n.min.css">
-    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-    <!-- scrollbar.css -->
-    <link rel="stylesheet" type="text/css" href="css/jquery.mCustomScrollbar.css">
-    <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="icon" href="../images/logo/LDMobile-logo.png" type="image/x-icon">
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    {{-- font awesome --}}
+    <link rel="stylesheet" href="font/font-awesome/css/all.min.css">
+    {{-- style --}}
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/default.css">
+    {{-- simple scrollbar --}}
+    <link rel="stylesheet"href="https://unpkg.com/simplebar@latest/dist/simplebar.css"/>
     
 </head>

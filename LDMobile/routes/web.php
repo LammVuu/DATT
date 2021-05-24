@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,13 +48,21 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
 
     route::get('tracuu', 'IndexController@TraCuu')->name('user/tra-cuu');
 
+    route::get('lienhe', 'IndexController@LienHe')->name('user/lien-he');
+
+    route::get('vechungtoi', 'IndexController@VeChungToi')->name('user/ve-chung-toi');
+
     route::post('test', 'IndexController@test');
 
     route::post('test2', 'IndexController@test2');
+
+    route::post('test3', 'IndexController@test3')->name('user/test3');
     
 });
+
 Route::group(['prefix' => 'admin', 'namespace' => 'admin'], function() {
-    Route::resource('dashboard', DashboardController::class);
+    Route::get('/', [DashboardController::class, 'index'])->name('admin/dashboard');
+
     Route::resource('hinhanh', HinhAnhController::class);
     Route::resource('banner', BannerController::class);
     Route::resource('slideshow', SlideshowController::class);

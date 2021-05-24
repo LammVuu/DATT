@@ -6,16 +6,20 @@
 
 <section class='product-shop-wrapper pb-30'>
     <div class='container'>
-        <div class='d-flex flex-row align-items-center'>
-            <div class='detail-product-name-title'>iPhone 11 PRO MAX</div>
-            <div class='pl-20'>
-                <i class="fas fa-star checked"></i>
-                <i class="fas fa-star checked"></i>
-                <i class="fas fa-star checked"></i>
-                <i class="fas fa-star checked"></i>
-                <i class="fas fa-star uncheck"></i>
-                <span class='ml-10'>21 đánh giá</span>
+        <div class='d-flex flex-row align-items-center justify-content-between'>
+            <div class="d-flex align-items-center">
+                <div class='fz-32 font-weight-600'>iPhone 11 PRO MAX</div>
+                <div class='pl-20'>
+                    <i class="fas fa-star checked"></i>
+                    <i class="fas fa-star checked"></i>
+                    <i class="fas fa-star checked"></i>
+                    <i class="fas fa-star checked"></i>
+                    <i class="fas fa-star uncheck"></i>
+                    <span class='ml-10'>21 đánh giá</span>
+                </div>
             </div>
+            {{-- nút yêu thích --}}
+            <div class="favorite-tag"><i class="far fa-heart"></i></div>
         </div> <hr>
 
         {{-- điện thoại --}}
@@ -55,12 +59,12 @@
                     {{-- dung lượng --}}
                     <div class='detail-title'>Dung lượng</div>
                     <div class='d-flex flex-row justify-content-start flex-wrap'>
-                        <a href='#' class='detail-option box-shadow selected'>
+                        <a href='#' class='detail-option flex-fill box-shadow selected'>
                             <span>512GB</span><br>
                             <b>30.000.000 <sup>đ</sup></b>
                         </a>
                         <?php for($i = 0; $i < 2; $i++) : ?>
-                        <a href='#' class='detail-option box-shadow'>
+                        <a href='#' class='detail-option flex-fill box-shadow'>
                             <span>512GB</span><br>
                             <b>30.000.000 <sup>đ</sup></b>
                         </a>
@@ -70,12 +74,12 @@
                     <div class='detail-title'>Màu sắc</div>
                     <div class='d-flex flex-row justify-content-start flex-wrap'>
                         <?php for($i = 0; $i < 5; $i++) : ?>
-                        <a href='#' class='detail-option box-shadow'>
+                        <a href='#' class='detail-option flex-fill box-shadow'>
                             <span>Đen</span><br>
                             <b>30.000.000 <sup>đ</sup></b>
                         </a>
                         <?php endfor ?>
-                        <a href='#' class='detail-option box-shadow selected'>
+                        <a href='#' class='detail-option flex-fill box-shadow selected'>
                             <span>Đen</span><br>
                             <b>30.000.000 <sup>đ</sup></b>
                         </a>
@@ -99,7 +103,7 @@
                     <a href="#" class='main-btn p-5 fz-20 font-weight-600'>MUA NGAY</a>
                 </div>
             </div>
-            {{-- chi nhánh & thông số kỹ thuật --}}
+            {{-- chi nhánh --}}
             <div class='col-md-4 mb-20'>
                 <div class="d-flex mb-20">
                     <img src="images/logo/apple-square-logo.png" alt="" class="w-30 circle-img border">
@@ -115,7 +119,6 @@
                         <div id='area-name'>Chọn khu vực</div>
                         <i class="far fa-chevron-down fz-14"></i>
                     </div>
-                    <span class="required-text">Vui lòng khu vực</span>
 
                     <div id='area-box' class="select-box">
                         {{-- option --}}
@@ -144,14 +147,14 @@
         <div class='row'>
             {{-- bài giới thiệu --}}
             <div class='col-md-8'>
-                <div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                <div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-interval="false" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="images/phone/iphone_12_red.jpg" class="d-block w-100" alt="...">
+                            <img src="images/phone/iphone_12_red.jpg" class="carousel-img d-block" alt="...">
                         </div>
                         @for ($i = 0; $i < 9; $i++)
                         <div class="carousel-item">
-                            <img src="images/phone/iphone_12_red.jpg" class="d-block w-100" alt="...">
+                            <img src="images/phone/iphone_12_red.jpg" class="carousel-img d-block" alt="...">
                         </div>
                         @endfor
                     </div>
@@ -320,6 +323,7 @@
                                     {{-- gửi đánh giá --}}
                                     <div class='relative p-10'>
                                         <div class='d-flex flex-column'>
+                                            {{-- chọn sao --}}
                                             <div class="d-flex">
                                                 <span>Chọn đánh giá của bạn</span>
                                                 <div class='ml-10'>
@@ -334,31 +338,28 @@
                                                 </div>
                                             </div>
 
+                                            {{-- đánh giá --}}
                                             <div class='pt-30'>
                                                 <label for="comment" class='form-label'>Đánh giá</label>
-                                                <textarea name="comment" class="form-control" rows="3"></textarea>
+                                                <textarea name="comment" rows="3" placeholder="Hãy chia sẽ cảm nhận của bạn về sản phẩm"></textarea>
                                                 
+                                                {{-- ảnh đính kèm & gửi đánh giá --}}
                                                 <div class='d-flex justify-content-between align-items-center pt-10'>
                                                     <div class="d-flex flex-fill align-items-center justify-content-between">
                                                         <div class="d-flex">
                                                             <input type="hidden" id='qty-img' value='0'>
                                                             <input class='upload-inp' type="file" multiple accept="image/*">
-                                                            <div class='detail-upload-link'>
+                                                            <div id='btn-photo-attached' class='pointer-cs'>
                                                                 <i class="fas fa-camera"></i>
-                                                                <span>Ảnh đính kèm
-                                                            </div>
-                                                            <div class='btn-expanded-evaluate ml-5' aria-expanded="true">
+                                                                <span>Ảnh đính kèm</span>
                                                                 <span class='qty-img'></span></span>
-                                                                <i class="fas fa-chevron-up expand-icon ml-5"></i>
                                                             </div>
                                                         </div>
-                                                        <div class="btn-remove-all mr-40"><i class="far fa-times-circle mr-5"></i>Xóa tất cả ảnh</div>
                                                     </div>
                                                     <div class='main-btn p-10'>Gửi đánh giá</div>
                                                 </div>
+                                                <div class="evaluate-img-div"></div>
                                             </div>
-                                        </div>
-                                        <div class="evaluate-img-div border">
                                         </div>
                                     </div>
                                 </td>
@@ -790,7 +791,7 @@
                     <div class="text-center font-weight-600 pt-20 pb-40">Bạn chỉ được phép chọn tối đa 3 ảnh đính kèm</div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="main-btn p-5" data-bs-dismiss="modal">Đã hiểu</button>
+                    <div type="button" class="main-btn p-5" data-bs-dismiss="modal">Đã hiểu</div>
                 </div>
             </div>
         </div>
@@ -798,7 +799,6 @@
 </div>
 </div>
 
-@include('user.content.section.sec-dang-ky')
 @include('user.content.section.sec-logo')
 
 @stop

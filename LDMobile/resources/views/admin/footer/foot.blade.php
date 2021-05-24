@@ -1,17 +1,7 @@
-<script type="text/javascript" src="js/jquery/jquery.min.js "></script>
-    <script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js "></script>
-    <script type="text/javascript" src="js/popper.js/popper.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap/js/bootstrap.min.js "></script>
-    <!-- waves js -->
-    <script src="pages/waves/js/waves.min.js"></script>
-    <!-- jquery slimscroll js -->
-    <script type="text/javascript" src="js/jquery-slimscroll/jquery.slimscroll.js"></script>
-
-    <!-- slimscroll js -->
-    <script src="js/jquery.mCustomScrollbar.concat.min.js "></script>
-
-    <!-- menu js -->
-    <script src="js/pcoded.min.js"></script>
-    <script src="js/vertical/vertical-layout.min.js "></script>
-
-    <script type="text/javascript" src="js/script.js "></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="js/jquery-3.6.0.min.js "></script>
+<script type="text/javascript" src="js/jquery-ui.min.js "></script>
+<script type="text/javascript" src="font/font-awesome/js/all.min.js "></script>
+<script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+<script type="text/javascript" src="js/main.js "></script>

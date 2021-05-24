@@ -8,5 +8,4 @@
 @include("user.content.index.sec-san-pham-noi-bat")
 
 @include('user.content.section.sec-logo')
-@include('user.content.section.sec-dang-ky')
 @stop

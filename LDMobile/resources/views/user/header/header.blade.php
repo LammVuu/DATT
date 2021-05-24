@@ -269,6 +269,7 @@
                         <input type="text" class='head-search-input border' placeholder="Tìm kiếm">
                         <span class='input-icon-right'><i class="fal fa-search"></i></span>
                     </div>
+                    {{-- danh sách kết quả --}}
                     <div class="head-search-result border">
                         @for ($i = 0; $i < 15; $i++)
                         <a href="#" class="head-single-result black fz-14">

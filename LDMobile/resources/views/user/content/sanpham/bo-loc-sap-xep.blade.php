@@ -1,23 +1,16 @@
-<div class='box-shadow shop-filter-sort-bar'>
-    {{-- chọn giá & bộ lọc & sắp xếp --}}
-    <div class='d-flex flex-row justify-content-between fz-14'>
-        <span>Chọn mức giá:</span>
-        <a href="#">Từ 2 - 4 triệu</a>
-        <a href="#">Từ 4 - 7 triệu</a>
-        <a href="#">Từ 7 - 13 triệu</a>
-        <a href="#">Từ 13 - 20 triệu</a>
-        <a href="#">Trên 20 triệu</a>
-
+<div class="d-flex align-items-center justify-content-between box-shadow p-15 mb-20">
+    <b>200 điện thoại</b>
+    <div class="d-flex">
         {{-- bộ lọc --}}
-        <div class='relative'>
-            <span id='btn-show-filter' aria-expanded="false">Bộ lọc<i class="fas fa-caret-down ml-5"></i></span>
+        <div class='relative mr-20'>
+            <span id='btn-show-filter'><i class="fal fa-filter mr-5"></i>Bộ lọc</span>
             <div class="shop-filter-box border">
                 <div class='d-flex flex-row justify-content-between'>
                     <input type="hidden" id='flag' value='0'>
                     {{-- màu sắc --}}
                     <div class='d-flex flex-column'>
                         <b>Màu sắc</b>
-        
+
                         <div class='mt-10'>
                             <div class="filter-item">
                                 <input type="checkbox" class="color-filter" name='checkbox-filter' id='red' value='đỏ'>
@@ -33,11 +26,11 @@
                             </div>
                         </div>
                     </div>
-        
+
                     {{-- dung lượng --}}
                     <div class='d-flex flex-column'>
                         <b>Dung lượng</b>
-        
+
                         <div class='mt-10'>
                             <div class="filter-item">
                                 <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-32'>
@@ -65,11 +58,11 @@
                             </div>
                         </div>
                     </div>
-        
+
                     {{-- khuyến mãi --}}
                     <div class='d-flex flex-column'>
                         <b>Khuyến mãi</b>
-        
+
                         <div class='mt-10'>
                             <div class="filter-item">
                                 <input type="checkbox" name='checkbox-filter' id='promotion'>
@@ -87,7 +80,7 @@
 
         {{-- sắp xếp --}}
         <div class="relative">
-            <span id='btn-show-sort' aria-expanded="false">Sắp xếp<i class="fas fa-caret-down ml-5"></i></span>
+            <span id='btn-show-sort'><i class="fal fa-sort mr-5"></i>Sắp xếp</span>
             <div class="shop-sort-box border">
                 <div class="d-flex justify-content-center">
                     <div class='d-flex flex-column'>
@@ -96,19 +89,19 @@
                             <input type="radio" name='sort' id='sort_1' checked>
                             <label for="sort_1">Nổi bật nhất</label>
                         </div>
-        
+
                         {{-- bán chạy nhất --}}
                         <div class="filter-item">
                             <input type="radio" name='sort' id='sort_2'>
                             <label for="sort_2">Bán chạy nhất</label>
                         </div>
-        
+
                         {{-- giá cao đến thấp --}}
                         <div class="filter-item">
                             <input type="radio" name='sort' id='sort_3'>
                             <label for="sort_3">Giá cao đến thấp</label>
                         </div>
-        
+
                         {{-- giá thấp đến cao --}}
                         <div class="filter-item">
                             <input type="radio" name='sort' id='sort_4'>

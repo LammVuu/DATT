@@ -28,89 +28,6 @@
 
                             {{-- giao hàng tận nơi --}}
                             <div class='atHome p-20 mt-10'>
-                                <!--<div class='row'>
-                                    <div class='col-md-12'>
-                                        <label for="DiaChi" class='form-label font-weight-600'>Chọn địa chỉ giao hàng</label>
-                                        <div class='row' id='DiaChi'>
-                                            {{-- chọn tỉnh thành --}}
-                                            <div class='col-md-6 mb-3'>
-                                                <div class="select">
-                                                    <div id='TinhThanh-selected' class="select-selected">
-                                                        <div id='TinhThanh-name'>
-                                                            <?php echo $lstTinhThanh[0]['Name'] ?>
-                                                        </div>
-                                                        <i class="far fa-chevron-down fz-14"></i>
-                                                    </div>
-                                                    <div id='TinhThanh-box' class="select-box">
-                                                        {{-- tìm kiếm --}}
-                                                        <div class="select-search">
-                                                            <input id='search-tinh-thanh' type="text" class="select-search-inp" placeholder="Nhập tên Tỉnh / Thành">
-                                                            <i class="select-search-icon far fa-search"></i>
-                                                        </div>
-
-                                                        {{-- option --}}
-                                                        <div id='list-tinh-thanh' class="select-option">
-                                                            @foreach($lstTinhThanh as $lst)
-                                                            <div id='<?php echo $lst['ID'] ?>' data-type='<?php echo $lst['Name'] . '/TinhThanh' ?>' class="option-tinhthanh select-single-option"><?php echo $lst['Name'] ?></div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{-- chọn quận huyện --}}
-                                            <div class='col-md-6 mb-3'>
-                                                <div class="select">
-                                                    <div id='QuanHuyen-selected' class="select-selected">
-                                                        <div id='QuanHuyen-name'>Chọn Quận / Huyện</div>
-                                                        <i class="far fa-chevron-down fz-14"></i>
-                                                    </div>
-                                                    <span class="required-text">Vui lòng chọn quận / huyện</span>
-                                                    
-                                                    <div id='QuanHuyen-box' class="select-box">
-                                                        {{-- tìm kiếm --}}
-                                                        <div class="select-search">
-                                                            <input id='search-quan-huyen' type="text" class="select-search-inp" placeholder="Nhập tên Quận / Huyện">
-                                                            <i class="select-search-icon far fa-search"></i>
-                                                        </div>
-
-                                                        {{-- option --}}
-                                                        <div id='list-quan-huyen' class="select-option">
-                                                            @foreach($lstQuanHuyen as $lst)
-                                                            <div id='<?php echo $lst['ID'] ?>' data-type='<?php echo $lst['Name'] . '/QuanHuyen' ?>' class="option-quanhuyen select-single-option"><?php echo $lst['Name'] ?></div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{-- chọn phường xã --}}
-                                            <div class='col-md-6'>
-                                                <div class="select">
-                                                    <div id='PhuongXa-selected' class="select-disable">
-                                                        <div id="PhuongXa-name">Chọn Phường / Xã</div>
-                                                        <i class="far fa-chevron-down fz-14"></i>
-                                                    </div>
-                                                    <span class="required-text">Vui lòng chọn phường / xã</span>
-
-                                                    <div id='PhuongXa-box' class="select-box">
-                                                        {{-- tìm kiếm --}}
-                                                        <div class="select-search">
-                                                            <input id='search-phuong-xa' type="text" class="select-search-inp" placeholder="Nhập tên Phường / Xã">
-                                                            <i class="select-search-icon far fa-search"></i>
-                                                        </div>
-
-                                                        {{-- option --}}
-                                                        <div id='list-phuong-xa' class="select-option"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{-- số nhà, tên đường --}}
-                                            <div class='col-md-6'>
-                                                <input id='address-inp' type="text" name='checkout-inp' placeholder="Số nhà, tên đường" required>
-                                                <span class="required-text">Vui lòng nhập địa chỉ</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
                                 <div class="col-md-12 white-bg p-20 border">
                                     {{-- họ tên --}}
                                     <div class="d-flex justify-content-between pb-10">
@@ -144,13 +61,10 @@
                                     <div class='col-md-6'>
                                         <label for="HoTen" class='font-weight-600 mb-5'>Họ và tên (Bắt buộc)</label>
                                         <input type="text" id='HoTen' name='checkout-inp' required>
-                                        <span class="required-text">Vui lòng nhập họ và tên</span>
                                     </div>
                                     <div class='col-md-6'>
                                         <label for="SDT" class='font-weight-600 mb-5'>Số điện thoại đặt hàng (Bắt buộc)</label>
                                         <input type="tel" id='SDT' name='checkout-inp'pattern="[0-9]{3}[0-9]{3}[0-9]{4}" maxlength="10" required>
-                                        <span class="required-text">Vui lòng nhập số diện thoại</span>
-                                        <span class="required-text">Số diện thoại không hợp lệ</span>
                                     </div>
                                 </div>
                                 <div class='row'>
@@ -160,7 +74,6 @@
                                                 <div id='area-name'>Chọn khu vực</div>
                                                 <i class="far fa-chevron-down fz-14"></i>
                                             </div>
-                                            <span class="required-text">Vui lòng khu vực</span>
 
                                             <div id='area-box' class="select-box">
                                                 {{-- option --}}
@@ -186,7 +99,6 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                <span class="required-text">Vui lòng cửa hàng để nhận hàng</span>
                             </div>
                         </div>
                     </div>
@@ -197,11 +109,11 @@
                 <div class='pb-20'>
                     {{-- phương thức thanh toán --}}
                     <div class='mb-3 d-flex align-items-center'>
-                        <input type="radio" name='payment-method' id="cash" checked>
+                        <input type="radio" name='payment-method' id="cash" checked value="cash">
                         <label for="cash">Thanh toán khi nhận hàng</label>
                     </div>
                     <div class='mb-3'>
-                        <input type="radio" name='payment-method' id="zalopay">
+                        <input type="radio" name='payment-method' id="zalopay" value='zalopay'>
                         <label for="zalopay">Thanh toán online</label>
                         <div class="ml-20 mt-5">
                             <img src="images/logo/zalopay-logo.png" alt="" class="ml-10 w-10">
@@ -215,8 +127,11 @@
                 </div>
                 <hr>
                 <div class='col-md-8 mx-auto pt-20 pb-20'>
-                    <div id='btn-confirm-checkout' type="button" class="checkout-btn w-100 p-10">ĐẶT HÀNG</div>
-                    <div class="text-center pt-5">(Vui lòng kiểm tra lại đơn hàng trước khi Đặt mua)</div>
+                    <form id='checkout-form' action={{route('user/test3')}} method="POST">
+                        @csrf
+                        <div id='btn-confirm-checkout' type="button" class="checkout-btn w-100 p-10">ĐẶT HÀNG</div>
+                        <div class="text-center pt-5">(Vui lòng kiểm tra lại đơn hàng trước khi Đặt mua)</div>
+                    </form>
                 </div>
             </div>
 
@@ -489,6 +404,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="list-address pt-20 pr-40 pb-20 pl-40">
+                    {{-- địa chỉ đang chọn --}}
                     <div class="col-md-12 white-bg p-20 border-success mb-50">
                         {{-- họ tên --}}
                         <div class="d-flex justify-content-between pb-10">
@@ -512,11 +428,12 @@
 
                         {{-- button --}}
                         <div class="d-flex">
-                            <div class="main-btn p-5 mr-10">Giao đến địa chỉ này</div>
-                            <div class="cancel-btn p-5">Sửa</div>
+                            <div class="main-btn p-5">Giao đến địa chỉ này</div>
+                            <div class="cancel-btn p-5 ml-10">Sửa</div>
                         </div>
                     </div>
 
+                    {{-- địa chỉ khác --}}
                     @for ($i = 0; $i < 5; $i++)
                     <div class="col-md-12 white-bg p-20 border mb-20">
                         {{-- họ tên --}}
@@ -547,6 +464,7 @@
                     </div>
                     @endfor
 
+                    {{-- thêm địa chỉ giao hàng mới --}}
                     <div class="d-flex">
                         Bạn muốn giao hàng đến địa chỉ khác?
                         <div id='btn-new-address-checkout' class="pointer-cs main-color-text ml-10">Thêm địa chỉ giao hàng mới</div>
@@ -564,7 +482,7 @@
                                 <div class="row mb-3">
                                     <label for="SDT" class="col-md-2 col-form-label">SĐT</label>
                                     <div class="col-md-10">
-                                        <input type="text" id="SDT" class="form-control">
+                                        <input type="tel" id="SDT" class="form-control">
                                     </div>
                                 </div>
                                 <div class="row mb-3">

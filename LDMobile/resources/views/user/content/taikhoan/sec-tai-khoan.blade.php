@@ -294,18 +294,12 @@
     </div>
 </div>
 
-{{-- toast avatar --}}
-<div id='avt-toast' class="alert-toast">
-    <div class="d-flex align-items-center">
-        <span>Cập nhật ảnh đại diện thành công</span>
-        <span class="btn-close-toast ml-20"><i class="fal fa-times"></i></span>
-    </div>
-</div>
+<div id="toast"></div>
 
 {{-- toast cover --}}
 <div id='cover-toast' class="alert-toast">
     <div class="d-flex align-items-center">
         <span>Cập nhật ảnh bìa thành công</span>
-        <span class="btn-close-toast ml-20"><i class="fal fa-times"></i></span>
+        {{-- <span class="btn-close-toast ml-20"><i class="fal fa-times"></i></span> --}}
     </div>
 </div>
