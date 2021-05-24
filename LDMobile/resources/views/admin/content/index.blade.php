@@ -7,7 +7,7 @@
                         <div class="pcoded-inner-navbar main-menu">
                             <div class="">
                                 <div class="main-menu-header">
-                                    <img class="img-80 img-radius" src="../admin/images/avatar-4.jpg" alt="User-Profile-Image">
+                                    <img class="img-80 img-radius" src="../admin_source/images/avatar-4.jpg" alt="User-Profile-Image">
                                     <div class="user-details">
                                         <span id="more-details">John Doe<i class="fa fa-caret-down"></i></span>
                                     </div>
@@ -364,7 +364,7 @@
                                                                     <tr>
                                                                         <td>
                                                                             <div class="d-inline-block align-middle">
-                                                                                <img src="../admin/images/avatar-4.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
+                                                                                <img src="../admin_source/images/avatar-4.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
                                                                                 <div class="d-inline-block">
                                                                                     <h6>Shirley Hoe</h6>
                                                                                     <p class="text-muted m-b-0">Sales executive , NY</p>
@@ -378,7 +378,7 @@
                                                                     <tr>
                                                                         <td>
                                                                             <div class="d-inline-block align-middle">
-                                                                                <img src="../admin/images/avatar-2.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
+                                                                                <img src="../admin_source/images/avatar-2.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
                                                                                 <div class="d-inline-block">
                                                                                     <h6>James Alexander</h6>
                                                                                     <p class="text-muted m-b-0">Sales executive , EL</p>
@@ -392,7 +392,7 @@
                                                                     <tr>
                                                                         <td>
                                                                             <div class="d-inline-block align-middle">
-                                                                                <img src="../admin/images/avatar-4.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
+                                                                                <img src="../admin_source/images/avatar-4.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
                                                                                 <div class="d-inline-block">
                                                                                     <h6>Shirley Hoe</h6>
                                                                                     <p class="text-muted m-b-0">Sales executive , NY</p>
@@ -406,7 +406,7 @@
                                                                     <tr>
                                                                         <td>
                                                                             <div class="d-inline-block align-middle">
-                                                                                <img src="../admin/images/avatar-2.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
+                                                                                <img src="../admin_source/images/avatar-2.jpg" alt="user image" class="img-radius img-40 align-top m-r-15">
                                                                                 <div class="d-inline-block">
                                                                                     <h6>Nick Xander</h6>
                                                                                     <p class="text-muted m-b-0">Sales executive , EL</p>

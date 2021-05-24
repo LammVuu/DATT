@@ -6,7 +6,7 @@
 
     <meta name="keywords" content="bootstrap, bootstrap ../admin template, ../admin theme, ../admin dashboard, dashboard template, ../admin template, responsive" />
     <meta name="author" content="Codedthemes" />
-    <base href="{{asset("admin/")}}/">
+    <base href="{{asset("admin_source/")}}/">
     <!-- Favicon icon -->
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <!-- Google font-->
