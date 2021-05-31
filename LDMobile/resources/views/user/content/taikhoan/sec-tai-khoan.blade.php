@@ -17,7 +17,7 @@
         {{-- avatar --}}
         <div class='account-avatar-div d-flex justify-content-between align-items-end'>
             <div class='flex-column'>
-                <h4>Hoang Lam</h4>
+                <div class="fz-22 font-weight-600">Hoang Lam</div>
                 <i>vuhoanglam2000vn@gmail.com</i>
             </div>
             <div class='account-cover-avatar-div'>

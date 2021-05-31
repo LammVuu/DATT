@@ -44,6 +44,8 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
 
     route::get("sosanh", "IndexController@SoSanh")->name('user/so-sanh');
 
+    route::get("ketquathanhtoan", "IndexController@KetQuaThanhToan");
+
     route::get("thanhcong", "IndexController@ThanhCong");
 
     route::get('tracuu', 'IndexController@TraCuu')->name('user/tra-cuu');
@@ -57,6 +59,8 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     route::post('test2', 'IndexController@test2');
 
     route::post('test3', 'IndexController@test3')->name('user/test3');
+
+    route::post('test4', 'IndexController@test4');
     
 });
 

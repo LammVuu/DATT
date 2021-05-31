@@ -71,7 +71,7 @@
                 <tbody>
                     <?php for($j = 0; $j < 3; $j++) : ?>
                     <tr>
-                        <td class='account-td-40'>
+                        <td class='w-40 vertical-center'>
                             <div class='d-flex flex-row'>
                                 <img src="images/phone/iphone_12_red.jpg" alt="" width="100px">
                                 <div class='d-flex flex-column fz-14'>
@@ -109,7 +109,7 @@
                     </tr>
                     {{-- tính tiền --}}
                     <tr>
-                        <td colspan="account-td-40">
+                        <td colspan="w-40 vertical-center">
                             <div class='p-10'>
                                 <div class='d-flex justify-content-between pb-5'>
                                     <span>Tạm tính:</span>

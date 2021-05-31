@@ -25,15 +25,15 @@
                                         <table class='table'>
                                             <tbody>
                                                 <tr>
-                                                    <td class='account-td-40'>Mã</td>
+                                                    <td class='w-40'>Mã</td>
                                                     <td><b>ABCDEF</b></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class='account-td-40'>Hạn sử dụng</td>
+                                                    <td class='w-40'>Hạn sử dụng</td>
                                                     <td>31/12/2021</td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="2" class='account-td-40'>
+                                                    <td colspan="2" class='w-40'>
                                                         <div class='d-flex flex-column'>
                                                             <span>Điều kiện:</span>
                                                             <ul class='mt-10'>

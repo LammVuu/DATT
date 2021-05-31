@@ -1,63 +1,78 @@
-@extends("user.layout")
-@section("content")
-
-<section class='login-registration-wrapper pt-50 pb-50'>
-    <div class='container'>
-        <div class='row'>
-            <div class='col-md-6 offset-3 box-shadow login-box'>
-                <h3 class='pb-30'>Đăng nhập</h3>
-
-                <form action="#">
-                    <!-- email -->
-                    <div class='input-group mb-3'>
-                        <span class='input-group-text'><i class="fas fa-envelope"></i></span>
-                        <input type='email' class='form-control' placeholder='abc@gmail.com'>
-                    </div>
-
-                    <!-- mật khẩu -->
-                    <div class='input-group mb-3'>
-                        <span class='input-group-text'><i class="fas fa-key"></i></span>
-                        <input type='password' class='form-control' placeholder='Password'>
-                    </div>
-
-                    <!-- lưu đăng nhập & quên mật khẩu -->
-                    <div class="login-checkbox-forget d-sm-flex justify-content-between align-items-center">
-                        <div class='form-check'>
-                            <input type="checkbox" class='form-check-input' name='remember'>
-                            <label for="remember" class='form-check-label'>Lưu đăng nhập</label>
+<!DOCTYPE html>
+<html lang="en">
+    @include("user.header.head")
+<body>
+    <section class='login-signup-sec'>
+        <div class='container'>
+            <div class='row'>
+                <div class='col-md-6 mx-auto box-shadow login-signup-box'>
+                    <h3 class='pb-30 font-weight-600'>Đăng nhập</h3>
+    
+                    <form action="#" method="POST">
+                        @csrf
+                        <!-- email -->
+                        <div class='input-group mb-3'>
+                            <span class='input-group-text'><i class="fas fa-phone"></i></span>
+                            <input type='text' class='form-control' placeholder='Số điện thoại' maxlength="10">
                         </div>
-                        <a class="forget" href="#">Quên mật khẩu?</a>
-                    </div>
-
-                    <!-- button đăng nhặp -->
-                    <div class="single-form">
-                        <a href="#" class='login-btn'>Đăng nhập</a>
-                    </div>
-
-                    <!-- đăng nhập khác -->
-                    <div class='mt-50'>
-                        <div class='d-flex flex-column align-items-center'>
-                            <p class="login ml-20">Chưa có tài khoản? <a href={{route('user/dang-ky')}}>Đăng ký</a></p>
-                            <p class="account mt-25">Đăng nhập với</p><br>
-
-                            <a href="#" class='login-signup-with box-shadow d-flex'>
-                                <div class='pl-50 pr-20'>
-                                    <img src="images/icon/facebook-icon.png" alt='fb-icon' class='icon-btn-login-signup'>
-                                </div>
-                                <span>Đăng nhập với Facebook</span>
-                            </a>
-                            <a href="#" class='login-signup-with box-shadow d-flex'>
-                                <div class='pl-50 pr-20'>
-                                    <img src="images/icon/google-icon.png" alt='gg-icon' class='icon-btn-login-signup'>
-                                </div>
-                                <span>Đăng nhập với Google</span>
-                            </a>
+    
+                        <!-- mật khẩu -->
+                        <div class='input-group mb-3'>
+                            <span class='input-group-text'><i class="fas fa-key"></i></span>
+                            <input type='password' class='form-control' placeholder='Mật khẩu'>
                         </div>
-                    </div>
-                </form>
+    
+                        <!-- lưu đăng nhập & quên mật khẩu -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <input type="checkbox" id='remember-me'>
+                                <label for="remember-me" class='form-check-label'>Lưu đăng nhập</label>
+                            </div>
+                            <a class="forget" href="#">Quên mật khẩu?</a>
+                        </div>
+    
+                        <!-- button đăng nhặp -->
+                        <a href="#" class='main-btn p-10 w-100 mt-20'>Đăng nhập</a>
+    
+                        <!-- đăng nhập khác -->
+                        <div class='mt-20'>
+                            <div class='d-flex flex-column align-items-center'>
+                                <div>Chưa có tài khoản? <a href={{route('user/dang-ky')}}>Đăng ký</a></div>
+                                <div class="login-with w-100"></div>
+    
+                                <a href="#" class='btn-login-signup-with box-shadow'>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <img src="images/icon/facebook-icon.png" alt='fb-icon' class="mr-20">
+                                            </div>
+                                            <div class="col-sm-8 d-flex align-items-center">Facebook</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="#" class='btn-login-signup-with box-shadow'>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <img src="images/icon/google-icon.png" alt='fb-icon' class="mr-20">
+                                            </div>
+                                            <div class="col-sm-8 d-flex align-items-center">Google</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- về trang chủ --}}
+                        <div class="mt-30">
+                            <a href={{route('user/index')}} class="d-flex align-items-center"><i class="far fa-chevron-left mr-10 fz-14"></i>Về trang chủ</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-@stop
+    @include("user.footer.footer-link")
+</body>
+</html>

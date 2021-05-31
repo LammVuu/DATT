@@ -4,15 +4,15 @@
             <div class='col-lg-8 col-md-12 col-sm-12'>
                 <div id="carouselExampleIndicators" class="relative carousel carousel-dark slide" data-bs-ride="carousel">
                     <div class="carousel-inner box-shadow">
-                        <div class="carousel-item active">
+                        <a href="#" class="carousel-item active">
                             <img src="images/header-1/header-big-1.jpg" class='carousel-img' alt="...">
-                        </div>
-                        <div class="carousel-item">
+                        </a>
+                        <a href="#" class="carousel-item">
                             <img src="images/header-1/header-big-2.jpg" class='carousel-img' alt="...">
-                        </div>
-                        <div class="carousel-item">
+                        </a>
+                        <a href="#" class="carousel-item">
                             <img src="images/header-1/header-big-1.jpg" class='carousel-img' alt="...">
-                        </div>
+                        </a>
                     </div>
                     <div class="slideshow-btn-prev" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                         <i class="far fa-chevron-left fz-30"></i>

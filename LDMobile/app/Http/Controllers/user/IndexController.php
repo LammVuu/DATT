@@ -278,6 +278,56 @@ class IndexController extends Controller
         return view($this->user.'so-sanh');
     }
 
+    public function KetQuaThanhToan()
+    {
+        $key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+        $data = $_GET;
+        $checksumData = $data["appid"] ."|". $data["apptransid"] ."|". $data["pmcid"] ."|". $data["bankcode"] ."|". $data["amount"] ."|". $data["discountamount"] ."|". $data["status"];
+        $mac = hash_hmac("sha256", $checksumData, $key2);
+
+        if (strcmp($mac, $data["checksum"]) != 0) {
+        http_response_code(400);
+        echo "Bad Request";
+        } else {
+            // kiểm tra xem đã nhận được callback hay chưa, nếu chưa thì tiến hành gọi API truy vấn trạng thái thanh toán của đơn hàng để lấy kết quả cuối cùng
+            $config = [
+                "app_id" => 2554,
+                "key1" => "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn",
+                "key2" => "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf",
+                "endpoint" => "https://sb-openapi.zalopay.vn/v2/query"
+            ];
+            
+            $app_trans_id = $data["apptransid"];  // Input your app_trans_id
+            $data_2 = $config["app_id"]."|".$app_trans_id."|".$config["key1"]; // app_id|app_trans_id|key1
+            $params = [
+                "app_id" => $config["app_id"],
+                "app_trans_id" => $app_trans_id,
+                "mac" => hash_hmac("sha256", $data_2, $config["key1"])
+            ];
+            
+            $context = stream_context_create([
+                "http" => [
+                    "header" => "Content-type: application/x-www-form-urlencoded\r\n",
+                    "method" => "POST",
+                    "content" => http_build_query($params)
+                ]
+            ]);
+            
+            $resp = file_get_contents($config["endpoint"], false, $context);
+            $result = json_decode($resp, true);
+
+            if($result['return_code'] == 1){
+                http_response_code(200);
+                return redirect('/thanhcong');
+            } else {
+                foreach ($result as $key => $value) {
+                    echo "$key: $value<br>";
+                }
+                return false;
+            }
+        }
+    }
+
     public function ThanhCong()
     {
         return view($this->user.'thanh-cong');
@@ -335,9 +385,9 @@ class IndexController extends Controller
     public function test3(Request $request)
     {
         $config = [
-            "app_id" => 2553,
-            "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-            "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
+            "app_id" => 2554,
+            "key1" => "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn",
+            "key2" => "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf",
             "endpoint" => "https://sb-openapi.zalopay.vn/v2/create"
         ];
 
@@ -348,7 +398,8 @@ class IndexController extends Controller
             "app_id" => $config["app_id"],
             "app_user" => "Hoàng Lâm",
             "app_trans_id" => date("ymd") . "_" . $transID, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-            "app_time" => round(microtime(true) * 1000), // miliseconds
+            // "app_time" => round(microtime(true) * 1000), // miliseconds
+            "app_time" => 1000000, // miliseconds
             "amount" => 100000,
             "item" => $items,
             "embed_data" => $embeddata,
@@ -375,11 +426,46 @@ class IndexController extends Controller
 
         return redirect($result['order_url']);
 
-        //return $result;
-
         // foreach ($result as $key => $value) {
         //     echo "$key: $value<br>";
         // }
+        
+        // return false;
+    }
+
+    public function test4(Request $request)
+    {
+        $result = [];
+
+        try {
+        $key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+        $postdata = file_get_contents('php://input');
+        $postdatajson = json_decode($postdata, true);
+        $mac = hash_hmac("sha256", $postdatajson["data"], $key2);
+
+        $requestmac = $postdatajson["mac"];
+
+        // kiểm tra callback hợp lệ (đến từ ZaloPay server)
+        if (strcmp($mac, $requestmac) != 0) {
+            // callback không hợp lệ
+            $result["return_code"] = -1;
+            $result["return_message"] = "mac not equal";
+        } else {
+            // thanh toán thành công
+            // merchant cập nhật trạng thái cho đơn hàng
+            $datajson = json_decode($postdatajson["data"], true);
+            // echo "update order's status = success where app_trans_id = ". $dataJson["app_trans_id"];
+
+            $result["return_code"] = 1;
+            $result["return_message"] = "success";
+        }
+        } catch (Exception $e) {
+        $result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
+        $result["return_message"] = $e->getMessage();
+        }
+
+        // thông báo kết quả cho ZaloPay server
+        echo json_encode($result);
     }
 
     // hàm loại bỏ ký tự có dấu

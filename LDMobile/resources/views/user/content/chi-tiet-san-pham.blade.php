@@ -109,9 +109,10 @@
                     <img src="images/logo/apple-square-logo.png" alt="" class="w-30 circle-img border">
                     <div class="d-flex flex-column ml-20 mt-20">
                         <div>Cung cấp bởi <b>Apple Việt Nam</b></div>
+                        <img src="images/icon/genuine-icon.png" alt="" width="130px">
                     </div>
                 </div>
-                <div class='detail-check-qty mb-3'>10 CỬA HÀNG CÓ SẴN SẢN PHẨM</div>
+                <div class='detail-check-qty mb-3'>CÁC CỬA HÀNG CÓ SẴN SẢN PHẨM</div>
 
                 {{-- xem cửa hàng --}}
                 <div class="select">
@@ -180,39 +181,39 @@
                     <table class='table border'>
                         <tbody class='fz-14 '>
                             <tr>
-                                <td class='td-40 center-td'>Màn hình</td>
+                                <td class='w-40 center-td'>Màn hình</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>Camera sau</td>
+                                <td class='w-40 center-td'>Camera sau</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>Camera trước</td>
+                                <td class='w-40 center-td'>Camera trước</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>Hệ điều hành</td>
+                                <td class='w-40 center-td'>Hệ điều hành</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>CPU</td>
+                                <td class='w-40 center-td'>CPU</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>RAM</td>
+                                <td class='w-40 center-td'>RAM</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>Bộ nhớ trong</td>
+                                <td class='w-40 center-td'>Bộ nhớ trong</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>SIM</td>
+                                <td class='w-40 center-td'>SIM</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
-                                <td class='td-40 center-td'>Pin</td>
+                                <td class='w-40 center-td'>Pin</td>
                                 <td class='font-weight-600'>ABC</td>
                             </tr>
                             <tr>
@@ -277,14 +278,14 @@
                         <tbody>
                             <tr>
                                 {{-- sao trung bình --}}
-                                <td class='td-10'>
+                                <td class='w-10 vertical-center'>
                                     <div class='d-flex justify-content-center align-items-center p-20'>
                                         <span class='detail-vote-avg'></span>
                                         <i class="fas fa-star checked fz-34 ml-5"></i>
                                     </div>
                                 </td>
                                 {{-- số lượt đánh giá --}}
-                                <td class='td-40'>
+                                <td class='w-40 vertical-center'>
                                     {{-- tổng số lương đánh giá --}}
                                     <input type="hidden" id='total-rating' value='100'>
 
@@ -306,7 +307,7 @@
                                     @endfor
                                 </td>
                                 {{-- đánh giá --}}
-                                <td class='td-50'>
+                                <td class='w-50 vertical-center'>
                                     {{-- chưa đăng nhập --}}
                                     {{-- <div class='d-flex flex-column align-items-center'>
                                         <div class='gray-1'>Vui lòng đăng nhập để có thể đánh giá</div>
@@ -551,19 +552,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Thiết kế</td>
+                            <td class='w-30 font-weight-600'>Thiết kế</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Chất liệu</td>
+                            <td class='w-30 font-weight-600'>Chất liệu</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Kích thước</td>
+                            <td class='w-30 font-weight-600'>Kích thước</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Khối lượng</td>
+                            <td class='w-30 font-weight-600'>Khối lượng</td>
                             <td>ABC</td>
                         </tr>
 
@@ -574,19 +575,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Công nghệ màn hình</td>
+                            <td class='w-30 font-weight-600'>Công nghệ màn hình</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Độ phân giải</td>
+                            <td class='w-30 font-weight-600'>Độ phân giải</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Tần số quét</td>
+                            <td class='w-30 font-weight-600'>Tần số quét</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Mặt kính cảm ứng</td>
+                            <td class='w-30 font-weight-600'>Mặt kính cảm ứng</td>
                             <td>ABC</td>
                         </tr>
 
@@ -597,19 +598,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Độ phân giải</td>
+                            <td class='w-30 font-weight-600'>Độ phân giải</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Quay phim</td>
+                            <td class='w-30 font-weight-600'>Quay phim</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Đèn Flash</td>
+                            <td class='w-30 font-weight-600'>Đèn Flash</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Tính năng</td>
+                            <td class='w-30 font-weight-600'>Tính năng</td>
                             <td>ABC</td>
                         </tr>
 
@@ -620,11 +621,11 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Độ phân giải</td>
+                            <td class='w-30 font-weight-600'>Độ phân giải</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Quay phim</td>
+                            <td class='w-30 font-weight-600'>Quay phim</td>
                             <td>ABC</td>
                         </tr>
 
@@ -635,19 +636,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Hệ điều hành</td>
+                            <td class='w-30 font-weight-600'>Hệ điều hành</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Chip xử lý (CPU)</td>
+                            <td class='w-30 font-weight-600'>Chip xử lý (CPU)</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Tốc độ CPU</td>
+                            <td class='w-30 font-weight-600'>Tốc độ CPU</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Chip đồ họa (GPU)</td>
+                            <td class='w-30 font-weight-600'>Chip đồ họa (GPU)</td>
                             <td>ABC</td>
                         </tr>
                         
@@ -658,19 +659,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>RAM</td>
+                            <td class='w-30 font-weight-600'>RAM</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Bộ nhớ trong</td>
+                            <td class='w-30 font-weight-600'>Bộ nhớ trong</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Bộ nhớ còn lại (khả dụng) khoảng</td>
+                            <td class='w-30 font-weight-600'>Bộ nhớ còn lại (khả dụng) khoảng</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Thẻ nhớ</td>
+                            <td class='w-30 font-weight-600'>Thẻ nhớ</td>
                             <td>ABC</td>
                         </tr>
 
@@ -681,35 +682,35 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Mạng di động</td>
+                            <td class='w-30 font-weight-600'>Mạng di động</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>SIM</td>
+                            <td class='w-30 font-weight-600'>SIM</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Wifi</td>
+                            <td class='w-30 font-weight-600'>Wifi</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>GPS</td>
+                            <td class='w-30 font-weight-600'>GPS</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Bluetooth</td>
+                            <td class='w-30 font-weight-600'>Bluetooth</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Cổng kết nối/sạc</td>
+                            <td class='w-30 font-weight-600'>Cổng kết nối/sạc</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Jack tai nghe</td>
+                            <td class='w-30 font-weight-600'>Jack tai nghe</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Kêt nối khác</td>
+                            <td class='w-30 font-weight-600'>Kêt nối khác</td>
                             <td>ABC</td>
                         </tr>
 
@@ -720,15 +721,15 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Dung lượng pin</td>
+                            <td class='w-30 font-weight-600'>Dung lượng pin</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Loại pin</td>
+                            <td class='w-30 font-weight-600'>Loại pin</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Công nghệ pin</td>
+                            <td class='w-30 font-weight-600'>Công nghệ pin</td>
                             <td>ABC</td>
                         </tr>
 
@@ -739,27 +740,27 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Bảo mật nâng cao</td>
+                            <td class='w-30 font-weight-600'>Bảo mật nâng cao</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Tính năng đặc biệt</td>
+                            <td class='w-30 font-weight-600'>Tính năng đặc biệt</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Ghi âm</td>
+                            <td class='w-30 font-weight-600'>Ghi âm</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Radio</td>
+                            <td class='w-30 font-weight-600'>Radio</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Xem phim</td>
+                            <td class='w-30 font-weight-600'>Xem phim</td>
                             <td>ABC</td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Nghe nhạc</td>
+                            <td class='w-30 font-weight-600'>Nghe nhạc</td>
                             <td>ABC</td>
                         </tr>
 
@@ -770,7 +771,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class='td-30 font-weight-600'>Thời điểm ra mắt</td>
+                            <td class='w-30 font-weight-600'>Thời điểm ra mắt</td>
                             <td>ABC</td>
                         </tr>
                     </tbody>

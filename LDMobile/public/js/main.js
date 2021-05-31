@@ -1,11 +1,11 @@
 
 //===== Preloader
-// $(window).on('load', function(){
-//     $('.loader').fadeOut(250);
-// });
-
+$(window).on('load', function(){
+    $('.loader').fadeOut(250);
+});
 
 $(function() {
+    var url = window.location.pathname.split('/')[window.location.pathname.split('/').length - 1];
 
     // hiển thị button cuộn lên đầu
     $(window).scroll(function(e){
@@ -45,7 +45,300 @@ $(function() {
         smartSpeed: 1000,
     });
 
-    //===================================================== Header ============================================================
+/*============================================================================================================================
+                                                            Sign Up
+=============================================================================================================================*/
+    
+    if(url == 'dangky'){
+        // cấu hình firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyBmuQyKi5Xer3D4hFYHMkYTMx0Jb3Bcgrs",
+            authDomain: "ldmobileauth-eb072.firebaseapp.com",
+            projectId: "ldmobileauth-eb072",
+            storageBucket: "ldmobileauth-eb072.appspot.com",
+            messagingSenderId: "285654392090",
+            appId: "1:285654392090:web:7dd64e8651ed9fdad660a3",
+            measurementId: "G-YHSGQC11SQ"
+        };
+
+        // khởi tạo
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+        firebase.auth().useDeviceLanguage();
+        firebase.auth().signOut();
+
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('signup-step-1', {
+            'size': 'invisible',
+            'callback': (response) => {
+                sendVerifyCode();
+            },
+            'expired-callback': () => {
+                location.reload();
+            }
+        });
+
+        recaptchaVerifier.render().then(function(widgetId) {
+            window.recaptchaWidgetId = widgetId;
+        });
+    }
+
+    /*=====================================================
+                        Nhập số điện thoại                  
+    =======================================================*/
+    // đăng ký tài khoản
+    $('#signup-step-1').click(function(){
+        sendVerifyCode();
+    });
+
+    // gửi mã xác nhận
+    function sendVerifyCode(){
+        var data = $('#su-tel');
+
+        // kiểm tra bẫy lỗi
+        var valiPhone = validatePhoneNumberSignUp(data);
+
+        // sdt không hợp lệ
+        if(!valiPhone){
+            return;
+        }  
+
+        $('.loader').fadeIn();
+        var tel = '+1' + $('#su-tel').val();
+        var appVerifier = window.recaptchaVerifier;
+
+        window.signingIn = true;
+
+        // gửi mã thành công
+        firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
+            window.confirmationResult = confirmationResult;
+            coderesult = confirmationResult;
+            window.signingIn = false;
+
+            // tiếp tục bước tiếp theo
+            $('#enter-phone-number').addClass('none-dp');
+
+            // hiển thị gửi code vào số điện thoại
+            var displayTel = tel.replace('+1','');
+            $('#tel-confirm').text(displayTel);
+            $('#enter-verify-code').removeClass('none-dp');
+
+        }).catch(function (error) { // gửi mã thất bại
+            console.log(error);
+            window.signingIn = false;
+            alert('Đã có lỗi xảy ra vui lòng thử lại')
+            grecaptcha.reset(window.recaptchaWidgetId);
+            location.reload();
+        });
+        $('.loader').fadeOut();
+    }
+
+    function validatePhoneNumberSignUp(tel){
+        // nếu đã kiểm tra rồi thì return
+        if(tel.hasClass('required-2')){
+            return;
+        }
+
+        var length = tel.val().length;
+        var phoneno = /^\d{10}$/;
+        var required;
+
+        // chưa nhập
+        if(length == 0){
+            tel.addClass('required-2');
+            required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
+            tel.after(required);
+            return false;
+        } else if(!tel.val().match(phoneno)){ // không đúng định dạng
+            required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');
+            tel.addClass('required-2');
+            tel.after(required);
+            return false;
+        }
+
+        return true;
+    }
+
+    // kiểm tra nhập số diện thoại
+    $('#su-tel').keyup(function(){
+        if($(this).hasClass('required-2')){
+            $(this).next().remove();
+        }
+
+        var phoneno = /^\d{10}$/;
+        var required; 
+
+        // chưa nhập
+        if($(this).val() == ''){
+            required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
+            $(this).addClass('required-2');
+            $(this).after(required);
+        } else if(!$(this).val().match(phoneno) || $(this).val().charAt(0) != 0){ // không đúng định dạng | ký tự đầu k phải số 0
+            if($(this).next().hasClass('required-text')){
+                return;
+            }
+            required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');    
+            $(this).addClass('required-2');
+            $(this).after(required);
+        } else { // xóa required
+            $(this).removeClass('required-2');
+            $(this).next().remove();
+        }
+    });
+
+    /*=====================================================
+                        Xác minh mã xác nhận                  
+    =======================================================*/
+
+    // quay lại bước nhập sdt
+    $('#back-to-enter-tel').click(function(){
+        // reset sdt
+        $('#su-tel').val('');
+        // reset reCAPTCHA
+        grecaptcha.reset(window.recaptchaWidgetId);
+
+        window.confirmationResult = null;
+
+        // quay lại phần nhập sdt
+        $('#enter-phone-number').removeClass('none-dp');
+        $('#enter-verify-code').addClass('none-dp');
+    });
+
+    // Xác nhận code
+    $('#signup-step-2').click(function(){
+        var codeInput = $('#verify-code-inp');
+        var valiVerfifyCode = validateVerifyCode(codeInput);
+
+        // code không hợp lệ
+        if(!valiVerfifyCode){
+            return;
+        } else {    // code hợp lệ
+            codeVerify(codeInput);
+        }
+    });
+
+    $('#verify-code-inp').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).removeClass('required');
+            $(this).next().remove();
+        }
+    });
+
+    // kiểm tra bẫy lỗi mã xác nhận
+    function validateVerifyCode(codeInput){
+        // nếu đã kiểm tra rồi thì return
+        if(codeInput.hasClass('required')){
+            return;
+        }
+
+        var code = codeInput.val().trim();
+
+        // code hợp lệ
+        if(code != '' && !isNaN(code) && code.length == 6){
+            return true;
+        }
+
+        // reset nhập code
+        codeInput.val('');
+
+        // hiển thị thông báo lỗi
+        codeInput.addClass('required');(errMessage);
+        var errMessage = $('<div class="required-text text-center">Mã xác thực không hợp lệ, vui lòng kiểm tra lại</div>');
+        codeInput.after(errMessage);
+        return false;
+    }
+
+    function codeVerify(codeInput) {
+        $('.loader').fadeIn();
+
+        var code = codeInput.val();
+    
+        // xác nhận code hợp lệ
+        coderesult.confirm(code).then(function (result) {
+            window.verifyingCode = false;
+            window.confirmationResult = null;
+
+            // tạo mật khẩu
+            $('#enter-verify-code').addClass('none-dp');
+            $('#enter-password').removeClass('none-dp');
+
+        }).catch(function (error) { // code không hợp lệ
+            window.verifyingCode = false;
+            console.log(error);
+
+            // hiển thị thông báo lỗi
+            codeInput.addClass('required');(errMessage);
+            var errMessage = $('<div class="required-text text-center">Mã xác thực không hợp lệ, vui lòng kiểm tra lại</div>');
+            codeInput.after(errMessage);
+        });
+
+        $('.loader').fadeOut();
+    }
+
+    /*=====================================================
+                        Tạo mật khẩu                  
+    =======================================================*/
+
+    $('#signup-step-3').click(function(){
+        var passwordInp = $('#su-pw');
+        var rePasswordInp = $('#su-re-pw');
+        var valiPw = validatePassword(passwordInp, rePasswordInp);
+    });
+
+    function validatePassword(passwordInp, rePasswordInp){
+        var pw = passwordInp.val();
+        var rePw = rePasswordInp.val();
+
+        if(passwordInp.hasClass('required') || rePasswordInp.hasClass('required')){
+            return;
+        }
+        
+        // mật khẩu và nhập lại mật khẩu hợp lệ
+        if(pw != '' && rePw != '' && pw.localeCompare(rePw) == 0){
+            return true;
+        }
+
+        // chưa nhập mật khẩu
+        if(pw == ''){
+            passwordInp.addClass('required');
+            var errMess = $('<div class="required-text">Vui lòng nhập mật khẩu</div>');
+            passwordInp.after(errMess);
+            return false;
+        }
+
+        // chưa nhập lại mật khẩu
+        if(rePw == ''){
+            rePasswordInp.addClass('required');
+            var errMess = $('<div class="required-text">Vui lòng nhập lại mật khẩu</div>');
+            rePasswordInp.after(errMess);
+            return false;
+        }
+
+        // nhập lại không khớp
+        if(pw.localeCompare(rePw) != 0){
+            rePasswordInp.addClass('required');
+            var errMess = $('<div class="required-text">Nhập lại mật khẩu không trùng khớp</div>');
+            rePasswordInp.after(errMess);
+            return false;
+        }
+    }
+
+    $('#su-pw').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).removeClass('required');
+            $(this).next().remove();
+        }
+    });
+
+    $('#su-re-pw').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).removeClass('required');
+            $(this).next().remove();
+        }
+    });
+
+/*============================================================================================================================
+                                                            Header
+=============================================================================================================================*/
 
     // hiển thị offcanvas
     $('#show-offcanvas').on('click', function(){
@@ -121,8 +414,11 @@ $(function() {
         }
     });
 
-    //===================================================== Index ============================================================
+/*============================================================================================================================
+                                                            Index
+=============================================================================================================================*/
 
+    // sec khuyến mãi
     $('#index-promotion-carousel').owlCarousel({
         nav: false,
         rewind: true,
@@ -155,7 +451,9 @@ $(function() {
         owl_promotion.trigger('next.owl.carousel');
     });
 
-    //===================================================== Account ============================================================
+/*============================================================================================================================
+                                                            Account
+=============================================================================================================================*/
 
     //==================================================================================
     //============================== thông tin tài khoản ===============================
@@ -688,7 +986,7 @@ $(function() {
             $('#temp_' + id).css({
                 'visibility' : 'visible',
             });
-            $(this).html('Xem thêm');
+            $(this).html('Xem chi tiết');
         }
     })
 
@@ -723,7 +1021,9 @@ $(function() {
         $('#confirm-modal').modal('show');
     });
 
-    //===================================================== Shop ============================================================
+/*============================================================================================================================
+                                                            Shop
+=============================================================================================================================*/
     
     // nút hiển thị bộ lọc
     $('#btn-show-filter').click(function(){
@@ -761,7 +1061,9 @@ $(function() {
         });
     });
 
-    //===================================================== Chi tiết ============================================================
+/*============================================================================================================================
+                                                            Detail
+=============================================================================================================================*/
     
     // slide hình ảnh khác của sản phẩm
     $('#detail-carousel').owlCarousel({
@@ -1064,7 +1366,9 @@ $(function() {
     });
     
 
-    //===================================================== Giỏ hàng ============================================================
+/*============================================================================================================================
+                                                            Cart
+=============================================================================================================================*/
 
     // giảm số lượng sản phẩm trong giỏ hàng
     $('.minus').off('click').on('click', function(e){
@@ -1088,7 +1392,9 @@ $(function() {
         $('.qty_' + id).text(qty);
     });
 
-    //===================================================== Thanh toán ============================================================
+/*============================================================================================================================
+                                                            Checkout
+=============================================================================================================================*/
 
     // kiểm tra nơi nhận hàng
     if($('input[name="receive-method"]').is(':checked')){
@@ -1127,7 +1433,9 @@ $(function() {
         $('#new-address-div').hide();
     });
 
-    //================================ nhận tại cửa hàng ==========================
+    /*=============================================================================
+                                  nhận tại cửa hàng
+    ===============================================================================*/
 
     // hiển thị khu vực
     $('#area-selected').click(function(){
@@ -1179,6 +1487,7 @@ $(function() {
     $('#btn-confirm-checkout').click(function(){
         var receciveMethod = $('input[name="receive-method"]:checked').val();
         
+        // nếu nhận tại cửa hàng thì kiểm tra bẫy lỗi các input
         if(receciveMethod == 'atStore'){
             var fullName = $('input[id="HoTen"]');
             var tel = $('#SDT');
@@ -1193,14 +1502,14 @@ $(function() {
             if(!valiName && !valiSelect && !valiPhone){
                 $(window).scrollTop(0);
             } else { // tiến hành thanh toán
-                pay();
+                checkout();
             }
+        } else {    // nếu giao hàng tận nơi
+            checkout();
         }
-
-        Pay();
     });
 
-    function Pay(){
+    function checkout(){
         var paymentMethod = $('input[name="payment-method"]:checked').val();
         
         // thanh toán khi nhận hàng
@@ -1208,29 +1517,6 @@ $(function() {
 
         } else { // thanh toán zalopay
             $('#checkout-form').submit();
-            // $.ajax({
-            //     headers: {
-            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            //     },
-            //     url: '/test3',
-            //     type: 'POST',
-            //     success:function(data){
-            //         console.log(data);
-            //         if(data['return_code'] == 1){
-            //             $.ajax({
-            //                 headers: {
-            //                     'contentType' : 'application/x-www-form-urlencoded'
-            //                 },
-            //                 url: data['order_url'],
-            //                 type: 'POST',
-            //                 success:function(data){
-            //                     console.log('ok');
-            //                 }
-            //             });
-            //         }
-            //     },
-                
-            // })
         }
     }
 
@@ -1358,8 +1644,9 @@ $(function() {
         },1000);
     }
     
-
-    //===================================================== Compare ============================================================
+/*============================================================================================================================
+                                                            Compare
+=============================================================================================================================*/
     
     // tìm kiếm điện thoại để so sánh
     $('#compare-search-phone').keyup(function(){
@@ -1377,7 +1664,9 @@ $(function() {
         $('.compare-detail').css('display', 'table-row');
     });
 
-    //===================================================== Check IMEI ============================================================
+/*============================================================================================================================
+                                                            Check IMEI
+=============================================================================================================================*/
 
     $('#imei-inp').keyup(function(){
         if($(this).hasClass('required')){

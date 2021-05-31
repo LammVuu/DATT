@@ -22,6 +22,7 @@
                         </thead>
                         <tbody>
                             <?php for($i = 0; $i < 3; $i++) : ?>
+                            {{-- điện thoại trong giỏ hàng --}}
                             <tr>
                                 <td class="d-flex">
                                     <div class='w-30'>
@@ -41,9 +42,9 @@
                                             
                                             {{-- giảm giá --}}
                                             <div class='cart-promotion p-10 mb-10 d-flex align-items-center'>
-                                                <a href="#" class="black fz-18" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample_<?php echo $i ?>" aria-expanded="false" aria-controls="collapseExample">
+                                                <div class="btn-promotion-info black fz-18" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample_<?php echo $i ?>" aria-expanded="false" aria-controls="collapseExample">
                                                     <i class="fal fa-info-circle mr-10 fz-18"></i>
-                                                </a>
+                                                </div>
                                                 Giảm<b class='ml-5 mr-5'>3.000.000<sup>đ</sup></b>còn lại<b class='price-color ml-5'>26.000.000<sup>đ</sup></b>
       
                                             </div>
@@ -172,11 +173,13 @@
 <div class="modal fade" id="modal-promotion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-body">
-                <div class="d-flex justify-content-between p-20">
-                    <h4>Mã khuyến mãi của tôi</h4>
-                    <button type='button' class="btn-close" data-bs-dismiss='modal'></button>
+            <div class="modal-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="fz-20 font-weight-600">Mã khuyến mãi của tôi</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+            </div>
+            <div class="modal-body">
                 <div class="cart-list-pro pl-50 pr-50 mt-20">
                     @for ($i = 0; $i < 5; $i++)
                         <div class="pb-30">

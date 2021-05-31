@@ -4,7 +4,7 @@
 @include("user.header.head")
 
 <body>
-    {{-- <div class="loader"><div class="loader-bg"></div><div class="spinner-border" role="status"></div></div> --}}
+    <div class="loader"><div class="loader-bg"></div><div class="spinner-border" role="status"></div></div>
 
     @include('user.header.header')
     

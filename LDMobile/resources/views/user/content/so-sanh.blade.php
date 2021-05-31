@@ -77,7 +77,7 @@
                             </div>
                         </div>
                     </td>
-                    <td class='w-25 center-td'>
+                    <td class='w-25 vertical-center'>
                         <button type='button' data-bs-toggle="modal" data-bs-target="#compare-phone" class="compare-btn-add-phone mb-120">
                             <img src="images/add-phone.png" alt="" class='w-30 center-img'>
                             <div class='pt-20 font-weight-600'>Thêm điện thoại để so sánh</div>
@@ -446,14 +446,10 @@
                 <tr class='border'>
                     <td></td>
                     <td>
-                        <div class='p-10'>
-                            <a href="#" class="main-btn w-100 p-10">Mua ngay</a>
-                        </div>
+                        <a href="#" class="main-btn w-100 p-10">Mua ngay</a>
                     </td>
                     <td>
-                        <div class='p-10'>
-                            <a href="#" class="main-btn w-100 p-10">Mua ngay</a>
-                        </div>
+                        <a href="#" class="main-btn w-100 p-10">Mua ngay</a>
                     </td>
                     <td></td>
                 </tr>

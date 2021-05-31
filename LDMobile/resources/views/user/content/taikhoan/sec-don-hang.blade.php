@@ -28,17 +28,17 @@
                 <?php for($i = 0; $i < 5; $i++) : ?>
                 <tr>
                     {{-- mã đơn hàng --}}
-                    <td class='center-td'>
+                    <td class='vertical-center'>
                         <div class='p-20'>
                             <a href="{{route('user/tai-khoan-chi-tiet-don-hang')}}"><?php echo $i ?></a>
                         </div>
                     </td>
                     {{-- ngày mua --}}
-                    <td class='center-td'>
+                    <td class='vertical-center'>
                         <div>18/04/2021</div>
                     </td>
                     {{-- sản phẩm mua --}}
-                    <td class='account-td-40'>
+                    <td class='w-40 vertical-center'>
                         <div class='pt-15 pb-15'>
                             <div class='d-flex justify-content-between align-items-end'>
                                 <div id=<?php echo 'temp_' . $i ?> class='d-flex'>
@@ -46,39 +46,75 @@
                                     <div class="d-flex flex-column fz-14">
                                         <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
                                         <span>Dung lượng: 128GB</span>
-                                        <span>Số lượng: 2</span>
+                                        <span>Số lượng: 2
+                                            <a type='button' data-bs-toggle='modal' data-bs-target='#view-more-order' class="ml-20">Xem thêm</a>
+                                        </span>
                                     </div>
                                 </div>
-                                <a data-bs-toggle="collapse" id=<?php echo $i ?> class='show-order-list-pro' data-id=<?php echo $i ?> href=<?php echo "#acc-order-list-pro-" . $i ?> role="button" aria-expanded="false" aria-controls="collapseExample">Xem thêm</a>
-                            </div>
-                            {{-- danh sách sản phẩm mua --}}
-                            <div class="collapse border" id=<?php echo "acc-order-list-pro-" . $i ?>>
-                                <?php for($j = 0; $j < 5; $j++) : ?>
-                                <div class='d-flex justify-content-between align-items-end pt-10 pb-10'>
-                                    <div class='d-flex'>
-                                        <img src="images/phone/iphone_12_red.jpg" alt="" width="60px">
-                                        <div class="d-flex flex-column fz-14">
-                                            <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
-                                            <span>Dung lượng: 128GB</span>
-                                            <span>Số lượng: 2</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php endfor ?>
                             </div>
                         </div>
                     </td>
                     {{-- giá  --}}
-                    <td class='center-td'>
+                    <td class='vertical-center'>
                         <div>15.000.000 VND</div>
                     </td>
                     {{-- trạng thái đơn hàng --}}
-                    <td class='center-td'>
+                    <td class='vertical-center'>
                         <div>Giao hàng thành công</div>
                     </td>
                 </tr>
                 <?php endfor ?>
             </tbody>
         </table>
+    </div>
+</div>
+
+{{-- modal xem thêm đơn hàng --}}
+<div class="modal fade" id="view-more-order" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div type='button' class="btn-close" data-bs-dismiss='modal'></div>
+                <div class="d-flex flex-column">
+                    <div class="fz-20 mb-5">Đơn hàng <b>123</b></div>
+                    <div class="fz-14">Ngày mua: 12/12/2021</div>
+                </div>
+            </div>
+            <div class="modal-body p-0">
+                {{-- danh sách điện thoại --}}
+                <div class="list-phone-order">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Điện thoại</th>
+                                <th>Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for ($i = 0; $i < 5; $i++)
+                            <tr>
+                                <td class="vertical-center text-center"><?php echo $i ?></td>
+                                <td>{{-- điện thoại --}}
+                                    <div class="p-10">
+                                        <div class="d-flex">
+                                            <img src="images/phone/iphone_12_black.jpg" alt="" width="100px">
+                                            <div class="ml-10">
+                                                <a href="#" class="font-weight-600 mb-5 black">iPhone 12 PRO MAX</a>
+                                                <div class="fz-14">Dung lượng: 128GB</div>
+                                                <div class="fz-14">Màu sắc: Đen</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="vertical-center text-center font-weight-600">x1</td>
+                            </tr>
+                        @endfor
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

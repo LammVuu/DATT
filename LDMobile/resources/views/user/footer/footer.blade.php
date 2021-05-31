@@ -76,8 +76,8 @@
                             <div>
                                 <div class="font-weight-600 fz-20">Về chúng tôi</div>
                                 <div class="d-flex flex-column mt-20">
-                                    <a href="#" class="gray-1 mb-5">Giới thiệu</a>
-                                    <a href="#" class="gray-1 mb-5">Liên hệ</a>
+                                    <a href={{route('user/ve-chung-toi')}} class="gray-1 mb-5">Giới thiệu</a>
+                                    <a href={{route('user/lien-he')}} class="gray-1 mb-5">Liên hệ</a>
                                 </div>
                             </div>
                         </div> 

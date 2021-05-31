@@ -3,10 +3,10 @@
 
 @include("user.header.head")
 <body>
-    <section class="pt-100 pb-100">
+    <section class="success-sec">
         <div class="container">
             <div class="row">
-                <div class="col-md-7 col-sm-10 mx-auto box-shadow">
+                <div class="col-md-7 col-sm-10 mx-auto box-shadow white-bg">
                     <div class="d-flex flex-column">
                         <img id='success-img' src="images/check.gif" alt="" class="center-img">
                     </div>

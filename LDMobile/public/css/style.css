@@ -1,7 +1,7 @@
-/*==================================================================
-                            01.Common css
-==================================================================*/
-/*=====  Common Style =====*/
+/*========================================================================================================================
+                                                      Default                                                           
+========================================================================================================================*/
+
 @import url("https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900&display=swap");
 
 /* width */
@@ -78,49 +78,6 @@ video {
   vertical-align: middle;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #000;
-  margin: 0;
-}
-
-h1 {
-  font-size: 48px;
-}
-
-h2 {
-  font-size: 36px;
-}
-
-h3 {
-  font-size: 28px;
-}
-
-h4 {
-  font-size: 22px;
-}
-
-h5 {
-  font-size: 18px;
-}
-
-h6 {
-  font-size: 16px;
-}
-
-p {
-  font-size: 16px;
-  line-height: 22px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.64);
-  margin: 0;
-}
-
 .bg_cover {
   background-position: center center;
   background-size: cover;
@@ -140,7 +97,78 @@ p {
   transition: all 0.3s linear;
 }
 
-/*===== All Preloader Style =====*/
+#btn-scroll-top{
+  cursor: pointer;
+  position: fixed;
+  z-index: 100;
+  right: 1%;
+  bottom: 2%;
+  padding: 5px 10px;
+  border: 2px solid #078fd8;
+  background-color: #078FD8;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  transition: 0.5s;
+  -ms-transform: translateY(100px);
+  transform: translateY(100px);
+}
+
+.center-img{
+  display: block;
+  margin: auto;
+}
+
+.circle-img{
+  border-radius: 100%;
+}
+
+.relative{
+  position: relative;
+}
+
+.pointer-cs{
+  cursor: pointer;
+}
+
+.default-cs{
+  cursor: default;
+}
+
+.none-dp{
+  display: none;
+}
+
+.block-dp{
+  display: block;
+}
+
+.vl{
+  border-right: 1px solid #dcdcdc;
+  height: 100%;
+}
+
+.none-style{
+  list-style-type: none;
+}
+
+.border-success{
+  border: 3px dashed #15c41e;
+}
+
+.vertical-center{
+  vertical-align:middle;
+}
+
+.box-shadow {
+  box-shadow: 0 1px 4px 2px rgba(0, 0, 0, 0.16);
+}
+
+/*========================================================================================================================
+                                                      Loader                                                           
+========================================================================================================================*/
+
 .loader{
   position: fixed;
   left: 0; top: 0; right: 0;
@@ -164,211 +192,30 @@ p {
   color: #078FD8;
 }
 
-/*==================================================================
-                          02.Page Banner css
-==================================================================*/
-/*=====  Page Banner Style =====*/
-.page-banner {
-  background-color: #542DED;
-  padding-top: 40px;
-  padding-bottom: 45px;
-}
+/*========================================================================================================================
+                                                      Alert Toast
+==========================================================================================================================*/
 
-.page-banner-content .sub-title {
-  font-weight: 500;
-  font-size: 44px;
-  line-height: 55px;
-  color: #fff;
-}
-
-@media (max-width: 767px) {
-  .page-banner-content .sub-title {
-    font-size: 24px;
-    line-height: 28px;
-  }
-}
-
-.page-banner-content .page-title {
-  font-weight: 500;
-  font-size: 60px;
-  line-height: 60px;
-  color: #fff;
-  margin-top: 10px;
-}
-
-@media (max-width: 767px) {
-  .page-banner-content .page-title {
-    font-size: 30px;
-    line-height: 35px;
-  }
-}
-
-/*==================================================================
-                          03.Colors css
-==================================================================*/
-/*========== White Color =========*/
-.white-color {
-  color: #fff;
-}
-
-.white-variant {
-  color: #FAFAFA;
-}
-
-.white-light {
-  color: #F2F2F2;
-}
-
-.bg-white-color {
-  background-color: #fff;
-}
-
-.bg-white-variant {
-  background-color: #FAFAFA;
-}
-
-.bg-white-light {
-  background-color: #F2F2F2;
-}
-
-/*========== Dark Color =========*/
-.dark-color {
-  color: #000;
-}
-
-.dark-variant {
-  color: #4C4C4C;
-}
-
-.dark-light {
-  color: #7D7D7D;
-}
-
-.bg-dark-color {
-  background-color: #000;
-}
-
-.bg-dark-variant {
-  background-color: #4C4C4C;
-}
-
-.bg-dark-light {
-  background-color: #7D7D7D;
-}
-
-/*========== Gray Color =========*/
-.gray-1 {
-  color: #828282;
-}
-
-.gray-2 {
-  color: #BDBDBD;
-}
-
-.gray-3 {
-  color: #D1D1D1;
-}
-
-.gray-4 {
-  color: #EFEFEF;
-}
-
-.bg-gray-1 {
-  background-color: #828282;
-}
-
-.bg-gray-2 {
-  background-color: #BDBDBD;
-}
-
-.bg-gray-3 {
-  background-color: #D1D1D1;
-}
-
-.bg-gray-4 {
-  background-color: #EFEFEF;
-}
-/*========== Font Weight =========*/
-.font-weight-300 {
-  font-weight: 300;
-}
-
-.font-weight-400 {
-  font-weight: 400;
-}
-
-.font-weight-600{
-  font-weight: 600;
-}
-
-.font-weight-500 {
-  font-weight: 500;
-}
-
-.font-weight-700 {
-  font-weight: 700;
-}
-
-.text-strike{
-  text-decoration: line-through;
-}
-
-.checkout-btn{
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #f83a5c;
+.alert-toast{
+  cursor: default;
+  position: fixed;
+  left: 20px; bottom: 30px;
+  z-index: 5;
+  width: auto;
+  font-size: 16px;
+  background-color: black;
+  opacity: 0.8;
   color: white;
-  text-align: center;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 2px 2px 10px 4px rgba(0, 0, 0, 0.16);
+  transform: translateY(100px);
   transition: .2s;
 }
 
-.checkout-btn:hover{
-  color: white;
-  background-color: #e52e4f;
-}
-
-.main-btn {
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #38b1f1;
-  color: white;
-  text-align: center;
-  transition: .2s;
-}
-
-.main-btn:hover{
-  background-color: #078FD8;
-  color: white;
-}
-
-.main-btn-2{
-  cursor: pointer;
-  border: 2px solid #078FD8;
-  border-radius: 5px;
-  background-color: white;
-  color: #078FD8;
-  text-align: center;
-  transition: .2s;
-}
-
-.main-btn-2:hover{
-  background-color: #078FD8;
-  color: white;
-}
-
-.cancel-btn{
-  cursor: pointer;
-  border: 2px solid #f1f1f1;
-  border-radius: 5px;
-  background-color: #f1f1f1;
-  color: black;
-  text-align: center;
-  transition: .2s;
-}
-
-/*==================================================================
-                           10. Breadcrumbs css
-==================================================================*/
+/*========================================================================================================================
+                                                    Breadcrumbs css
+==========================================================================================================================*/
 /*=====  Breadcrumbs Style =====*/
 .breadcrumbs-style {
   border-radius: 8px;
@@ -538,285 +385,176 @@ p {
   color: #fff;
 }
 
-/*=======================================================================================================================*/
-
-/*====================================================== Custom =========================================================*/
-
-::placeholder{
-  color: #919191;
+/*========================================================================================================================
+                                                  Color & Font
+==========================================================================================================================*/
+/*========== White Color =========*/
+.white-color {
+  color: #fff;
 }
 
-/*============ input field =================*/
-[type="text"], [type='tel'], [type='password'], [type='email']{
-  width: 100%;
-  padding:7px 12px;
-  color: black;
-  border: 1px solid #dcdcdc;
-  border-radius: 5px;
-  outline: none;
-  transition: .2s;
-}
-[type='text']:focus, [type='tel']:focus, [type='password']:focus, [type='email']:focus{
-  border-radius: 5px;
-  /* border: 1px solid #078FD8; */
-  box-shadow: 0 0 0 2px #078FD8;
+.white-variant {
+  color: #FAFAFA;
 }
 
-/*============ warning input =================*/
-.required{
-  box-shadow: 0 0 0 2px red !important;
-  background-color: #ffe7e7 !important;
+.white-light {
+  color: #F2F2F2;
 }
 
-.required-text{
-  padding-top: 5px;
-  color: red;
+.bg-white-color {
+  background-color: #fff;
 }
 
-/* ====================== radio input ======================*/
-[type="radio"]:checked,
-[type="radio"]:not(:checked) {
-    position: absolute;
-    left: -9999px;
-}
-[type="radio"]:checked + label,
-[type="radio"]:not(:checked) + label
-{
-    position: relative;
-    padding-left: 28px;
-    cursor: pointer;
-    line-height: 20px;
-    display: inline-block;
-    color: #666;
-}
-[type="radio"]:checked + label::before,
-[type="radio"]:not(:checked) + label::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 18px;
-    height: 18px;
-    
-    border-radius: 100%;
-    background: #fff;
-}
-[type="radio"]:checked + label::before{
-  border: 1px solid #078FD8;
-}
-[type="radio"]:not(:checked) + label::before{
-  border: 1px solid #ddd;
-}
-[type="radio"]:checked + label::after,
-[type="radio"]:not(:checked) + label::after {
-    content: '';
-    width: 10px;
-    height: 10px;
-    background: #078FD8;
-    border: 1px solid #078FD8;
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    border-radius: 100%;
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-}
-[type="radio"]:not(:checked) + label::after {
-    opacity: 0;
-    -webkit-transform: scale(0);
-    transform: scale(0);
-}
-[type="radio"]:checked + label::after {
-    opacity: 1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
+.bg-white-variant {
+  background-color: #FAFAFA;
 }
 
-/* ====================== checkbox input ======================*/
-[type='checkbox']:checked, [type='checkbox']:not(:checked){
-  position: absolute;
-  left: -9999px;
-}
-[type="checkbox"]:checked + label,
-[type="checkbox"]:not(:checked) + label
-{
-    position: relative;
-    padding-left: 24px;
-    cursor: pointer;
-    line-height: 20px;
-    display: inline-block;
-    color: #666;
-}
-[type="checkbox"]:checked + label::before,
-[type="checkbox"]:not(:checked) + label::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 2px;
-    width: 15px;
-    height: 15px;
-    background: #fff;
-}
-[type="checkbox"]:checked + label::before{
-  background-color: #078FD8;
-
-}
-[type="checkbox"]:not(:checked) + label::before{
-  border: 1px solid #ddd;
-}
-[type="checkbox"]:checked + label::after,
-[type="checkbox"]:not(:checked) + label::after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 4px;
-  z-index: 1;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 3px 3px 0;
-  -webkit-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-[type="checkbox"]:not(:checked) + label::after {
-  opacity: 0;
-}
-[type="checkbox"]:checked + label::after {
-  opacity: 1;
+.bg-white-light {
+  background-color: #F2F2F2;
 }
 
-/* ================ range slider =================*/
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+/*========== Dark Color =========*/
+.dark-color {
+  color: #000;
 }
 
-.slider:hover {
-  opacity: 1;
+.dark-variant {
+  color: #4C4C4C;
 }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #078FD8;
-  cursor: pointer;
+.dark-light {
+  color: #7D7D7D;
 }
 
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #04AA6D;
-  cursor: pointer;
+.bg-dark-color {
+  background-color: #000;
 }
 
-/* ================ textarea =================*/
-
-textarea{
-  resize: none;
-  overflow: auto;
-  border: 1px solid #dcdcdc;
-  border-radius: 5px;
-  padding: 7px 14px;
-  width: 100%;
-  transition: .2s;
+.bg-dark-variant {
+  background-color: #4C4C4C;
 }
 
-textarea:focus{
-  box-shadow: 0 0 0 2px #078FD8;
+.bg-dark-light {
+  background-color: #7D7D7D;
 }
 
-/*=======================================================================================================================*/
+/*========== Gray Color =========*/
+.gray-1 {
+  color: #828282;
+}
 
-#btn-scroll-top{
-  cursor: pointer;
-  position: fixed;
-  z-index: 100;
-  right: 1%;
-  bottom: 2%;
-  padding: 5px 10px;
-  border: 2px solid #078fd8;
-  background-color: #078FD8;
-  border-radius: 10px;
-  font-size: 24px;
+.gray-2 {
+  color: #BDBDBD;
+}
+
+.gray-3 {
+  color: #D1D1D1;
+}
+
+.gray-4 {
+  color: #EFEFEF;
+}
+
+.bg-gray-1 {
+  background-color: #828282;
+}
+
+.bg-gray-2 {
+  background-color: #BDBDBD;
+}
+
+.bg-gray-3 {
+  background-color: #D1D1D1;
+}
+
+.bg-gray-4 {
+  background-color: #EFEFEF;
+}
+/*========== Font Weight =========*/
+.font-weight-300 {
+  font-weight: 300;
+}
+
+.font-weight-400 {
+  font-weight: 400;
+}
+
+.font-weight-600{
   font-weight: 600;
-  color: white;
-  transition: 0.5s;
-  -ms-transform: translateY(100px);
-  transform: translateY(100px);
 }
 
-.center-img{
-  display: block;
-  margin: auto;
+.font-weight-500 {
+  font-weight: 500;
 }
 
-.circle-img{
-  border-radius: 100%;
+.font-weight-700 {
+  font-weight: 700;
 }
 
-.relative{
-  position: relative;
+.text-strike{
+  text-decoration: line-through;
 }
 
-.pointer-cs{
+.checkout-btn{
   cursor: pointer;
-}
-
-.default-cs{
-  cursor: default;
-}
-
-.none-dp{
-  display: none;
-}
-
-.block-dp{
-  display: block;
-}
-
-.vl{
-  border-right: 1px solid #dcdcdc;
-  height: 100%;
-}
-
-.none-style{
-  list-style-type: none;
-}
-
-.border-success{
-  border: 3px dashed #15c41e;
-}
-
-/*====================================== Toast ===================================*/
-.alert-toast{
-  cursor: default;
-  position: fixed;
-  left: 20px; bottom: 30px;
-  z-index: 5;
-  width: auto;
-  font-size: 16px;
-  background-color: black;
-  opacity: 0.8;
-  color: white;
   border-radius: 5px;
-  padding: 10px;
-  box-shadow: 2px 2px 10px 4px rgba(0, 0, 0, 0.16);
-  transform: translateY(100px);
+  background-color: #f83a5c;
+  color: white;
+  text-align: center;
   transition: .2s;
 }
+
+.checkout-btn:hover{
+  color: white;
+  background-color: #e52e4f;
+}
+
+.main-btn, button.main-btn {
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #38b1f1;
+  color: white;
+  text-align: center;
+  transition: .2s;
+}
+
+button.main-btn{
+  border: none;
+}
+
+.main-btn:hover, button.main-btn{
+  background-color: #078FD8;
+  color: white;
+}
+
+.main-btn-2{
+  cursor: pointer;
+  border: 2px solid #078FD8;
+  border-radius: 5px;
+  background-color: white;
+  color: #078FD8;
+  text-align: center;
+  transition: .2s;
+}
+
+.main-btn-2:hover{
+  background-color: #078FD8;
+  color: white;
+}
+
+.cancel-btn{
+  cursor: pointer;
+  border: 2px solid #f1f1f1;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+  color: black;
+  text-align: center;
+  transition: .2s;
+}
+
+/*========================================================================================================================
+                                                      select                                                           
+/*========================================================================================================================*/
 
 .select{
   position: relative;
@@ -894,7 +632,246 @@ textarea:focus{
   color: white;
 }
 
-/*======================================= owl carousel ========================================*/
+
+/*========================================================================================================================
+                                                      Required input                                                           
+/*========================================================================================================================*/
+
+.required{
+  box-shadow: 0 0 0 2px red !important;
+  background-color: #ffe7e7 !important;
+}
+
+.required-text{
+  padding-top: 5px;
+  color: red;
+}
+
+/*========================================================================================================================
+                                                      Input field                                                           
+/*========================================================================================================================*/
+
+::placeholder{
+  color: #919191;
+}
+
+/*============ input field =================*/
+[type="text"], .phone-number, [type='password'], [type='email']{
+  width: 100%;
+  padding:7px 12px;
+  color: black;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  outline: none;
+  transition: .2s;
+}
+[type='text']:focus, .phone-number:focus, [type='password']:focus, [type='email']:focus{
+  border-radius: 5px;
+  box-shadow: 0 0 0 2px #078FD8;
+}
+
+
+/*========================================================================================================================
+                                                  Phone number sign up                                                           
+/*========================================================================================================================*/
+
+.sign-up{
+  width: 100%;
+  padding: 7px;
+  color: black;
+  border-left: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: 1px solid #dcdcdc;
+  outline: none;
+  transition: .2s;
+}
+
+.required-2{
+  border-bottom: 2px solid red;
+  background-color: #ffe7e7 !important;
+}
+
+/*========================================================================================================================
+                                                      Radio input                                                           
+/*========================================================================================================================*/
+
+[type="radio"]:checked,
+[type="radio"]:not(:checked) {
+    position: absolute;
+    left: -9999px;
+}
+[type="radio"]:checked + label,
+[type="radio"]:not(:checked) + label
+{
+    position: relative;
+    padding-left: 28px;
+    cursor: pointer;
+    line-height: 20px;
+    display: inline-block;
+    color: #666;
+}
+[type="radio"]:checked + label::before,
+[type="radio"]:not(:checked) + label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 18px;
+    height: 18px;
+    
+    border-radius: 100%;
+    background: #fff;
+}
+[type="radio"]:checked + label::before{
+  border: 1px solid #078FD8;
+}
+[type="radio"]:not(:checked) + label::before{
+  border: 1px solid #ddd;
+}
+[type="radio"]:checked + label::after,
+[type="radio"]:not(:checked) + label::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #078FD8;
+    border: 1px solid #078FD8;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    border-radius: 100%;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+[type="radio"]:not(:checked) + label::after {
+    opacity: 0;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+}
+[type="radio"]:checked + label::after {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+
+/*========================================================================================================================
+                                                      Checkbox input                                                           
+/*========================================================================================================================*/
+
+[type='checkbox']:checked, [type='checkbox']:not(:checked){
+  position: absolute;
+  left: -9999px;
+}
+[type="checkbox"]:checked + label,
+[type="checkbox"]:not(:checked) + label
+{
+    position: relative;
+    padding-left: 24px;
+    cursor: pointer;
+    line-height: 20px;
+    display: inline-block;
+    color: #666;
+}
+[type="checkbox"]:checked + label::before,
+[type="checkbox"]:not(:checked) + label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+}
+[type="checkbox"]:checked + label::before{
+  background-color: #078FD8;
+
+}
+[type="checkbox"]:not(:checked) + label::before{
+  border: 1px solid #ddd;
+}
+[type="checkbox"]:checked + label::after,
+[type="checkbox"]:not(:checked) + label::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  z-index: 1;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+[type="checkbox"]:not(:checked) + label::after {
+  opacity: 0;
+}
+[type="checkbox"]:checked + label::after {
+  opacity: 1;
+}
+
+/*========================================================================================================================
+                                                      Textarea                                                           
+/*========================================================================================================================*/
+
+textarea{
+  resize: none;
+  overflow: auto;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  padding: 7px 14px;
+  width: 100%;
+  transition: .2s;
+}
+
+textarea:focus{
+  box-shadow: 0 0 0 2px #078FD8;
+}
+
+/*========================================================================================================================
+                                                      Range slider                                                           
+/*========================================================================================================================*/
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #078FD8;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+/*========================================================================================================================
+                                                      Owl carousel                                                           
+/*========================================================================================================================*/
+
 #prev-owl-carousel, #next-owl-carousel{
   position: absolute;
   top: 40%;
@@ -910,7 +887,9 @@ textarea:focus{
   right: 0;
 }
 
-/*====================================================== Header ===============================================*/
+/*========================================================================================================================
+                                                        Header                                                           
+/*========================================================================================================================*/
 
 .head-bg{
   background: rgb(2,0,36);
@@ -992,7 +971,7 @@ textarea:focus{
   .head-offcanvas {
     display: none;
   }
-  .head-item{
+  .head-items{
     display: block;
   }
 }
@@ -1000,8 +979,9 @@ textarea:focus{
 @media screen and (max-width: 1100px) and (min-width: 576px){
   .head-offcanvas {
     display: block;
+    float: right;
   }
-  .head-item{
+  .head-items{
     display: none;
   }
 }
@@ -1010,9 +990,13 @@ textarea:focus{
   width: 60px;
 }
 
-.head-item a{
+.head-item{
   display: flex;
   align-items: center;
+}
+
+a.head-item:hover{
+  color: white;
 }
 
 .head-number{
@@ -1094,6 +1078,10 @@ textarea:focus{
   color: black;
 }
 
+/*===============================================================
+                            Cart
+=================================================================*/
+
 .head-cart{
   position: relative;
   color: white;
@@ -1106,7 +1094,6 @@ textarea:focus{
   width: 500px;
   border-radius: 10px;
   max-height: 600px; overflow: auto;
-  
   z-index: 90;
   background-color: white;
   display: none;
@@ -1120,10 +1107,6 @@ textarea:focus{
   font-size: 14px;
   display: flex;
   flex-direction: column;
-}
-
-.center-td{
-  vertical-align:middle;
 }
 
 .minus{
@@ -1144,10 +1127,6 @@ textarea:focus{
   color: #078fd8;
 }
 
-.cart-total{
-  margin: 0 0 30px 0;
-}
-
 .btn-view-cart{
   border: 1px solid #078fd8;
   border-radius: 5px;
@@ -1159,7 +1138,7 @@ textarea:focus{
 }
 
 .btn-view-cart:hover{
-  box-shadow: 1px 1px 4px 2px #078fd8;
+  box-shadow: 0 0 0 2px #078fd8;
 }
 
 .btn-checkout{
@@ -1177,7 +1156,7 @@ textarea:focus{
 
 .head-qty-cart{
   position: absolute;
-  top: -10px;
+  top: 0;
   right: -10px;
   color: white;
   background-color: #e52e4f;
@@ -1191,6 +1170,7 @@ textarea:focus{
 .head-account{
   cursor: default;
   font-weight: 600;
+  padding-bottom: 5px;
   display: flex;
   align-items: center;
   position: relative;
@@ -1203,11 +1183,22 @@ textarea:focus{
 .head-account-dropdown{
   position: absolute;
   right: 0; top: 100%;
-  height: auto; width: 200%;
-  background-color: white;
-  border: 1px solid #dcdcdc;
+  height: auto; width: 250px;
   font-weight: 300;
   display: none;
+}
+
+.head-account-option{
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  display: flex;
+  align-items: center;
+}
+
+.head-account-option:hover{
+  background-color: #078FD8;
+  color: white;
 }
 
 .head-btn-signup{
@@ -1224,7 +1215,9 @@ textarea:focus{
   color: black !important ;
 }
 
-/*====================================================== Slideshow ===============================================*/
+/*========================================================================================================================
+                                                      Slideshow                                                           
+/*========================================================================================================================*/
 
 .carousel-indicators{
   position: relative;
@@ -1306,7 +1299,9 @@ textarea:focus{
   }
 }
 
-/*===================================================== Index ===========================================================*/
+/*========================================================================================================================
+                                                          Index                                                           
+/*========================================================================================================================*/
 
 .index-bg{
   background-color: #f5f8fd;
@@ -1379,27 +1374,33 @@ textarea:focus{
   color: white;
 }
 
-/*===================================================== Account ===========================================================*/
+/*========================================================================================================================
+                                                    Account sidebar                                                           
+/*========================================================================================================================*/
 
-.box-shadow {
-  box-shadow: 0 1px 4px 2px rgba(0, 0, 0, 0.16);
+.account-sidebar-tag{
+  padding: 10px 20px;
+  color: #3b3b3b;
+  display: flex;
+  align-items: center;
 }
 
-.login-signup-with{
-  width: 350px;
-  padding: 7px;
-  border-radius: 15px;
-  font-weight: bold;
-  margin: 5px;
-  background-color: white;
-  color: black;
+.account-sidebar-tag:hover{
+  background-color: #9eddff;
+  color: #3b3b3b;
 }
 
-.icon-btn-login-signup{
-  width: 25px;
+.account-sidebar-active{
+  background-color: #9eddff;
 }
 
-/*===================== Cover image ==================*/
+/*========================================================================================================================
+                                                    Account profile                                                           
+/*========================================================================================================================*/
+
+/*=======================================================
+                       Cover image 
+=========================================================*/
 
 .account-cover-avatar-div{
   position: relative;
@@ -1454,7 +1455,9 @@ textarea:focus{
   height: 100px;
 }
 
-/*===================== Avatar image ==================*/
+/*=======================================================
+                       Avatar image 
+=========================================================*/
 
 .account-cover-avatar-div:hover .overlay-avatar{
   -webkit-transform: scale(1);
@@ -1529,61 +1532,9 @@ textarea:focus{
   border-radius: 10px;
 }
 
-.account-sidebar-tag{
-  padding: 10px 20px;
-  color: #3b3b3b;
-  display: flex;
-  align-items: center;
-}
-
-.account-sidebar-tag:hover{
-  background-color: #9eddff;
-  color: #3b3b3b;
-}
-
-.account-sidebar-active{
-  background-color: #9eddff;
-}
-
-.td-10{
-  width: 10%;
-  vertical-align: middle;
-}
-
-.td-15{
-  width: 15%;
-  vertical-align: middle;
-}
-
-.td-20{
-  width: 20%;
-  vertical-align: middle;
-}
-
-.td-25{
-  width: 205;
-  vertical-align: middle;
-}
-
-.td-30{
-  width: 30%;
-  vertical-align: middle;
-}
-
-.td-40{
-  width: 40%;
-  vertical-align: middle;
-}
-
-.td-50{
-  width: 50%;
-  vertical-align: middle;
-}
-
-.td-60{
-  width: 60%;
-  vertical-align: middle;
-}
+/*========================================================================================================================
+                                              Account notification                                                           
+/*========================================================================================================================*/
 
 .account-btn-option{
   cursor: pointer;
@@ -1607,14 +1558,24 @@ textarea:focus{
   background-color: #f6fcff;
 }
 
+/*========================================================================================================================
+                                                    Account order                                                           
+/*========================================================================================================================*/
+
 .account-order{
   position: relative;
 }
+
 .account-order-product-div{
   position: absolute;
   left: 0; right: 0;
   height: 50px;
   background-color: red;
+}
+
+.list-phone-order{
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 .account-deliver-success, .account-deliver-fail{
@@ -1633,13 +1594,19 @@ textarea:focus{
   background-color: #ee5316;
 }
 
+/*========================================================================================================================
+                                                    Account voucher                                                           
+/*========================================================================================================================*/
+
 .account-voucher{
   position: relative;
   display: flex;
   width: 100%;
 }
 
-/*===================== big voucher ==================*/
+/*==================================================
+                     big voucher
+===================================================*/
 
 .voucher-left{
   background-color: white;
@@ -1670,6 +1637,18 @@ textarea:focus{
   border-top-left-radius: 100%;
   border-left: 2px solid #078FD8;
   border-top: 2px solid #078FD8;
+}
+
+.voucher-left-content{
+  position: absolute;
+  top: 10px; right: 10px; bottom: 10px; left: 10px;
+  background-color: #078FD8;
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
 .voucher-right{
@@ -1704,7 +1683,19 @@ textarea:focus{
   border-top: 2px solid #078FD8;
 }
 
-/*===================== small voucher ==================*/
+.voucher-content{
+  position: absolute;
+  right: 0; top: 100%;
+  width: 400px;
+  height: auto;
+  background-color: white;
+  display: none;
+  z-index: 100;
+}
+
+/*==================================================
+                     Small voucher
+===================================================*/
 
 .voucher-left-small{
   background-color: white;
@@ -1735,6 +1726,18 @@ textarea:focus{
   border-top-left-radius: 100%;
   border-left: 2px solid #078FD8;
   border-top: 2px solid #078FD8;
+}
+
+.voucher-left-small-content{
+  position: absolute;
+  top: 5px; right: 5px; bottom: 5px; left: 5px;
+  background-color: #078FD8;
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
 .voucher-right-small{
@@ -1768,11 +1771,13 @@ textarea:focus{
   border-top: 2px solid #078FD8;
 }
 
-/*===================== disable voucher ==================*/
+/*==================================================
+                     disable voucher
+===================================================*/
 
 .dis-voucher-left{
   background-color: white;
-  border-radius: 10px 17px 17px 10px;
+  border-radius: 10px;
   border-top: 2px solid #dcdcdc;
   border-right: 2px dashed #dcdcdc;
   border-bottom: 2px solid #dcdcdc;
@@ -1781,9 +1786,9 @@ textarea:focus{
 }
 
 .dis-voucher-left::before{
-  content:  '';
+  content: '';
   position: absolute;
-  top: 0; right: 0;
+  top: -2px; right: -2px;
   width: 10px; height: 10px;
   background-color: white;
   border-bottom-left-radius: 100%;
@@ -1793,7 +1798,7 @@ textarea:focus{
 .dis-voucher-left::after{
   content:  '';
   position: absolute;
-  bottom: 0; right: 0;
+  bottom: -2px; right: -2px;
   width: 10px; height: 10px;
   background-color: white;
   border-top-left-radius: 100%;
@@ -1803,7 +1808,7 @@ textarea:focus{
 
 .dis-voucher-right{
   background-color: white;
-  border-radius: 17px 10px 10px 17px;
+  border-radius: 10px;
   border-top: 2px solid #dcdcdc;
   border-right: 2px solid #dcdcdc;
   border-bottom: 2px solid #dcdcdc;
@@ -1815,7 +1820,7 @@ textarea:focus{
 .dis-voucher-right::before{
   content: '';
   position: absolute;
-  top:0; left:0;
+  top: -2px; left: -2px;
   width: 10px; height: 10px;
   background-color: white;
   border-bottom-right-radius: 100%;
@@ -1825,7 +1830,7 @@ textarea:focus{
 .dis-voucher-right::after{
   content: '';
   position: absolute;
-  bottom: 0; left:0;
+  bottom: -2px; left: -2px;
   width: 10px; height: 10px;
   background-color: white;
   border-top-right-radius: 100%;
@@ -1833,16 +1838,8 @@ textarea:focus{
   border-top: 2px solid #dcdcdc;
 }
 
-.voucher-left-content{
-  position: absolute;
-  top: 10px; right: 10px; bottom: 10px; left: 10px;
-  background-color: #078FD8;
-  color: white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
+.dis-promotion-info-icon{
+  color: #747474;
 }
 
 .dis-voucher-left-content{
@@ -1857,10 +1854,6 @@ textarea:focus{
   font-weight: 600;
 }
 
-.dis-promotion-info-icon{
-  color: #747474;
-}
-
 .dis-condition-tag{
   border: 1px solid #747474;
   border-radius: 5px;
@@ -1869,19 +1862,12 @@ textarea:focus{
   cursor: default;
 }
 
-/*=======================================================*/
-
-.voucher-left-small-content{
-  position: absolute;
-  top: 5px; right: 5px; bottom: 5px; left: 5px;
-  background-color: #078FD8;
-  color: white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
+.dis-promotion-info-icon:hover .voucher-content{
+  display: block;
 }
+
+/*===================================================
+=====================================================*/
 
 .promotion-info-icon{
   color: #078FD8;
@@ -1891,19 +1877,9 @@ textarea:focus{
   display: block;
 }
 
-.dis-promotion-info-icon:hover .voucher-content{
-  display: block;
-}
-
-.voucher-content{
-  position: absolute;
-  right: 0; top: 100%;
-  width: 400px;
-  height: auto;
-  background-color: white;
-  display: none;
-  z-index: 100;
-}
+/*========================================================================================================================
+                                                    Account address                                                           
+/*========================================================================================================================*/
 
 .btn-new-address{
   width: 100%;
@@ -1917,7 +1893,9 @@ textarea:focus{
 }
 
 
-/*===================================================== Shop ===========================================================*/
+/*========================================================================================================================
+                                                          Shop                                                           
+/*========================================================================================================================*/
 
 #btn-show-filter, #btn-show-sort{
   cursor: pointer;
@@ -2158,7 +2136,9 @@ textarea:focus{
   color:gainsboro
 }
 
-/*===================================================== Detail ===========================================================*/
+/*========================================================================================================================
+                                                          Detail                                                           
+/*========================================================================================================================*/
 
 .detail-another-div{
   position: relative;
@@ -2321,7 +2301,7 @@ textarea:focus{
   z-index: 1;
   width: 20px;
   height: 20px;
-  color: white;
+  color: black;
 }
 
 .btn-expanded-evaluate{
@@ -2355,33 +2335,79 @@ textarea:focus{
   height: 100px;
 }
 
-/*===================================================== Login signup ===========================================================*/
+/*========================================================================================================================
+                                                      Login & Signup                                                           
+/*========================================================================================================================*/
 
-.login-box{
+.login-signup-sec{
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  background-image: url("../images/login-signup-bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.login-signup-box{
   padding: 50px; 
   border-radius: 10px;
-}
-
-.login-btn{
-  width: 100%;
-  padding: 10px;
-  border: 2px solid #078fd8;
-  background-color: #078FD8;
-  border-radius: 10px;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  text-align: center;
-  transition: .25s;
-}
-
-.login-btn:hover{
   background-color: white;
-  border: 2px solid #078fd8;
-  color: #078FD8;
 }
 
-/*===================================================== Compare ===========================================================*/
+.login-with{
+  position: relative;
+  color: #9c9c9c;
+  margin: 20px 0 10px 0;
+  text-align: center;
+}
+
+
+.login-with::before{
+  content: '';
+  position: absolute;
+  left: 0; top: 50%; right: 0; bottom: 50%;
+  z-index: 1;
+  width: 100%;
+  height: 1px;
+  background-color: #e5e2e2;
+}
+
+.login-with::after{
+  position: relative;
+  z-index: 2;
+  content: 'Đăng nhập với';
+  background-color: white;
+  padding: 0 20px;
+}
+
+.btn-login-signup-with{
+  width: 200px;
+  padding: 7px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin: 5px;
+  background-color: white;
+  color: black;
+}
+
+.btn-login-signup-with:hover{
+  color: black;
+}
+
+.signup-image{
+  margin: 0 20px 20px 20px;
+  background-color: #e3f5ff;
+}
+
+/* hide reCAPTCHA */
+.grecaptcha-badge { 
+  visibility: hidden;
+}
+
+/*========================================================================================================================
+                                                      Compare                                                           
+/*========================================================================================================================*/
 
 .compare-btn-add-phone{
   cursor: pointer;
@@ -2415,7 +2441,9 @@ textarea:focus{
 
 }
 
-/*===================================================== Cart ===========================================================*/
+/*========================================================================================================================
+                                                        Cart                                                           
+/*========================================================================================================================*/
 
 .cart-box{
   border-radius: 10px;
@@ -2433,6 +2461,29 @@ textarea:focus{
 
 .cart-promotion{
   background-color: #fff9ac;
+}
+
+.btn-promotion-info{
+  position: relative;
+}
+
+.btn-promotion-info::before{
+  content: 'Xem chi tiết';
+  position: absolute;
+  left: -35px; bottom: 100%; right: -35px;
+  padding: 5px;
+  z-index: 1;
+  background-color: black;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+  color: white;
+  opacity: 0.8;
+  display: none;
+}
+
+.btn-promotion-info:hover::before{
+  display: block;
 }
 
 .cart-btn-info-promotion{
@@ -2467,7 +2518,9 @@ textarea:focus{
   overflow-x: hidden;
 }
 
-/*===================================================== Checkout ===========================================================*/
+/*========================================================================================================================
+                                                      Checkout                                                           
+/*========================================================================================================================*/
 
 .atStore, .atHome{
   display: none;
@@ -2506,6 +2559,23 @@ textarea:focus{
   margin: 0 2px;
 }
 
+.checkout-btn-collapse-cart{
+  cursor: pointer;
+  transition: .5s;
+}
+
+/*========================================================================================================================
+                                                      Payment success                                                           
+/*========================================================================================================================*/
+
+.success-sec{
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  background-color: #caecff;
+}
+
 .order-id{
   background-color: #16e420;
   color: white;
@@ -2522,16 +2592,9 @@ textarea:focus{
   transition: .5s;
 }
 
-/*=================================================================*/
-.checkout-btn-collapse-cart{
-  cursor: pointer;
-  transition: .5s;
-}
-
-/*===================================================== Contact ===========================================================*/
-
-
-/*===================================================== footer ===========================================================*/
+/*========================================================================================================================
+                                                        Footer                                                           
+/*========================================================================================================================*/
 
 .signup-footer{
   position: relative;

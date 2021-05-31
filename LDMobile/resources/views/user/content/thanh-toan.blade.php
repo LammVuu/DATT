@@ -64,7 +64,7 @@
                                     </div>
                                     <div class='col-md-6'>
                                         <label for="SDT" class='font-weight-600 mb-5'>Số điện thoại đặt hàng (Bắt buộc)</label>
-                                        <input type="tel" id='SDT' name='checkout-inp'pattern="[0-9]{3}[0-9]{3}[0-9]{4}" maxlength="10" required>
+                                        <input type="text" id='SDT' class="phone-number" name='checkout-inp' maxlength="10" required>
                                     </div>
                                 </div>
                                 <div class='row'>
