@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class TAIKHOAN_DIACHI extends Model
+{
+    use HasFactory;
+
+    protected $table = 'taikhoan_diachi';
+    
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'id_tk',
+        'hoten',
+        'diachi',
+        'sdt',
+        'macdinh',
+        'trangthai',
+    ];
+
+    public $timestamps = false;
+}

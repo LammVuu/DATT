@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class KHUYENMAI extends Model
+{
+    use HasFactory;
+
+    protected $table = 'khuyenmai';
+    
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'tenkm',
+        'noidung',
+        'chietkhau',
+        'ngaybatdau',
+        'ngayketthuc',
+        'trangthai',
+    ];
+
+    public $timestamps = false;
+}
