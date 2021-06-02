@@ -19,6 +19,7 @@ class CreateSanphamTable extends Migration
             $table->unsignedInteger('id_msp');
             $table->string('hinhanh', 100);
             $table->string('mausac', 50);
+            $table->string('ram', 10);
             $table->string('dungluong', 10);
             $table->integer('gia');
             $table->unsignedInteger('id_km');

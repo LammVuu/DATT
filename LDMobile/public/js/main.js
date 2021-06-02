@@ -49,8 +49,8 @@ $(function() {
                                                             Sign Up
 =============================================================================================================================*/
     
+    // cấu hình firebase
     if(url == 'dangky'){
-        // cấu hình firebase
         var firebaseConfig = {
             apiKey: "AIzaSyBmuQyKi5Xer3D4hFYHMkYTMx0Jb3Bcgrs",
             authDomain: "ldmobileauth-eb072.firebaseapp.com",
@@ -83,7 +83,7 @@ $(function() {
     }
 
     /*=====================================================
-                        Nhập số điện thoại                  
+                        Nhập thông tin                  
     =======================================================*/
     // đăng ký tài khoản
     $('#signup-step-1').click(function(){
@@ -92,10 +92,11 @@ $(function() {
 
     // gửi mã xác nhận
     function sendVerifyCode(){
-        var data = $('#su-tel');
+        var nameInp = $('#su-fullname');
+        var telInp = $('#su-tel');
 
         // kiểm tra bẫy lỗi
-        var valiPhone = validatePhoneNumberSignUp(data);
+        var valiPhone = validateInformationSignUp(nameInp, telInp);
 
         // sdt không hợp lệ
         if(!valiPhone){
@@ -103,7 +104,7 @@ $(function() {
         }  
 
         $('.loader').fadeIn();
-        var tel = '+1' + $('#su-tel').val();
+        var tel = '+1' + telInp.val();
         var appVerifier = window.recaptchaVerifier;
 
         window.signingIn = true;
@@ -115,7 +116,7 @@ $(function() {
             window.signingIn = false;
 
             // tiếp tục bước tiếp theo
-            $('#enter-phone-number').addClass('none-dp');
+            $('#enter-information').addClass('none-dp');
 
             // hiển thị gửi code vào số điện thoại
             var displayTel = tel.replace('+1','');
@@ -132,35 +133,48 @@ $(function() {
         $('.loader').fadeOut();
     }
 
-    function validatePhoneNumberSignUp(tel){
+    function validateInformationSignUp(nameInp, telInp){
         // nếu đã kiểm tra rồi thì return
-        if(tel.hasClass('required-2')){
+        if(nameInp.hasClass('required') || telInp.hasClass('required')){
             return;
         }
 
-        var length = tel.val().length;
         var phoneno = /^\d{10}$/;
-        var required;
 
-        // chưa nhập
-        if(length == 0){
-            tel.addClass('required-2');
-            required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
-            tel.after(required);
+        // chưa nhập họ tên
+        if(nameInp.val() == ''){
+            nameInp.addClass('required');
+            var required = $('<span class="required-text">Vui lòng nhập họ và tên</span>');
+            nameInp.after(required);
             return false;
-        } else if(!tel.val().match(phoneno)){ // không đúng định dạng
-            required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');
-            tel.addClass('required-2');
-            tel.after(required);
+        }
+
+        // chưa nhập sdt
+        if(telInp.val().length == 0){
+            telInp.addClass('required');
+            var required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
+            telInp.after(required);
+            return false;
+        } else if(!telInp.val().match(phoneno)){ // không đúng định dạng
+            var required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');
+            telInp.addClass('required');
+            telInp.after(required);
             return false;
         }
 
         return true;
     }
 
+    $('#su-fullname').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).removeClass('required');
+            $(this).next().remove();
+        }
+    });
+
     // kiểm tra nhập số diện thoại
     $('#su-tel').keyup(function(){
-        if($(this).hasClass('required-2')){
+        if($(this).hasClass('required')){
             $(this).next().remove();
         }
 
@@ -170,17 +184,17 @@ $(function() {
         // chưa nhập
         if($(this).val() == ''){
             required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
-            $(this).addClass('required-2');
+            $(this).addClass('required');
             $(this).after(required);
         } else if(!$(this).val().match(phoneno) || $(this).val().charAt(0) != 0){ // không đúng định dạng | ký tự đầu k phải số 0
             if($(this).next().hasClass('required-text')){
                 return;
             }
             required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');    
-            $(this).addClass('required-2');
+            $(this).addClass('required');
             $(this).after(required);
         } else { // xóa required
-            $(this).removeClass('required-2');
+            $(this).removeClass('required');
             $(this).next().remove();
         }
     });
@@ -275,7 +289,7 @@ $(function() {
     }
 
     /*=====================================================
-                        Tạo mật khẩu                  
+                        Nhập thông tin                  
     =======================================================*/
 
     $('#signup-step-3').click(function(){
@@ -292,7 +306,7 @@ $(function() {
             return;
         }
         
-        // mật khẩu và nhập lại mật khẩu hợp lệ
+        // thông tin hợp lệ
         if(pw != '' && rePw != '' && pw.localeCompare(rePw) == 0){
             return true;
         }

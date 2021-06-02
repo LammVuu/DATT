@@ -111,18 +111,24 @@
                     <form action="#" method="POST">
                         @csrf
                         {{-- enter phone number --}}
-                        <div id='enter-phone-number'>
+                        <div id='enter-information'>
                             {{-- title --}}
                             <div class="mb-30">
                                 <h2 class="font-weight-600">Đăng ký</h2>
-                                <div>Vui lòng nhập số điện thoại</div>    
                             </div>
+
+                            {{-- họ tên --}}
+                            <div class="mb-3">
+                                <input type="text" id='su-fullname' placeholder="Họ và tên" required>    
+                            </div> 
+
                             {{-- SDT --}}
-                            <div>
-                                <input type='tel' id='su-tel' maxlength="10" class="sign-up fz-26" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" placeholder='Số điện thoại' required>
+                            <div class="mb-3">
+                                <input type='text' id='su-tel' maxlength="10" placeholder='Số điện thoại' required>
                             </div>
+
                             {{-- nút tiếp tục --}}
-                            <button type='button' id='signup-step-1' class='main-btn mt-30 p-10 w-100'>Tiếp tục</button>
+                            <button type='button' id='signup-step-1' class='main-btn p-10 w-100'>Tiếp tục</button>
                             <div class="d-flex justify-content-center mt-10">Đã có tài khoản? <a href="{{route('user/dang-nhap')}}" class="ml-10">Đăng nhập</a></div>
         
                             {{-- đăng nhập khác --}}
@@ -182,17 +188,17 @@
                         <div id='enter-password' class="none-dp">
                             <div class="mb-30">
                                 <h3 class="font-weight-600">Tạo mật khẩu</h3>
-                                <div>Mật khẩu này sử dụng cho lần đăng nhập tiếp theo</div>
                             </div>
-
                             {{-- mật khẩu --}}
                             <div class="mb-3">
-                                <input type='password' id="su-pw" class='form-control' placeholder='Mật khẩu'>
+                                <label for="su-pw" class="font-weight-600 form-label">Mật khẩu</label>
+                                <input type='password' id="su-pw">
                             </div>
 
                             {{-- nhập lại mật khẩu --}}
                             <div class="mb-3">
-                                <input type='password' id="su-re-pw" class='form-control' placeholder='Nhập lại mật khẩu'>
+                                <label for="su-re-pw" class="font-weight-600 form-label">Nhập lại mật khẩu</label>
+                                <input type='password' id="su-re-pw">
                             </div>
 
                             <div type='button' id='signup-step-3' class="main-btn p-10">Đăng ký</div>
