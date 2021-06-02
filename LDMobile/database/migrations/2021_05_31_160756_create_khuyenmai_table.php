@@ -18,8 +18,8 @@ class CreateKhuyenmaiTable extends Migration
             $table->string('tenkm', 100);
             $table->text('noidung');
             $table->float('chietkhau');
-            $table->dateTime('ngaybatdau');
-            $table->dateTime('ngayketthuc');
+            $table->string('ngaybatdau', 20);
+            $table->string('ngayketthuc', 20);
             $table->boolean('trangthai');   
         });
     }

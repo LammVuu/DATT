@@ -17,7 +17,7 @@ class CreateThongbaoTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->text('noidung');
-            $table->dateTime('thoigian');
+            $table->string('thoigian', 20);
             $table->boolean('trangthai');
         });
     }

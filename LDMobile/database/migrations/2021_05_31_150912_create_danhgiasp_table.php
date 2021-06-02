@@ -18,7 +18,7 @@ class CreateDanhgiaspTable extends Migration
             $table->unsignedInteger('id_tk');
             $table->unsignedInteger('id_sp');
             $table->text('noidung');
-            $table->dateTime('thoigian');
+            $table->string('thoigian', 20);
             $table->integer('soluotthich');
             $table->tinyInteger('danhgia');
             $table->boolean('trangthai');

@@ -19,8 +19,8 @@ class CreateVoucherTable extends Migration
             $table->text('noidung');
             $table->float('chietkhau');
             $table->unsignedInteger('dieukien');
-            $table->dateTime('ngaybatdau');
-            $table->dateTime('ngayketthuc');
+            $table->string('ngaybatdau', 20);
+            $table->string('ngayketthuc', 20);
             $table->integer('sl')->nullable()->unsigned();
             $table->boolean('trangthai');
         });

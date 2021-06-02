@@ -17,8 +17,8 @@ class CreateBaohanhTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_sp');
             $table->string('imei', 15)->unique();
-            $table->date('ngaymua');
-            $table->date('ngayketthuc');
+            $table->string('ngaymua', 20);
+            $table->string('ngayketthuc', 20);
             $table->boolean('trangthai');
         });
     }
