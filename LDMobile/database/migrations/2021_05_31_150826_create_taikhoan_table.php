@@ -16,7 +16,7 @@ class CreateTaikhoanTable extends Migration
         Schema::create('taikhoan', function (Blueprint $table) {
             $table->increments('id');
             $table->string('sdt', 10)->unique();
-            $table->string('matkhau', 100);
+            $table->string('password', 500);
             $table->string('email', 100)->unique();
             $table->string('hoten', 100);
             $table->string('anhdaidien', 100)->nullable();

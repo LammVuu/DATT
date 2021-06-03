@@ -89,3 +89,4 @@ GET		/product/{product}/edit		edit	product.edit
 PUT/PATCH	/product/{product}		update	product.update
 DELETE	/ product/{product}			destroy	product.destroy
 */
+
