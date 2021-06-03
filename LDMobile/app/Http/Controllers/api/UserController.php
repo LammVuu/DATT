@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,19 @@ use Auth;
 class UserController extends Controller
 {
     //
-
+    public function signup(Request $request)
+    {
+      
+        $user = new User([
+            'hoten' => $request->hoten,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+        $user->save();
+        return response()->json([
+            'message' => 'Successfully created user!'
+        ], 201);
+    }
 
     public function login(Request $request)
     {
