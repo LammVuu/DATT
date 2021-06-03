@@ -34,8 +34,8 @@ class UserController extends Controller
             $token = $tokenResult->token;
             $token->save();
             return response()->json([
-                'status' => 200
-                'data' => $user
+                'status' => 200,
+                'data' => $user,
                 'access_token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
             ]);

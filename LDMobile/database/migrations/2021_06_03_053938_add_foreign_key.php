@@ -13,73 +13,100 @@ class AddForeignKey extends Migration
      */
     public function up()
     {
+        // tài khoản địa chỉ
         Schema::table('taikhoan_diachi', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
         });
 
+        // thông báo
         Schema::table('thongbao', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
         });
 
+        // tài khoản voucher
         Schema::table('taikhoan_voucher', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_vc')->references('id')->on('voucher');
         });
 
+        // phản hồi
         Schema::table('phanhoi', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_dg')->references('id')->on('danhgiasp');
         });
 
+
+        // ctdg
         Schema::table('ctdg', function (Blueprint $table) {
             $table->foreign('id_dg')->references('id')->on('danhgiasp');
         });
 
+
+        // lượt thích
         Schema::table('luotthich', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_dg')->references('id')->on('danhgiasp');
         });
 
+
+        // giỏ hàng
         Schema::table('giohang', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_sp')->references('id')->on('sanpham');
         });
 
+        // hình ảnh
         Schema::table('hinhanh', function (Blueprint $table) {
             $table->foreign('id_msp')->references('id')->on('mausp');
         });
 
+
+        // slideshow ctmsp
         Schema::table('slideshow_ctmsp', function (Blueprint $table) {
             $table->foreign('id_msp')->references('id')->on('mausp');
         });
 
+        // mẫu sp
         Schema::table('mausp', function (Blueprint $table) {
             $table->foreign('id_ncc')->references('id')->on('nhacungcap');
         });
 
+
+        // ctdh
         Schema::table('ctdh', function (Blueprint $table) {
             $table->foreign('id_dh')->references('id')->on('donhang');
             $table->foreign('id_sp')->references('id')->on('sanpham');
         });
 
+        // sản phẩm
         Schema::table('sanpham', function (Blueprint $table) {
             $table->foreign('id_msp')->references('id')->on('mausp');
             $table->foreign('id_km')->references('id')->on('khuyenmai');
         });
 
-        Schema::table('baohanh', function (Blueprint $table) {
+        // imei
+        Schema::table('imei', function (Blueprint $table) {
             $table->foreign('id_sp')->references('id')->on('sanpham');
         });
 
+        // bảo hành
+        Schema::table('baohanh', function (Blueprint $table) {
+            $table->foreign('id_imei')->references('id')->on('imei');
+        });
+
+        // đơn hàng
         Schema::table('donhang', function (Blueprint $table) {
+            $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_vc')->references('id')->on('voucher');
         });
 
+        // kho
         Schema::table('kho', function (Blueprint $table) {
             $table->foreign('id_cn')->references('id')->on('chinhanh');
-            $table->foreign('id_sp')->references('id')->on('chinhanh');
+            $table->foreign('id_sp')->references('id')->on('sanpham');
         });
 
+        // chi nhánh
         Schema::table('chinhanh', function (Blueprint $table) {
             $table->foreign('id_tt')->references('id')->on('tinhthanh');
         });

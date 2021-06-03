@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBaohanhTable extends Migration
+class CreateImeiTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateBaohanhTable extends Migration
      */
     public function up()
     {
-        Schema::create('baohanh', function (Blueprint $table) {
+        Schema::create('imei', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('id_imei')->unique();
+            $table->unsignedInteger('id_sp');
             $table->string('imei', 15)->unique();
-            $table->string('ngaymua', 20);
-            $table->string('ngayketthuc', 20);
             $table->boolean('trangthai');
         });
     }
@@ -30,6 +28,6 @@ class CreateBaohanhTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('baohanh');
+        Schema::dropIfExists('imei');
     }
 }

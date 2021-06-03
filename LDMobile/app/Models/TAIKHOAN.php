@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 
-class TAIKHOAN extends Authenticatable
+class TAIKHOAN extends Models
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     protected $table = 'taikhoan';
     
@@ -17,7 +15,7 @@ class TAIKHOAN extends Authenticatable
 
     protected $fillable = [
         'sdt',
-        'matkhau',
+        'password',
         'email',
         'hoten',
         'anhdaidien',
