@@ -26,7 +26,7 @@ class UserController extends Controller
     {
         $login = [
             'email' => request('email'),
-            'matkhau' => request('matkhau'),
+            'password' => request('password'),
         ];
         if(Auth::attempt($login)){
             $user = $request->user();
@@ -34,8 +34,8 @@ class UserController extends Controller
             $token = $tokenResult->token;
             $token->save();
             return response()->json([
-                'status' => 200
-                'data' => $user
+                'status' => 200,
+                'data' => $user,
                 'access_token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
             ]);
