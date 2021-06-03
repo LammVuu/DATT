@@ -26,7 +26,7 @@ class UserController extends Controller
     {
         $login = [
             'email' => request('email'),
-            'matkhau' => request('matkhau'),
+            'password' => request('password'),
         ];
         if(Auth::attempt($login)){
             $user = $request->user();
