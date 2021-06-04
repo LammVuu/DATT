@@ -23,12 +23,40 @@ class IndexController extends Controller
 
     public function SanPham(){
         $SANPHAM = Models\SANPHAM::class;
+        $MAUSP = Models\MAUSP::class;
 
-        $lst_product = $SANPHAM::all();
+        $lst_model = $MAUSP::all();
+        // $lst_product = [];
+        // $i = 0;
+
+        // echo '<pre>';
+        // foreach($lst_model as $model){
+        //     $id_msp =  $model['id'];
+        //     $sanpham = $SANPHAM::where('id_msp', $id_msp)->first();
+
+        //     $temp = [
+        //         'id' => $sanpham->id,
+        //         'tensp' => $sanpham->tensp,
+        //         'hinhanh' => $sanpham->hinhanh,
+        //         'mausac' => $sanpham->mausac,
+        //         'ram' => $sanpham->ram,
+        //         'dungluong' => $sanpham->dungluong,
+        //         'gia' => $sanpham->gia,
+        //         'id_km' => $sanpham->id_km,
+        //     ];
+
+        //     $lst_product[$i] = $temp;
+            
+        //     $i++;
+        // }
+        // print_r($lst_product);
+        // echo '</pre>';
+        // return false;
+
         $url_img = 'images/phone/';
 
         $data = [
-            'lst_product' => $lst_product,
+            'lst_product' => $SANPHAM::all(),
             'url_img' => $url_img,
         ];
 
