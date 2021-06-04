@@ -18,4 +18,10 @@ class TINHTHANH extends Model
     ];
 
     public $timestamps = false;
+
+    // chinhanh
+    public function chinhanh()
+    {
+        return $this->hasMany(CHINHANH::class, 'id_tt');
+    }
 }

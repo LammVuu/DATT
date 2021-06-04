@@ -17,4 +17,10 @@ class SLIDESHOW_CTMSP extends Model
     ];
 
     public $timestamps = false;
+
+    // mausp
+    public function mausp()
+    {
+        return $this->belongsTo(MAUSP::class, 'id_msp');
+    }
 }

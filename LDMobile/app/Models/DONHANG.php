@@ -26,4 +26,22 @@ class DONHANG extends Model
     ];
 
     public $timestamps = false;
+
+    // taikhoan
+    public function taikhoan()
+    {
+        return $this->belongsTo(TAIKHOAN::class, 'id_tk');
+    }
+
+    // voucher
+    public function voucher()
+    {
+        return $this->belongsTo(VOUCHER::class, 'id_vc');
+    }
+
+    // ctdh
+    public function ctdh()
+    {
+        return $this->belongsToMany(SANPHAM::class, 'ctdh', 'id_dh', 'id_sp')->withPivot('gia', 'sl', 'giamgia', 'thanhtien');
+    }
 }

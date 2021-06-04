@@ -13,7 +13,7 @@
 
                 {{-- danh sách sản phẩm --}}
                 <div class="row">
-                    <?php for($i = 0; $i < 10; $i++) : ?>
+                    @foreach ($lst_product as $key)
                     <div class='col-lg-3 col-md-4 col-sm-6'>
                         <div class='shop-product-card box-shadow'>
                             {{-- khuyến mãi tag --}}
@@ -26,13 +26,13 @@
                             {{-- thông tin sản phẩm --}}
                             <div>
                                 <div class='pt-20 pb-20'>
-                                    <img src="images/phone/iphone_11_black.jpg" class='shop-product-img-card'>
+                                    <img src="<?php echo $url_img.$key['hinhanh'] ?>" class='shop-product-img-card'>
                                 </div>
                                 <div class='pb-20 text-center d-flex flex-column'>
-                                    <b class='mb-10'>iPhone 11 PRO MAX</b>
+                                    <b class='mb-10'><?php echo $key['tensp'] ?></b>
                                     <div>
                                         <span class='font-weight-600 price-color'>36.000.000<sup>đ</sup></span>
-                                        <span class='ml-5 text-strike'>39.000.000<sup>đ</sup></span>
+                                        <span class='ml-5 text-strike'><?php echo $key['gia'] ?><sup>đ</sup></span>
                                     </div>
                                     <div>
                                         <div class='flex-row'>
@@ -48,7 +48,7 @@
                             </div>
                         </div>
                     </div>
-                    <?php endfor ?>
+                    @endforeach
                 </div>
             </div>
         </div>

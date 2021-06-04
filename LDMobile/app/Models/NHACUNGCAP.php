@@ -23,4 +23,10 @@ class NHACUNGCAP extends Model
     ];
 
     public $timestamps = false;
+
+    // mausp
+    public function mausp()
+    {
+        return $this->hasMany(MAUSP::class, 'id_ncc');
+    }
 }

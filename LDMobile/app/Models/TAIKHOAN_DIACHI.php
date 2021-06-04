@@ -23,4 +23,10 @@ class TAIKHOAN_DIACHI extends Model
     ];
 
     public $timestamps = false;
+
+    // taikhoan
+    public function taikhoan()
+    {
+        return $this->belongsTo(TAIKHOAN::class, 'id_tk');
+    }
 }

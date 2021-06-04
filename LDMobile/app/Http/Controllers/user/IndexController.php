@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Storage;
 
+use App\Models;
+
 class IndexController extends Controller
 {
     public function __construct()
@@ -20,7 +22,17 @@ class IndexController extends Controller
     }
 
     public function SanPham(){
-        return view($this->user."san-pham");
+        $SANPHAM = Models\SANPHAM::class;
+
+        $lst_product = $SANPHAM::all();
+        $url_img = 'images/phone/';
+
+        $data = [
+            'lst_product' => $lst_product,
+            'url_img' => $url_img,
+        ];
+
+        return view($this->user."san-pham")->with($data);
     }
 
     public function ChiTiet(){

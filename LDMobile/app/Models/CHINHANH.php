@@ -21,4 +21,16 @@ class CHINHANH extends Model
     ];
 
     public $timestamps = false;
+
+    // kho
+    public function kho()
+    {
+        return $this->belongsToMany(SANPHAM::class, 'kho', 'id_cn', 'id_sp')->withPivot('id', 'slton', 'trangthai');
+    }
+
+    // tinhthanh
+    public function tinhthanh()
+    {
+        return $this->belongsTo(TINHTHANH::class, 'id_tt');
+    }
 }

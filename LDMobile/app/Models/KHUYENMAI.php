@@ -23,4 +23,10 @@ class KHUYENMAI extends Model
     ];
 
     public $timestamps = false;
+
+    // sanpham
+    public function sanpham()
+    {
+        return $this->hasMany(SANPHAM::class, 'id_sp');
+    }
 }

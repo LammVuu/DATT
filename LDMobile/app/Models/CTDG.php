@@ -17,4 +17,10 @@ class CTDG extends Model
     ];
 
     public $timestamps = false;
+
+    // danhgiasp
+    public function danhgiasp()
+    {
+        return $this->belongsTo(DANHGIASP::class, 'id_dg');
+    }
 }

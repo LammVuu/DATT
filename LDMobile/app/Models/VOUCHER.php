@@ -25,4 +25,16 @@ class VOUCHER extends Model
     ];
 
     public $timestamps = false;
+
+    // taikhoan_voucher
+    public function taikhoan_voucher()
+    {
+        return $this->belongsToMany(TAIKHOAN::class, 'taikhoan_voucher', 'id_vc', 'id_tk')->withPivot('id', 'trangthai');
+    }
+
+    // donhang
+    public function donhang()
+    {
+        return $this->hasMany(DONHANG::class, 'id_vc');
+    }
 }
