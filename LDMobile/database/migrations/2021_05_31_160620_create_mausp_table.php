@@ -17,6 +17,7 @@ class CreateMauspTable extends Migration
             $table->increments('id');
             $table->string('tenmau', 100);
             $table->text('mota')->nullable();
+            $table->string('id_youtube', 50)->nullable();
             $table->unsignedInteger('id_ncc');
             $table->string('baohanh', 50)->nullable();
             $table->string('diachibaohanh', 200)->nullable();

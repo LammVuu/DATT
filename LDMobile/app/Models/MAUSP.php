@@ -16,6 +16,7 @@ class MAUSP extends Model
     protected $fillable = [
         'tenmau',
         'mota',
+        'id_youtube',
         'id_ncc',
         'baohanh',
         'diachibaohanh',

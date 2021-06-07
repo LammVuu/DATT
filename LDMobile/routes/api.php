@@ -18,7 +18,14 @@ Route::middleware('auth:api')->group(function () {
     //
 });
 Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
-
-
+    Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
+    Route::get('supplier','SanPhamController@getSupplier');
+    Route::get('slideshow','SanPhamController@getSlideshow');
+    Route::get('hotsale','SanPhamController@getHotSale');
+    Route::get('featured-product','SanPhamController@getFeaturedProduct');
+    Route::get('related-product/{id}','SanPhamController@getRelatedProduct');
+    Route::get('detail-product/{id}','SanPhamController@getDetailProduct');
+    Route::get('compare-product','SanPhamController@getCompareProduct');
+    Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
 });
 Route::post('log-in','API\UserController@login');
