@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Classes\Helper;
 use Illuminate\Http\Request;
 use Auth;
 class UserController extends Controller
@@ -30,19 +31,23 @@ class UserController extends Controller
         ];
         if(Auth::attempt($login)){
             $user = $request->user();
-            $tokenResult = $user->createToken('Personal Access Token');
+            $user->anhdaidien = Helper::$URL.$user->anhdaidien;
+            $tokenResult = $user->createToken('LD Mobile');
             $token = $tokenResult->token;
             $token->save();
             return response()->json([
-                'status' => 200,
+                'status' => true,
+                'code'  => 200,
+                'message'=> null,
                 'data' => $user,
-                'access_token' => $tokenResult->accessToken,
-                'token_type' => 'Bearer',
+                'token' => $tokenResult->accessToken,
             ]);
         }
             return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
+                'status' => false,
+                'code'  => 401,
+                'message' => 'Username or Password not valid'
+            ]);
         
     }
     public function logout(Request $request)
