@@ -1299,6 +1299,14 @@ a.head-item:hover{
   }
 }
 
+.big-banner{
+  background-image: url("../images/banner/big-banner.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100px;
+}
+
 /*========================================================================================================================
                                                           Index                                                           
 /*========================================================================================================================*/
@@ -1310,11 +1318,32 @@ a.head-item:hover{
 .index-promotion-phone{
   background-color: white;
   padding: 20px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #dcdcdc;
   transition: .2s;
 }
 
 .index-promotion-phone:hover{
-  border: 3px solid gray;
+  border: 4px solid #078FD8;
+}
+
+.index-featured-phone{
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 0 0 1px #dcdcdc;
+}
+
+.index-featured-phone:hover{
+  box-shadow: 0 0 4px 3px #dcdcdc;
+  z-index: 1;
 }
 
 .fire-animation{
@@ -1362,15 +1391,14 @@ a.head-item:hover{
 .index-brand-tag{
   padding: 5px 10px;
   border-radius: 10px;
-  border: 2px solid #5c5c5c;
-  color: #5c5c5c;
+  border: 2px solid black;
+  color: black;
   margin: 0 5px;
-  transition: .2s;
 }
 
 .index-brand-tag:hover{
-  border: 2px solid #078FD8;
-  background: #078FD8;
+  border: 2px solid black;
+  background: black;
   color: white;
 }
 
@@ -1947,7 +1975,7 @@ a.head-item:hover{
 
 .shop-product-card{
   width: 100%;
-  height: auto;
+  height: 400px;
   border-radius: 10px;
   margin-top: 30px;
   position: relative;
@@ -1960,41 +1988,45 @@ a.head-item:hover{
 
 .shop-product-card:hover .shop-cart-link{
   opacity: 1;
-  -ms-transform: translateY(415%);
-  transform: translateY(415%);
+  -ms-transform: translateY(155px);
+  transform: translateY(155px);
 }
 
 .shop-product-card:hover .shop-detail-link{
   opacity: 1;
-  -ms-transform: translateY(-415%);
-  transform: translateY(-415%);
+  -ms-transform: translateY(-155px);
+  transform: translateY(-155px);
 }
 
 @media screen and (max-width: 1296px) and (min-width: 1200px) {
   .shop-product-card:hover .shop-cart-link{
     opacity: 1;
-    -ms-transform: translateY(365%);
-    transform: translateY(365%);
+    -ms-transform: translateY(155px);
+    transform: translateY(155px);
   }
   
   .shop-product-card:hover .shop-detail-link{
     opacity: 1;
-    -ms-transform: translateY(-365%);
-    transform: translateY(-365%);
+    -ms-transform: translateY(-155px);
+    transform: translateY(-155px);
   }
 }
 
 @media screen and (max-width: 1200px) and (min-width: 992px) {
+  .shop-product-card{
+    height: 320px;
+  }
+
   .shop-product-card:hover .shop-cart-link{
     opacity: 1;
-    -ms-transform: translateY(360%);
-    transform: translateY(360%);
+    -ms-transform: translateY(120px);
+    transform: translateY(120px);
   }
   
   .shop-product-card:hover .shop-detail-link{
     opacity: 1;
-    -ms-transform: translateY(-360%);
-    transform: translateY(-360%);
+    -ms-transform: translateY(-120px);
+    transform: translateY(-120px);
   }
 
   .shop-cart-link, .shop-detail-link{
@@ -2003,16 +2035,20 @@ a.head-item:hover{
 }
 
 @media screen and (max-width: 992px) and (min-width: 768px) {
+  .shop-product-card{
+    height: 320px;
+  }
+
   .shop-product-card:hover .shop-cart-link{
     opacity: 1;
-    -ms-transform: translateY(360%);
-    transform: translateY(360%);
+    -ms-transform: translateY(120px);
+    transform: translateY(120px);
   }
   
   .shop-product-card:hover .shop-detail-link{
     opacity: 1;
-    -ms-transform: translateY(-360%);
-    transform: translateY(-360%);
+    -ms-transform: translateY(-120px);
+    transform: translateY(-120px);
   }
 
   .shop-cart-link, .shop-detail-link{
@@ -2021,30 +2057,38 @@ a.head-item:hover{
 }
 
 @media screen and (max-width: 768px) and (min-width: 576px){
+  .shop-product-card{
+    height: 340px;
+  }
+
   .shop-product-card:hover .shop-cart-link{
     opacity: 1;
-    -ms-transform: translateY(345%);
-    transform: translateY(345%);
+    -ms-transform: translateY(125px);
+    transform: translateY(125px);
   }
   
   .shop-product-card:hover .shop-detail-link{
     opacity: 1;
-    -ms-transform: translateY(-345%);
-    transform: translateY(-345%);
+    -ms-transform: translateY(-125px);
+    transform: translateY(-125px);
   }
 }
 
 @media screen and (max-width: 576px){
+  .shop-product-card{
+    height: auto;
+  }
+
   .shop-product-card:hover .shop-cart-link{
     opacity: 1;
-    -ms-transform: translateY(620%);
-    transform: translateY(620%);
+    -ms-transform: translateY(240px);
+    transform: translateY(240px);
   }
   
   .shop-product-card:hover .shop-detail-link{
     opacity: 1;
-    -ms-transform: translateY(-620%);
-    transform: translateY(-620%);
+    -ms-transform: translateY(-240px);
+    transform: translateY(-240px);
   }
 }
 
@@ -2171,7 +2215,7 @@ a.head-item:hover{
 
 .detail-option:hover{
   color:black;
-  box-shadow: 0 0 1px 2px #078fd8;
+  box-shadow: 0 0 1px 2px #ee1010;
 }
 
 .detail-title{
@@ -2180,7 +2224,7 @@ a.head-item:hover{
 }
 
 .selected{
-  box-shadow: 0 0 1px 2px #078fd8;
+  box-shadow: 0 0 1px 2px #ee1010;
 }
 
 .detail-promotion{

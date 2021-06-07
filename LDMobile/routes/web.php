@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
 
+use App\Http\Controllers\user\IndexController;
+use App\Http\Controllers\user\CartController;
+use App\Http\Controllers\user\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,45 +18,45 @@ use App\Http\Controllers\admin\DashboardController;
 |
 */
 Route::group(['prefix' => '', 'namespace' => 'user'], function() {
-    Route::get("/","IndexController@Index")->name("user/index");
+    Route::get("/",[IndexController::class, 'Index'])->name("user/index");
 
-    Route::get("chitiet","IndexController@ChiTiet")->name("user/chi-tiet");
+    Route::get("thanhtoan", [IndexController::class, 'ThanhToan'])->name("user/thanh-toan");
 
-    Route::get("thanhtoan","IndexController@ThanhToan")->name("user/thanh-toan");
+    Route::get("dienthoai", [IndexController::class, 'DienThoai'])->name("user/dien-thoai");
 
-    Route::get("sanpham","IndexController@SanPham")->name("user/san-pham");
+    Route::get('dienthoai/{id}', [IndexController::class, 'ChiTiet'])->name('user/chi-tiet');
     
-    Route::get("dangnhap","UserController@DangNhap")->name("user/dang-nhap");
+    Route::get("dangnhap", [UserController::class, 'DangNhap'])->name("user/dang-nhap");
     
-    Route::get("dangky","UserController@DangKy")->name("user/dang-ky");
+    Route::get("dangky", [UserController::class, 'DangKy'])->name("user/dang-ky");
     
-    Route::get("taikhoan","UserController@TaiKhoan")->name("user/tai-khoan");
+    Route::get("taikhoan", [UserController::class, 'TaiKhoan'])->name("user/tai-khoan");
     
-    Route::get("taikhoan/thongbao","UserController@ThongBao")->name("user/tai-khoan-thong-bao");
+    Route::get("taikhoan/thongbao", [UserController::class, 'ThongBao'])->name("user/tai-khoan-thong-bao");
     
-    Route::get("taikhoan/donhang","UserController@DonHang")->name("user/tai-khoan-don-hang");
+    Route::get("taikhoan/donhang", [UserController::class, 'DonHang'])->name("user/tai-khoan-don-hang");
 
-    Route::get("taikhoan/diachi","UserController@DiaChi")->name("user/tai-khoan-dia-chi");
+    Route::get("taikhoan/diachi", [userController::class, 'DiaChi'])->name("user/tai-khoan-dia-chi");
     
-    Route::get("taikhoan/chitietdonhang","UserController@ChiTietDonHang")->name("user/tai-khoan-chi-tiet-don-hang");
+    Route::get("taikhoan/chitietdonhang", [UserController::class, 'ChiTietDonHang'])->name("user/tai-khoan-chi-tiet-don-hang");
     
-    Route::get("taikhoan/yeuthich","UserController@YeuThich")->name("user/tai-khoan-yeu-thich");
+    Route::get("taikhoan/yeuthich", [UserController::class, 'YeuThich'])->name("user/tai-khoan-yeu-thich");
     
-    Route::get("taikhoan/voucher","UserController@Voucher")->name("user/tai-khoan-voucher");
+    Route::get("taikhoan/voucher", [UserController::class, 'Voucher'])->name("user/tai-khoan-voucher");
     
-    Route::get("giohang","CartController@GioHang")->name("user/gio-hang");
+    Route::get("giohang", [CartController::class, 'GioHang'])->name("user/gio-hang");
 
-    route::get("sosanh", "IndexController@SoSanh")->name('user/so-sanh');
+    route::get("sosanh", [IndexController::class, 'SoSanh'])->name('user/so-sanh');
 
-    route::get("ketquathanhtoan", "IndexController@KetQuaThanhToan");
+    route::get("ketquathanhtoan", [IndexController::class, "ketQuaThanhToan"]);
 
-    route::get("thanhcong", "IndexController@ThanhCong");
+    route::get("thanhcong", [IndexController::class, 'ThanhCong']);
 
-    route::get('tracuu', 'IndexController@TraCuu')->name('user/tra-cuu');
+    route::get('tracuu', [IndexController::class, 'TraCuu'])->name('user/tra-cuu');
 
-    route::get('lienhe', 'IndexController@LienHe')->name('user/lien-he');
+    route::get('lienhe', [IndexController::class, 'LienHe'])->name('user/lien-he');
 
-    route::get('vechungtoi', 'IndexController@VeChungToi')->name('user/ve-chung-toi');
+    route::get('vechungtoi', [IndexController::class, 'VeChungToi'])->name('user/ve-chung-toi');
 
     route::post('test', 'IndexController@test');
 

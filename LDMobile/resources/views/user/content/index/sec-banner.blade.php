@@ -1,3 +1,6 @@
-<section class=" pt-70 pb-100">
-    
+<section class="index-bg">
+    <div class="container">
+        <div class="big-banner"></div>
+    </div>
 </section>
+

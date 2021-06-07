@@ -1,5 +1,5 @@
 <div class="d-flex align-items-center justify-content-between box-shadow p-15 mb-20">
-    <b>200 điện thoại</b>
+    <b><?php echo $qty. ' Điện thoại' ?></b>
     <div class="d-flex">
         {{-- bộ lọc --}}
         <div class='relative mr-20'>

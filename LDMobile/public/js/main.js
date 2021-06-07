@@ -1111,7 +1111,7 @@ $(function() {
         owl_detail.trigger('next.owl.carousel');
     });
 
-    $('.another-img').click(function(){
+    $('.another-img').off('click').click(function(){
         var data = $(this).attr('src');
         $('#main-img').attr('src', data);
     });

@@ -19,26 +19,42 @@
         <hr class="m-0">
         
         <div class="d-flex flex-wrap">
-            @for ($i = 0; $i < 10; $i++)
-            <a href='#' class="index-promotion-phone w-20 relative">
+            @foreach($lst_featured as $key)
+            <a href="{{ route('user/chi-tiet', ['id' => $key['id']]) }}" class="index-featured-phone w-20 relative">
                 {{-- khuyến mãi tag --}}
-                <div class='shop-promotion-tag'><span class='shop-promotion-text'>-15%</span></div>
-                <img src="images/phone/iphone_11_black.jpg">
-                <div class='pt-10 font-weight-600 black'>iPhone 12 PRO MAX</div>
-                <div class="pt-10">
-                    <span class="price-color font-weight-600">21.000.000<sup>đ</sup></span>
-                    <span class="text-strike gray-1 ml-10">25.000.000<sup>đ</sup></span>
+                <div class='shop-promotion-tag'>
+                    @if($key['khuyenmai'] != 0)
+                    <span class='shop-promotion-text'>{{ '-'.($key['khuyenmai']*100).'%'}}</span>
+                    @endif
                 </div>
-                <div class='d-flex align-items-center pt-10'>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star uncheck"></i>
-                    <span class='fz-12 ml-10 black'>21 đánh giá</span>
+                {{-- hình ảnh --}}
+                <img src="{{ $url_phone.$key['hinhanh'] }}">
+
+                {{-- tên sản phẩm --}}
+                <div class='font-weight-600 black text-center'>{{ $key['tensp'] }}</div>
+
+                <div>
+                    <div class="pt-10">
+                        <span class="price-color font-weight-600">{{ number_format($key['gia'] - ($key['gia'] * $key['khuyenmai'])) }}<sup>đ</sup></span>
+                        <span class="text-strike gray-1 ml-10">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                    </div>
+                    @if ($key['danhgia']['qty'] != 0)
+                    <div class='d-flex align-items-center pt-10'>
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if($key['danhgia']['star'] > $i)
+                            <i class="fas fa-star checked"></i>
+                            @else
+                            <i class="fas fa-star uncheck"></i>
+                            @endif
+                        @endfor
+                        <span class='fz-12 ml-10 black'>{{ $key['danhgia']['qty'].' đánh giá' }}</span>
+                    </div>
+                    @else
+                    <span class='fz-12 ml-10 white'>none</span>
+                    @endif
                 </div>
             </a>  
-            @endfor    
+            @endforeach
         </div>
     </div>
 </section>

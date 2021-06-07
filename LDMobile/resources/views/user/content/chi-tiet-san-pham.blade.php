@@ -8,14 +8,18 @@
     <div class='container'>
         <div class='d-flex flex-row align-items-center justify-content-between'>
             <div class="d-flex align-items-center">
-                <div class='fz-32 font-weight-600'>iPhone 11 PRO MAX</div>
+                <div class='fz-32 font-weight-600'>{{ $phone['tensp'] }}</div>
                 <div class='pl-20'>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star checked"></i>
-                    <i class="fas fa-star uncheck"></i>
-                    <span class='ml-10'>21 đánh giá</span>
+                    @if ($phone['danhgia']['qty'] != 0)
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if($phone['danhgia']['star'] > $i)
+                            <i class="fas fa-star checked"></i>
+                            @else
+                            <i class="fas fa-star uncheck"></i>
+                            @endif
+                        @endfor
+                        <span class='ml-10'>{{ $phone['danhgia']['qty'].' đánh giá' }}</span>
+                    @endif
                 </div>
             </div>
             {{-- nút yêu thích --}}
@@ -29,17 +33,14 @@
                 <div class='d-flex flex-column'>
                     {{-- ảnh sản phẩm --}}
                     <div class='detail-product-image-div'>
-                        <img id='main-img' src="images/phone/iphone_11_black.jpg" alt="product-image">
+                        <img id='main-img' src="{{ $url_phone.$phone['hinhanh'] }}" alt="product-image">
                     </div>
                     {{-- ảnh khác --}}
                     <div class='detail-another-div'>
                         <div id='detail-carousel' class="owl-carousel owl-theme">
-                            @for ($i = 0; $i < 2; $i++)
-                                <img class="another-img" src="images/phone/iphone_12_black.jpg">
-                                <img class="another-img" src="images/phone/iphone_12_red.jpg">
-                                <img class="another-img" src="images/phone/iphone_12_blue.jpg">
-                                <img class="another-img" src="images/phone/iphone_12_green.jpg">
-                            @endfor
+                            @foreach($modelImages as $key)
+                                <img class="another-img" src="{{ $url_phone.$key['hinhanh'] }}">
+                            @endforeach
                         </div>
                         <div style='display: flex'>
                             <div id='prev-owl-carousel'><i class="far fa-chevron-left fz-26"></i></div>
@@ -53,25 +54,25 @@
                 <div class='d-flex flex-column'>
                     {{-- giá --}}
                     <div class='d-flex flex-row align-items-center'>
-                        <div class='font-weight-600 price-color' style='font-size: 22px'>25.000.000 <sup>đ</sup></div>
-                        <div class='ml-10 text-strike'>29.000.000 <sup>đ</sup></div>
+                        <div class='font-weight-600 price-color fz-26'>25.000.000 <sup>đ</sup></div>
+                        <div class='ml-10 text-strike gray-1 fz-22'>29.000.000 <sup>đ</sup></div>
                     </div>
                     {{-- dung lượng --}}
-                    <div class='detail-title'>Dung lượng</div>
+                    <div class='detail-title pt-10'>Dung lượng</div>
                     <div class='d-flex flex-row justify-content-start flex-wrap'>
                         <a href='#' class='detail-option flex-fill box-shadow selected'>
                             <span>512GB</span><br>
-                            <b>30.000.000 <sup>đ</sup></b>
+                            <b class="price-color">30.000.000 <sup>đ</sup></b>
                         </a>
                         <?php for($i = 0; $i < 2; $i++) : ?>
                         <a href='#' class='detail-option flex-fill box-shadow'>
                             <span>512GB</span><br>
-                            <b>30.000.000 <sup>đ</sup></b>
+                            <b class="price-color">30.000.000 <sup>đ</sup></b>
                         </a>
                         <?php endfor ?>
                     </div>
                     {{-- màu sắc --}}
-                    <div class='detail-title'>Màu sắc</div>
+                    <div class='detail-title pt-10'>Màu sắc</div>
                     <div class='d-flex flex-row justify-content-start flex-wrap'>
                         <?php for($i = 0; $i < 5; $i++) : ?>
                         <a href='#' class='detail-option flex-fill box-shadow'>

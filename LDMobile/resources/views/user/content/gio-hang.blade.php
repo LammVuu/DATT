@@ -14,7 +14,7 @@
                             <tr>
                                 <th>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <a href={{route('user/san-pham')}} class="main-color-text font-weight-300"><i class="fas fa-chevron-left mr-5"></i>Xem sản phẩm khác</a>
+                                        <a href={{route('user/dien-thoai')}} class="main-color-text font-weight-300"><i class="fas fa-chevron-left mr-5"></i>Xem sản phẩm khác</a>
                                         <div class='cart-title'>Giỏ hàng</div> 
                                     </div>                                    
                                 </th>

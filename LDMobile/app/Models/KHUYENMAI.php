@@ -27,6 +27,6 @@ class KHUYENMAI extends Model
     // sanpham
     public function sanpham()
     {
-        return $this->hasMany(SANPHAM::class, 'id_sp');
+        return $this->hasMany(SANPHAM::class, 'id_km');
     }
 }

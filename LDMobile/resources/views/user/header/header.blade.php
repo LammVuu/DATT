@@ -15,7 +15,7 @@
                     <div class="d-flex align-items-center justify-content-lg-between">
                         <div class="head-phone-drop">
                             {{-- điện thoại --}}
-                            <a href="{{route('user/san-pham')}}" class='head-item pt-15 pb-15 white'>
+                            <a href="{{route('user/dien-thoai')}}" class='head-item pt-15 pb-15 white'>
                                 Điện thoại<i class="fas fa-caret-down ml-10"></i>
                             </a>
 
@@ -294,7 +294,7 @@
             
                 {{-- điện thoại --}}
                 <div class='head-drop-2 head-offcanvas-item text-center pb-20'>
-                    <a href="{{route('user/san-pham')}}">Điện thoại<i class="fas fa-caret-right ml-5"></i></a>
+                    <a href="{{route('user/dien-thoai')}}">Điện thoại<i class="fas fa-caret-right ml-5"></i></a>
                     <div class='head-drop-content-2 box-shadow pt-50 pb-50 pl-50 pr-50 fz-16'>
                             {{-- Apple --}}
                             <div>
