@@ -65,6 +65,8 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     route::post('test3', 'IndexController@test3')->name('user/test3');
 
     route::post('test4', 'IndexController@test4');
+
+    route::get('test5', 'IndexController@test5');
     
 });
 

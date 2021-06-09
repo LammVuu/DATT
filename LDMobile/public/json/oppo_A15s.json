@@ -1,5 +1,4 @@
 {
-    "id": 1,
     "thong_so_ky_thuat": {
         "man_hinh": {
             "cong_nghe_mh": "LCD",
@@ -9,11 +8,14 @@
         },
         "camera_sau": {
             "do_phan_giai": "Chính 13 MP & Phụ 2 MP, 2 MP",
-            "quay_phim": [{
-                "chat_luong": "FullHD 1080p@30fps"
-            }],
+            "quay_phim": [
+                {
+                    "chat_luong": "FullHD 1080p@30fps"
+                }
+            ],
             "den_flash": "Có",
-            "tinh_nang": [{
+            "tinh_nang": [
+                {
                     "name": "Chạm lấy nét"
                 },
                 {
@@ -40,12 +42,12 @@
                 {
                     "name": "Tự động lấy nét (AF)"
                 }
-
             ]
         },
         "camera_truoc": {
             "do_phan_giai": "Chính 8 MP",
-            "tinh_nang": [{
+            "tinh_nang": [
+                {
                     "name": "Quay video HD"
                 },
                 {
@@ -65,13 +67,14 @@
         "luu_tru": {
             "RAM": "4 GB",
             "bo_nho_trong": "64 GB",
-            "bo_nho_con_lai ": "Khoảng 55 GB",
+            "bo_nho_con_lai": "Khoảng 55 GB",
             "the_nho": "MicroSD, hỗ trợ tối đa 256 GB"
         },
         "ket_noi": {
             "mang_mobile": "Hỗ trợ 4G",
             "SIM": "2 Nano SIM",
-            "wifi": [{
+            "wifi": [
+                {
                     "name": "Wi-Fi hotspot"
                 },
                 {
@@ -84,7 +87,8 @@
                     "name": "Dual-band (2.4 GHz/5 GHz)"
                 }
             ],
-            "GPS": [{
+            "GPS": [
+                {
                     "name": "GLONASS"
                 },
                 {
@@ -94,14 +98,18 @@
                     "name": "BDS"
                 }
             ],
-            "bluetooth": [{
-                "name": "v5.0"
-            }],
+            "bluetooth": [
+                {
+                    "name": "v5.0"
+                }
+            ],
             "cong_sac": "Micro USB",
             "jack_tai_nghe": "3.5 mm",
-            "ket_noi_khac": [{
-                "name": "OTG"
-            }]
+            "ket_noi_khac": [
+                {
+                    "name": "OTG"
+                }
+            ]
         },
         "thiet_ke_trong_luong": {
             "thiet_ke": "Nguyên khối",
@@ -112,32 +120,53 @@
         "pin": {
             "loai": "Li-Po",
             "dung_luong": "4230 mAh",
-            "cong_nghe": [{
-                "name": "Tiết kiệm pin"
-            }]
+            "cong_nghe": [
+                {
+                    "name": "Tiết kiệm pin"
+                }
+            ]
         },
         "tien_ich": {
-            "bao_mat": [{
+            "bao_mat": [
+                {
                     "name": "Mở khoá khuôn mặt"
                 },
                 {
                     "name": "Mở khóa bằng vân tay"
                 }
+            ],
+            "tinh_nang_khac": [
+                {
+                    "name": "Ghi âm cuộc gọi"
+                },
+                {
+                    "name": "Chặn cuộc gọi"
+                },
+                {
+                    "name": "Chặn tin nhắn"
+                }
+            ],
+            "ghi_am": "Có",
+            "xem_phim": [
+                {
+                    "name": "AV1"
+                },
+                {
+                    "name": "MP4"
+                }
+            ],
+            "nghe_nhac": [
+                {
+                    "name": "MP3"
+                },
+                {
+                    "name": "WAV"
+                },
+                {
+                    "name": "Lossnless"
+                }
             ]
-        },
-        "tinh_nang_khac": [{
-                "name": "Ghi âm cuộc gọi"
-            },
-            {
-                "name": "Chặn cuộc gọi"
-            },
-            {
-                "name": "Chặn tin nhắn"
-            }
-        ],
-        "ghi_am": "Có",
-        "xem_phim": "AV1, MP4",
-        "nghe_nhac": "MP3, WAV, Lossnless"
+        }
     },
     "thong_tin_khac": {
         "thoi_diem_ra_mat": "01/2021"

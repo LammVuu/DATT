@@ -1,5 +1,4 @@
 {
-    "id": 1,
     "thong_so_ky_thuat": {
         "man_hinh": {
             "cong_nghe_mh": "AMOLED",
@@ -9,7 +8,8 @@
         },
         "camera_sau": {
             "do_phan_giai": "Chính 64 MP & Phụ 8 MP, 2 MP",
-            "quay_phim": [{
+            "quay_phim": [
+                {
                     "chat_luong": "4K 2160p@60fps"
                 },
                 {
@@ -17,7 +17,8 @@
                 }
             ],
             "den_flash": "Đèn LED kép",
-            "tinh_nang": [{
+            "tinh_nang": [
+                {
                     "name": "Quay chậm (Slow Motion)"
                 },
                 {
@@ -62,12 +63,12 @@
                 {
                     "name": "Chuyên nghiệp Pro"
                 }
-
             ]
         },
         "camera_truoc": {
             "do_phan_giai": "44 MP",
-            "tinh_nang": [{
+            "tinh_nang": [
+                {
                     "name": "A.I Camera"
                 },
                 {
@@ -102,13 +103,14 @@
         "luu_tru": {
             "RAM": "8 GB",
             "bo_nho_trong": "128 GB",
-            "bo_nho_con_lai ": "Khoảng 115 GB",
+            "bo_nho_con_lai": "Khoảng 115 GB",
             "the_nho": "MicroSD, hỗ trợ tối đa 256 GB"
         },
         "ket_noi": {
             "mang_mobile": "Hỗ trợ 4G",
             "SIM": "2 Nano SIM",
-            "wifi": [{
+            "wifi": [
+                {
                     "name": "Wi-Fi hotspot"
                 },
                 {
@@ -121,7 +123,8 @@
                     "name": "Dual-band (2.4 GHz/5 GHz)"
                 }
             ],
-            "GPS": [{
+            "GPS": [
+                {
                     "name": "GLONASS"
                 },
                 {
@@ -131,14 +134,18 @@
                     "name": "BDS"
                 }
             ],
-            "bluetooth": [{
-                "name": "v5.0"
-            }],
+            "bluetooth": [
+                {
+                    "name": "v5.0"
+                }
+            ],
             "cong_sac": "Type-C",
             "jack_tai_nghe": "3.5 mm",
-            "ket_noi_khac": [{
-                "name": "OTG"
-            }]
+            "ket_noi_khac": [
+                {
+                    "name": "OTG"
+                }
+            ]
         },
         "thiet_ke_trong_luong": {
             "thiet_ke": "Nguyên khối",
@@ -149,7 +156,8 @@
         "pin": {
             "loai": "Li-Po",
             "dung_luong": "4000 mAh",
-            "cong_nghe": [{
+            "cong_nghe": [
+                {
                     "name": "Sạc pin nhanh"
                 },
                 {
@@ -161,63 +169,67 @@
             ]
         },
         "tien_ich": {
-            "bao_mat": [{
+            "bao_mat": [
+                {
                     "name": "Mở khoá khuôn mặt"
                 },
                 {
                     "name": "Mở khóa bằng vân tay dươi màn hình"
                 }
+            ],
+            "tinh_nang_khac": [
+                {
+                    "name": "Trợ lí ảo Jovi"
+                },
+                {
+                    "name": "Ghi âm cuộc gọi"
+                },
+                {
+                    "name": "Chặn cuộc gọi"
+                },
+                {
+                    "name": "Đa cửa sổ (Chia đôi màn hình)"
+                },
+                {
+                    "name": "Hỗ trợ chơi game (Siêu trò chơi)"
+                }
+            ],
+            "ghi_am": "Có",
+            "xem_phim": [
+                {
+                    "name": "AVI"
+                },
+                {
+                    "name": "MP4"
+                },
+                {
+                    "name": "3GP"
+                }
+            ],
+            "nghe_nhac": [
+                {
+                    "name": "WMV"
+                },
+                {
+                    "name": "APE"
+                },
+                {
+                    "name": "FLAC"
+                },
+                {
+                    "name": "MIDI"
+                },
+                {
+                    "name": "AMR"
+                },
+                {
+                    "name": "MP3"
+                },
+                {
+                    "name": "WAV"
+                }
             ]
-        },
-        "tinh_nang_khac": [{
-                "name": "Trợ lí ảo Jovi"
-            },
-            {
-                "name": "Ghi âm cuộc gọi"
-            },
-            {
-                "name": "Chặn cuộc gọi"
-            },
-            {
-                "name": "Đa cửa sổ (Chia đôi màn hình)"
-            },
-            {
-                "name": "Hỗ trợ chơi game (Siêu trò chơi)"
-            }
-        ],
-        "ghi_am": "Có",
-        "xem_phim": [{
-                "name": "AVI"
-            },
-            {
-                "name": "MP4"
-            },
-            {
-                "name": "3GP"
-            }
-        ],
-        "nghe_nhac": [{
-                "name": "WMV"
-            },
-            {
-                "name": "APE"
-            },
-            {
-                "name": "FLAC"
-            },
-            {
-                "name": "MIDI"
-            },
-            {
-                "name": "AMR"
-            },
-            {
-                "name": "MP3"
-            },
-            {
-                "name": "WAV"
-            }
-        ]
+        }
     },
     "thong_tin_khac": {
         "thoi_diem_ra_mat": "04/2020"

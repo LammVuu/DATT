@@ -628,8 +628,8 @@ button.main-btn{
 }
 
 .select-single-option:hover{
-  background-color: #078FD8;
-  color: white;
+  background-color: #f8f8f8;
+  color: black;
 }
 
 
@@ -1228,7 +1228,7 @@ a.head-item:hover{
   width: 10px !important;
   height: 10px !important;
   border-radius: 100%;
-  margin: 0 10px 0 10px !important;
+  margin: 0 10px !important;
   background-color: white !important;
   border: 1px solid #078FD8 !important;
 }
@@ -1265,6 +1265,7 @@ a.head-item:hover{
   align-items: center;
   justify-content: center;
   border-radius: 100%;
+  box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.16);
   transform: translateX(0);
   transition: .2s;
   visibility: hidden;
@@ -2206,11 +2207,11 @@ a.head-item:hover{
 }
 
 .detail-option{
-  padding: 10px;
   text-align: center;
-  margin: 5px 10px 5px 0;
+  width: 100%;
   color: black;
   border-radius: 5px;
+  padding: 10px;
 }
 
 .detail-option:hover{
@@ -2591,7 +2592,7 @@ a.head-item:hover{
 }
 
 .single-branch:hover{
-  background-color: #078FD8;
+  background-color: #f8f8f8;
 }
 
 .single-branch:hover .branch-text{

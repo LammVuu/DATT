@@ -1,5 +1,4 @@
 {
-    "id": 1,
     "thong_so_ky_thuat": {
         "man_hinh": {
             "cong_nghe_mh": "AMOLED",
@@ -9,7 +8,8 @@
         },
         "camera_sau": {
             "do_phan_giai": "Chính 48 MP & Phụ 13 MP, 12 MP",
-            "quay_phim": [{
+            "quay_phim": [
+                {
                     "chat_luong": "4K 2160p@60fps"
                 },
                 {
@@ -32,7 +32,8 @@
                 }
             ],
             "den_flash": "Đèn LED 2 tông màu",
-            "tinh_nang": [{
+            "tinh_nang": [
+                {
                     "name": "Quay chậm (Slow Motion)"
                 },
                 {
@@ -78,7 +79,8 @@
         },
         "camera_truoc": {
             "do_phan_giai": "32 MP",
-            "tinh_nang": [{
+            "tinh_nang": [
+                {
                     "name": "A.I Camera"
                 },
                 {
@@ -116,13 +118,14 @@
         "luu_tru": {
             "RAM": "12 GB",
             "bo_nho_trong": "256 GB",
-            "bo_nho_con_lai ": "Khoảng 231 GB",
+            "bo_nho_con_lai": "Khoảng 231 GB",
             "the_nho": ""
         },
         "ket_noi": {
             "mang_mobile": "Hỗ trợ 4G, Hỗ trợ 5G",
             "SIM": "2 Nano SIM",
-            "wifi": [{
+            "wifi": [
+                {
                     "name": "Wi-Fi hotspot"
                 },
                 {
@@ -135,7 +138,8 @@
                     "name": "Dual-band (2.4 GHz/5 GHz)"
                 }
             ],
-            "GPS": [{
+            "GPS": [
+                {
                     "name": "GLONASS"
                 },
                 {
@@ -145,7 +149,8 @@
                     "name": "BDS"
                 }
             ],
-            "bluetooth": [{
+            "bluetooth": [
+                {
                     "name": "v5.1"
                 },
                 {
@@ -157,7 +162,8 @@
             ],
             "cong_sac": "Type-C",
             "jack_tai_nghe": "Type-C",
-            "ket_noi_khac": [{
+            "ket_noi_khac": [
+                {
                     "name": "OTG"
                 },
                 {
@@ -174,7 +180,8 @@
         "pin": {
             "loai": "Li-Po",
             "dung_luong": "4200 mAh",
-            "cong_nghe": [{
+            "cong_nghe": [
+                {
                     "name": "Sạc pin nhanh"
                 },
                 {
@@ -186,75 +193,79 @@
             ]
         },
         "tien_ich": {
-            "bao_mat": [{
+            "bao_mat": [
+                {
                     "name": "Mở khoá khuôn mặt"
                 },
                 {
                     "name": "Mở khóa bằng vân tay dưới màn hình"
                 }
+            ],
+            "tinh_nang_khac": [
+                {
+                    "name": "Ghi âm cuộc gọi"
+                },
+                {
+                    "name": "Chặn cuộc gọi"
+                },
+                {
+                    "name": "Không gian trò chơi"
+                },
+                {
+                    "name": "Không gian trẻ em"
+                },
+                {
+                    "name": "Khóa ứng dụng"
+                },
+                {
+                    "name": "Nhân bản ứng dụng"
+                },
+                {
+                    "name": "Chặn tin nhắn"
+                },
+                {
+                    "name": "Đa cửa sổ (chia đôi màn hình)"
+                },
+                {
+                    "name": "Kháng nước, Kháng bụi"
+                },
+                {
+                    "name": "Âm thanh Dolby Audio"
+                },
+                {
+                    "name": "Thu nhỏ màn hình sử dụng một tay"
+                },
+                {
+                    "name": "Trợ lí ảo"
+                }
+            ],
+            "ghi_am": "Có (microphone chuyên dụng chống ồn)",
+            "xem_phim": [
+                {
+                    "name": "H.263P"
+                },
+                {
+                    "name": "MP4"
+                },
+                {
+                    "name": "3GP"
+                },
+                {
+                    "name": "H.264(MPEG4-AVC)"
+                }
+            ],
+            "nghe_nhac": [
+                {
+                    "name": "WMA"
+                },
+                {
+                    "name": "MP3"
+                },
+                {
+                    "name": "AAC"
+                }
             ]
-        },
-        "tinh_nang_khac": [{
-                "name": "Ghi âm cuộc gọi"
-            },
-            {
-                "name": "Chặn cuộc gọi"
-            },
-            {
-                "name": "Không gian trò chơi"
-            },
-            {
-                "name": "Không gian trẻ em"
-            },
-            {
-                "name": "Khóa ứng dụng"
-            },
-            {
-                "name": "Nhân bản ứng dụng"
-            },
-            {
-                "name": "Chặn tin nhắn"
-            },
-            {
-                "name": "Đa cửa sổ (chia đôi màn hình)"
-            },
-            {
-                "name": "Kháng nước, Kháng bụi"
-            },
-            {
-                "name": "Âm thanh Dolby Audio"
-            },
-            {
-                "name": "Thu nhỏ màn hình sử dụng một tay"
-            },
-            {
-                "name": "Trợ lí ảo"
-            }
-        ],
-        "ghi_am": "Có (microphone chuyên dụng chống ồn)",
-        "xem_phim": [{
-                "name": "H.263P"
-            },
-            {
-                "name": "MP4"
-            },
-            {
-                "name": "3GP"
-            },
-            {
-                "name": "H.264(MPEG4-AVC)"
-            }
-        ],
-        "nghe_nhac": [{
-                "name": "WMA"
-            },
-            {
-                "name": "MP3"
-            },
-            {
-                "name": "AAC"
-            }
-        ]
+        }
     },
     "thong_tin_khac": {
         "thoi_diem_ra_mat": "03/2020"

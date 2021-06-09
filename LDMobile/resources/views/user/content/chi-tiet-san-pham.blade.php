@@ -6,6 +6,7 @@
 
 <section class='product-shop-wrapper pb-30'>
     <div class='container'>
+        {{-- tên điện thoại, sao, lượt đánh giá --}}
         <div class='d-flex flex-row align-items-center justify-content-between'>
             <div class="d-flex align-items-center">
                 <div class='fz-32 font-weight-600'>{{ $phone['tensp'] }}</div>
@@ -24,7 +25,7 @@
             </div>
             {{-- nút yêu thích --}}
             <div class="favorite-tag"><i class="far fa-heart"></i></div>
-        </div> <hr>
+        </div><hr>
 
         {{-- điện thoại --}}
         <div class='row'>
@@ -38,7 +39,7 @@
                     {{-- ảnh khác --}}
                     <div class='detail-another-div'>
                         <div id='detail-carousel' class="owl-carousel owl-theme">
-                            @foreach($modelImages as $key)
+                            @foreach($lst_variation['image'] as $key)
                                 <img class="another-img" src="{{ $url_phone.$key['hinhanh'] }}">
                             @endforeach
                         </div>
@@ -53,51 +54,60 @@
             <div class='col-md-4 mb-20 fz-14'>
                 <div class='d-flex flex-column'>
                     {{-- giá --}}
-                    <div class='d-flex flex-row align-items-center'>
-                        <div class='font-weight-600 price-color fz-26'>25.000.000 <sup>đ</sup></div>
-                        <div class='ml-10 text-strike gray-1 fz-22'>29.000.000 <sup>đ</sup></div>
+                    <div class='d-flex flex-row align-items-end'>
+                        <div class='font-weight-600 price-color fz-26'>{{ number_format($phone['giakhuyenmai']) }}<sup>đ</sup></div>
+                        <div class="d-flex ml-20 fz-18">
+                            <div>Giá niêm yết :</div>
+                            <b class='ml-5 text-strike'>{{ number_format($phone['gia']) }}<sup>đ</sup></b>
+                        </div>
+                        
                     </div>
                     {{-- dung lượng --}}
                     <div class='detail-title pt-10'>Dung lượng</div>
-                    <div class='d-flex flex-row justify-content-start flex-wrap'>
-                        <a href='#' class='detail-option flex-fill box-shadow selected'>
-                            <span>512GB</span><br>
-                            <b class="price-color">30.000.000 <sup>đ</sup></b>
-                        </a>
-                        <?php for($i = 0; $i < 2; $i++) : ?>
-                        <a href='#' class='detail-option flex-fill box-shadow'>
-                            <span>512GB</span><br>
-                            <b class="price-color">30.000.000 <sup>đ</sup></b>
-                        </a>
-                        <?php endfor ?>
+                    <div class='row'>
+                        @foreach ($lst_variation['capacity'] as $key)
+                            <div class="col-md-4 col-sm-3 p-10">
+                            @if ($key['dungluong'] == $phone['dungluong'] && $key['ram'] == $phone['ram'])
+                                <div type='button' class='detail-option box-shadow selected'>
+                                    <div class="font-weight-600">{{ $key['dungluong'] }}</div>
+                                    <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                </div>
+                            @else
+                                <a href='{{ route('user/chi-tiet', ['id' => $key['id_sp']]) }}' class='detail-option box-shadow'>
+                                    <div>{{ $key['dungluong'] }}</div>
+                                    <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                </a>
+                            @endif
+                            </div>
+                        @endforeach
                     </div>
+
                     {{-- màu sắc --}}
                     <div class='detail-title pt-10'>Màu sắc</div>
-                    <div class='d-flex flex-row justify-content-start flex-wrap'>
-                        <?php for($i = 0; $i < 5; $i++) : ?>
-                        <a href='#' class='detail-option flex-fill box-shadow'>
-                            <span>Đen</span><br>
-                            <b>30.000.000 <sup>đ</sup></b>
-                        </a>
-                        <?php endfor ?>
-                        <a href='#' class='detail-option flex-fill box-shadow selected'>
-                            <span>Đen</span><br>
-                            <b>30.000.000 <sup>đ</sup></b>
-                        </a>
+                    <div class='row'>
+                        @foreach ($lst_variation['color'] as $key)
+                            <div class="col-md-4 col-sm-3 p-10">
+                            @if ($key['mausac'] == $phone['mausac'])
+                                <div type='button' class='detail-option box-shadow selected'>
+                                    <div class="font-weight-600">{{ $key['mausac'] }}</div>
+                                    <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                </div>
+                            @else
+                                <a href='{{ route('user/chi-tiet', ['id' => $key['id_sp']]) }}' class='detail-option box-shadow'>
+                                    <div>{{ $key['mausac'] }}</div>
+                                    <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                </a>
+                            @endif  
+                            </div>  
+                        @endforeach
                     </div>
+
                     {{-- khuyến mãi --}}
                     <div class='detail-promotion mt-40 mb-10'>
-                        <div class='detail-promotion-text'><i class="fas fa-gift" style='margin-right: 5px'></i>KHUYẾN MÃI</div>
-                        <div class='detail-title'><i class="fas fa-check-circle" style='margin-right: 5px; color: #078fd8'></i>Giảm 10% cho sinh viên năm cuối</div>
+                        <div class='detail-promotion-text'><i class="fas fa-gift mr-5"></i>KHUYẾN MÃI</div>
+                        <div class='detail-title'><i class="fas fa-check-circle mr-5 main-color-text"></i>{{ $phone['khuyenmai']['tenkm']}}</div>
                         <div class='detail-promotion-content'>
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam qui accusamus corrupti esse doloribus ab, tempora cumque cupiditate odio nam quo, culpa voluptatibus mollitia natus alias quis atque excepturi inventore!
-                        </div>
-                    </div>
-                    {{-- bảo hành --}}
-                    <div class='detail-warranty p-10 mb-20'>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-shield-check mr-10 fz-18 main-color-text"></i>
-                            <span>Bảo hành chính hãng 12 tháng</span>
+                            {{ $phone['khuyenmai']['noidung'] }}                           
                         </div>
                     </div>
                     {{-- mua ngay --}}
@@ -106,11 +116,19 @@
             </div>
             {{-- chi nhánh --}}
             <div class='col-md-4 mb-20'>
+                {{-- nhà cung cấp --}}
                 <div class="d-flex mb-20">
-                    <img src="images/logo/apple-square-logo.png" alt="" class="w-30 circle-img border">
+                    <img src="{{ $url_logo.$supplier['anhdaidien'] }}" alt="" class="w-30 circle-img border">
                     <div class="d-flex flex-column ml-20 mt-20">
-                        <div>Cung cấp bởi <b>Apple Việt Nam</b></div>
+                        <div>Cung cấp bởi <b>{{ $supplier['tenncc'] }}</b></div>
                         <img src="images/icon/genuine-icon.png" alt="" width="130px">
+                    </div>
+                </div>
+                {{-- bảo hành --}}
+                <div class='detail-warranty p-10 mb-20'>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-shield-check mr-10 fz-18 main-color-text"></i>
+                        <span>Bảo hành chính hãng {{ $phone['baohanh'] }}</span>
                     </div>
                 </div>
                 <div class='detail-check-qty mb-3'>CÁC CỬA HÀNG CÓ SẴN SẢN PHẨM</div>
@@ -125,19 +143,17 @@
                     <div id='area-box' class="select-box">
                         {{-- option --}}
                         <div class="select-option">
-                            @foreach ($lstKhuVuc as $lst)
-                                <div class="option-area select-single-option" data-area='<?php echo $lst['ID'] ?>'><?php echo $lst['TenTT'] ?></div>
+                            @foreach ($lst_area as $key)
+                                <div class="option-area select-single-option" data-area='{{ $key->id }}'>{{ $key->tentt }}</div>
                             @endforeach 
                         </div>
                     </div>
                 </div>
                 <div class="list-branch">
-                    @foreach ($lstChiNhanh as $lst)
-                        <div class="single-branch default-cs" data-area='<?php echo $lst['ID_TT'] ?>'>
-                            <div class="branch-text">
-                                <i class="fas fa-store mr-5"></i>
-                                <?php echo $lst['DiaChi'] ?>
-                            </div>
+                    @foreach ($lst_branch as $key)
+                        <div class="single-branch default-cs" data-area='{{ $key['id_tt'] }}'>
+                            <i class="fas fa-store mr-10"></i>{{ $key['diachi'] }}
+                            <a href="#" class="ml-10">Đặt giữ hàng tại đây</a>
                         </div>
                     @endforeach
                 </div>
@@ -152,13 +168,15 @@
                 <div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-interval="false" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="images/phone/iphone_12_red.jpg" class="carousel-img d-block" alt="...">
+                            <iframe height="400" class="w-100" allowfullscreen
+                                src="{{ 'https://www.youtube.com/embed/' . $phone['id_youtube'] }}">
+                            </iframe>
                         </div>
-                        @for ($i = 0; $i < 9; $i++)
+                        @foreach($slide_model as $key)
                         <div class="carousel-item">
-                            <img src="images/phone/iphone_12_red.jpg" class="carousel-img d-block" alt="...">
+                            <img src="{{ $url_slide.$key['hinhanh'] }}" class="carousel-img" alt="...">
                         </div>
-                        @endfor
+                        @endforeach
                     </div>
                     <div class="slideshow-btn-prev" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                         <i class="far fa-chevron-left fz-30"></i>
@@ -169,7 +187,7 @@
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
                             aria-current="true"></button>
-                        @for ($i = 1; $i < 10; $i++)
+                        @for ($i = 1; $i < count($slide_model) + 1; $i++)
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<?php echo $i ?>"></button>
                         @endfor
                     </div>
@@ -183,39 +201,78 @@
                         <tbody class='fz-14 '>
                             <tr>
                                 <td class='w-40 center-td'>Màn hình</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{  
+                                        $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['cong_nghe_mh'] . ', ' .
+                                        $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['ty_le_mh'] .  '"' 
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>Camera sau</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['do_phan_giai']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>Camera trước</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['camera_truoc']['do_phan_giai']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>Hệ điều hành</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['HDH']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>CPU</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['CPU']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>RAM</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['RAM']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>Bộ nhớ trong</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['bo_nho_trong']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>SIM</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['SIM'] . ', ' .
+                                        $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['mang_mobile']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td class='w-40 center-td'>Pin</td>
-                                <td class='font-weight-600'>ABC</td>
+                                <td>
+                                    {{
+                                        $phone['cauhinh']['thong_so_ky_thuat']['pin']['loai'] . ', ' .
+                                        $phone['cauhinh']['thong_so_ky_thuat']['pin']['dung_luong']
+                                    }}
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
@@ -554,19 +611,35 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Thiết kế</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['thiet_ke']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Chất liệu</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['chat_lieu']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Kích thước</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['kich_thuoc']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Khối lượng</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['khoi_luong']
+                                }}
+                            </td>
                         </tr>
 
                         {{-- màn hình --}}
@@ -577,19 +650,27 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Công nghệ màn hình</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['cong_nghe_mh']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Độ phân giải</td>
-                            <td>ABC</td>
-                        </tr>
-                        <tr>
-                            <td class='w-30 font-weight-600'>Tần số quét</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['do_phan_giai']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Mặt kính cảm ứng</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['kinh_cam_ung']
+                                }}
+                            </td>
                         </tr>
 
                         {{-- Camera sau --}}
@@ -600,19 +681,35 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Độ phân giải</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['do_phan_giai']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Quay phim</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['quay_phim'] as $key)
+                                    <div class="mb-5">{{ $key['chat_luong'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Đèn Flash</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['den_flash']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Tính năng</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['tinh_nang'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
 
                         {{-- Camera trước --}}
@@ -623,11 +720,19 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Độ phân giải</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['camera_truoc']['do_phan_giai']
+                                }}
+                            </td>
                         </tr>
                         <tr>
-                            <td class='w-30 font-weight-600'>Quay phim</td>
-                            <td>ABC</td>
+                            <td class='w-30 font-weight-600'>Tính năng</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['camera_truoc']['tinh_nang'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
 
                         {{-- hệ điều hành & CPU --}}
@@ -638,19 +743,35 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Hệ điều hành</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['HDH']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Chip xử lý (CPU)</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['CPU']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Tốc độ CPU</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['CPU_speed']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Chip đồ họa (GPU)</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['GPU']
+                                }}
+                            </td>
                         </tr>
                         
                         {{-- bộ nhớ & lưu trữ --}}
@@ -661,19 +782,35 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>RAM</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['RAM']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Bộ nhớ trong</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['bo_nho_trong']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Bộ nhớ còn lại (khả dụng) khoảng</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['bo_nho_con_lai']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Thẻ nhớ</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['the_nho']
+                                }}
+                            </td>
                         </tr>
 
                         {{-- kết nối --}}
@@ -684,35 +821,67 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Mạng di động</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['mang_mobile']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>SIM</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['SIM']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Wifi</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['wifi'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>GPS</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['GPS'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Bluetooth</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['bluetooth'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Cổng kết nối/sạc</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['cong_sac']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Jack tai nghe</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['jack_tai_nghe']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Kêt nối khác</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['ket_noi_khac'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
 
                         {{-- Pin & Sạc --}}
@@ -723,15 +892,27 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Dung lượng pin</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['pin']['dung_luong']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Loại pin</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['pin']['loai']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Công nghệ pin</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['pin']['cong_nghe'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
 
                         {{-- Tiện ích --}}
@@ -742,27 +923,43 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Bảo mật nâng cao</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['bao_mat'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Tính năng đặc biệt</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['tinh_nang_khac'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Ghi âm</td>
-                            <td>ABC</td>
-                        </tr>
-                        <tr>
-                            <td class='w-30 font-weight-600'>Radio</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['ghi_am']
+                                }}
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Xem phim</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['xem_phim'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Nghe nhạc</td>
-                            <td>ABC</td>
+                            <td>
+                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['nghe_nhac'] as $key)
+                                    <div class="mb-5">{{ $key['name'] }}</div>
+                                @endforeach
+                            </td>
                         </tr>
 
                         {{-- thông tin khác --}}
@@ -773,7 +970,11 @@
                         </tr>
                         <tr>
                             <td class='w-30 font-weight-600'>Thời điểm ra mắt</td>
-                            <td>ABC</td>
+                            <td>
+                                {{
+                                    $phone['cauhinh']['thong_tin_khac']['thoi_diem_ra_mat']
+                                }}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
