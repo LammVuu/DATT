@@ -1,5 +1,11 @@
 <div class="d-flex align-items-center justify-content-between box-shadow p-15 mb-20">
-    <b><?php echo $qty. ' Điện thoại' ?></b>
+    <b>
+        @if (empty($brand))
+            {{ $qty . ' điện thoại'}}
+        @else
+            {{ $qty . ' điện thoại ' . $brand }}
+        @endif
+    </b>
     <div class="d-flex">
         {{-- bộ lọc --}}
         <div class='relative mr-20'>

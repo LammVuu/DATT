@@ -24,7 +24,9 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
 
     Route::get("dienthoai", [IndexController::class, 'DienThoai'])->name("user/dien-thoai");
 
-    Route::get('dienthoai/{id}', [IndexController::class, 'ChiTiet'])->name('user/chi-tiet');
+    Route::get("dienthoai-{brand}", [IndexController::class, 'DienThoaiTheoHang'])->name("user/dien-thoai-theo-hang");
+
+    Route::get('dienthoai/{name}', [IndexController::class, 'ChiTiet'])->name('user/chi-tiet');
     
     Route::get("dangnhap", [UserController::class, 'DangNhap'])->name("user/dang-nhap");
     
@@ -46,7 +48,7 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     
     Route::get("giohang", [CartController::class, 'GioHang'])->name("user/gio-hang");
 
-    route::get("sosanh", [IndexController::class, 'SoSanh'])->name('user/so-sanh');
+    route::get("sosanh/{str}", [IndexController::class, 'SoSanh'])->name('user/so-sanh');
 
     route::get("ketquathanhtoan", [IndexController::class, "ketQuaThanhToan"]);
 

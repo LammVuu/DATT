@@ -10,28 +10,28 @@
             "do_phan_giai": "2 camera 12 MP",
             "quay_phim": [
                 {
-                    "name": "4K 2160p@30fps"
+                    "chat_luong": "4K 2160p@30fps"
                 },
                 {
-                    "name": "4K 2160p@60fps"
+                    "chat_luong": "4K 2160p@60fps"
                 },
                 {
-                    "name": "4K 2160p@24fps"
+                    "chat_luong": "4K 2160p@24fps"
                 },
                 {
-                    "name": "FullHD 1080p@30fps"
+                    "chat_luong": "FullHD 1080p@30fps"
                 },
                 {
-                    "name": "FullHD 1080p@60fps"
+                    "chat_luong": "FullHD 1080p@60fps"
                 },
                 {
-                    "name": "FullHD 1080p@120fps"
+                    "chat_luong": "FullHD 1080p@120fps"
                 },
                 {
-                    "name": "FullHD 1080p@240fps"
+                    "chat_luong": "FullHD 1080p@240fps"
                 },
                 {
-                    "name": "HD 720p@30fps"
+                    "chat_luong": "HD 720p@30fps"
                 }
             ],
             "den_flash": "Đèn LED kép",

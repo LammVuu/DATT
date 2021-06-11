@@ -194,57 +194,57 @@
                 {
                     "name": "Mở khóa bằng vân tay dươi màn hình"
                 }
+            ],
+            "tinh_nang_khac": [
+                {
+                    "name": "Chặn cuộc gọi"
+                },
+                {
+                    "name": "Đa cửa sổ (Chia đôi màn hình)"
+                },
+                {
+                    "name": "Thu nhỏ màn hình 1 tay"
+                },
+                {
+                    "name": "Nhân bản ứng dụng"
+                }
+            ],
+            "ghi_am": "Có",
+            "xem_phim": [
+                {
+                    "name": "AVI"
+                },
+                {
+                    "name": "MP4"
+                },
+                {
+                    "name": "3GP"
+                }
+            ],
+            "nghe_nhac": [
+                {
+                    "name": "WMV"
+                },
+                {
+                    "name": "APE"
+                },
+                {
+                    "name": "FLAC"
+                },
+                {
+                    "name": "MIDI"
+                },
+                {
+                    "name": "AMR"
+                },
+                {
+                    "name": "MP3"
+                },
+                {
+                    "name": "WAV"
+                }
             ]
-        },
-        "tinh_nang_khac": [
-            {
-                "name": "Chặn cuộc gọi"
-            },
-            {
-                "name": "Đa cửa sổ (Chia đôi màn hình)"
-            },
-            {
-                "name": "Thu nhỏ màn hình 1 tay"
-            },
-            {
-                "name": "Nhân bản ứng dụng"
-            }
-        ],
-        "ghi_am": "Có",
-        "xem_phim": [
-            {
-                "name": "AVI"
-            },
-            {
-                "name": "MP4"
-            },
-            {
-                "name": "3GP"
-            }
-        ],
-        "nghe_nhac": [
-            {
-                "name": "WMV"
-            },
-            {
-                "name": "APE"
-            },
-            {
-                "name": "FLAC"
-            },
-            {
-                "name": "MIDI"
-            },
-            {
-                "name": "AMR"
-            },
-            {
-                "name": "MP3"
-            },
-            {
-                "name": "WAV"
-            }
-        ]
+        }
     },
     "thong_tin_khac": {
         "thoi_diem_ra_mat": "05/2020"

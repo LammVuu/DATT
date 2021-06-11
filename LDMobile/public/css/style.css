@@ -872,18 +872,18 @@ textarea:focus{
                                                       Owl carousel                                                           
 /*========================================================================================================================*/
 
-#prev-owl-carousel, #next-owl-carousel{
+.prev-owl-carousel, .next-owl-carousel{
   position: absolute;
   top: 40%;
   bottom: 40%;
   z-index: 1;
 }
 
-#prev-owl-carousel{
+.prev-owl-carousel{
   left: 0;
 }
 
-#next-owl-carousel{
+.next-owl-carousel{
   right: 0;
 }
 
@@ -1022,10 +1022,21 @@ a.head-item:hover{
 
 .head-phone-drop-content{  
   position: absolute;
-  left: 7%; right: 20%;
-  border-radius: 10px;
-  background-color: white;  
+  left: 0; top: 100%;
   display: none;
+}
+
+.head-brand-item{
+  padding: 10px;
+  background-color: white;
+  width: 200px;
+  color: black;
+  justify-content: space-between;
+}
+
+.head-brand-item:hover{
+  background-color: #f1f1f1;
+  color: black;
 }
 
 .head-input-grp{
@@ -1372,18 +1383,18 @@ a.head-item:hover{
   background: linear-gradient(to right, #d61717, #dbac13);
 }
 
-.index-btn-owl-left, .index-btn-owl-right{
+.btn-owl-left-style-1, .btn-owl-right-style-1{
   padding: 10px;
   background: white;
 }
 
-.index-btn-owl-left{
+.btn-owl-left-style-1{
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   box-shadow: 2px 0 4px 2px rgba(0, 0, 0, 0.16);
 }
 
-.index-btn-owl-right{
+.btn-owl-right-style-1{
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   box-shadow: -2px 0 4px 2px rgba(0, 0, 0, 0.16);
@@ -2192,6 +2203,7 @@ a.head-item:hover{
 
 .favorite-tag{
   cursor: pointer;
+  position: relative;
   background-color: white;
   border: 2px solid #f14c91;
   border-radius: 100%;
@@ -2200,6 +2212,24 @@ a.head-item:hover{
   align-items: center;
   padding: 10px;
   font-size: 24px;
+}
+
+.favorite-tag::before{
+  content: 'Thêm vào danh sách yêu thích';
+  position: absolute;
+  right: 130%;
+  padding: 5px;
+  width: 240px;
+  border-radius: 5px;
+  background-color: #f14c91;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  display: none;
+}
+
+.favorite-tag:hover::before{
+  display: block;
 }
 
 .favorite-tag-clicked{
@@ -2297,6 +2327,38 @@ a.head-item:hover{
   color: black;
   font-size: 18px;
   text-transform: uppercase;
+}
+
+.detail-item{
+  padding: 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.16);
+}
+
+.detail-item-title{
+  position: relative;
+  padding: 0 24px;
+  color: black;
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.detail-item-title::before{
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background-color: #078FD8;
+}
+
+.detail-item-content{
+  width: 20%;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 14px;
 }
 
 .detail-vote-avg{

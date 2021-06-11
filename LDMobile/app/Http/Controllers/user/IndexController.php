@@ -42,6 +42,15 @@ class IndexController extends Controller
     {
         $this->viewprefix='user.pages.';
         $this->user='user/content/';
+
+        $this->lst_brand = [];
+        $i = 0;
+
+        foreach(NHACUNGCAP::all() as $key){
+            $this->lst_brand[$i]['brand'] = explode(' ', $key->tenncc)[0];
+            $this->lst_brand[$i]['image'] = $key->anhdaidien;
+            $i++;
+        }
     }
     public function Index(){
         /*=================================
@@ -78,7 +87,7 @@ class IndexController extends Controller
                     hotsale
         ===================================*/
 
-        $lst_temp = $this->getAllProductsByCapacity();
+        $lst_temp = $this->getAllProductByCapacity();
 
         // sắp xếp khuyến mãi giảm dần
         $lst_product = $this->sortProductsByPromotionASC($lst_temp);
@@ -100,31 +109,19 @@ class IndexController extends Controller
             $SANPHAM = MAUSP::find($model->id)->sanpham;
 
             // lấy mẫu sp theo dung lượng
-            $lst_temp = $this->getProductsByCapacity($SANPHAM);
+            $lst_temp = $this->getProductByCapacity($SANPHAM);
 
             foreach($lst_temp as $key){
-                $lst_featured[$i] = [
-                    // thông tin sản phẩm
-                    'id' => $key['id'],
-                    'tensp' => $key['tensp'],
-                    'hinhanh' => $key['hinhanh'],
-                    'mausac' => $key['mausac'],
-                    'ram' => $key['ram'],
-                    'dungluong' => $key['dungluong'],
-                    'gia' => $key['gia'],
-    
-                    // khuyến mãi
-                    'khuyenmai' => $key['khuyenmai'],
-                    'giakhuyenmai' => $key['giakhuyenmai'],
-    
-                    // đánh giá
-                    'danhgia' => $key['danhgia'],
-                ];
+                $lst_featured[$i] = $key;
                 $i++;
             }
         }
 
         $data = [
+            // brand
+            'lst_brand' => $this->lst_brand,
+            'url_logo' => 'images/logo/',
+
             // slideshow
             'lst_slide' => $lst_slide,
             'url_slide' => 'images/slideshow/',
@@ -148,38 +145,74 @@ class IndexController extends Controller
 
     public function DienThoai(){
 
-        $lst_product = $this->getAllProductsByCapacity();
+        $lst_product = $this->getAllProductByCapacity();
 
         // số lượng sản phẩm
         $qty = count($lst_product);
         
         $data = [
+            'lst_brand' => $this->lst_brand,
             'lst_product' => $lst_product,
             'qty' => $qty,
             'url_phone' => 'images/phone/',
+            'brand' => '',
         ];
 
         return view($this->user."dien-thoai")->with($data);
     }
 
-    public function ChiTiet($id){
-        /*==============================================================================================
-                                                       Phone
-        ================================================================================================*/
+    public function DienThoaiTheoHang($brand)
+    {
+        $model = MAUSP::where('id_ncc', NHACUNGCAP::where('tenncc', 'like', $brand.'%')->first()->id)->get();
 
-        // điện thoại theo id;
-        $SANPHAM = SANPHAM::where('id', $id)->first();
+        $lst_product = [];
+        $i = 0;
 
-        // nếu id không hợp lệ
-        if(!isset($SANPHAM)){
+        foreach($model as $key){
+            $lst_temp = $this->getProductByCapacity(SANPHAM::where('id_msp', $key['id'])->get());
+
+            foreach($lst_temp as $phone){
+                $lst_product[$i] = $phone;
+                $i++;
+            }
+        }
+        
+        $data = [
+            'lst_brand' => $this->lst_brand,
+            'lst_product' => $lst_product,
+            'qty' => count($lst_product),
+            'url_phone' => 'images/phone/',
+            'brand' => $brand,
+        ];
+
+
+        return view($this->user.'dien-thoai')->with($data);
+    }
+
+    public function ChiTiet($name){
+        $phoneName = $this->getPhoneNameByString($name);
+
+        if(!$phoneName){
             return redirect()->route('user/dien-thoai');
         }
 
+        // điện thoại theo tên
+        if($phoneName['ram'] == ''){
+            $SANPHAM = SANPHAM::where('tensp', $phoneName['tensp'])
+                            ->where('dungluong', $phoneName['dungluong'])
+                            ->inRandomOrder()->first();
+        } else {
+            $SANPHAM = SANPHAM::where('tensp', $phoneName['tensp'])
+                            ->where('dungluong', $phoneName['dungluong'])
+                            ->where('ram', $phoneName['ram'])
+                            ->inRandomOrder()->first();
+        }
+
+        // mã sp
+        $id = $SANPHAM->id;
+
         // mã mẫu sp
         $id_msp = $SANPHAM->id_msp;
-
-        // mẫu sp
-        $model = MAUSP::where('id', $id_msp)->first();
 
         // dung lượng
         $capacity = $SANPHAM->dungluong;
@@ -190,29 +223,39 @@ class IndexController extends Controller
         // ram
         $ram = $SANPHAM->ram;
 
+        // mẫu sp
+        $model = MAUSP::where('id', $id_msp)->first();
+
         // các điện thoại cùng mẫu
-        $phones = MAUSP::find($id_msp)->sanpham;
+        $phoneByModel = MAUSP::find($id_msp)->sanpham;
 
         // các điện thoại cùng mẫu theo dung lượng
-        $phonesByCapacity = $this->getProductsByCapacity($phones);
+        $phoneByCapacity = $this->getProductByCapacity($phoneByModel);
+
+        /*==============================================================================================
+                                                       Phone
+        ================================================================================================*/
 
         // điện thoại theo id
         $phone = [
-            'id' => $SANPHAM->id,
+            'id' => $id,
+            'tensp' => '',
             'hinhanh' => $SANPHAM->hinhanh,
             'mausac' => $SANPHAM->mausac,
             'ram' => $SANPHAM->ram,
             'dungluong' => $SANPHAM->dungluong,
             'gia' => $SANPHAM->gia,
-            'cauhinh' => json_decode($this->getSpecifications($id), true),
-            'trangthai' => $SANPHAM->trangthai,
+            'giakhuyenmai' => '',
+            'cauhinh' => $this->getSpecifications($id),
             'baohanh' => MAUSP::where('id', $id_msp)->first()->baohanh,
             'khuyenmai' => $this->getPromotionById($id_km),
             'id_youtube' => $model->id_youtube,
+            'danhgia' => [],
+            'trangthai' => $SANPHAM->trangthai,
         ];
 
-        // lấy đánh giá, khuyến mãi của mẫu sp
-        foreach($phonesByCapacity as $key){
+        // lấy tên, đánh giá, khuyến mãi của mẫu sp
+        foreach($phoneByCapacity as $key){
             if($key['dungluong'] == $capacity && $key['ram'] == $ram){
                 $phone['tensp'] = $key['tensp'];
                 $phone['giakhuyenmai'] = $key['giakhuyenmai'];
@@ -232,9 +275,9 @@ class IndexController extends Controller
 
         $i = 0;
         // lấy dung lượng biến thể
-        foreach($phonesByCapacity as $key){
+        foreach($phoneByCapacity as $key){
             $lst_variation['capacity'][$i] = [
-                'id_sp' => $key['id'],
+                'tensp_url' => $key['tensp_url'],
                 'ram' => $key['ram'],
                 'dungluong' => $key['dungluong'],
                 'giakhuyenmai' => $key['giakhuyenmai'],
@@ -245,10 +288,10 @@ class IndexController extends Controller
 
         $i = 0;
         // lấy màu sắc, hình ảnh biến thể
-        foreach($phones as $key){
+        foreach($phoneByModel as $key){
             if($key['dungluong'] == $capacity && $key['ram'] == $ram){
                 $lst_variation['color'][$i] = [
-                    'id_sp' => $key['id'],
+                    'hinhanh' => $key['hinhanh'],
                     'mausac' => $key['mausac'],
                     'giakhuyenmai' => $phone['giakhuyenmai'],
                 ];
@@ -266,49 +309,17 @@ class IndexController extends Controller
         ================================================================================================*/
 
         $samePhones = [];
-        $lst_evaluate = [];
         $i = 0;
 
         // các điện thoại cùng dung lượng
-        foreach($phones as $key){
+        foreach($phoneByModel as $key){
             if($key['dungluong'] == $capacity){
                 $samePhones[$i] = $key;
                 $i++;
             }
         }
 
-        // lấy đánh giá của mẫu sp theo dung lượng
-        $lst_evaluate;
-        $i = 0;
-        
-        foreach($samePhones as $key){
-            $DANHGIASP = SANPHAM::find($key['id'])->danhgiasp;
-
-            if(count($DANHGIASP) == 0){
-                continue;
-            }
-
-            foreach($DANHGIASP as $evaluate){
-                $lst_evaluate[$i] = [
-                    'id' => $evaluate->pivot->id,
-                    'taikhoan' => $this->getAccountById($evaluate->pivot->id_tk),
-                    'sanpham' => $this->getProductById($evaluate->pivot->id_sp),
-                    'noidung' => $evaluate->pivot->noidung,
-                    'thoigian' => $evaluate->pivot->thoigian,
-                    'soluotthich' => $evaluate->pivot->soluotthich,
-                    'danhgia' => $evaluate->pivot->danhgia,
-                    'trangthai' => $evaluate->pivot->trangthai,
-                ];
-                $i++;
-            }
-        }
-
-        if(!isset($lst_evaluate)){
-            $lst_evaluate = [];
-        }
-
-        $this->print($lst_evaluate);
-        return false;
+        $lst_evaluate = $this->getEvaluateByCapacity($samePhones);
 
         /*==============================================================================================
                                                     supplier
@@ -324,17 +335,6 @@ class IndexController extends Controller
 
         $lst_area = TINHTHANH::all();
 
-        $evaluate = [
-            'total-rating' => '100',
-            'rating' => [
-                '5' => '90',
-                '4' => '5',
-                '3' => '5',
-                '2' => '0',
-                '1' => '0',
-            ],
-        ];
-
         /*==============================================================================================
                                                    slideshow model
         ==============================================================================================*/
@@ -342,10 +342,23 @@ class IndexController extends Controller
         $slide_model = MAUSP::find($id_msp)->slideshow_ctmsp;
 
         /*==============================================================================================
+                                                   same brand
+        ==============================================================================================*/
+
+        $lst_proSameBrand = $this->getProductBySupplierId($model->id_ncc);
+
+        /*==============================================================================================
+                                                similar product
+        ==============================================================================================*/
+        
+        $lst_similarPro = $this->getProductByPriceRange($id);
+
+        /*==============================================================================================
                                                     data
         ================================================================================================*/
 
         $data = [
+            'lst_brand' => $this->lst_brand,
             'phone' => $phone,
             'url_phone' => 'images/phone/',
             'url_json' => 'json/',
@@ -355,7 +368,8 @@ class IndexController extends Controller
             'lst_variation' => $lst_variation,
             'supplier' => $supplier,
             'slide_model' => $slide_model,
-            'evaluate' => $evaluate,
+            'lst_proSameBrand' => $lst_proSameBrand,
+            'lst_similarPro' => $lst_similarPro,
             'lst_area' => $lst_area,
             'lst_branch' => $lst_branch,
         ];
@@ -554,8 +568,47 @@ class IndexController extends Controller
         // return false;
     }
 
-    public function SoSanh(){
-        return view($this->user.'so-sanh');
+    public function SoSanh($str){
+        $current_url = explode('vs', $str)[0];
+        $compare_url = explode('vs', $str)[1];
+
+        $currentName = $this->getPhoneNameByString($current_url);
+        $compareName = $this->getPhoneNameByString($compare_url);
+
+        // điện thoại theo tên
+        if($currentName['ram'] == ''){
+            $currentId = SANPHAM::where('tensp', $currentName['tensp'])
+                            ->where('dungluong', $currentName['dungluong'])
+                            ->inRandomOrder()->first()->id;
+        } else {
+            $currentId = SANPHAM::where('tensp', $currentName['tensp'])
+                            ->where('dungluong', $currentName['dungluong'])
+                            ->where('ram', $currentName['ram'])
+                            ->inRandomOrder()->first()->id;
+        }
+
+        if($compareName['ram'] == ''){
+            $compareId = SANPHAM::where('tensp', $compareName['tensp'])
+                            ->where('dungluong', $compareName['dungluong'])
+                            ->inRandomOrder()->first()->id;
+        } else {
+            $compareId = SANPHAM::where('tensp', $compareName['tensp'])
+                            ->where('dungluong', $compareName['dungluong'])
+                            ->where('ram', $compareName['ram'])
+                            ->inRandomOrder()->first()->id;
+        }
+
+        $currentProduct = $this->getProductInformation($currentId);
+        $compareProduct = $this->getProductInformation($compareId);
+
+        $data = [
+            'lst_brand' => $this->lst_brand,
+            'url_phone' => '/images/phone/',
+            'currentProduct' => $currentProduct,
+            'compareProduct' => $compareProduct,
+        ];
+
+        return view($this->user.'so-sanh')->with($data);
     }
 
     public function KetQuaThanhToan()
@@ -862,7 +915,7 @@ class IndexController extends Controller
     }
 
     // lấy danh sách mẫu sp theo dung lượng
-    public function getAllProductsByCapacity()
+    public function getAllProductByCapacity()
     {
         $lst_model = MAUSP::all();
         $i = 0;
@@ -872,26 +925,10 @@ class IndexController extends Controller
             $SANPHAM = MAUSP::find($model->id)->sanpham;
 
             // lấy mẫu sp theo dung lượng
-            $lst_temp = $this->getProductsByCapacity($SANPHAM);
+            $lst_temp = $this->getProductByCapacity($SANPHAM);
 
             foreach($lst_temp as $key){
-                $lst_product[$i] = [
-                    // thông tin sản phẩm
-                    'id' => $key['id'],
-                    'tensp' => $key['tensp'],
-                    'hinhanh' => $key['hinhanh'],
-                    'mausac' => $key['mausac'],
-                    'ram' => $key['ram'],
-                    'dungluong' => $key['dungluong'],
-                    'gia' => $key['gia'],
-    
-                    // khuyến mãi
-                    'khuyenmai' => $key['khuyenmai'],
-                    'giakhuyenmai' => $key['giakhuyenmai'],
-    
-                    // đánh giá
-                    'danhgia' => $key['danhgia'],
-                ];
+                $lst_product[$i] = $key;
                 $i++;
             }
         }
@@ -900,7 +937,7 @@ class IndexController extends Controller
     }
 
     // lấy mẫu sp theo dung lượng
-    public function getProductsByCapacity($lst)
+    public function getProductByCapacity($lst)
     {
         // dung lượng: 64 GB / 128 GB
         $capacity = $lst[0]['dungluong'];
@@ -921,6 +958,7 @@ class IndexController extends Controller
                 $lst_temp[$capacity.'_'.$ram][$i] = [
                     'id' => $key['id'],
                     'tensp' => $key['tensp'],
+                    'tensp_url' => str_replace(' ', '-', $key['tensp']),
                     'hinhanh' => $key['hinhanh'],
                     'mausac' => $key['mausac'],
                     'ram' => $key['ram'],
@@ -929,7 +967,6 @@ class IndexController extends Controller
                     'khuyenmai' => $promotion,
                     'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
                     'danhgia' => $this->starRatingProduct($key['id']),
-                    'cauhinh' => $key['cauhinh'],
                     'trangthai' => $key['trangthai'],
                 ];
 
@@ -947,6 +984,7 @@ class IndexController extends Controller
                 $lst_temp[$capacity.'_'.$ram][$i] = [
                     'id' => $key['id'],
                     'tensp' => $key['tensp'],
+                    'tensp_url' => str_replace(' ', '-', $key['tensp']),
                     'hinhanh' => $key['hinhanh'],
                     'mausac' => $key['mausac'],
                     'ram' => $key['ram'],
@@ -955,7 +993,6 @@ class IndexController extends Controller
                     'khuyenmai' => $promotion,
                     'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
                     'danhgia' => $this->starRatingProduct($key['id']),
-                    'cauhinh' => $key['cauhinh'],
                     'trangthai' => $key['trangthai'],
                 ];
 
@@ -976,10 +1013,12 @@ class IndexController extends Controller
                     $key = $lst_temp[array_keys($lst_temp)[$i]];
                     
                     $rand = mt_rand(0, count($key) - 1);
+                    $tensp_url = $key[$rand]['tensp_url'].' '.$key[$rand]['ram'].' '.$key[$rand]['dungluong'];
 
                     $lst_product[$i] = [
                         'id' => $key[$rand]['id'],
                         'tensp' => $key[$rand]['tensp'].' '.$key[$rand]['ram'].' '.$key[$rand]['dungluong'],
+                        'tensp_url' => str_replace(' ', '-', $tensp_url),
                         'hinhanh' => $key[$rand]['hinhanh'],
                         'mausac' => $key[$rand]['mausac'],
                         'ram' => $key[$rand]['ram'],
@@ -988,7 +1027,6 @@ class IndexController extends Controller
                         'khuyenmai' => $key[$rand]['khuyenmai'],
                         'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
                         'danhgia' => $this->starRatingByCapacity($key),
-                        'cauhinh' => $key[$rand]['cauhinh'],
                         'trangthai' => $key[$rand]['trangthai'],
                     ];
                 }
@@ -997,10 +1035,12 @@ class IndexController extends Controller
                     $key = $lst_temp[array_keys($lst_temp)[$i]];
     
                     $rand = mt_rand(0, count($key) - 1);
+                    $tensp_url = $key[$rand]['tensp_url'].' '.$key[$rand]['dungluong'];
     
                     $lst_product[$i] = [
                         'id' => $key[$rand]['id'],
                         'tensp' => $key[$rand]['tensp'].' '.$key[$rand]['dungluong'],
+                        'tensp_url' => str_replace(' ', '-', $tensp_url),
                         'hinhanh' => $key[$rand]['hinhanh'],
                         'mausac' => $key[$rand]['mausac'],
                         'ram' => $key[$rand]['ram'],
@@ -1009,7 +1049,6 @@ class IndexController extends Controller
                         'khuyenmai' => $key[$rand]['khuyenmai'],
                         'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
                         'danhgia' => $this->starRatingByCapacity($key),
-                        'cauhinh' => $key[$rand]['cauhinh'],
                         'trangthai' => $key[$rand]['trangthai'],
                     ];
                 }
@@ -1019,10 +1058,12 @@ class IndexController extends Controller
                 $key = $lst_temp[array_keys($lst_temp)[$i]];
 
                 $rand = mt_rand(0, count($key) - 1);
+                $tensp_url = $key[$rand]['tensp_url'].' '.$key[$rand]['dungluong'];
 
                 $lst_product[$i] = [
                     'id' => $key[$rand]['id'],
                     'tensp' => $key[$rand]['tensp'].' '.$key[$rand]['dungluong'],
+                    'tensp_url' => str_replace(' ', '-', $tensp_url),
                     'hinhanh' => $key[$rand]['hinhanh'],
                     'mausac' => $key[$rand]['mausac'],
                     'ram' => $key[$rand]['ram'],
@@ -1031,7 +1072,6 @@ class IndexController extends Controller
                     'khuyenmai' => $key[$rand]['khuyenmai'],
                     'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
                     'danhgia' => $this->starRatingByCapacity($key),
-                    'cauhinh' => $key[$rand]['cauhinh'],
                     'trangthai' => $key[$rand]['trangthai'],
                 ];
             }
@@ -1043,21 +1083,48 @@ class IndexController extends Controller
     // lấy sp theo id_sp
     public function getProductById($id_sp)
     {
-        $temp = SANPHAM::where('id', $id_sp)->first();
+        return $temp = $this->getProductByCapacity(SANPHAM::where('id', $id_sp)->get());
+    }
 
-        $product = [
-            'id' => $id_sp,
-            'tensp' => $temp->tensp,
-            'id_msp' => $temp->id_msp,
-            'hinhanh' => $temp->hinhanh,
-            'mausac' => $temp->mausac,
-            'ram' => $temp->ram,
-            'dungluong' => $temp->dungluong,
-            'gia' => $temp->gia,
-            'id_km' => $temp->id_km,
-            'cauhinh' => $temp->cauhinh,
-            'trangthai' => $temp->trangthai,
-        ];
+    // lấy thông tin sản phẩm
+    public function getProductInformation($id_sp)
+    {
+        $product = [];
+
+        $product['sanpham'] = $this->getProductById($id_sp);
+
+        $phoneByModel = MAUSP::find(SANPHAM::find($id_sp)->mausp->id)->sanpham;
+        $phoneByCapacity = $this->getProductByCapacity($phoneByModel);
+
+        // lấy dung lượng biến thể
+        $i = 0;
+        foreach($phoneByCapacity as $key){
+            $lst_variation['capacity'][$i] = [
+                'id_sp' => $key['id'],
+                'ram' => $key['ram'],
+                'dungluong' => $key['dungluong'],
+                'giakhuyenmai' => $key['giakhuyenmai'],
+            ];
+             
+            $i++;
+        }
+
+        // lấy màu sắc, hình ảnh biến thể
+        $i = 0;
+        foreach($phoneByModel as $key){
+            if($key['dungluong'] == $phoneByModel[0]['dungluong'] && $key['ram'] == $phoneByModel[0]['ram']){
+                $lst_variation['color'][$i] = [
+                    'id_sp' => $key['id'],
+                    'hinhanh' => $key['hinhanh'],
+                    'mausac' => $key['mausac'],
+                    'giakhuyenmai' => $product['sanpham'][0]['giakhuyenmai'],
+                ];
+                $i++;
+            }
+        }
+
+        $product['variation'] = $lst_variation;
+        $product['cauhinh'] = $this->getSpecifications($id_sp);
 
         return $product;
     }
@@ -1090,6 +1157,50 @@ class IndexController extends Controller
     /*==========================================================================================================
                                                 detail function                                                            
     ============================================================================================================*/
+    // lấy tên điện thoại từ chuỗi
+    public function getPhoneNameByString($str)
+    {
+        $lst = explode('-', $str);
+
+        if(count($lst) == 1){
+            return false;
+        }
+
+        $count = 0;
+        foreach($lst as $key){
+            if($key == 'GB'){
+                $count++;
+            }
+        }
+
+        $lst_name = [
+            'tensp' => '',
+            'ram' => '',
+            'dungluong' => '',
+        ];
+
+        if($count == 1){
+            $lst_name['dungluong'] = $lst[count($lst) - 2].' '.$lst[count($lst) - 1];
+            for($i = 0; $i < 2; $i++){
+                unset($lst[count($lst) - 1]);
+            }
+        } else {
+            $lst_name['ram'] = $lst[count($lst) - 4].' '.$lst[count($lst) - 3];
+            $lst_name['dungluong'] = $lst[count($lst) - 2].' '.$lst[count($lst) - 1];
+            for($i = 0; $i < 4; $i++){
+                unset($lst[count($lst) - 1]);
+            }
+        }
+
+        $name = '';
+        foreach($lst as $key){
+            $name .= $key.' ';
+        }
+
+        $lst_name['tensp'] = $name;
+
+        return $lst_name;
+    }
 
     // lấy nhà cung cấp theo id_msp
     public function getSupplierByModelId($id_msp)
@@ -1102,6 +1213,7 @@ class IndexController extends Controller
             $supplier = [
                 'id' => $temp['id'],
                 'tenncc' => $temp['tenncc'],
+                'brand' => explode(' ', $temp['tenncc'])[0],
                 'anhdaidien' => $temp['anhdaidien'],
                 'diachi' => $temp['diachi'],
                 'sdt' => $temp['diachi'],
@@ -1136,7 +1248,7 @@ class IndexController extends Controller
     {
         $fileName = SANPHAM::where('id', $id_sp)->first()->cauhinh;
 
-        return File::get(public_path('\json\\' . $fileName));
+        return json_decode(File::get(public_path('\json\\' . $fileName)), true);
     }
 
     // lấy tài khoản theo id_tk
@@ -1182,6 +1294,194 @@ class IndexController extends Controller
         }
 
         return $lst_branch;
+    }
+
+    // lấy ngẫu nhiên điện thoại cùng nhà cung cấp
+    public function getProductBySupplierId($id_ncc, $qty = 5)
+    {
+        $models = NHACUNGCAP::find($id_ncc)->mausp;
+        $lst_product = [];
+        
+        // random mẫu sản phẩm không trùng nhau
+        $lst_model = $this->getUniqueRandomNumber($models[0]['id'], $models[count($models) - 1]['id'], $qty);
+
+        // random sản phẩm theo id_msp
+        for($i = 0; $i < count($lst_model); $i++){
+            $phones = SANPHAM::where('id_msp', $lst_model[$i])->get();
+
+            $phonesByCapacity = $this->getProductByCapacity($phones);
+            $lst_product[$i] = $phonesByCapacity[mt_rand(0 , count($phonesByCapacity) - 1)];
+        }
+
+        return $lst_product;
+    }
+
+    // lấy ngẫu nhiên điện thoại tương tự trong tầm giá
+    public function getProductByPriceRange($id_sp, $qty = 5)
+    {
+        $id_msp = SANPHAM::find($id_sp)->mausp->id;
+
+        $phone = SANPHAM::where('id', $id_sp)->first();
+
+        // danh sách mẫu sp theo dung lượng không trùng với mẫu đang xem
+        $lst_modelByCap = [];
+        $i = 0;
+        foreach(MAUSP::all() as $model){
+            if($model->id == $id_msp){
+                continue;
+            }
+
+            $phoneByModel = SANPHAM::where('id_msp', $model->id)->get();
+            $phoneByCapacity = $this->getProductByCapacity($phoneByModel);
+
+            foreach($phoneByCapacity as $key){
+                $lst_modelByCap[$i] = $key;
+                $i++;
+            }
+        }
+
+        // danh sách sản phẩm trong tầm giá:  1tr < giá sp < 1tr
+        $lst_product = [];
+        $i = 0;
+        $higher = $phone->gia + 1000000;
+        $lower = $phone->gia - 1000000;
+        
+        foreach($lst_modelByCap as $phone){
+            if($phone['gia'] >= $lower && $phone['gia'] <= $higher){
+                $lst_product[$i] = $phone;
+                $i++;
+            }
+        }
+
+        return $lst_product;
+    }
+
+    // lấy mảng số ngẫu nhiên không trùng khớp
+    public function getUniqueRandomNumber($min, $max, $qty)
+    {
+        $lst_rand = [];
+        
+        for($i = 0; $i < $qty; $i++){
+            $rand = mt_rand($min, $max);
+
+            if(count($lst_rand) != 0){
+                while(1){
+                    // nếu bị trùng thì random lại
+                    if(in_array($rand, $lst_rand)){
+                        $rand = mt_rand($min, $max);
+                    } else {
+                        $lst_rand[$i] = $rand;
+                        break;
+                    }
+                }
+            } else {
+                $lst_rand[$i] = $rand;
+            }
+        }
+
+        return $lst_rand;
+    }
+
+    // lấy đánh giá của mẫu sp cùng dung lượng
+    public function getEvaluateByCapacity($samePhones)
+    {
+        $lst_evaluate = [];
+        
+        // lấy đánh giá của mẫu sp theo dung lượng
+        $lst_evaluate = [
+            'evaluate' => [],
+            'image' => [],
+            'total-rating' => '',
+            'rating' => [
+                '5' => '',
+                '4' => '',
+                '3' => '',
+                '2' => '',
+                '1' => '',
+            ],
+        ];
+        $i = 0;
+
+        $_1s = 0; $_2s = 0; $_3s = 0; $_4s = 0; $_5s = 0;
+        
+        foreach($samePhones as $key){
+            $DANHGIASP = SANPHAM::find($key['id'])->danhgiasp;
+
+            if(count($DANHGIASP) == 0){
+                continue;
+            }
+
+            foreach($DANHGIASP as $evaluate){
+                $imageEvaluate = $this->getEvaluateDetail($evaluate->pivot->id_dg);
+                $product = $this->getProductById($evaluate->pivot->id_sp)[0];
+
+                $lst_evaluate['evaluate'][$i] = [
+                    'id' => $evaluate->pivot->id,
+                    'taikhoan' => $this->getAccountById($evaluate->pivot->id_tk),
+                    'sanpham' => [
+                        'id' => $product['id'],
+                        'tensp' => $product['tensp'],
+                        'mausac' => $product['mausac'],
+                        'dungluong' => $product['dungluong'],
+                    ],
+                    'noidung' => $evaluate->pivot->noidung,
+                    'hinhanh' => $imageEvaluate,
+                    'thoigian' => $evaluate->pivot->thoigian,
+                    'soluotthich' => $evaluate->pivot->soluotthich,
+                    'danhgia' => $evaluate->pivot->danhgia,
+                    'trangthai' => $evaluate->pivot->trangthai,
+                ];
+
+                if($evaluate->pivot->danhgia == 1){
+                    $_1s++;
+                } elseif($evaluate->pivot->danhgia == 2){
+                    $_2s++;
+                } elseif($evaluate->pivot->danhgia == 3){
+                    $_3s++;
+                } elseif($evaluate->pivot->danhgia == 4){
+                    $_4s++;
+                } else {
+                    $_5s++;
+                }
+                $i++;
+            }
+        }
+
+        // chi tiết đánh giá
+        $lst_evaluate['total-rating'] = $i;
+        $lst_evaluate['rating']['1'] = $_1s;
+        $lst_evaluate['rating']['2'] = $_2s;
+        $lst_evaluate['rating']['3'] = $_3s;
+        $lst_evaluate['rating']['4'] = $_4s;
+        $lst_evaluate['rating']['5'] = $_5s;
+
+        if(!isset($lst_evaluate)){
+            $lst_evaluate = [];
+        }
+
+        return $lst_evaluate;
+    }
+
+    // lấy hình ảnh đánh giá theo id_dg
+    public function getEvaluateDetail($id_dg)
+    {
+        $temp = CTDG::where('id_dg', $id_dg)->get();
+
+        if(!isset($temp)){
+            return [];
+        }
+
+        $lst_imageEvaluate = [];
+        $i = 0;
+        foreach($temp as $key){
+            $lst_imageEvaluate[$i] = [
+                'hinhanh' => $key['hinhanh'],
+            ];
+
+            $i++;
+        }
+
+        return $lst_imageEvaluate;
     }
 
     // hàm loại bỏ ký tự có dấu

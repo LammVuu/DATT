@@ -433,7 +433,9 @@ $(function() {
 =============================================================================================================================*/
 
     // sec khuyến mãi
-    $('#index-promotion-carousel').owlCarousel({
+
+    var owl_promotion = $('#index-promotion-carousel');
+    owl_promotion.owlCarousel({
         nav: false,
         rewind: true,
         dots: false,
@@ -454,14 +456,11 @@ $(function() {
         }
     });
 
-    var owl_promotion = $('#index-promotion-carousel');
-    owl_promotion.owlCarousel();
-
-    $('#prev-owl-carousel').on('click', function(){
+    $('#prev-index-promotion').on('click', function(){
         owl_promotion.trigger('prev.owl.carousel', [300]);
     });
 
-    $('#next-owl-carousel').on('click', function(){
+    $('#next-index-promotion').on('click', function(){
         owl_promotion.trigger('next.owl.carousel');
     });
 
@@ -1158,6 +1157,46 @@ $(function() {
         }
     });
 
+    // sản phẩm tương tự
+    var owl_similar = $('#similar-pro-carousel');
+    owl_similar.owlCarousel({
+        nav: false,
+        rewind: true,
+        dots: false,
+        responsiveClass:true,
+        responsive: {
+            0: {
+                items: 5
+            },
+            600: {
+                items: 2
+            },
+            1000: {
+                items: 4
+            },
+            1200: {
+                items: 5
+            }
+        }
+    });
+
+    $('#prev-similar').on('click', function(){
+        owl_similar.trigger('prev.owl.carousel', [300]);
+    });
+
+    $('#next-similar').on('click', function(){
+        owl_similar.trigger('next.owl.carousel');
+    });
+
+    // thay đổi màu sắc
+    $('.color-option').off('click').click(function(){
+        var image = $(this).data('image');
+        $('#main-img').attr('src', image);
+
+        $('.color-option').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
     // hiển thị đánh giá sản phẩm
     if($('#total-rating').length){
         var total_rating = parseInt($('#total-rating').val());
@@ -1377,6 +1416,16 @@ $(function() {
                 $(this).parent().parent().parent().parent().remove();
             }, 250);
         });
+    });
+
+    // so sánh
+    $('.compare-btn').off('click').click(function(){
+        var currentName = url;
+        var compareName = $(this).attr('id').split('_')[1];
+
+        var redirectPage ='/sosanh/' + currentName + 'vs' + compareName;
+
+        location.href = redirectPage;
     });
     
 

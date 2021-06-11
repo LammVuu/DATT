@@ -114,7 +114,14 @@
             ],
             "cong_sac": "Type-C",
             "jack_tai_nghe": "3.5 mm",
-            "ket_noi_khac": "Hồng ngoại, OTG"
+            "ket_noi_khac": [
+                {
+                    "name": "Hồng ngoại"
+                },
+                {
+                    "name": "OTG"
+                }
+            ]
         },
         "thiet_ke_trong_luong": {
             "thiet_ke": "Nguyên khối",

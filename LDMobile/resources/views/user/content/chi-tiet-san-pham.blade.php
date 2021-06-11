@@ -44,8 +44,8 @@
                             @endforeach
                         </div>
                         <div style='display: flex'>
-                            <div id='prev-owl-carousel'><i class="far fa-chevron-left fz-26"></i></div>
-                            <div id='next-owl-carousel'><i class="far fa-chevron-right fz-26"></i></div>
+                            <div class='prev-owl-carousel'><i class="far fa-chevron-left fz-26"></i></div>
+                            <div class='next-owl-carousel'><i class="far fa-chevron-right fz-26"></i></div>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                                     <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
                                 </div>
                             @else
-                                <a href='{{ route('user/chi-tiet', ['id' => $key['id_sp']]) }}' class='detail-option box-shadow'>
+                                <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='detail-option box-shadow'>
                                     <div>{{ $key['dungluong'] }}</div>
                                     <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
                                 </a>
@@ -88,15 +88,17 @@
                         @foreach ($lst_variation['color'] as $key)
                             <div class="col-md-4 col-sm-3 p-10">
                             @if ($key['mausac'] == $phone['mausac'])
-                                <div type='button' class='detail-option box-shadow selected'>
+                                <div type='button' class='color-option detail-option box-shadow selected'
+                                    data-image="{{ $url_phone.$key['hinhanh'] }}">
                                     <div class="font-weight-600">{{ $key['mausac'] }}</div>
                                     <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
                                 </div>
                             @else
-                                <a href='{{ route('user/chi-tiet', ['id' => $key['id_sp']]) }}' class='detail-option box-shadow'>
+                                <div type="button" class='color-option detail-option box-shadow'
+                                    data-image="{{ $url_phone.$key['hinhanh'] }}">
                                     <div>{{ $key['mausac'] }}</div>
                                     <div class="price-color font-weight-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
-                                </a>
+                                </div>
                             @endif  
                             </div>  
                         @endforeach
@@ -282,191 +284,347 @@
                         </tbody>
                     </table>
             </div>
-        </div><hr>
+        </div>
 
-        <div class='row'>
-            {{-- sản phẩm tương tự --}}
-            <div class='col-md-12'>
-                <div class='fz-20 font-weight-600'>Các sản phẩm tương tự</div>
-                <div class='row'>
-                    @for ($i = 0; $i < 4; $i++)
-                    <div class='col-md-3 col-sm-3 pt-30 pb-30'>
-                        <div class='d-flex flex-column fz-14'>
+        {{-- sản phẩm cùng hãng --}}
+        <div class='row pt-50'>
+            <div class='col-md-12 detail-item'>
+                <div class='detail-item-title'>Cùng thương hiệu {{ $supplier['brand'] }}</div>
+                <div class="p-20">
+                    <div class='d-flex justify-content-start flex-wrap'>
+                        @foreach($lst_proSameBrand as $key)
+                        <div class='detail-item-content'>
                             {{-- hình ảnh --}}
-                            <img src="images/phone/iphone_12_black.jpg" class='w-70' alt="">
+                            <div>
+                                <img src="{{ $url_phone.$key['hinhanh'] }}" class='w-70 center-img' alt="">
+                            </div>
                             {{-- tên điện thoại --}}
-                            <div class='pt-20'>
-                                <a href="#" class='font-weight-600 black'>iPhone 12 PRO MAX 128GB</a>
+                            <div class='text-center pl-10 pr-10'>
+                                <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='font-weight-600 black'>{{ $key['tensp'] }}</a>
                             </div>
                             {{-- giá --}}
-                            <div class='d-flex flex-column pt-10 fz-14'>
-                                <span class="price-color font-weight-600">25.000.000 <sup>đ</sup></span>
+                            <div class="d-flex justify-content-center">
                                 <div>
-                                    <span class='text-strike'>29.000.000 <sup>đ</sup></span>
-                                    <span class='pl-5 pr-5'>|</span>
-                                    <span class='price-color'>-10%</span>
+                                    <div class='d-flex flex-column fz-14'>
+                                        <span class="price-color font-weight-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                        <div>
+                                            <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                            <span class='pl-5 pr-5'>|</span>
+                                            <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
+                                        </div>
+                                    </div>
+                                    {{-- đánh giá --}}
+                                    <div class='pt-10'>
+                                        @if ($key['danhgia']['qty'] != 0)
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if($key['danhgia']['star'] > $i)
+                                                <i class="fas fa-star checked"></i>
+                                                @else
+                                                <i class="fas fa-star uncheck"></i>
+                                                @endif
+                                            @endfor
+                                            <span class='ml-10'>{{ $key['danhgia']['qty'] }} đánh giá</span>
+                                            @else
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                        @endif
+                                    </div>
+                                    
+                                    {{-- so sánh --}}
+                                    <div class='pt-10'>
+                                        <div id="{{ 'brand_'.$key['tensp_url'] }}" type='button' class="compare-btn main-color-text">So sánh</div>
+                                    </div>
                                 </div>
                             </div>
-                            {{-- đánh giá --}}
-                            <div class='pt-10'>
-                                <i class="fas fa-star checked"></i>
-                                <i class="fas fa-star checked"></i>
-                                <i class="fas fa-star checked"></i>
-                                <i class="fas fa-star checked"></i>
-                                <i class="fas fa-star uncheck"></i>
-                                <span class='ml-10'>21 đánh giá</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- sản phẩm tương tự --}}
+        <div class='row pt-50'>
+            <div class='col-md-12 detail-item'>
+                <div class='detail-item-title'>Sản phẩm tương tự</div>
+                <div class="pt-20 pb-20">
+                    <div class='relative'>
+                        <div id='similar-pro-carousel' class="owl-carousel owl-theme m-0">
+                            @foreach($lst_similarPro as $key)
+                            <div class='d-flex flex-column justify-content-between fz-14' style="height: 350px">
+                                {{-- hình ảnh --}}
+                                <div class="w-65 center-img">
+                                    <img src="{{ $url_phone.$key['hinhanh'] }}" alt="">
+                                </div>
+                                {{-- tên điện thoại --}}
+                                <div class='text-center pl-10 pr-10'>
+                                    <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='font-weight-600 black'>{{ $key['tensp'] }}</a>
+                                </div>
+                                {{-- giá --}}
+                                <div class="d-flex justify-content-center">
+                                    <div>
+                                        <div class='d-flex flex-column fz-14'>
+                                            <span class="price-color font-weight-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                            <div>
+                                                <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                                <span class='pl-5 pr-5'>|</span>
+                                                <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
+                                            </div>
+                                        </div>
+                                        {{-- đánh giá --}}
+                                        <div class='pt-10'>
+                                            @if ($key['danhgia']['qty'] != 0)
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if($key['danhgia']['star'] > $i)
+                                                    <i class="fas fa-star checked"></i>
+                                                    @else
+                                                    <i class="fas fa-star uncheck"></i>
+                                                    @endif
+                                                @endfor
+                                                <span class='ml-10'>21 đánh giá</span>
+                                                @else
+                                                <i class="fas fa-star uncheck"></i>
+                                                <i class="fas fa-star uncheck"></i>
+                                                <i class="fas fa-star uncheck"></i>
+                                                <i class="fas fa-star uncheck"></i>
+                                                <i class="fas fa-star uncheck"></i>
+                                            @endif
+                                        </div>
+                                        {{-- so sánh --}}
+                                        <div class='pt-10'>
+                                            <div id="{{ 'similar_'.$key['tensp_url'] }}" type='button' class="compare-btn main-color-text">So sánh</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            {{-- so sánh --}}
-                            <div class='pt-10'>
-                                <a href="#" >So sánh</a>
-                            </div>
+                            @endforeach
+                        </div>
+                        <div class="d-flex">
+                            <div id='prev-similar' class="prev-owl-carousel d-flex align-items-center btn-owl-left-style-1"><i class="fas fa-chevron-left fz-26"></i></div>
+                            <div id='next-similar' class="next-owl-carousel d-flex align-items-center btn-owl-right-style-1"><i class="fas fa-chevron-right fz-26"></i></div>
                         </div>
                     </div>
-                    @endfor
                 </div>
             </div>
-        </div><hr>
+        </div>
 
         {{-- gửi đánh giá --}}
-        <div class='row'>
+        <div class='row pt-50'>
             <div class='col-md-12'>
-                <div class='fz-20 font-weight-600'><?php echo $evaluate['total-rating'] ?> đánh giá iPhone 12 PRO MAX</div>
+                @if ($lst_evaluate['total-rating'] != 0)
+                <div class='fz-20 font-weight-600'>{{ $lst_evaluate['total-rating']}} đánh giá {{ $phone['tensp'] }}</div>
+                @else
+                <div class='fz-20 font-weight-600'>Hãy là người đầu tiên đánh giá {{ $phone['tensp'] }}</div>    
+                @endif
+                
                 <div class='pt-20 pb-20'>
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                {{-- sao trung bình --}}
-                                <td class='w-10 vertical-center'>
-                                    <div class='d-flex justify-content-center align-items-center p-20'>
-                                        <span class='detail-vote-avg'></span>
-                                        <i class="fas fa-star checked fz-34 ml-5"></i>
-                                    </div>
-                                </td>
-                                {{-- số lượt đánh giá --}}
-                                <td class='w-40 vertical-center'>
-                                    {{-- tổng số lương đánh giá --}}
-                                    <input type="hidden" id='total-rating' value='100'>
+                    {{-- nếu đã có đánh giá --}}
+                    @if ($lst_evaluate['total-rating'] != 0)
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    {{-- sao trung bình --}}
+                                    <td class='w-10 vertical-center'>
+                                        <div class='d-flex justify-content-center align-items-center p-20'>
+                                            <span class='detail-vote-avg'></span>
+                                            <i class="fas fa-star checked fz-34 ml-5"></i>
+                                        </div>
+                                    </td>
+                                    {{-- số lượt đánh giá --}}
+                                    <td class='w-40 vertical-center'>
+                                        {{-- tổng số lương đánh giá --}}
+                                        <input type="hidden" id='total-rating' value='{{ $lst_evaluate['total-rating'] }}'>
 
-                                    {{-- sao đánh giá --}}
-                                    @for ($i = 5; $i >= 1; $i--)
-                                        <div class='d-flex justify-content-between p-5 fz-14'>
-                                            <div class='d-flex align-items-center w-5'>
-                                                <span><?php echo $i ?></span>
-                                                <i class="fas fa-star checked ml-5"></i>
-                                            </div>
-                                            <div class='d-flex align-items-center w-65'>
-                                                <div class='detail-progress-bar'>
-                                                    <div id='<?php echo 'percent-' . $i . '-star' ?>' 
-                                                        data-id='<?php echo $evaluate['rating'][$i] ?>'></div>
+                                        {{-- sao đánh giá --}}
+                                        @for ($i = 5; $i >= 1; $i--)
+                                            <div class='d-flex justify-content-between p-5 fz-14'>
+                                                <div class='d-flex align-items-center w-5'>
+                                                    <span><?php echo $i ?></span>
+                                                    <i class="fas fa-star checked ml-5"></i>
                                                 </div>
-                                            </div>
-                                            <div id='vote-5-star' class='d-flex align-items-center w-20'><?php echo $evaluate['rating'][$i] ?> đánh giá</div>
-                                        </div>
-                                    @endfor
-                                </td>
-                                {{-- đánh giá --}}
-                                <td class='w-50 vertical-center'>
-                                    {{-- chưa đăng nhập --}}
-                                    {{-- <div class='d-flex flex-column align-items-center'>
-                                        <div class='gray-1'>Vui lòng đăng nhập để có thể đánh giá</div>
-                                        <div class='pt-20 pb-20'>
-                                            <i class="fal fa-smile fz-46 success-color ml-5 mr-5"></i>
-                                            <i class="fal fa-frown fz-46 warning-color ml-5 mr-5"></i>
-                                        </div>
-                                        <a href="#" class='main-btn pt-5 pr-20 pb-5 pl-20'>Đăng nhập</a>
-                                    </div> --}}
-
-                                    {{-- mua hàng mới cho đánh giá --}}
-                                    
-
-                                    {{-- gửi đánh giá --}}
-                                    <div class='relative p-10'>
-                                        <div class='d-flex flex-column'>
-                                            {{-- chọn sao --}}
-                                            <div class="d-flex">
-                                                <span>Chọn đánh giá của bạn</span>
-                                                <div class='ml-10'>
-                                                    <div class='d-flex'>
-                                                        <i id='star-1' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='1'></i>
-                                                        <i id='star-2' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='2'></i>
-                                                        <i id='star-3' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='3'></i>
-                                                        <i id='star-4' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='4'></i>
-                                                        <i id='star-5' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='5'></i>
-                                                        <input type="hidden" id='star-rating' value='0'>
+                                                <div class='d-flex align-items-center w-65'>
+                                                    <div class='detail-progress-bar'>
+                                                        <div id='<?php echo 'percent-' . $i . '-star' ?>' 
+                                                            data-id='<?php echo $lst_evaluate['rating'][$i] ?>'></div>
                                                     </div>
                                                 </div>
+                                                <div class='d-flex align-items-center w-20'><?php echo $lst_evaluate['rating'][$i] ?> đánh giá</div>
                                             </div>
+                                        @endfor
+                                    </td>
+                                    {{-- đánh giá --}}
+                                    <td class='w-50 vertical-center'>
+                                        {{-- chưa đăng nhập --}}
+                                        {{-- <div class='d-flex flex-column align-items-center'>
+                                            <div class='gray-1'>Vui lòng đăng nhập để có thể đánh giá</div>
+                                            <div class='pt-20 pb-20'>
+                                                <i class="fal fa-smile fz-46 success-color ml-5 mr-5"></i>
+                                                <i class="fal fa-frown fz-46 warning-color ml-5 mr-5"></i>
+                                            </div>
+                                            <a href="#" class='main-btn pt-5 pr-20 pb-5 pl-20'>Đăng nhập</a>
+                                        </div> --}}
 
-                                            {{-- đánh giá --}}
-                                            <div class='pt-30'>
-                                                <label for="comment" class='form-label'>Đánh giá</label>
-                                                <textarea name="comment" rows="3" placeholder="Hãy chia sẽ cảm nhận của bạn về sản phẩm"></textarea>
-                                                
-                                                {{-- ảnh đính kèm & gửi đánh giá --}}
-                                                <div class='d-flex justify-content-between align-items-center pt-10'>
-                                                    <div class="d-flex flex-fill align-items-center justify-content-between">
-                                                        <div class="d-flex">
-                                                            <input type="hidden" id='qty-img' value='0'>
-                                                            <input class='upload-inp' type="file" multiple accept="image/*">
-                                                            <div id='btn-photo-attached' class='pointer-cs'>
-                                                                <i class="fas fa-camera"></i>
-                                                                <span>Ảnh đính kèm</span>
-                                                                <span class='qty-img'></span></span>
-                                                            </div>
+                                        {{-- mua hàng mới cho đánh giá --}}
+                                        
+
+                                        {{-- gửi đánh giá --}}
+                                        <div class='relative p-10'>
+                                            <div class='d-flex flex-column'>
+                                                {{-- chọn sao --}}
+                                                <div class="d-flex">
+                                                    <span>Chọn đánh giá của bạn</span>
+                                                    <div class='ml-10'>
+                                                        <div class='d-flex'>
+                                                            <i id='star-1' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='1'></i>
+                                                            <i id='star-2' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='2'></i>
+                                                            <i id='star-3' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='3'></i>
+                                                            <i id='star-4' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='4'></i>
+                                                            <i id='star-5' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='5'></i>
+                                                            <input type="hidden" id='star-rating' value='0'>
                                                         </div>
                                                     </div>
-                                                    <div class='main-btn p-10'>Gửi đánh giá</div>
                                                 </div>
-                                                <div class="evaluate-img-div"></div>
+
+                                                {{-- đánh giá --}}
+                                                <div class='pt-30'>
+                                                    <label for="comment" class='form-label'>Đánh giá</label>
+                                                    <textarea name="comment" rows="3" placeholder="Hãy chia sẽ cảm nhận của bạn về sản phẩm"></textarea>
+                                                    
+                                                    {{-- ảnh đính kèm & gửi đánh giá --}}
+                                                    <div class='d-flex justify-content-between align-items-center pt-10'>
+                                                        <div class="d-flex flex-fill align-items-center justify-content-between">
+                                                            <div class="d-flex">
+                                                                <input type="hidden" id='qty-img' value='0'>
+                                                                <input class='upload-inp' type="file" multiple accept="image/*">
+                                                                <div id='btn-photo-attached' class='pointer-cs'>
+                                                                    <i class="fas fa-camera"></i>
+                                                                    <span>Ảnh đính kèm</span>
+                                                                    <span class='qty-img'></span></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class='main-btn p-10'>Gửi đánh giá</div>
+                                                    </div>
+                                                    <div class="evaluate-img-div"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    @else
+                        {{-- đánh giá --}}
+                        <div class='w-50 vertical-center border'>
+                            {{-- chưa đăng nhập --}}
+                            {{-- <div class='d-flex flex-column align-items-center'>
+                                <div class='gray-1'>Vui lòng đăng nhập để có thể đánh giá</div>
+                                <div class='pt-20 pb-20'>
+                                    <i class="fal fa-smile fz-46 success-color ml-5 mr-5"></i>
+                                    <i class="fal fa-frown fz-46 warning-color ml-5 mr-5"></i>
+                                </div>
+                                <a href="#" class='main-btn pt-5 pr-20 pb-5 pl-20'>Đăng nhập</a>
+                            </div> --}}
+
+                            {{-- mua hàng mới cho đánh giá --}}
+                            
+
+                            {{-- gửi đánh giá --}}
+                            <div class='relative p-10'>
+                                <div class='d-flex flex-column'>
+                                    {{-- chọn sao --}}
+                                    <div class="d-flex">
+                                        <span>Chọn đánh giá của bạn</span>
+                                        <div class='ml-10'>
+                                            <div class='d-flex'>
+                                                <i id='star-1' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='1'></i>
+                                                <i id='star-2' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='2'></i>
+                                                <i id='star-3' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='3'></i>
+                                                <i id='star-4' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='4'></i>
+                                                <i id='star-5' class="star-rating fas fa-star gray-2 fz-24 pr-5" data-id='5'></i>
+                                                <input type="hidden" id='star-rating' value='0'>
                                             </div>
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                                    {{-- đánh giá --}}
+                                    <div class='pt-30'>
+                                        <label for="comment" class='form-label'>Đánh giá</label>
+                                        <textarea name="comment" rows="3" placeholder="Hãy chia sẽ cảm nhận của bạn về sản phẩm (Tối thiểu 10 ký tự)"></textarea>
+                                        
+                                        {{-- ảnh đính kèm & gửi đánh giá --}}
+                                        <div class='d-flex justify-content-between align-items-center pt-10'>
+                                            <div class="d-flex flex-fill align-items-center justify-content-between">
+                                                <div class="d-flex">
+                                                    <input type="hidden" id='qty-img' value='0'>
+                                                    <input class='upload-inp' type="file" multiple accept="image/*">
+                                                    <div id='btn-photo-attached' class='pointer-cs'>
+                                                        <i class="fas fa-camera"></i>
+                                                        <span>Ảnh đính kèm</span>
+                                                        <span class='qty-img'></span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='main-btn p-10'>Gửi đánh giá</div>
+                                        </div>
+                                        <div class="evaluate-img-div"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    @endif
                 </div>
             </div>
-        </div><hr>
+        </div>
 
         {{-- đánh giá sản phẩm --}}
+        @if ($lst_evaluate['total-rating'] != 0)
+        <hr>
         <div id='list-comment'>
-            @for ($i = 0; $i < 5; $i++)
+            @foreach($lst_evaluate['evaluate'] as $key)
             <div class='d-flex flex-column pt-20 pb-20'>
                 {{-- ảnh đại diện & tên & sao & ngày đăng --}}
                 <div class='d-flex'>
                     <img src="images/avt1620997169.jpg" class='circle-img w-6' alt="">
                     <div class='d-flex flex-column justify-content-between pl-20'>
                         <b>Vũ Hoàng Lâm</b>
-                        <div class='d-flex'>
-                            <i class="fas fa-star checked" data-id='1'></i>
-                            <i class="fas fa-star checked" data-id='2'></i>
-                            <i class="fas fa-star checked" data-id='3'></i>
-                            <i class="fas fa-star checked" data-id='4'></i>
-                            <i class="fas fa-star checked" data-id='5'></i>
-                            <input type="hidden" id='star-rating' value='0'>
+                        <div class='d-flex align-items-center'>
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if($key['danhgia'] > $i)
+                                <i class="fas fa-star checked"></i>
+                                @else
+                                <i class="fas fa-star uncheck"></i>
+                                @endif
+                            @endfor
+                            <div class="ml-10 mr-10 gray-1">|</div>
+                            <div class="gray-1">Màu: {{ $key['sanpham']['mausac'] }}</div>
                         </div>
-                        <div>26/04/2021 20:56</div>
+                        <div>{{ $key['thoigian']}} 20:56</div>
                     </div>
                 </div>
 
                 {{-- nội dung --}}
                 <div class='pt-10'>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate aliquid qui debitis accusamus repellat tempora, unde consectetur at illo, quidem, dicta architecto ipsa perferendis. Officiis, eligendi! Debitis illo eaque cupiditate! Lorem ipsum, dolor sit amet consectetur adipisicing elit. Non laudantium quam nihil ea! Voluptatem, totam ipsa. Doloremque ullam architecto cupiditate voluptates optio, autem error rerum labore quidem rem beatae unde!
+                    {{ $key['noidung'] }}
                 </div>
 
                 {{-- hình ảnh --}}
+                @if (count($key['hinhanh']) != 0)
                 <div class='pt-10'>
                     <img src="images/product-details-bg.jpg" alt="" class='img-evaluate'>
                     <img src="images/product-details-bg.jpg" alt="" class='img-evaluate'>
                     <img src="images/product-details-bg.jpg" alt="" class='img-evaluate'>
-                </div>
+                </div>    
+                @endif
 
                 {{-- like & phản hồi --}}
                 <div class='d-flex align-items-center pt-20'>
                     {{-- like --}}
                     <div class='font-weight-600 fz-18 main-color-text'>
-                        <i class="fas fa-thumbs-up mr-5"></i>360
+                        <i class="fas fa-thumbs-up mr-5"></i>{{ $key['soluotthich'] }}
                     </div>
                     <div class='pl-20 pr-20'>|</div>
                     
@@ -486,25 +644,9 @@
                     </div>
                 </div>
             </div>
-
-            {{-- <div class='d-flex flex-column pl-70 pt-10 pb-10'>
-                <div class='row'>
-                    <div class="col-md-1">
-                        <img src="images/avt1620997169.jpg" class='circle-img' alt="">
-                    </div>
-                    <div class="col-md-11">
-                        <textarea name="" id="" class="form-control" rows="3" placeholder="Viết câu trả lời"></textarea>
-                        <div class="d-flex justify-content-end align-items-center pt-10">
-                            <div class="pointer-cs price-color"><i class="fal fa-times-circle mr-5"></i>Hủy</div>
-                            <div class='pl-10 pr-10'>|</div>
-                            <div class="pointer-cs main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>    
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
         
                 {{-- phản hồi --}}
-                <!--<div class='d-flex flex-column pl-70 pt-20 pb-20'>
+                <div class='d-flex flex-column pl-70 pt-20 pb-20'>
                     {{-- ảnh đại diện & tên & ngày đăng --}}
                     <div class='d-flex'>
                         <img src="images/avt1620997169.jpg" class='circle-img w-6' alt="">
@@ -538,44 +680,10 @@
                         </div>
                     </div>
                 </div>
-                <div class='d-flex flex-column pl-70 pt-20 pb-20'>
-                    {{-- ảnh đại diện & tên & sao & ngày đăng --}}
-                    <div class='d-flex'>
-                        <img src="images/avt1620997169.jpg" class='circle-img w-6' alt="">
-                        <div class='d-flex flex-column pl-20'>
-                            <b>Vũ Hoàng Lâm</b>
-                            <div>26/04/2021 20:56</div>
-                        </div>
-                    </div>
-        
-                    {{-- nội dung --}}
-                    <div class='pt-10'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente ipsa saepe vitae nemo perferendis incidunt deserunt consectetur, voluptas iure possimus accusantium maxime excepturi hic laboriosam dolorem veritatis similique. Ipsa, adipisci.
-                    </div>
-        
-                    {{-- like --}}
-                    <div class='d-flex align-items-center pt-20'>
-                        <div class='font-weight-600 fz-18 main-color-text'>
-                            <i class="fas fa-thumbs-up mr-5"></i>360
-                        </div>
-                        <div class='pl-20 pr-20'>|</div>
-                        <div>
-                            {{-- thích --}}
-                            <a href="#" class='black'>
-                                <i class="fal fa-thumbs-up mr-5"></i>Thích
-                            </a>
-        
-                            {{-- đã thích --}}
-                            {{-- <a href="#" class='main-color-text'>
-                                <i class="fal fa-thumbs-up mr-5"></i>Đã thích
-                            </a> --}}
-                        </div>
-                    </div>
-                </div>-->
-
             <hr>
-            @endfor
+            @endforeach
         </div>
+        @endif
     </div>
 </section>
 
@@ -592,11 +700,8 @@
                 {{-- hình ảnh --}}
                 <div class='pt-40 pb-40'>
                     <div class='row'>
-                        <div class='col-md-6'>
-                            <img src="images/phone/iphone_12_black.jpg" alt="">
-                        </div>
-                        <div class='col-md-6'>
-                            <img src="images/phone/iphone_12_black.jpg" alt="">
+                        <div class='col-md-6 mx-auto'>
+                            <img src="{{ $url_phone.$phone['hinhanh'] }}" alt="">
                         </div>
                     </div>
                 </div>

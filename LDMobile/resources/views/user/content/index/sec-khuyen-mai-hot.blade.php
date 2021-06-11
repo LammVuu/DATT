@@ -10,7 +10,7 @@
         <div class='relative'>
             <div id='index-promotion-carousel' class="owl-carousel owl-theme m-0">
                 @foreach($lst_promotion as $key)
-                <a href="{{ route('user/chi-tiet', ['id' => $key['id']]) }}" class="index-promotion-phone">
+                <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class="index-promotion-phone">
                     {{-- hình ảnh --}}
                     <img src="{{ $url_phone.$key['hinhanh'] }}">
                     
@@ -44,8 +44,8 @@
                 @endforeach
             </div>
             <div class="d-flex">
-                <div id='prev-owl-carousel' class="d-flex align-items-center index-btn-owl-left"><i class="fas fa-chevron-left fz-26"></i></div>
-                <div id='next-owl-carousel' class="d-flex align-items-center index-btn-owl-right"><i class="fas fa-chevron-right fz-26"></i></div>
+                <div id='prev-index-promotion' class="prev-owl-carousel d-flex align-items-center btn-owl-left-style-1"><i class="fas fa-chevron-left fz-26"></i></div>
+                <div id='next-index-promotion' class="next-owl-carousel d-flex align-items-center btn-owl-right-style-1"><i class="fas fa-chevron-right fz-26"></i></div>
             </div>
         </div>  
     </div>

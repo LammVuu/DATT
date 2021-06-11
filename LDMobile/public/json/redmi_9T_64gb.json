@@ -8,7 +8,7 @@
         },
         "camera_sau": {
             "do_phan_giai": "Chính 48 MP & Phụ 8 MP, 2 MP, 2 MP",
-            "video": [
+            "quay_phim": [
                 {
                     "chat_luong": "FullHD 1080p@30fps"
                 },
@@ -177,5 +177,7 @@
             ]
         }
     },
-    "thong_tin_khac": "01/2021"
+    "thong_tin_khac": {
+        "thoi_diem_ra_mat": "01/2021"
+    }
 }

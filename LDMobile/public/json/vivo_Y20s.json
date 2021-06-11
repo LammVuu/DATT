@@ -228,5 +228,7 @@
             ]
         }
     },
-    "thong_tin_khac": "09/2020"
+    "thong_tin_khac": {
+        "thoi_diem_ra_mat": "09/2020"
+    }
 }

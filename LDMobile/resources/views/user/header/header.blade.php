@@ -13,85 +13,17 @@
             <div class="w-93">
                 <div class="head-items">
                     <div class="d-flex align-items-center justify-content-lg-between">
-                        <div class="head-phone-drop">
+                        <div class="head-phone-drop relative">
                             {{-- điện thoại --}}
                             <a href="{{route('user/dien-thoai')}}" class='head-item pt-15 pb-15 white'>
                                 Điện thoại<i class="fas fa-caret-down ml-10"></i>
                             </a>
 
                             {{-- dropdown điện thoại --}}
-                            <div class='head-phone-drop-content p-50 box-shadow'>
-                                <div class='row'>
-                                    <div class='col-md-12'>
-                                        <div class='row'>
-                                            {{-- Apple --}}
-                                            <div class='col-md-2'>
-                                                <div class='d-flex flex-column'>
-                                                    <a href="#" class='black font-weight-600 fz-20'>Apple</a>
-                                                    <div class='d-flex flex-column pt-10'>
-                                                        <a href="#" class='black mb-5'>iPhone 12 Series</a>
-                                                        <a href="#" class='black mb-5'>iPhone 11 Series</a>
-                                                        <a href="#" class='black mb-5'>iPhone SE 2020</a>
-                                                        <a href="#" class='black mb-5'>iPhone XR | XS</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-            
-                                            {{-- Samsung --}}
-                                            <div class='col-md-2'>
-                                                <div class='d-flex flex-column'>
-                                                    <a href="#" class='black font-weight-600 fz-20'>Samsung</a>
-                                                    <div class='d-flex flex-column pt-10'>
-                                                        <a href="#" class='black mb-5'>Galaxy Note</a>
-                                                        <a href="#" class='black mb-5'>Galaxy S</a>
-                                                        <a href="#" class='black mb-5'>Galaxy A</a>
-                                                        <a href="#" class='black mb-5'>Galaxy Z</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-            
-                                            {{-- xiaomi --}}
-                                            <div class='col-md-2'>
-                                                <div class='d-flex flex-column'>
-                                                    <a href="#" class='black font-weight-600 fz-20'>Xiaomi</a>
-                                                    <div class='d-flex flex-column pt-10'>
-                                                        <a href="#" class='black mb-5'>Redmi</a>
-                                                        <a href="#" class='black mb-5'>Mi</a>
-                                                        <a href="#" class='black mb-5'>POCO</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-            
-                                            {{-- oppo --}}
-                                            <div class='col-md-2'>
-                                                <div class='d-flex flex-column'>
-                                                    <a href="#" class='black font-weight-600 fz-20'>Oppo</a>
-                                                    <div class='d-flex flex-column pt-10'>
-                                                        <a href="#" class='black mb-5'>Oppo A</a>
-                                                        <a href="#" class='black mb-5'>Oppo Reno</a>
-                                                        <a href="#" class='black mb-5'>Oppo FindX</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-            
-                                            {{-- vivo --}}
-                                            <div class='col-md-2'>
-                                                <div class='d-flex flex-column'>
-                                                    <a href="#" class='black font-weight-600 fz-20'>Vivo</a>
-                                                    <div class='d-flex flex-column pt-10'>
-                                                        <a href="#" class='black mb-5'>Vivo V</a>
-                                                        <a href="#" class='black mb-5'>Vivo Y</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-            
-                                            {{-- logo --}}
-                                            <div class='col-md-2'>
-                                                <img src="images/logo/LDMobile-logo.png" alt="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class='head-phone-drop-content box-shadow'>
+                                @foreach ($lst_brand as $key)
+                                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => $key['brand']]) }}" class="head-brand-item">{{ $key['brand'] }}</a>
+                                @endforeach
                             </div>
                         </div>
                         

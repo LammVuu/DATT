@@ -26,7 +26,7 @@
                             {{-- thêm giỏ hàng --}}
                             <div class='shop-overlay-product'></div>
                             <a href="#" class='shop-cart-link'><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</a>
-                            <a href="{{route('user/chi-tiet', ['id' => $key['id']])}}" class='shop-detail-link'>Xem chi tiết</a>
+                            <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='shop-detail-link'>Xem chi tiết</a>
                             {{-- thông tin sản phẩm --}}
                             <div>
                                 <div class='pt-20 pb-20'>

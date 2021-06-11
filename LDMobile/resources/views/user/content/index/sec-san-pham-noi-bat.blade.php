@@ -8,19 +8,19 @@
                 </div>
             </div>
             <div>
-                <a href="#" class="index-brand-tag">Apple</a>
-                <a href="#" class="index-brand-tag">Samsung</a>
-                <a href="#" class="index-brand-tag">Xiaomi</a>
-                <a href="#" class="index-brand-tag">Oppo</a>
-                <a href="#" class="index-brand-tag">Vivo</a>
-                <a href="#" class="index-brand-tag">Xem tất cả</a>
+                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Apple'])}}" class="index-brand-tag">Apple</a>
+                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Samsung'])}}" class="index-brand-tag">Samsung</a>
+                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Xiaomi'])}}" class="index-brand-tag">Xiaomi</a>
+                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Oppo'])}}" class="index-brand-tag">Oppo</a>
+                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Vivo'])}}" class="index-brand-tag">Vivo</a>
+                <a href="{{route('user/dien-thoai')}}" class="index-brand-tag">Xem tất cả</a>
             </div>
         </div>
         <hr class="m-0">
         
         <div class="d-flex flex-wrap">
             @foreach($lst_featured as $key)
-            <a href="{{ route('user/chi-tiet', ['id' => $key['id']]) }}" class="index-featured-phone w-20 relative">
+            <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class="index-featured-phone w-20 relative">
                 {{-- khuyến mãi tag --}}
                 <div class='shop-promotion-tag'>
                     @if($key['khuyenmai'] != 0)
