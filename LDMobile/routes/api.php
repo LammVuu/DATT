@@ -26,6 +26,8 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('related-product/{id}','SanPhamController@getRelatedProduct');
     Route::get('detail-product/{id}','SanPhamController@getDetailProduct');
     Route::get('compare-product','SanPhamController@getCompareProduct');
+    Route::get('all-product','SanPhamController@getAllProduct');
+    Route::get('slideshow-product/{id}','SanPhamController@getSlideShowOfProduct');
     Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
 });
 Route::post('log-in','API\UserController@login');

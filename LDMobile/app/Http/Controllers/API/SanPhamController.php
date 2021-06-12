@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\SANPHAM;
 use App\Models\MAUSP;
 use App\Models\NHACUNGCAP;
+use App\Models\SLIDESHOW_CTMSP;
 use App\Models\DANHGIASP;
 use App\Models\SLIDESHOW;
 use App\Models\KHUYENMAI;
@@ -94,25 +95,25 @@ class SanPhamController extends Controller
     }
     public function getAllProduct(Request $request){
         $page = !empty($request->page) ? $request->page : 1;
-    	$itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : 5;
-        $dsLoaiSP = MAUSP::orderBy('id',"desc")->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->get();
-        $dem =count($dsLoaiSP);
-        for($i=0;$i<$dem;$i++){
-        $sanpham = SANPHAM::where('MaLoai', $dsLoaiSP[$i]->id)->get();
-        $dsLoaiSP[$i]->Gia = $sanpham[0]->Gia;
-        $dsLoaiSP[$i]->GiaMoi = $sanpham[0]->GiaMoi;
-         $dsLoaiSP[$i]->AnhDaiDien=Helper::$URL.$dsLoaiSP[$i]->AnhDaiDien;
-        }
-        if($request->order=="0"){
-            $dsLoaiSP = $dsLoaiSP ->sortBy('GiaMoi')->values();
-            
-        }else if($request->order=="1"){
-            $dsLoaiSP = $dsLoaiSP ->sortByDesc('GiaMoi')->values();
+    	$itemsPerPage = !empty($request->per_page) ? $request->per_page : 5;
+        $listProduct = SANPHAM::inRandomOrder()->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy()->get();
+        
+        foreach($listProduct as $product){
+            $product->tensp = $product->tensp." ".$product->dungluong;
+            $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
+            $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            $allJudge = DANHGIASP::where("id_sp", $product->id)->get();
+            $totalVote = 0;
+            foreach($allJudge as $judge){
+                $totalVote += $judge->danhgia;
+            }
+            $product->tongluotvote = $totalVote;
+            $product->tongdanhgia = count($allJudge);
         }
         return response()->json([
             'status' => 'true',
             'message' => '',
-    		'data' => $dsLoaiSP
+    		'data' => $listProduct
     	]); 
     }
     public function getFeaturedProduct(){
@@ -244,24 +245,31 @@ class SanPhamController extends Controller
     public function getRelatedProduct($id){
         $listIdCateFirst = array();
         $listIdCateFinish = array();
+        $listIdCateResult = array();
         $listIdProductFirst = array();
         $listIdProductFinish = array();
+        $listIdProductResult = array();
         $product = SANPHAM::find($id);
-
-        $listCateRelated = MAUSP::where("id_ncc",  MAUSP::find($product->id_msp)->value('id_ncc'))->get();
+        $cateProduct = MAUSP::find($product->id_msp);
+        $listCateRelated = MAUSP::where("id_ncc",  $cateProduct->id_ncc)->get();
         foreach($listCateRelated as $cate){
             array_push($listIdCateFirst, $cate->id);
         }
-   
         $listIdCateFinish = array_rand($listIdCateFirst, 5);
-
+        foreach($listIdCateFinish as $cate){
+            array_push($listIdCateResult, $listIdCateFirst[$cate]);
+        }
         //random lan 2
-        $listProduct = SANPHAM::whereIn("id_msp", $listIdCateFinish)->get();
+        $listProduct = SANPHAM::whereIn("id_msp", $listIdCateResult)->get();
+        
         foreach($listProduct as $pro){
             array_push($listIdProductFirst, $pro->id);
         }
         $listIdProductFinish = array_rand($listIdProductFirst, 5);
-        $listResult = SANPHAM::whereIn('id', $listIdProductFinish)->get();
+        foreach($listIdProductFinish as $cate){
+            array_push($listIdProductResult, $listIdProductFirst[$cate]);
+        }
+        $listResult = SANPHAM::whereIn('id', $listIdProductResult)->get();
        
         foreach($listResult as $pro){
             $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
@@ -284,10 +292,9 @@ class SanPhamController extends Controller
         $listResult = array();
         $price = $request->price;
         $listProduct = SANPHAM::where(function($query) use ($price){
-            $query->where('gia','<=',$price+500000);
-            $query->where('gia','>=',$price-500000);
+            $query->where('gia','<=',$price+1000000);
+            $query->where('gia','>=',$price-1000000);
         })->get();
-        $totalProductLeft = 5;
         foreach($listProduct as $product){
             $count = false;
             if(!empty($listResult)){
@@ -299,14 +306,9 @@ class SanPhamController extends Controller
 
                 if($count == false ){
                     array_push($listResult, $product);
-                    $totalProductLeft--;
                 }
             }else {
                 array_push($listResult, $product);
-                $totalProductLeft--;
-            }
-            if($totalProductLeft==0){
-                break;
             }
         }
         foreach($listResult as $pro){
@@ -319,6 +321,20 @@ class SanPhamController extends Controller
             }
             $pro->tongluotvote = $totalVote;
             $pro->tongdanhgia = count($allJudge);
+        }
+        return response()->json([
+            'status' => 'true',
+            'message' => '',
+            'data' => $listResult
+        ]);
+    }
+    public function getSlideShowOfProduct($id){
+        $listResult = array();
+        $product = SANPHAM::find($id);
+        $id_msp = $product->id_msp;
+        $listSlideShow = SLIDESHOW_CTMSP::where('id_msp', $id_msp)->get();
+        foreach($listSlideShow as $product){
+            array_push($listResult, Helper::$URL."phone/slideshow/".$product->hinhanh);
         }
         return response()->json([
             'status' => 'true',
