@@ -120,7 +120,7 @@
             <div class='col-md-4 mb-20'>
                 {{-- nhà cung cấp --}}
                 <div class="d-flex mb-20">
-                    <img src="{{ $url_logo.$supplier['anhdaidien'] }}" alt="" class="w-30 circle-img border">
+                    <img src="{{ $url_logo.$supplier['anhdaidien'] }}" alt="" class="detail-supplier-img">
                     <div class="d-flex flex-column ml-20 mt-20">
                         <div>Cung cấp bởi <b>{{ $supplier['tenncc'] }}</b></div>
                         <img src="images/icon/genuine-icon.png" alt="" width="130px">
@@ -176,7 +176,7 @@
                         </div>
                         @foreach($slide_model as $key)
                         <div class="carousel-item">
-                            <img src="{{ $url_slide.$key['hinhanh'] }}" class="carousel-img" alt="...">
+                            <img src="{{ $url_model_slide.$key['hinhanh'] }}" class="carousel-img" alt="...">
                         </div>
                         @endforeach
                     </div>
@@ -290,14 +290,13 @@
         <div class='row pt-50'>
             <div class='col-md-12 detail-item'>
                 <div class='detail-item-title'>Cùng thương hiệu {{ $supplier['brand'] }}</div>
-                <div class="p-20">
-                    <div class='d-flex justify-content-start flex-wrap'>
+                <div class='relative'>
+                    <div id='same-brand-pro-carousel' class="owl-carousel owl-theme m-0">
                         @foreach($lst_proSameBrand as $key)
                         <div class='detail-item-content'>
                             {{-- hình ảnh --}}
-                            <div>
-                                <img src="{{ $url_phone.$key['hinhanh'] }}" class='w-70 center-img' alt="">
-                            </div>
+                            <img src="{{ $url_phone.$key['hinhanh'] }}" alt="">
+                            
                             {{-- tên điện thoại --}}
                             <div class='text-center pl-10 pr-10'>
                                 <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='font-weight-600 black'>{{ $key['tensp'] }}</a>
@@ -342,6 +341,10 @@
                         </div>
                         @endforeach
                     </div>
+                    <div class="d-flex">
+                        <div id='prev-brand' class="prev-owl-carousel d-flex align-items-center btn-owl-left-style-1"><i class="fas fa-chevron-left fz-26"></i></div>
+                        <div id='next-brand' class="next-owl-carousel d-flex align-items-center btn-owl-right-style-1"><i class="fas fa-chevron-right fz-26"></i></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -350,62 +353,58 @@
         <div class='row pt-50'>
             <div class='col-md-12 detail-item'>
                 <div class='detail-item-title'>Sản phẩm tương tự</div>
-                <div class="pt-20 pb-20">
-                    <div class='relative'>
-                        <div id='similar-pro-carousel' class="owl-carousel owl-theme m-0">
-                            @foreach($lst_similarPro as $key)
-                            <div class='d-flex flex-column justify-content-between fz-14' style="height: 350px">
-                                {{-- hình ảnh --}}
-                                <div class="w-65 center-img">
-                                    <img src="{{ $url_phone.$key['hinhanh'] }}" alt="">
-                                </div>
-                                {{-- tên điện thoại --}}
-                                <div class='text-center pl-10 pr-10'>
-                                    <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='font-weight-600 black'>{{ $key['tensp'] }}</a>
-                                </div>
-                                {{-- giá --}}
-                                <div class="d-flex justify-content-center">
-                                    <div>
-                                        <div class='d-flex flex-column fz-14'>
-                                            <span class="price-color font-weight-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
-                                            <div>
-                                                <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
-                                                <span class='pl-5 pr-5'>|</span>
-                                                <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
-                                            </div>
+                <div class='relative'>
+                    <div id='similar-pro-carousel' class="owl-carousel owl-theme m-0">
+                        @foreach($lst_similarPro as $key)
+                        <div class='detail-item-content'>
+                            {{-- hình ảnh --}}
+                            <img src="{{ $url_phone.$key['hinhanh'] }}" alt="">
+                            {{-- tên điện thoại --}}
+                            <div class='text-center pl-10 pr-10'>
+                                <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='font-weight-600 black'>{{ $key['tensp'] }}</a>
+                            </div>
+                            {{-- giá --}}
+                            <div class="d-flex justify-content-center">
+                                <div>
+                                    <div class='d-flex flex-column fz-14'>
+                                        <span class="price-color font-weight-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                        <div>
+                                            <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                            <span class='pl-5 pr-5'>|</span>
+                                            <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                         </div>
-                                        {{-- đánh giá --}}
-                                        <div class='pt-10'>
-                                            @if ($key['danhgia']['qty'] != 0)
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if($key['danhgia']['star'] > $i)
-                                                    <i class="fas fa-star checked"></i>
-                                                    @else
-                                                    <i class="fas fa-star uncheck"></i>
-                                                    @endif
-                                                @endfor
-                                                <span class='ml-10'>21 đánh giá</span>
+                                    </div>
+                                    {{-- đánh giá --}}
+                                    <div class='pt-10'>
+                                        @if ($key['danhgia']['qty'] != 0)
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if($key['danhgia']['star'] > $i)
+                                                <i class="fas fa-star checked"></i>
                                                 @else
                                                 <i class="fas fa-star uncheck"></i>
-                                                <i class="fas fa-star uncheck"></i>
-                                                <i class="fas fa-star uncheck"></i>
-                                                <i class="fas fa-star uncheck"></i>
-                                                <i class="fas fa-star uncheck"></i>
-                                            @endif
-                                        </div>
-                                        {{-- so sánh --}}
-                                        <div class='pt-10'>
-                                            <div id="{{ 'similar_'.$key['tensp_url'] }}" type='button' class="compare-btn main-color-text">So sánh</div>
-                                        </div>
+                                                @endif
+                                            @endfor
+                                            <span class='ml-10'>21 đánh giá</span>
+                                            @else
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                            <i class="fas fa-star uncheck"></i>
+                                        @endif
+                                    </div>
+                                    {{-- so sánh --}}
+                                    <div class='pt-10'>
+                                        <div id="{{ 'similar_'.$key['tensp_url'] }}" type='button' class="compare-btn main-color-text">So sánh</div>
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
                         </div>
-                        <div class="d-flex">
-                            <div id='prev-similar' class="prev-owl-carousel d-flex align-items-center btn-owl-left-style-1"><i class="fas fa-chevron-left fz-26"></i></div>
-                            <div id='next-similar' class="next-owl-carousel d-flex align-items-center btn-owl-right-style-1"><i class="fas fa-chevron-right fz-26"></i></div>
-                        </div>
+                        @endforeach
+                    </div>
+                    <div class="d-flex">
+                        <div id='prev-similar' class="prev-owl-carousel d-flex align-items-center btn-owl-left-style-1"><i class="fas fa-chevron-left fz-26"></i></div>
+                        <div id='next-similar' class="next-owl-carousel d-flex align-items-center btn-owl-right-style-1"><i class="fas fa-chevron-right fz-26"></i></div>
                     </div>
                 </div>
             </div>

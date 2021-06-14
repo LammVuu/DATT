@@ -165,6 +165,22 @@ video {
   box-shadow: 0 1px 4px 2px rgba(0, 0, 0, 0.16);
 }
 
+.error-message, .success-message{
+  padding: 7px;
+  width: 100%;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.error-message{
+  background-color: #fcc9c9;
+}
+
+.success-message{
+  background-color: #c9ffc2;
+}
+
 /*========================================================================================================================
                                                       Loader                                                           
 ========================================================================================================================*/
@@ -183,13 +199,20 @@ video {
   position: absolute;
   left: 0; right: 0; bottom: 0; top: 0;
   background-color: black;
-  opacity: 0.7;
+  opacity: 0.8;
+}
+
+.loader-img{
+  position: absolute;
+  left: 50%; top: 50%;
+  margin: -45px 0 0 -45px;
+  width: 90px;
 }
 
 .spinner-border{
-  width: 100px;
-  height: 100px;
-  color: #078FD8;
+  width: 110px;
+  height: 110px;
+  color: white;
 }
 
 /*========================================================================================================================
@@ -1020,12 +1043,6 @@ a.head-item:hover{
   display: none;
 }
 
-.head-phone-drop-content{  
-  position: absolute;
-  left: 0; top: 100%;
-  display: none;
-}
-
 .head-brand-item{
   padding: 10px;
   background-color: white;
@@ -1080,7 +1097,6 @@ a.head-item:hover{
   .head-search-result{
     max-height: 240px;
     margin-top: 0;
-    
   }
 }
 
@@ -1208,22 +1224,21 @@ a.head-item:hover{
 }
 
 .head-account-option:hover{
-  background-color: #078FD8;
-  color: white;
+  background-color: #f1f1f1;
+  color: black;
 }
 
 .head-btn-signup{
   padding: 5px 10px;
-  color: white;
-  border: 1px solid white;
+  color: black;
+  background-color: white;
   border-radius: 5px;
   font-weight: 600;
-  transition: 0.5s
+  transition: .2s;
 }
 
 .head-btn-signup:hover{
-  background-color: white;
-  color: black !important ;
+  color: black;
 }
 
 /*========================================================================================================================
@@ -1947,20 +1962,60 @@ a.head-item:hover{
   align-items: center;
 }
 
-.shop-filter-box{
+.filter-badge{
   position: absolute;
-  right: 0;
-  margin-top: 10px;
-  width: 500px; padding: 20px; border-radius: 10px;
-  background-color: white;
-  z-index: 1;
+  right: -10px; top: -10px;
+  padding: 2px 8px;
+  border-radius: 100%;
+  background-color: #e52e4f;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-self: center;
+  align-items: center;
   display: none;
+}
+
+.filter-title{
+  font-weight: 600;
+  color: black;
+  margin-bottom: 5px;
+}
+
+.filter-item{
+  padding: 7px 12px;
+  text-align: center;
+  border: 2px solid #dcdcdc;
+  border-radius: 5px;
+  color: black;
+  margin: 0 10px 10px 0;
+  display: flex;
+}
+
+.filter-selected{
+  color:#078FD8;
+  border: 2px solid #078FD8;
+}
+
+.filter-item.brand{
+  width: 120px;
+  display: flex;
+  justify-content: center;
+}
+
+.filter-item:hover{
+  color:#078FD8;
+  border: 2px solid #078FD8;
 }
 
 .shop-btn-remove-filter{
   cursor: pointer;
   color: #d80707;
   text-align: center;
+}
+
+.see-result-filter{
+  display: none;
 }
 
 .shop-sort-box{
@@ -1972,16 +2027,6 @@ a.head-item:hover{
   padding: 20px;
   border-radius: 10px;
   z-index: 1;
-  display: none;
-}
-
-.filter-item{
-  padding: 5px 0;
-  display: flex;
-  align-items: center;
-}
-
-.shop-btn-see-result{
   display: none;
 }
 
@@ -2285,6 +2330,13 @@ a.head-item:hover{
   text-align: justify;
 }
 
+.detail-supplier-img{
+  width: 120px;
+  height: 120px;
+  border-radius: 100%;
+  border: 2px solid black;
+}
+
 .detail-check-qty{
   padding: 10px;
   font-size: 18px;
@@ -2353,8 +2405,8 @@ a.head-item:hover{
 }
 
 .detail-item-content{
-  width: 20%;
-  height: 350px;
+  height: 400px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

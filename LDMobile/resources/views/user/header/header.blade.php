@@ -13,19 +13,8 @@
             <div class="w-93">
                 <div class="head-items">
                     <div class="d-flex align-items-center justify-content-lg-between">
-                        <div class="head-phone-drop relative">
-                            {{-- điện thoại --}}
-                            <a href="{{route('user/dien-thoai')}}" class='head-item pt-15 pb-15 white'>
-                                Điện thoại<i class="fas fa-caret-down ml-10"></i>
-                            </a>
-
-                            {{-- dropdown điện thoại --}}
-                            <div class='head-phone-drop-content box-shadow'>
-                                @foreach ($lst_brand as $key)
-                                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => $key['brand']]) }}" class="head-brand-item">{{ $key['brand'] }}</a>
-                                @endforeach
-                            </div>
-                        </div>
+                        {{-- điện thoại --}}
+                        <a href="{{route('user/dien-thoai')}}" class='head-item pt-15 pb-15 white'>Điện thoại</a>
                         
                         {{-- tìm kiếm & giỏ hàng --}}
                         <div class="head-item">
@@ -37,25 +26,7 @@
                                 </div>
 
                                 {{-- danh sách kết quả --}}
-                                <div class="head-search-result border">
-                                    @for ($i = 0; $i < 15; $i++)
-                                    <a href="#" class="head-single-result black fz-14">
-                                        <div class="d-flex">
-                                            <div class="w-25 p-10">
-                                                <img src="images/phone/iphone_12_red.jpg" alt="">
-                                            </div>
-                                            <div class="d-flex flex-column w-75 p-10">
-                                                <b>iPhone 12 PRO MAX 128GB</b>
-                                                <div class="d-flex align-items-center mt-5">
-                                                    <span class="price-color font-weight-600">25.000.000<sup>đ</sup></span>
-                                                    <span class="text-strike ml-10">29.000.000<sup>đ</sup></span>
-                                                    <span class="price-color ml-10">-10%</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                    @endfor
-                                </div>
+                                <div class="head-search-result border"></div>
                             </div>
             
                             {{-- giỏ hàng --}}
@@ -111,35 +82,43 @@
                         </div>
             
                         {{-- tài khoản --}}
-                        <div class='head-item mr-20'>
-                            <div class='d-flex'>
-                                <img src="images/profile-photo.png" alt="avatar" class="head-brand mr-10">
-                                <div class='d-flex flex-column justify-content-end'>
-                                    <i class='white fz-14'>Xin Chào!</i>
-                                    <div class='white head-account'>Vũ Hoàng Lâm<i class="fas fa-caret-down ml-5"></i>
-                                        <div class='head-account-dropdown box-shadow'>
-                                            <a href="#" class='head-account-option'><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
-                                            <a href="#" class='head-account-option'>
-                                                <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
-                                                <div class='head-number fz-12'>50</div>
-                                            </a>
-                                            <a href="#" class='head-account-option'>
-                                                <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                                <div><div class='head-number fz-12'>50</div></div>
-                                            </a>
-                                            <a href="#" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
+                        @if (session('user'))
+                            <div class='head-item mr-20'>
+                                <div class='d-flex'>
+                                    <?php $user = session('user'); ?>
+                                    @if (!$user->anhdaidien)
+                                        <img src="{{ $url_user.'default/user-icon.png'}}" alt="avatar" width="60px" class="circle-img mr-10">
+                                    @else
+                                        <img src="{{ $url_user.$user->hoten.'/'.$user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
+                                    @endif
+                                    
+                                    <div class='d-flex flex-column justify-content-end'>
+                                        <i class='white fz-14'>Xin Chào!</i>
+                                        <div class='white head-account'>{{ session('user')->hoten }}<i class="fas fa-caret-down ml-5"></i>
+                                            <div class='head-account-dropdown box-shadow'>
+                                                <a href="{{route('user/tai-khoan')}}" class='head-account-option'><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
+                                                <a href="{{route('user/tai-khoan-thong-bao')}}" class='head-account-option'>
+                                                    <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
+                                                    <div class='head-number fz-12'>50</div>
+                                                </a>
+                                                <a href="{{route('user/tai-khoan-don-hang')}}" class='head-account-option'>
+                                                    <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
+                                                    <div><div class='head-number fz-12'>50</div></div>
+                                                </a>
+                                                <a href="{{route('user/logout')}}" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {{-- đăng nhập/đăng ký --}}
-                        {{-- <div class="head-item">
-                            <a href="#" class='white'><i class="fas fa-user mr-10"></i>Đăng nhập</a>
-                            <span class="ml-10 mr-10 fz-26 white">|</span>
-                            <a href="#" class='head-btn-signup'>Đăng ký</a>
-                        </div> --}}
+                        @else
+                            {{-- đăng nhập/đăng ký --}}
+                            <div class="head-item">
+                                <a href="{{route('user/dang-nhap')}}" class='head-item white'><i class="fas fa-user mr-10"></i>Đăng nhập</a>
+                                <span class="ml-10 mr-10 fz-26 white">|</span>
+                                <a href="{{route('user/dang-ky')}}" class='head-btn-signup'>Đăng ký</a>
+                            </div>
+                        @endif
                     </div>
                 </div>     
 

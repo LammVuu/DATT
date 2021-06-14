@@ -1,5 +1,6 @@
 @extends("user.layout")
 @section("content")
+
 @include("user.content.index.slideshow")
 
 @include("user.content.index.sec-banner")

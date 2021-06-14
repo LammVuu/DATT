@@ -35,7 +35,8 @@ $(function() {
 
     // slide logo các hãng
     $('#logo-carousel').owlCarousel({
-        items:4,
+        items:5,
+        margin: 40,
         loop:true,
         dots:false,
         nav: false,
@@ -43,6 +44,63 @@ $(function() {
         autoplayTimeout:1500,
         autoplayHoverPause:true,
         smartSpeed: 1000,
+    });
+
+/*============================================================================================================================
+                                                            Login
+=============================================================================================================================*/    
+
+    // đăng nhập
+    $('#btn-login').click(function(){
+        var telInp = $('#login_tel');
+        var pwInp = $('#login_pw');
+        var valiLogin = validateLogin(telInp, pwInp);
+
+        if(valiLogin){
+            $('#login-form').submit();
+        }
+    });
+
+    function validateLogin(telInp, pwInp){
+        if(telInp.hasClass('required') || pwInp.hasClass('required')){
+            return;
+        }
+
+        var phoneno = /^\d{10}$/;
+
+        // chưa nhập sdt
+        if(telInp.val().length == 0){
+            telInp.addClass('required');
+            var required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
+            telInp.after(required);
+            return false;
+        } else if(!telInp.val().match(phoneno)){ // không đúng định dạng
+            var required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');
+            telInp.addClass('required');
+            telInp.after(required);
+            return false;
+        }
+
+        // chưa nhập mật khẩu
+        if(pwInp.val().length == 0){
+            pwInp.addClass('required');
+            var required = $('<span class="required-text">Vui lòng nhập mật khẩu</span>');
+            pwInp.after(required);
+            return false;
+        }
+
+        return true;
+    }
+
+    $('#login_tel').keyup(function(){
+        valiPhonenumberTyping($(this));
+    });
+
+    $('#login_pw').keyup(function(){
+        if($(this).hasClass('required')){
+            $(this).removeClass('required');
+            $(this).next().remove();
+        }
     });
 
 /*============================================================================================================================
@@ -92,8 +150,8 @@ $(function() {
 
     // gửi mã xác nhận
     function sendVerifyCode(){
-        var nameInp = $('#su-fullname');
-        var telInp = $('#su-tel');
+        var nameInp = $('#su_fullname');
+        var telInp = $('#su_tel');
 
         // kiểm tra bẫy lỗi
         var valiPhone = validateInformationSignUp(nameInp, telInp);
@@ -165,7 +223,7 @@ $(function() {
         return true;
     }
 
-    $('#su-fullname').keyup(function(){
+    $('#su_fullname').keyup(function(){
         if($(this).hasClass('required')){
             $(this).removeClass('required');
             $(this).next().remove();
@@ -173,31 +231,35 @@ $(function() {
     });
 
     // kiểm tra nhập số diện thoại
-    $('#su-tel').keyup(function(){
-        if($(this).hasClass('required')){
-            $(this).next().remove();
+    $('#su_tel').keyup(function(){
+        valiPhonenumberTyping($(this));
+    });
+
+    function valiPhonenumberTyping(telInp){
+        if(telInp.hasClass('required')){
+            telInp.next().remove();
         }
 
         var phoneno = /^\d{10}$/;
         var required; 
 
         // chưa nhập
-        if($(this).val() == ''){
+        if(telInp.val() == ''){
             required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
-            $(this).addClass('required');
-            $(this).after(required);
-        } else if(!$(this).val().match(phoneno) || $(this).val().charAt(0) != 0){ // không đúng định dạng | ký tự đầu k phải số 0
-            if($(this).next().hasClass('required-text')){
+            telInp.addClass('required');
+            telInp.after(required);
+        } else if(!telInp.val().match(phoneno) || telInp.val().charAt(0) != 0){ // không đúng định dạng | ký tự đầu k phải số 0
+            if(telInp.next().hasClass('required-text')){
                 return;
             }
             required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');    
-            $(this).addClass('required');
-            $(this).after(required);
+            telInp.addClass('required');
+            telInp.after(required);
         } else { // xóa required
-            $(this).removeClass('required');
-            $(this).next().remove();
+            telInp.removeClass('required');
+            telInp.next().remove();
         }
-    });
+    }
 
     /*=====================================================
                         Xác minh mã xác nhận                  
@@ -289,13 +351,17 @@ $(function() {
     }
 
     /*=====================================================
-                        Nhập thông tin                  
+                        Nhập mật khẩu
     =======================================================*/
 
     $('#signup-step-3').click(function(){
-        var passwordInp = $('#su-pw');
-        var rePasswordInp = $('#su-re-pw');
+        var passwordInp = $('#su_pw');
+        var rePasswordInp = $('#su_re_pw');
         var valiPw = validatePassword(passwordInp, rePasswordInp);
+
+        if(valiPw){
+            $('#signup-form').submit();
+        }
     });
 
     function validatePassword(passwordInp, rePasswordInp){
@@ -336,14 +402,14 @@ $(function() {
         }
     }
 
-    $('#su-pw').keyup(function(){
+    $('#su_pw').keyup(function(){
         if($(this).hasClass('required')){
             $(this).removeClass('required');
             $(this).next().remove();
         }
     });
 
-    $('#su-re-pw').keyup(function(){
+    $('#su_re_pw').keyup(function(){
         if($(this).hasClass('required')){
             $(this).removeClass('required');
             $(this).next().remove();
@@ -398,13 +464,6 @@ $(function() {
             $('.head-offcanvas-account-option').css('display' ,'none');
     });
 
-    // dropdown điện thoại
-    $('.head-phone-drop').hover(function(){
-       $('.head-phone-drop-content').css('display', 'block'); 
-    }, function(){
-       $('.head-phone-drop-content').css('display', 'none'); 
-    });
-
     // hiển thị giỏ hàng trên header
     $('.head-cart').hover(function(){
         $('.head-cart-box').css('display', 'block');
@@ -415,16 +474,82 @@ $(function() {
     // thanh tìm kiếm
     $('.head-search-input').focus(function(){
         $('.backdrop').fadeIn();
+        if($('.head-search-input').val() != ''){
+            $('.head-search-result').css('display', 'block');
+        }
     });
-    $('.head-search-input').focusout(function(){
-        $('.backdrop').fadeOut();
-        $('.head-search-result').css('display', 'none');
-    })
-    $('.head-search-input').keyup(function(){
+    // $('.head-search-input').focusout(function(){
+    //     $('.backdrop').fadeOut();
+    //     $('.head-search-result').css('display', 'none');
+    // });
+
+
+    var enterKey = false;
+    $('.head-search-input').keypress(function(e){
+        if(e.keyCode == '13'){
+            var val = $(this).val().toLowerCase().trim();
+            enterKey = true;
+            location.href = 'timkiem/' + val;
+        }
+    });
+
+    var timer;
+    $('.head-search-input').keyup(function(e){
+        if(enterKey == true){
+            return;
+        }
         if($(this).val() == ''){
             $('.head-search-result').css('display', 'none');
+            $('.head-search-result').children().remove();
         } else {
-            $('.head-search-result').css('display', 'block');
+            clearTimeout(timer);
+            timer = setTimeout(() =>{
+                var val = $(this).val().toLowerCase().trim();
+                if(val == ''){
+                    return;
+                }
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/ajax-search-phone',
+                    type: 'POST',
+                    cache: false,
+                    data: {'str': val},
+                    success:function(data){
+                        $('.head-search-result').children().remove();
+                        if(data['phone'].length == 0){
+                            $('.head-search-result').css('display', 'none');
+                            return;
+                        }
+
+                        var count = data['phone'].length;
+                        for(var i = 0; i < count; i++){
+                            var phone = $('<a href="dienthoai/'+ data['phone'][i]['tensp_url'] +'" class="head-single-result black fz-14">' +
+                                            '<div class="d-flex">' +
+                                                '<div class="w-25 p-10">' +
+                                                    '<img src="'+ data['url_phone'] + data['phone'][i]['hinhanh'] +'" alt="">' +
+                                                '</div>' +
+                                                '<div class="d-flex flex-column w-75 p-10">' +
+                                                    '<b>'+ data['phone'][i]['tensp'] +'</b>' +
+                                                    '<div class="d-flex align-items-center mt-5">' +
+                                                        '<span class="price-color font-weight-600">'+ data['phone'][i]['gia'] +'<sup>đ</sup></span>' +
+                                                        '<span class="text-strike ml-10">'+ data['phone'][i]['giakhuyenmai'] +'<sup>đ</sup></span>' +
+                                                        '<span class="price-color ml-10">-'+ (data['phone'][i]['khuyenmai'] * 100) + '%</span>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</a>');
+                                
+                            phone.appendTo('.head-search-result');
+                        }
+                        $('.head-search-result').scrollTop(0);
+
+                        $('.head-search-result').css('display', 'block');
+                    }
+                });
+            }, 300);
         }
     });
 
@@ -432,8 +557,15 @@ $(function() {
                                                             Index
 =============================================================================================================================*/
 
-    // sec khuyến mãi
+    // alert thông báo
+    if($('#alert-message').length){
+        var toast = $('<div id="message" class="alert-toast"><div class="d-flex align-items-center"><span>'+ $('#alert-message').data('message') +'</span></div></div>');
+        $("#alert-message").after(toast);
+        showToast('#message');
+        $('#alert-message').remove();
+    }
 
+    // sec khuyến mãi
     var owl_promotion = $('#index-promotion-carousel');
     owl_promotion.owlCarousel({
         nav: false,
@@ -1037,13 +1169,6 @@ $(function() {
 /*============================================================================================================================
                                                             Shop
 =============================================================================================================================*/
-    
-    // nút hiển thị bộ lọc
-    $('#btn-show-filter').click(function(){
-        $('.shop-filter-box').toggle('blind', 250);
-        $('.shop-sort-box').hide();
-    });
-    
 
     // nút hiển thị sắp xếp
     $('#btn-show-sort').click(function(){
@@ -1051,28 +1176,216 @@ $(function() {
         $('.shop-filter-box').hide();
     });
 
-    // ẩn/hiện nút xem kết quả lọc
-    $('input[name="checkbox-filter"]').click(function(){
-        var count = $('#flag').val();
-        if($(this).prop('checked') == true){
-            $('#flag').val(++count);
-            $('.shop-btn-see-result').css('display', 'block');
-        } else {
-            $('#flag').val(--count);
-        }
-        if(count == 0){
-            $('.shop-btn-see-result').css('display', 'none');
-        }
-    })
-
-    // gỡ bỏ chọn tất cả checkbox bộ lọc
+    // gỡ bỏ chọn tất cả bộ lọc
     $('.shop-btn-remove-filter').click(function(){
-        $('input[name="checkbox-filter"]').each(function(){
-            this.checked = false;
-            $('.shop-btn-see-result').css('display', 'none');
-            $('#flag').val(0);
-        });
+        // icon loading
+        var loading = $('<div class="spinner-border text-light" role="status" style="width: 20px; height: 20px"></div>');
+        $('#btn-see-filter').text('');
+        loading.appendTo($('#btn-see-filter'));
+
+        dataFilter = {};
+        $('div[name="filter-item"]').removeClass('filter-selected');
+        filterProduct(dataFilter);
     });
+
+    var dataFilter = {};
+
+    // thêm | xóa bộ lọc
+    $('.filter-item').off('click').click(function(e){
+        e.preventDefault();
+
+        // icon loading
+        var loading = $('<div class="spinner-border text-light" role="status" style="width: 20px; height: 20px"></div>');
+        $('#btn-see-filter').text('');
+        loading.appendTo($('#btn-see-filter'));
+                        
+        var type = $(this).data('data').split('_')[0];
+        var keyword = $(this).data('data').split('_')[1];
+        var elmnt = $('#' + $(this).data('data'));
+
+        // hủy 1 bộ lọc
+        if($(elmnt).hasClass('filter-selected')){
+            if(type == 'brand'){
+                const index = dataFilter['brand'].indexOf(keyword);
+                if (index > -1) {
+                    dataFilter['brand'].splice(index, 1);
+                }
+                if(dataFilter['brand'].length == 0){
+                    delete dataFilter['brand'];
+                }
+                filterProduct(dataFilter);
+                $(elmnt).removeClass('filter-selected');
+            } else if(type == 'price'){
+                const index = dataFilter['price'].indexOf(keyword);
+                if (index > -1) {
+                    dataFilter['price'].splice(index, 1);
+                }
+                if(dataFilter['price'].length == 0){
+                    delete dataFilter['price'];
+                }
+                filterProduct(dataFilter);
+                $(elmnt).removeClass('filter-selected');
+            } else if(type == 'os'){
+                const index = dataFilter['os'].indexOf(keyword);
+                if (index > -1) {
+                    dataFilter['os'].splice(index, 1);
+                }
+                if(dataFilter['os'].length == 0){
+                    delete dataFilter['os'];
+                }
+                filterProduct(dataFilter);
+                $(elmnt).removeClass('filter-selected');
+            } else if(type == 'ram'){
+                const index = dataFilter['ram'].indexOf(keyword);
+                if (index > -1) {
+                    dataFilter['ram'].splice(index, 1);
+                }
+                if(dataFilter['ram'].length == 0){
+                    delete dataFilter['ram'];
+                }
+                filterProduct(dataFilter);
+                $(elmnt).removeClass('filter-selected');
+            } else if(type == 'capacity') {
+                const index = dataFilter['capacity'].indexOf(keyword);
+                if (index > -1) {
+                    dataFilter['capacity'].splice(index, 1);
+                }
+                if(dataFilter['capacity'].length == 0){
+                    delete dataFilter['capacity'];
+                }
+                filterProduct(dataFilter);
+                $(elmnt).removeClass('filter-selected');
+            }
+        } else { // thêm bộ lọc
+            if(type == 'brand'){
+                addFilter(dataFilter, 'brand', keyword);
+                filterProduct(dataFilter);
+                $(elmnt).addClass('filter-selected');
+            } else if(type == 'price'){
+                addFilter(dataFilter, 'price', keyword);
+                filterProduct(dataFilter);
+                $(elmnt).addClass('filter-selected');
+            } else if(type == 'os'){
+                addFilter(dataFilter, 'os', keyword);
+                filterProduct(dataFilter);
+                $(elmnt).addClass('filter-selected');
+            } else if(type == 'ram'){
+                addFilter(dataFilter, 'ram', keyword);
+                filterProduct(dataFilter);
+                $(elmnt).addClass('filter-selected');
+            } else if(type == 'capacity') {
+                addFilter(dataFilter, 'capacity', keyword);
+                filterProduct(dataFilter);
+                $(elmnt).addClass('filter-selected');
+            }
+        }
+    });
+
+    function addFilter(dataFilter, filter, keyword){
+        if(dataFilter[filter] == null){
+            dataFilter[filter] = [];
+        }
+        dataFilter[filter].push(keyword);
+    }
+
+    function filterProduct(dataFilter){
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: '/ajax-filter-product',
+            type: 'POST',
+            data: {dataFilter:dataFilter},
+            success: function(data){
+                // số tiêu chí lọc
+                if(Object.keys(dataFilter).length == 0){
+                    $('.filter-badge').text('');
+                    $('.filter-badge').css('display', 'none');    
+                } else {
+                    $('.filter-badge').text(Object.keys(dataFilter).length);
+                    $('.filter-badge').css('display', 'block');
+                }
+                
+                $('.see-result-filter').css('display', 'block');
+                $('#btn-see-filter').text('Xem ' + data.length + ' kết quả');
+
+                if(data.length == 0){
+                    $('#btn-see-filter').attr('enable', 'false');
+                } else {
+                    $('#btn-see-filter').attr('enable', 'true')
+                }
+                //console.log(data);
+
+                // xem danh sách kết quả lọc
+                $('#btn-see-filter').click(function(){
+                    if($(this).attr('enable') == 'false'){
+                        return;
+                    }
+
+                    $('#filter-modal').modal('hide');
+                    $('.loader').show();
+                    loadFilterProduct(data)
+                    $('.loader').fadeOut(250);
+                });
+            }
+        });
+    }
+
+    // hiển thị danh sách kết quả bộ lọc
+    function loadFilterProduct(data){
+        $('#lst_product').children().remove();
+        $('#qty-product').text(data.length + ' điện thoại');
+        for(var i = 0; i < data.length; i++){
+            var product = $('<div class="col-lg-3 col-md-4 col-sm-6">' +
+                                '<div id="product_'+ i +'" class="shop-product-card box-shadow">' +
+                                    '<div class="shop-overlay-product"></div>' +
+                                    '<a href="#" class="shop-cart-link"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</a>' +
+                                    '<a href="/dienthoai/'+ data[i]['tensp_url'] +'" class="shop-detail-link">Xem chi tiết</a>' +
+                                    '<div>' +
+                                        '<div class="pt-20 pb-20">' +
+                                            '<img src="/images/phone/'+ data[i]['hinhanh'] +'" class="shop-product-img-card">' +
+                                        '</div>' +
+                                        '<div class="pb-20 text-center d-flex flex-column">' +
+                                            '<b class="mb-10">'+ data[i]['tensp'] +'</b>' +
+                                            '<div>' +
+                                                '<span class="font-weight-600 price-color">'+ new Intl.NumberFormat().format(data[i]['giakhuyenmai']) +'<sup>đ</sup></span>' +
+                                                '<span class="ml-5 text-strike">'+ new Intl.NumberFormat().format(data[i]['gia']) +'<sup>đ</sup></span>' +
+                                            '</div>' +
+                                            '<div>' +
+                                                '<div id="evaluate_'+ i +'" class="flex-row pt-5">' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>');
+
+            product.appendTo('#lst_product');
+                            
+            // khuyến mãi
+            if(data[i]['khuyenmai'] != 0){
+                var promotionTag = $('<div class="shop-promotion-tag">' +
+                                        '<span class="shop-promotion-text">'+ (data[i]['khuyenmai']*100) + '%' +'</span>' +
+                                    '</div>');
+                $('#product_' + i).prepend(promotionTag);
+            }
+
+            // đánh giá
+            if(data[i]['danhgia']['qty'] != 0){
+                for(var j = 1; j <= 5; j++){
+                    if(data[i]['danhgia']['star'] > j){
+                        var star = $('<i class="fas fa-star checked"></i>');
+                        star.appendTo($('#evaluate_' + i));
+                    } else {
+                        var star = $('<i class="fas fa-star uncheck"></i>');
+                        star.appendTo($('#evaluate_' + i));
+                    }
+                }
+                var qtyEvaluate = $('<span class="fz-14 ml-10">' + data[i]['danhgia']['qty'] + ' đánh giá </span>');
+                qtyEvaluate.appendTo($('#evaluate_' + i));
+            }
+        }
+    }
 
 /*============================================================================================================================
                                                             Detail
@@ -1156,6 +1469,38 @@ $(function() {
             showToast('#add-favorite');
         }
     });
+
+    // sản phẩm cùng hãng
+    var owl_sameBrand = $('#same-brand-pro-carousel');
+    owl_sameBrand.owlCarousel({
+        nav: false,
+        rewind: true,
+        dots: false,
+        responsiveClass:true,
+        responsive: {
+            0: {
+                items: 5
+            },
+            600: {
+                items: 2
+            },
+            1000: {
+                items: 4
+            },
+            1200: {
+                items: 5
+            }
+        }
+    });
+
+    $('#prev-brand').on('click', function(){
+        owl_sameBrand.trigger('prev.owl.carousel', [300]);
+    });
+
+    $('#next-brand').on('click', function(){
+        owl_sameBrand.trigger('next.owl.carousel');
+    });
+
 
     // sản phẩm tương tự
     var owl_similar = $('#similar-pro-carousel');

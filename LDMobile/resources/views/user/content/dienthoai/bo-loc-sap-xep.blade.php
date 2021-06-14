@@ -1,87 +1,10 @@
 <div class="d-flex align-items-center justify-content-between box-shadow p-15 mb-20">
-    <b>
-        @if (empty($brand))
-            {{ $qty . ' điện thoại'}}
-        @else
-            {{ $qty . ' điện thoại ' . $brand }}
-        @endif
-    </b>
+    <b id="qty-product">{{ $fs_title }}</b>
     <div class="d-flex">
         {{-- bộ lọc --}}
         <div class='relative mr-20'>
-            <span id='btn-show-filter'><i class="fal fa-filter mr-5"></i>Bộ lọc</span>
-            <div class="shop-filter-box border">
-                <div class='d-flex flex-row justify-content-between'>
-                    <input type="hidden" id='flag' value='0'>
-                    {{-- màu sắc --}}
-                    <div class='d-flex flex-column'>
-                        <b>Màu sắc</b>
-
-                        <div class='mt-10'>
-                            <div class="filter-item">
-                                <input type="checkbox" class="color-filter" name='checkbox-filter' id='red' value='đỏ'>
-                                <label for="red">Đỏ</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class="color-filter" name='checkbox-filter' id='blue' value='xanh'>
-                                <label for="blue">Xanh dương</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class="color-filter" name='checkbox-filter' id='black' value='đen'>
-                                <label for="black">Đen</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- dung lượng --}}
-                    <div class='d-flex flex-column'>
-                        <b>Dung lượng</b>
-
-                        <div class='mt-10'>
-                            <div class="filter-item">
-                                <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-32'>
-                                <label for="capacity-32" class='form-check-label'>32 GB</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-64'>
-                                <label for="capacity-64" class='form-check-label'>64 GB</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-128'>
-                                <label for="capacity-128" class='form-check-label'>128 GB</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-256'>
-                                <label for="capacity-256" class='form-check-label'>256 GB</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-512'>
-                                <label for="capacity-512" class='form-check-label'>512 GB</label>
-                            </div>
-                            <div class="filter-item">
-                                <input type="checkbox" class='form-check-input' name='checkbox-filter' id='capacity-1t'>
-                                <label for="capacity-1t" class='form-check-label'>1 TB</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- khuyến mãi --}}
-                    <div class='d-flex flex-column'>
-                        <b>Khuyến mãi</b>
-
-                        <div class='mt-10'>
-                            <div class="filter-item">
-                                <input type="checkbox" name='checkbox-filter' id='promotion'>
-                                <label for="promotion" >Sản phẩm có khuyến mãi</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class='shop-btn-see-result pt-20'>
-                    <div class="main-btn p-5">Xem 10 kết quả</div>
-                    <div class='shop-btn-remove-filter pt-10'>Bỏ chọn tất cả</div>
-                </div>
-            </div>
+            <span id='btn-show-filter' data-bs-toggle="modal" data-bs-target="#filter-modal"><i class="fal fa-filter mr-5"></i>Bộ lọc</span>
+            <div class="filter-badge"></div>
         </div>
 
         {{-- sắp xếp --}}
@@ -114,6 +37,71 @@
                             <label for="sort_4">Giá thấp đến cao</label>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- modal bộ lọc --}}
+<div class="modal fade" id="filter-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                {{-- nút đóng --}}
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+                {{-- hãng --}}
+                <div class="filter-title">Hãng</div>
+                <div class="d-flex align-items-center flex-wrap">
+                    @foreach ($lst_brand as $key)
+                        <div type="button" name="filter-item" id="brand_{{ $key['brand'] }}" data-data="brand_{{ $key['brand'] }}" class="filter-item brand filter-brand">{{ $key['brand'] }}</div>
+                    @endforeach
+                </div><hr>
+
+                {{-- giá, hệ điều hành --}}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="filter-title">Giá</div>
+                        <div class="d-flex align-items-center flex-wrap">
+                            <div id="price_2" type="button" name="filter-item" data-data="price_2" class="filter-item">Dưới 2 triệu</div>
+                            <div id="price_3-4" type="button" name="filter-item" data-data="price_3-4" class="filter-item">Từ 3 - 4 triệu</div>
+                            <div id="price_4-7" type="button" name="filter-item" data-data="price_4-7" class="filter-item">Từ 4 - 7 triệu</div>
+                            <div id="price_7-13" type="button" name="filter-item" data-data="price_7-13" class="filter-item">Từ 7 - 13 triệu</div>
+                            <div id="price_13-20" type="button" name="filter-item" data-data="price_13-20" class="filter-item">Từ 13 - 20 triệu</div>
+                            <div id="price_20" type="button" name="filter-item" data-data="price_20" class="filter-item">Trên 20 triệu</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="filter-title">Hệ điều hành</div>
+                        <div class="d-flex align-items-center flex-wrap">
+                            <div id="os_Android" type="button" name="filter-item" data-data="os_Android" class="filter-item">Android</div>
+                            <div id="os_iOS" type="button" name="filter-item" data-data="os_iOS" class="filter-item">iOS</div>
+                        </div>
+                    </div>
+                </div><hr>
+
+                {{-- ram, dung lượng --}}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="filter-title">Ram</div>
+                        <div class="d-flex align-items-center flex-wrap">
+                            @foreach ($lst_ram as $key)
+                            <div id="ram_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" type="button" name="filter-item" data-data="ram_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" class="filter-item">{{ $key }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="filter-title">Dung lượng</div>
+                        <div class="d-flex align-items-center flex-wrap">
+                            @foreach ($lst_capacity as $key)
+                            <div id="capacity_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" type="button" name="filter-item" data-data="capacity_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" class="filter-item">{{ $key }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class='see-result-filter pt-20'>
+                    <div id='btn-see-filter' class="main-btn p-10"></div>
+                    <div class='shop-btn-remove-filter pt-10'>Bỏ chọn tất cả</div>
                 </div>
             </div>
         </div>

@@ -1,3 +1,5 @@
+<?php $user = session('user') ?>
+
 <div class='row'>
     <div class='col-md-3'>
         @section("acc-info-active") account-sidebar-active @stop
@@ -25,7 +27,7 @@
                     <input id='change-avt-inp' data-modal='avt' type="file" class="none-dp" accept="image/*">
                     <div id='btn-change-avt' class='account-change-img pointer-cs'>Thay đổi</div>
                 </div>
-                <img id='avt-img' src="images/icon/user-icon-1.png" alt="avatar" class='account-avt-img'>
+                <img id='avt-img' src="{{ $url_user.}}" alt="avatar" class='account-avt-img'>
             </div>
         </div>
         

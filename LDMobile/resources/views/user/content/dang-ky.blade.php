@@ -2,7 +2,7 @@
 <html lang="en">
     @include("user.header.head")
 <body>
-    <div class="loader"><div class="loader-bg"></div><div class="spinner-border" role="status"></div></div>
+    <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
     <section class='login-signup-sec'>
         <div class='container'>
             <div class='row'>
@@ -108,7 +108,10 @@
 
                 {{-- quick signup --}}
                 <div class="col-md-5 col-sm-10 mx-auto box-shadow login-signup-box">
-                    <form action="#" method="POST">
+                    @if(session('error_message'))
+                        <div class="error-message mb-20">{{ session('error_message') }}</div>
+                    @endif
+                    <form id="signup-form" action="{{route('user/signup')}}" method="POST">
                         @csrf
                         {{-- enter phone number --}}
                         <div id='enter-information'>
@@ -119,12 +122,12 @@
 
                             {{-- họ tên --}}
                             <div class="mb-3">
-                                <input type="text" id='su-fullname' placeholder="Họ và tên" required>    
+                                <input type="text" id='su_fullname' name="su_fullname" placeholder="Họ và tên" required>    
                             </div> 
 
                             {{-- SDT --}}
                             <div class="mb-3">
-                                <input type='text' id='su-tel' maxlength="10" placeholder='Số điện thoại' required>
+                                <input type='text' id='su_tel' name="su_tel" maxlength="10" placeholder='Số điện thoại' required>
                             </div>
 
                             {{-- nút tiếp tục --}}
@@ -191,14 +194,14 @@
                             </div>
                             {{-- mật khẩu --}}
                             <div class="mb-3">
-                                <label for="su-pw" class="font-weight-600 form-label">Mật khẩu</label>
-                                <input type='password' id="su-pw">
+                                <label for="su_pw" class="font-weight-600 form-label">Mật khẩu</label>
+                                <input type='password' id="su_pw" name="su_pw">
                             </div>
 
                             {{-- nhập lại mật khẩu --}}
                             <div class="mb-3">
-                                <label for="su-re-pw" class="font-weight-600 form-label">Nhập lại mật khẩu</label>
-                                <input type='password' id="su-re-pw">
+                                <label for="su_re_pw" class="font-weight-600 form-label">Nhập lại mật khẩu</label>
+                                <input type='password' id="su_re_pw" name="su_re_pw">
                             </div>
 
                             <div type='button' id='signup-step-3' class="main-btn p-10">Đăng ký</div>

@@ -18,39 +18,33 @@ use App\Http\Controllers\user\UserController;
 |
 */
 Route::group(['prefix' => '', 'namespace' => 'user'], function() {
+    Route::get("dangnhap", [UserController::class, 'DangNhap'])->name("user/dang-nhap");
+    
+    Route::get("dangky", [UserController::class, 'DangKy'])->name("user/dang-ky");
+
+    Route::post("signup", [UserController::class, 'SignUpPost'])->name('user/signup');
+
+    Route::post("login", [UserController::class, 'LoginPost'])->name('user/login');
+
+    Route::get("logout", [UserController::class, 'LogOut'])->name('user/logout');
+
     Route::get("/",[IndexController::class, 'Index'])->name("user/index");
 
-    Route::get("thanhtoan", [IndexController::class, 'ThanhToan'])->name("user/thanh-toan");
+    Route::post("ajax-search-phone", [IndexController::class, 'AjaxSearchPhone']);
 
+    Route::post("ajax-filter-product", [IndexController::class, 'AjaxFilterProduct']);
+    
     Route::get("dienthoai", [IndexController::class, 'DienThoai'])->name("user/dien-thoai");
+
+    Route::get("timkiem/{name?}", [IndexController::class, 'TimKiemDienThoai'])->name("user/tim-kiem");
 
     Route::get("dienthoai-{brand}", [IndexController::class, 'DienThoaiTheoHang'])->name("user/dien-thoai-theo-hang");
 
     Route::get('dienthoai/{name}', [IndexController::class, 'ChiTiet'])->name('user/chi-tiet');
     
-    Route::get("dangnhap", [UserController::class, 'DangNhap'])->name("user/dang-nhap");
-    
-    Route::get("dangky", [UserController::class, 'DangKy'])->name("user/dang-ky");
-    
-    Route::get("taikhoan", [UserController::class, 'TaiKhoan'])->name("user/tai-khoan");
-    
-    Route::get("taikhoan/thongbao", [UserController::class, 'ThongBao'])->name("user/tai-khoan-thong-bao");
-    
-    Route::get("taikhoan/donhang", [UserController::class, 'DonHang'])->name("user/tai-khoan-don-hang");
-
-    Route::get("taikhoan/diachi", [userController::class, 'DiaChi'])->name("user/tai-khoan-dia-chi");
-    
-    Route::get("taikhoan/chitietdonhang", [UserController::class, 'ChiTietDonHang'])->name("user/tai-khoan-chi-tiet-don-hang");
-    
-    Route::get("taikhoan/yeuthich", [UserController::class, 'YeuThich'])->name("user/tai-khoan-yeu-thich");
-    
-    Route::get("taikhoan/voucher", [UserController::class, 'Voucher'])->name("user/tai-khoan-voucher");
-    
     Route::get("giohang", [CartController::class, 'GioHang'])->name("user/gio-hang");
 
     route::get("sosanh/{str}", [IndexController::class, 'SoSanh'])->name('user/so-sanh');
-
-    route::get("ketquathanhtoan", [IndexController::class, "ketQuaThanhToan"]);
 
     route::get("thanhcong", [IndexController::class, 'ThanhCong']);
 
@@ -69,6 +63,26 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     route::post('test4', 'IndexController@test4');
 
     route::get('test5', 'IndexController@test5');
+
+    Route::group(['middleware' => 'CheckLogin'], function(){
+        Route::get("thanhtoan", [IndexController::class, 'ThanhToan'])->name("user/thanh-toan");
+    
+        Route::get("taikhoan", [UserController::class, 'TaiKhoan'])->name("user/tai-khoan");
+    
+        Route::get("taikhoan/thongbao", [UserController::class, 'ThongBao'])->name("user/tai-khoan-thong-bao");
+            
+        Route::get("taikhoan/donhang", [UserController::class, 'DonHang'])->name("user/tai-khoan-don-hang");
+    
+        Route::get("taikhoan/diachi", [userController::class, 'DiaChi'])->name("user/tai-khoan-dia-chi");
+        
+        Route::get("taikhoan/chitietdonhang", [UserController::class, 'ChiTietDonHang'])->name("user/tai-khoan-chi-tiet-don-hang");
+        
+        Route::get("taikhoan/yeuthich", [UserController::class, 'YeuThich'])->name("user/tai-khoan-yeu-thich");
+        
+        Route::get("taikhoan/voucher", [UserController::class, 'Voucher'])->name("user/tai-khoan-voucher");
+    
+        route::get("ketquathanhtoan", [IndexController::class, "ketQuaThanhToan"]);
+    });
     
 });
 

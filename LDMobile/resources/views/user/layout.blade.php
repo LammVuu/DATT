@@ -4,7 +4,12 @@
 @include("user.header.head")
 
 <body>
-    <div class="loader"><div class="loader-bg"></div><div class="spinner-border" role="status"></div></div>
+    {{-- session --}}
+    @if (session('alert_message'))
+        <div id="alert-message" data-message="{{session('alert_message')}}"></div>
+    @endif
+    
+    <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
 
     @include('user.header.header')
     

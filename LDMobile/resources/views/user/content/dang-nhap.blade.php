@@ -2,37 +2,41 @@
 <html lang="en">
     @include("user.header.head")
 <body>
+    <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
     <section class='login-signup-sec'>
         <div class='container'>
             <div class='row'>
-                <div class='col-md-6 mx-auto box-shadow login-signup-box'>
+                <div class='col-md-5 mx-auto box-shadow login-signup-box'>
+                    @if(session('success_message'))
+                        <div class="success-message mb-20">{{ session('success_message') }}</div>
+                    @elseif (session('error_message'))
+                        <div class="error-message mb-20">{{ session('error_message') }}</div>
+                    @endif
                     <h3 class='pb-30 font-weight-600'>Đăng nhập</h3>
     
-                    <form action="#" method="POST">
+                    <form id="login-form" action="{{route('user/login')}}" method="POST">
                         @csrf
-                        <!-- email -->
-                        <div class='input-group mb-3'>
-                            <span class='input-group-text'><i class="fas fa-phone"></i></span>
-                            <input type='text' class='form-control' placeholder='Số điện thoại' maxlength="10">
+                        <!-- sdt -->
+                        <div class='mb-3'>
+                            <input type='text' id="login_tel" name="login_tel" placeholder='Số điện thoại' maxlength="10">
                         </div>
     
                         <!-- mật khẩu -->
-                        <div class='input-group mb-3'>
-                            <span class='input-group-text'><i class="fas fa-key"></i></span>
-                            <input type='password' class='form-control' placeholder='Mật khẩu'>
+                        <div class='mb-3'>
+                            <input type='password' id="login_pw" name="login_pw" placeholder='Mật khẩu'>
                         </div>
     
                         <!-- lưu đăng nhập & quên mật khẩu -->
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <input type="checkbox" id='remember-me'>
-                                <label for="remember-me" class='form-check-label'>Lưu đăng nhập</label>
+                                <input type="checkbox" id='remember' name="remember">
+                                <label for="remember" class='form-check-label'>Lưu đăng nhập</label>
                             </div>
                             <a class="forget" href="#">Quên mật khẩu?</a>
                         </div>
     
                         <!-- button đăng nhặp -->
-                        <a href="#" class='main-btn p-10 w-100 mt-20'>Đăng nhập</a>
+                        <div id="btn-login" class='main-btn p-10 w-100 mt-20'>Đăng nhập</div>
     
                         <!-- đăng nhập khác -->
                         <div class='mt-20'>

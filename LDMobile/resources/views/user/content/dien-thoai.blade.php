@@ -12,7 +12,7 @@
                 @include('user.content.dienthoai.bo-loc-sap-xep')
 
                 {{-- danh sách sản phẩm --}}
-                <div class="row">
+                <div id="lst_product" class="row">
                     @foreach ($lst_product as $key)
                     <div class='col-lg-3 col-md-4 col-sm-6'>
                         <div class='shop-product-card box-shadow'>
