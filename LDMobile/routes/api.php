@@ -25,8 +25,11 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('featured-product','SanPhamController@getFeaturedProduct');
     Route::get('related-product/{id}','SanPhamController@getRelatedProduct');
     Route::get('detail-product/{id}','SanPhamController@getDetailProduct');
-    Route::get('compare-product','SanPhamController@getCompareProduct');
+    Route::get('compare-product/{id}','SanPhamController@getCompareProduct');
+    Route::get('ram-storage','SanPhamController@getRamAndStorage');
     Route::get('all-product','SanPhamController@getAllProduct');
+    Route::get('filter-product','SanPhamController@getProductFilter');
+    Route::get('banner','SanPhamController@getBanner');
     Route::get('slideshow-product/{id}','SanPhamController@getSlideShowOfProduct');
     Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
 });

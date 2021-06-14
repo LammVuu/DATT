@@ -39,7 +39,14 @@ class SanPhamController extends Controller
     		'data' => $slideshow
     	]);
     }
+    public function getBanner(Request $request){
+        
+    }
+    public function getVoucherHot(){
+        
+    }
     public function getHotSale(){
+        
         $listProductHotSale = array();
         $listProduct = SANPHAM::all();
         $listDiscount = KHUYENMAI::orderBy("chietkhau", "desc")->get();
@@ -251,7 +258,7 @@ class SanPhamController extends Controller
         $listIdProductResult = array();
         $product = SANPHAM::find($id);
         $cateProduct = MAUSP::find($product->id_msp);
-        $listCateRelated = MAUSP::where("id_ncc",  $cateProduct->id_ncc)->get();
+        $listCateRelated = MAUSP::where("id_ncc",  $cateProduct->id_ncc)->where('id', '!=', $product->id_msp)->get();
         foreach($listCateRelated as $cate){
             array_push($listIdCateFirst, $cate->id);
         }
@@ -288,10 +295,10 @@ class SanPhamController extends Controller
         ]);
     }
 
-    public function getCompareProduct(Request $request){
+    public function getCompareProduct($id, Request $request){
         $listResult = array();
         $price = $request->price;
-        $listProduct = SANPHAM::where(function($query) use ($price){
+        $listProduct = SANPHAM::where('id_msp','!=',$id)->where(function($query) use ($price){
             $query->where('gia','<=',$price+1000000);
             $query->where('gia','>=',$price-1000000);
         })->get();
@@ -340,6 +347,64 @@ class SanPhamController extends Controller
             'status' => 'true',
             'message' => '',
             'data' => $listResult
+        ]);
+    }
+    public function getRamAndStorage(){
+        $listRam  = array();
+        $listStorage = array();
+        $ram = SANPHAM::select('ram')->distinct()->get();
+        $storage =  SANPHAM::select('dungluong')->distinct()->get();
+        foreach($ram as $s){
+            array_push($listRam, $s->ram);
+        }
+        foreach($storage as $r){
+            array_push($listStorage, $r->dungluong);
+        }
+        return response()->json([
+            'status' => 'true',
+            'message' => '',
+            'data' => ([
+                "ram"=>$listRam,
+                "dungluong"=>$listStorage
+                ])
+        ]);
+    }
+    public function getProductFilter(Request $request){
+        $page = !empty($request->page) ? $request->page : 1;
+    	$itemsPerPage = !empty($request->per_page) ? $request->per_page : 5;
+        $priceMax = $request->priceMax;
+        $priceMin = $request->priceMin;
+        if(!empty($priceMax)&&!empty($request->ram)&&!empty($request->dungluong)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where(function($query) use ($priceMax, $priceMin){
+                $query->where('gia','<=',$priceMax);
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMax)&&!empty($request->ram)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where(function($query) use ($priceMax, $priceMin){
+                $query->where('gia','<=',$priceMax);
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMax)&&!empty($request->dungluong)){
+            $listProduct = SANPHAM::where('dungluong', $request->dungluong)->where(function($query) use ($priceMax, $priceMin){
+                $query->where('gia','<=',$priceMax);
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($request->ram)&&!empty($request->ram)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($request->ram)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($request->dungluong)){
+            $listProduct = SANPHAM::where('dungluong', $request->dungluong)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMax)){
+            $listProduct = SANPHAM::where(function($query) use ($priceMax, $priceMin){
+                $query->where('gia','<=',$priceMax);
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }
+        return response()->json([
+            'status' => 'true',
+            'message' => '',
+            'data' => $listProduct
         ]);
     }
 }
