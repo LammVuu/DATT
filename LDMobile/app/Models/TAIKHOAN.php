@@ -19,7 +19,6 @@ class TAIKHOAN extends Model
         'email',
         'hoten',
         'anhdaidien',
-        'anhbia',
         'loaitk',
         'htdn',
         'trangthai',

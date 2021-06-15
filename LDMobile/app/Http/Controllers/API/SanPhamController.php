@@ -389,7 +389,7 @@ class SanPhamController extends Controller
                 $query->where('gia','<=',$priceMax);
                 $query->where('gia','>=',$priceMin);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
-        }else if(!empty($request->ram)&&!empty($request->ram)){
+        }else if(!empty($request->ram)&&!empty($request->dungluong)){
             $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }else if(!empty($request->ram)){
             $listProduct = SANPHAM::where('ram', $request->ram)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
@@ -400,6 +400,18 @@ class SanPhamController extends Controller
                 $query->where('gia','<=',$priceMax);
                 $query->where('gia','>=',$priceMin);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }
+        foreach($listProduct as $product){
+            $product->tensp = $product->tensp." ".$product->dungluong;
+            $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
+            $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            $allJudge = DANHGIASP::where("id_sp", $product->id)->get();
+            $totalVote = 0;
+            foreach($allJudge as $judge){
+                $totalVote += $judge->danhgia;
+            }
+            $product->tongluotvote = $totalVote;
+            $product->tongdanhgia = count($allJudge);
         }
         return response()->json([
             'status' => 'true',

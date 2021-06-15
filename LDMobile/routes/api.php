@@ -32,5 +32,9 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('banner','SanPhamController@getBanner');
     Route::get('slideshow-product/{id}','SanPhamController@getSlideShowOfProduct');
     Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
+    Route::delete('log-out','UserController@logout');
+   
 });
+Route::post('check-number-phone','API\UserController@checkNumberPhone');
 Route::post('log-in','API\UserController@login');
+Route::post('sign-up','API\UserController@signup');

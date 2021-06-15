@@ -29,7 +29,7 @@ class User extends Authenticatable
         'htdn',
         'trangthai',
     ];
-
+    public $timestamps = false;
     /**
      * The attributes that should be hidden for arrays.
      *
