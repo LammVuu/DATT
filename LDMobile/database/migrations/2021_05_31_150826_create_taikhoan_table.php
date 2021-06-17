@@ -22,6 +22,7 @@ class CreateTaikhoanTable extends Migration
             $table->string('anhdaidien', 500)->nullable();
             $table->boolean('loaitk');
             $table->string('htdn', 10);
+            $table->string('remember_token', 500)->nullable();
             $table->boolean('trangthai');
         });
     }

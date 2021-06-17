@@ -86,7 +86,7 @@ class UserController extends Controller
            
         if(Auth::attempt($login)){
             $user = $request->user();
-            if(!$user->htdn =="facebook" || !$user->htdn =="google" ){
+            if($user->htdn =="normal"){
                 $user->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
             }
             $tokenResult = $user->createToken('LD Mobile');
@@ -128,6 +128,80 @@ class UserController extends Controller
             'status' => true,
             'messages' => 'OK',
             'data'=>null
+        ]);
+    }
+    public function changeAvatar($id, Request $request){
+        $user = User::find($id);
+        $user->anhdaidien = Helper::imageUpload($request);
+        if($user->update()){
+            if($user->htdn =="normal"){
+                $user->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
+            }
+            return response()->json([
+                'status' => true,
+                'messages' => "Đổi ảnh đại diện thành công",
+                'data' => $user
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'messages' => "Có lỗi xảy ra",
+            'data' => null
+        ]);
+        
+        
+    }
+    public function changeInfoUser($id, Request $request){
+        $user = User::find($id);
+        if(!empty($request->name)){
+            $user->hoten = $request->name;
+            if($user->update()){
+                return response()->json([
+                    'status' => true,
+                    'messages' => "Cập nhật thành công",
+                    'data' => null
+                ]);
+            }
+        }
+        
+        return response()->json([
+            'status' => false,
+            'messages' => "Có lỗi xảy ra, vui lòng thử lại sau...",
+            'data' => null
+        ]);
+    }
+    public function checkPassword(Request $request){
+        $find = User::where('sdt', $request->phone)->value('password');
+        if(Hash::check($request->password, $find)){
+            return response()->json([
+                'status' => true,
+                'messages' => "",
+                'data' => null
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'messages' => "Có lỗi xảy ra, vui lòng thử lại sau...",
+            'data' => null
+        ]);
+    }
+    public function changePassword(Request $request){
+        $find = User::where('sdt', $request->phone)->value('id');
+        $user = User::find($find);
+        $user->password = Hash::make($request->password);
+        if($user->update()){
+            if($user->update()){
+                return response()->json([
+                    'status' => true,
+                    'messages' => "Đổi mật khẩu thành công",
+                    'data' => null
+                ]);
+            }
+        }
+        return response()->json([
+            'status' => false,
+            'messages' => "Có lỗi xảy ra, vui lòng thử lại sau...",
+            'data' => null
         ]);
     }
 }

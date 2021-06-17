@@ -27,6 +27,7 @@ class User extends Authenticatable
         'anhbia',
         'loaitk',
         'htdn',
+        'remember_token',
         'trangthai',
     ];
     public $timestamps = false;
