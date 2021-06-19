@@ -1,7 +1,9 @@
 @extends("user.layout")
 @section("content")
 
-@section("direct")THANH TOÁN @stop
+@section("breadcrumb")
+    <a href="{{route('user/thanh-toan')}}" class="bc-item active">Thanh toán</a>
+@stop
 @include("user.content.section.sec-thanh-dieu-huong")
 
 <section class='pt-50 pb-50'>

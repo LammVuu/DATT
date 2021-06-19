@@ -18,9 +18,18 @@ use App\Http\Controllers\user\UserController;
 |
 */
 Route::group(['prefix' => '', 'namespace' => 'user'], function() {
+    
     Route::get("dangnhap", [UserController::class, 'DangNhap'])->name("user/dang-nhap");
     
     Route::get("dangky", [UserController::class, 'DangKy'])->name("user/dang-ky");
+
+    Route::get("auth/facebook/redirect", [UserController::class, 'FacebookRedirect'])->name('user/facebook-redirect');
+
+    Route::get("auth/facebook/callback", [UserController::class, 'FacebookCallback']);
+
+    Route::get("auth/google/redirect", [UserController::class, 'GoogleRedirect'])->name('user/google-redirect');
+
+    Route::get("auth/google/callback", [UserController::class, 'GoogleCallback']);
 
     Route::post("signup", [UserController::class, 'SignUpPost'])->name('user/signup');
 
@@ -33,6 +42,16 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     Route::post("ajax-search-phone", [IndexController::class, 'AjaxSearchPhone']);
 
     Route::post("ajax-filter-product", [IndexController::class, 'AjaxFilterProduct']);
+
+    Route::post("ajax-choose-color", [IndexController::class, 'AjaxChooseColor']);
+
+    Route::post("ajax-add-cart", [CartController::class, 'AjaxAddCart']);
+
+    Route::get("ajax-remove-all-cart", [CartController::class, 'AjaxRemoveAllCart']);
+
+    Route::post("ajax-remove-cart-item", [CartController::class, 'AjaxRemoveCartItem']);
+
+    Route::post("ajax-update-cart", [CartController::class, 'AjaxUpdateCart']);
     
     Route::get("dienthoai", [IndexController::class, 'DienThoai'])->name("user/dien-thoai");
 
@@ -41,8 +60,6 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     Route::get("dienthoai-{brand}", [IndexController::class, 'DienThoaiTheoHang'])->name("user/dien-thoai-theo-hang");
 
     Route::get('dienthoai/{name}', [IndexController::class, 'ChiTiet'])->name('user/chi-tiet');
-    
-    Route::get("giohang", [CartController::class, 'GioHang'])->name("user/gio-hang");
 
     route::get("sosanh/{str}", [IndexController::class, 'SoSanh'])->name('user/so-sanh');
 
@@ -65,6 +82,9 @@ Route::group(['prefix' => '', 'namespace' => 'user'], function() {
     route::get('test5', 'IndexController@test5');
 
     Route::group(['middleware' => 'CheckLogin'], function(){
+
+        Route::get("giohang", [CartController::class, 'GioHang'])->name("user/gio-hang");
+        
         Route::get("thanhtoan", [IndexController::class, 'ThanhToan'])->name("user/thanh-toan");
     
         Route::get("taikhoan", [UserController::class, 'TaiKhoan'])->name("user/tai-khoan");

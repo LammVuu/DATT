@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TAIKHOAN extends Model
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class TAIKHOAN extends Authenticatable
 {
     use HasFactory;
 
@@ -21,6 +23,8 @@ class TAIKHOAN extends Model
         'anhdaidien',
         'loaitk',
         'htdn',
+        'remember_token',
+        'user_social_token',
         'trangthai',
     ];
 

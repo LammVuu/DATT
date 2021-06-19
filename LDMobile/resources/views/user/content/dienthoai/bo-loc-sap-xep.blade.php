@@ -13,28 +13,17 @@
             <div class="shop-sort-box border">
                 <div class="d-flex justify-content-center">
                     <div class='d-flex flex-column'>
-                        {{-- nổi bật nhất --}}
-                        <div class="filter-item">
-                            <input type="radio" name='sort' id='sort_1' checked>
-                            <label for="sort_1">Nổi bật nhất</label>
+                        <div class="mb-3">
+                            <input type="radio" name='sort' id='high-to-low'>
+                            <label for="high-to-low">Giá cao đến thấp</label>
                         </div>
-
-                        {{-- bán chạy nhất --}}
-                        <div class="filter-item">
-                            <input type="radio" name='sort' id='sort_2'>
-                            <label for="sort_2">Bán chạy nhất</label>
+                        <div class="mb-3">
+                            <input type="radio" name='sort' id='low-to-high'>
+                            <label for="low-to-high">Giá thấp đến cao</label>
                         </div>
-
-                        {{-- giá cao đến thấp --}}
-                        <div class="filter-item">
-                            <input type="radio" name='sort' id='sort_3'>
-                            <label for="sort_3">Giá cao đến thấp</label>
-                        </div>
-
-                        {{-- giá thấp đến cao --}}
-                        <div class="filter-item">
-                            <input type="radio" name='sort' id='sort_4'>
-                            <label for="sort_4">Giá thấp đến cao</label>
+                        <div>
+                            <input type="radio" name='sort' id='sale-off-percent'>
+                            <label for="sale-off-percent">% giảm</label>
                         </div>
                     </div>
                 </div>
@@ -47,7 +36,7 @@
 <div class="modal fade" id="filter-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-body">
+            <div class="modal-body p-20">
                 {{-- nút đóng --}}
                 <button class="btn-close" data-bs-dismiss="modal"></button>
                 {{-- hãng --}}

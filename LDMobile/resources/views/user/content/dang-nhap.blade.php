@@ -43,8 +43,7 @@
                             <div class='d-flex flex-column align-items-center'>
                                 <div>Chưa có tài khoản? <a href={{route('user/dang-ky')}}>Đăng ký</a></div>
                                 <div class="login-with w-100"></div>
-    
-                                <a href="#" class='btn-login-signup-with box-shadow'>
+                                <a href="{{route('user/facebook-redirect')}}" type="button" class='btn-login-signup-with box-shadow'>
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-sm-4">
@@ -54,7 +53,7 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a href="#" class='btn-login-signup-with box-shadow'>
+                                <a href="{{route('user/google-redirect')}}" class='btn-login-signup-with box-shadow'>
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-sm-4">

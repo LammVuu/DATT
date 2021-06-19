@@ -16,12 +16,13 @@ class CreateTaikhoanTable extends Migration
         Schema::create('taikhoan', function (Blueprint $table) {
             $table->increments('id');
             $table->string('sdt', 10)->unique()->nullable();
-            $table->string('password', 500);
+            $table->string('password', 500)->nullable();
             $table->string('email', 100)->unique()->nullable();
             $table->string('hoten', 100);
             $table->string('anhdaidien', 500)->nullable();
             $table->boolean('loaitk');
             $table->string('htdn', 10);
+            $table->string('user_social_token', 500)->nullable();
             $table->string('remember_token', 500)->nullable();
             $table->boolean('trangthai');
         });

@@ -4,68 +4,76 @@
         @include("user.content.taikhoan.sec-thanh-chuc-nang")
     </div>
     <div class='col-md-9'>
-        <table class='table border'>
-            <thead>
-                <tr>
-                    <th>
-                        <div class='pt-15 pb-15'>Mã đơn hàng</div>
-                    </th>
-                    <th>
-                        <div class='pt-15 pb-15'>Ngày mua</div>
-                    </th>
-                    <th>
-                        <div class='pt-15 pb-15'>Sản phẩm</div>
-                    </th>
-                    <th>
-                        <div class='pt-15 pb-15'>Tổng tiền</div>
-                    </th>
-                    <th>
-                        <div class='pt-15 pb-15'>Trạng thái đơn hàng</div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php for($i = 0; $i < 5; $i++) : ?>
-                <tr>
-                    {{-- mã đơn hàng --}}
-                    <td class='vertical-center'>
-                        <div class='p-20'>
-                            <a href="{{route('user/tai-khoan-chi-tiet-don-hang')}}"><?php echo $i ?></a>
-                        </div>
-                    </td>
-                    {{-- ngày mua --}}
-                    <td class='vertical-center'>
-                        <div>18/04/2021</div>
-                    </td>
-                    {{-- sản phẩm mua --}}
-                    <td class='w-40 vertical-center'>
-                        <div class='pt-15 pb-15'>
-                            <div class='d-flex justify-content-between align-items-end'>
-                                <div id=<?php echo 'temp_' . $i ?> class='d-flex'>
-                                    <img src="images/phone/iphone_12_red.jpg" alt="" width="60px">
-                                    <div class="d-flex flex-column fz-14">
-                                        <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
-                                        <span>Dung lượng: 128GB</span>
-                                        <span>Số lượng: 2
-                                            <a type='button' data-bs-toggle='modal' data-bs-target='#view-more-order' class="ml-20">Xem thêm</a>
-                                        </span>
+        @if (count($data['lst_order']['order']) != 0)
+            @foreach ($data['lst_order']['order'] as $key)
+                <table class='table border'>
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class='pt-15 pb-15'>Mã đơn hàng</div>
+                            </th>
+                            <th>
+                                <div class='pt-15 pb-15'>Ngày mua</div>
+                            </th>
+                            <th>
+                                <div class='pt-15 pb-15'>Sản phẩm</div>
+                            </th>
+                            <th>
+                                <div class='pt-15 pb-15'>Tổng tiền</div>
+                            </th>
+                            <th>
+                                <div class='pt-15 pb-15'>Trạng thái đơn hàng</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for($i = 0; $i < 5; $i++) : ?>
+                        <tr>
+                            {{-- mã đơn hàng --}}
+                            <td class='vertical-center'>
+                                <div class='p-20'>
+                                    <a href="{{route('user/tai-khoan-chi-tiet-don-hang')}}"><?php echo $i ?></a>
+                                </div>
+                            </td>
+                            {{-- ngày mua --}}
+                            <td class='vertical-center'>
+                                <div>18/04/2021</div>
+                            </td>
+                            {{-- sản phẩm mua --}}
+                            <td class='w-40 vertical-center'>
+                                <div class='pt-15 pb-15'>
+                                    <div class='d-flex justify-content-between align-items-end'>
+                                        <div id=<?php echo 'temp_' . $i ?> class='d-flex'>
+                                            <img src="images/phone/iphone_12_red.jpg" alt="" width="60px">
+                                            <div class="d-flex flex-column fz-14">
+                                                <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
+                                                <span>Dung lượng: 128GB</span>
+                                                <span>Số lượng: 2
+                                                    <a type='button' data-bs-toggle='modal' data-bs-target='#view-more-order' class="ml-20">Xem thêm</a>
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                    {{-- giá  --}}
-                    <td class='vertical-center'>
-                        <div>15.000.000 VND</div>
-                    </td>
-                    {{-- trạng thái đơn hàng --}}
-                    <td class='vertical-center'>
-                        <div>Giao hàng thành công</div>
-                    </td>
-                </tr>
-                <?php endfor ?>
-            </tbody>
-        </table>
+                            </td>
+                            {{-- giá  --}}
+                            <td class='vertical-center'>
+                                <div>15.000.000 VND</div>
+                            </td>
+                            {{-- trạng thái đơn hàng --}}
+                            <td class='vertical-center'>
+                                <div>Giao hàng thành công</div>
+                            </td>
+                        </tr>
+                        <?php endfor ?>
+                    </tbody>
+                </table>
+            @endforeach
+        @else
+            <div class="p-70 box-shadow text-center">
+                Bạn chưa có đơn hàng nào. <a href="{{route('user/dien-thoai')}}" class="ml-5">Mua hàng</a>
+            </div>
+        @endif
     </div>
 </div>
 

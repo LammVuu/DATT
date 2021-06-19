@@ -25,33 +25,41 @@
                 </th>
             </thead>
             <tbody>
-                <?php for($i = 0; $i < 5; $i++) : ?>
-                <tr id=<?php echo 'noti-' . $i ?> class='account-noti-wait'>
-                    {{-- ngày --}}
-                    <td class='w-10 align-middle'>
-                        <div class='p-20'>
-                            <span>18/04/2021</span>
-                        </div>
-                    </td>
-
-                    {{-- nội dung --}}
-                    <td id=<?php echo 'noti-content-' . $i ?> class='w-70 align-middle'>
-                        <div class='p-20'>
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Animi doloremque vel obcaecati non modi porro, cum quisquam? Molestias similique illum maxime molestiae cum ipsum dicta veritatis, quas officia, in reprehenderit.
-                        </div>                            
-                    </td>
-
-                    {{-- nút đánh dấu đã đọc --}}
-                    <td class='w-15 align-middle'>
-                        <div class="noti-btn-read pointer-cs main-color-text" data-id='<?php echo $i ?>'>Đánh dấu đã đọc</div>
-                    </td>
-
-                    {{-- nút xóa --}}
-                    <td class='w-5 align-middle'>
-                        <div class='noti-btn-delete pointer-cs price-color' data-id='<?php echo $i ?>'>xóa</div>
+                @if (count($data['lst_noti']['noti']) != 0)
+                    @foreach ($data['lst_noti']['noti'] as $key)
+                    <tr id={{ 'noti-' . $key['id'] }} class='account-noti-wait'>
+                        {{-- ngày --}}
+                        <td class='w-10 align-middle'>
+                            <div class='p-20'>
+                                <span>{{ $key['thoigian'] }}</span>
+                            </div>
+                        </td>
+    
+                        {{-- nội dung --}}
+                        <td id={{ 'noti-content-' . $key['id'] }} class='w-70 align-middle'>
+                            <div class='p-20'>
+                                {{ $key['noidung'] }}
+                            </div>                            
+                        </td>
+    
+                        {{-- nút đánh dấu đã đọc --}}
+                        <td class='w-15 align-middle'>
+                            <div class="noti-btn-read pointer-cs main-color-text" data-id='<?php echo $i ?>'>Đánh dấu đã đọc</div>
+                        </td>
+    
+                        {{-- nút xóa --}}
+                        <td class='w-5 align-middle'>
+                            <div class='noti-btn-delete pointer-cs price-color' data-id='<?php echo $i ?>'>xóa</div>
+                        </td>
+                    </tr>
+                    @endforeach
+                @else
+                <tr>
+                    <td colspan="4">
+                        <div class="text-center p-70">Bạn không có thông báo nào.</div>
                     </td>
                 </tr>
-                <?php endfor ?>
+                @endif
             </tbody>
         </table>
     </div>

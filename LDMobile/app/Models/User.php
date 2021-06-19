@@ -24,10 +24,10 @@ class User extends Authenticatable
         'email',
         'password',
         'anhdaidien',
-        'anhbia',
         'loaitk',
         'htdn',
         'remember_token',
+        'user_social_token',
         'trangthai',
     ];
     public $timestamps = false;

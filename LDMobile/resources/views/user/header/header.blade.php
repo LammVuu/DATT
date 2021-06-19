@@ -1,5 +1,5 @@
 
-<div class="head-bg pt-10 pb-10">
+<div class="head-bg">
     <div class="container-fluid">
         <div class="d-flex align-items-center">
             {{-- Logo --}}
@@ -30,55 +30,16 @@
                             </div>
             
                             {{-- giỏ hàng --}}
-                            <div class='head-cart pt-10 pb-10 ml-20'>
-                                <i class="fas fa-shopping-cart fz-32"></i>
-                                <span class='head-qty-cart'>10</span>
-                                {{-- giỏ hàng box --}}
-                                <div class='head-cart-box box-shadow'>
-                                    <table class='table'>
-                                        <thead>
-                                            <th colspan="4">
-                                                <div class='d-flex justify-content-between pl-10 pr-10'>Giỏ hàng</div>
-                                            </th>
-                                        </thead>
-                                        <tbody>
-                                            <?php for($i = 0; $i < 2; $i++) : ?>
-                                            <tr>
-                                                <td class='vertical-center d-flex flex-row'>
-                                                    <img class='cart-img-pro' src="images/phone/iphone_11_black.jpg">
-                                                    <div class='cart-pro-info'>
-                                                        <a href="#" style='color:black'><b>iPhone 11 PRO MAX</b></a>
-                                                        <i>Màu sắc: Đen</i>
-                                                        <i>Dung lượng: 128GB</i>
-                                                    </div>
-                                                </td>
-                                                <td class='vertical-center'>
-                                                    <div>
-                                                        <div class='cart-qty-input d-flex justify-content-between'>
-                                                            <button type='button' data-id='<?php echo $i ?>' class='plus'><i class="fas fa-plus"></i></button>
-                                                            <b id=<?php echo 'qty_' . $i ?>>1</b>
-                                                            <button type='button' data-id='<?php echo $i ?>' class='minus'><i class="fas fa-minus"></i></button>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class='vertical-center'><b>25.000.000<sup>đ</sup></b></td>
-                                                <td class='vertical-center'><a href="#" class='price-color fz-20'><i class="fas fa-trash"></i></a></td>
-                                            </tr>
-                                            <?php endfor ?>
-                                        </tbody>
-                                    </table>
-                                    <div class='d-flex flex-column p-20'>
-                                        <div class='d-flex align-items-center justify-content-between black mb-20'>
-                                            <div>TỔNG TIỀN</div>
-                                            <div class="price-color font-weight-600 fz-22">50.000.000<sup>đ</sup></div>
-                                        </div>
-                                        <div class='d-flex'>
-                                            <a href={{route('user/gio-hang')}} class='btn-view-cart'>Xem giỏ hàng</a>
-                                            <a href="#" class='main-btn p-10'>Thanh Toán</a>
-                                        </div>
-                                    </div>  
-                                </div>
+                            <div class="relative">
+                                <a href="{{route('user/gio-hang')}}" class='head-cart ml-20'>
+                                    <i class="fas fa-shopping-cart fz-32"></i>
+                                    @if (session('user') && $data['cart']['qty'] != 0)
+                                        <span class='head-qty-cart'>{{ $data['cart']['qty'] }}</span>
+                                    @endif
+                                </a>
+                                <div id="add-cart-success"></div>
                             </div>
+                            
                         </div>
             
                         {{-- tài khoản --}}
@@ -86,11 +47,7 @@
                             <div class='head-item mr-20'>
                                 <div class='d-flex'>
                                     <?php $user = session('user'); ?>
-                                    @if (!$user->anhdaidien)
-                                        <img src="{{ $url_user.'default/user-icon.png'}}" alt="avatar" width="60px" class="circle-img mr-10">
-                                    @else
-                                        <img src="{{ $url_user.$user->hoten.'/'.$user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
-                                    @endif
+                                    <img src="{{ $user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
                                     
                                     <div class='d-flex flex-column justify-content-end'>
                                         <i class='white fz-14'>Xin Chào!</i>
@@ -99,11 +56,15 @@
                                                 <a href="{{route('user/tai-khoan')}}" class='head-account-option'><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
                                                 <a href="{{route('user/tai-khoan-thong-bao')}}" class='head-account-option'>
                                                     <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
-                                                    <div class='head-number fz-12'>50</div>
+                                                    @if (count($data['lst_noti']['noti']) != 0)
+                                                        <div class='head-number fz-12'>{{$data['lst_noti']['not-seen']}}</div>    
+                                                    @endif
                                                 </a>
                                                 <a href="{{route('user/tai-khoan-don-hang')}}" class='head-account-option'>
                                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                                    <div><div class='head-number fz-12'>50</div></div>
+                                                    @if (count($data['lst_order']['order']) != 0)
+                                                        <div class='head-number fz-12'>{{$data['lst_order']['processing']}}</div>    
+                                                    @endif
                                                 </a>
                                                 <a href="{{route('user/logout')}}" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
                                             </div>

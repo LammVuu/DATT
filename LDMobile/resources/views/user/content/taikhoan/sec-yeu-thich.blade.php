@@ -24,39 +24,46 @@
                 </th>
             </thead>
             <tbody>
-                {{-- danh sách yêu thích --}}
-                <?php for($i = 0; $i < 3; $i++) : ?>
-                <tr class="relative block-dp">
-                    <td class="block-dp">
-                        <div class='d-flex justify-content-between'>
-                            <div class="d-flex p-20">
-                                <img src="images/phone/iphone_12_black.jpg" alt="" width="150px">
-                                <div class='d-flex flex-column'>
-                                    <a href="#" class="font-weight-600 black">iPhone 12 PRO MAX</a>
-                                    <div class='d-flex mt-10'>
-                                        <i class="fas fa-star checked"></i>
-                                        <i class="fas fa-star checked"></i>
-                                        <i class="fas fa-star checked"></i>
-                                        <i class="fas fa-star checked"></i>
-                                        <i class="fas fa-star uncheck"></i>
-                                        <span class='fz-14 ml-10'>21 đánh giá</span>
+                @if (count($data['lst_favorite']) != 0)
+                    @foreach ($data['lst_favorite'] as $key)
+                        <tr class="relative block-dp">
+                            <td class="block-dp">
+                                <div class='d-flex justify-content-between'>
+                                    <div class="d-flex p-20">
+                                        <img src="images/phone/iphone_12_black.jpg" alt="" width="150px">
+                                        <div class='d-flex flex-column'>
+                                            <a href="#" class="font-weight-600 black">iPhone 12 PRO MAX</a>
+                                            <div class='d-flex mt-10'>
+                                                <i class="fas fa-star checked"></i>
+                                                <i class="fas fa-star checked"></i>
+                                                <i class="fas fa-star checked"></i>
+                                                <i class="fas fa-star checked"></i>
+                                                <i class="fas fa-star uncheck"></i>
+                                                <span class='fz-14 ml-10'>21 đánh giá</span>
+                                            </div>
+                                            <span class='mt-10'>Màu sắc: Đen</span>
+                                            <span>Dung Lượng: 128GB</span>
+                                        </div>
                                     </div>
-                                    <span class='mt-10'>Màu sắc: Đen</span>
-                                    <span>Dung Lượng: 128GB</span>
+                                    <div class="d-flex flex-fill justify-content-end p-20">
+                                        <div class='d-flex flex-column'>
+                                            <b class='price-color'>21.000.000 VND</b>
+                                            <span><span class='text-strike fz-14'>25.000.000 VND</span>
+                                        </div>
+                                    </div>
+                                    {{-- nút xóa --}}
+                                    <i class="fav-btn-delete far fa-times fz-26 gray-1 mr-5"></i>
                                 </div>
-                            </div>
-                            <div class="d-flex flex-fill justify-content-end p-20">
-                                <div class='d-flex flex-column'>
-                                    <b class='price-color'>21.000.000 VND</b>
-                                    <span><span class='text-strike fz-14'>25.000.000 VND</span>
-                                </div>
-                            </div>
-                            {{-- nút xóa --}}
-                            <i class="fav-btn-delete far fa-times fz-26 gray-1 mr-5"></i>
-                        </div>
-                    </td>
-                </tr>
-                <?php endfor ?>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td>
+                            <div class="p-70 text-center">Chưa có sản phẩm nào. <a href="{{route('user/dien-thoai')}}" class="ml-5">Xem sản phẩm</a></div>
+                        </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
