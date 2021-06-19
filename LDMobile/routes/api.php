@@ -32,6 +32,11 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('banner','SanPhamController@getBanner');
     Route::get('slideshow-product/{id}','SanPhamController@getSlideShowOfProduct');
     Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
+    Route::get('my-cart/{id}','CartController@getMyCart');
+    Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
+    Route::post('add-to-cart/{id}','CartController@addToCart');
+    Route::put('update-cart/{id}','CartController@updateCart');
+    Route::delete('delete-product-in-cart/{id}','CartController@deleteProductInCart');
     Route::delete('log-out','UserController@logout');
     Route::post('change-avatar/{id}', 'UserController@changeAvatar');
     Route::put('change-info/{id}','UserController@changeInfoUser');
