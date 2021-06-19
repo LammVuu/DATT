@@ -237,178 +237,6 @@ video {
 }
 
 /*========================================================================================================================
-                                                    Breadcrumbs css
-==========================================================================================================================*/
-/*=====  Breadcrumbs Style =====*/
-.breadcrumbs-style {
-  border-radius: 8px;
-  padding: 5px;
-  /*=====  Breadcrumbs Style 01 =====*/
-  /*=====  Breadcrumbs Style 02 =====*/
-}
-
-@media (max-width: 767px) {
-  .breadcrumbs-style {
-    padding: 5px;
-  }
-}
-
-.breadcrumbs-style .breadcrumb-left {
-  padding-top: 5px;
-}
-
-.breadcrumbs-style .breadcrumb-left .breadcrumb {
-  margin-bottom: 0;
-  padding: 0;
-  border-radius: 0;
-  background-color: transparent;
-}
-
-@media (max-width: 767px) {
-  .breadcrumbs-style .breadcrumb-left .breadcrumb {
-    -ms-flex-pack: center;
-    -webkit-box-pack: center;
-    justify-content: center;
-  }
-}
-
-.breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item {
-  position: relative;
-  line-height: 40px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-@media (max-width: 767px) {
-  .breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item {
-    font-size: 14px;
-  }
-}
-
-.breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item {
-  padding-left: 60px;
-}
-
-@media only screen and (min-width: 768px) and (max-width: 991px) {
-  .breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item {
-    padding-left: 30px;
-  }
-}
-
-@media (max-width: 767px) {
-  .breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item {
-    padding-left: 16px;
-  }
-}
-
-.breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  content: '\F0142';
-  font-family: "Material Design Icons";
-  font-size: 24px;
-  position: absolute;
-  line-height: 40px;
-  left: 20px;
-  padding: 0;
-}
-
-@media only screen and (min-width: 768px) and (max-width: 991px) {
-  .breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-    left: 2px;
-  }
-}
-
-@media (max-width: 767px) {
-  .breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-    left: -1px;
-    font-size: 18px;
-  }
-}
-
-.breadcrumbs-style .breadcrumb-left .breadcrumb .breadcrumb-item a {
-  -webkit-transition: all 0.3s linear;
-  transition: all 0.3s linear;
-}
-
-.breadcrumbs-style.breadcrumbs-style-1 {
-  background-color: white;
-}
-
-.breadcrumbs-style.breadcrumbs-style-1 .breadcrumb-left .breadcrumb .breadcrumb-item {
-  color: #542DED;
-}
-
-.breadcrumbs-style.breadcrumbs-style-1 .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  color: #542DED;
-}
-
-.breadcrumbs-style.breadcrumbs-style-1 .breadcrumb-left .breadcrumb .breadcrumb-item a {
-  color: #7D7D7D;
-}
-
-.breadcrumbs-style.breadcrumbs-style-1 .breadcrumb-left .breadcrumb .breadcrumb-item a:hover {
-  color: #542DED;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 {
-  background-color: #542DED;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-left .breadcrumb .breadcrumb-item {
-  color: #fff;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-left .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-left .breadcrumb .breadcrumb-item a {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-left .breadcrumb .breadcrumb-item a:hover {
-  color: #fff;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select::after {
-  border-color: #fff;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select .current {
-  color: #FAFAFA;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select .list {
-  -webkit-box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
-  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
-  background-color: transparent;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select .list .option {
-  background-color: #542DED;
-  color: #fff;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select .list .option.selected {
-  background-color: #2A21DE;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select .list .option:hover {
-  background-color: #2A21DE !important;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .nice-select .list:hover .option:not(:hover) {
-  background-color: #542DED !important;
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .breadcrumb-list-grid li a {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.breadcrumbs-style.breadcrumbs-style-2 .breadcrumb-right .breadcrumb-list-grid li a.active {
-  color: #fff;
-}
-
-/*========================================================================================================================
                                                   Color & Font
 ==========================================================================================================================*/
 /*========== White Color =========*/
@@ -523,6 +351,9 @@ video {
   border-radius: 5px;
   background-color: #f83a5c;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   transition: .2s;
 }
@@ -537,7 +368,9 @@ video {
   border-radius: 5px;
   background-color: #38b1f1;
   color: white;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: .2s;
 }
 
@@ -567,10 +400,12 @@ button.main-btn{
 
 .cancel-btn{
   cursor: pointer;
-  border: 2px solid #f1f1f1;
   border-radius: 5px;
-  background-color: #f1f1f1;
+  background-color: #d8d8d8;
   color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   transition: .2s;
 }
@@ -911,6 +746,35 @@ textarea:focus{
 }
 
 /*========================================================================================================================
+                                                    Breadcrumbs css
+==========================================================================================================================*/
+
+.bc{
+  background-color: #f1f1f1;
+  display: flex;
+  align-items: center;
+}
+
+.bc-item{
+  color: #888888;
+  padding: 10px 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.bc-item.active{
+  font-weight: 600;
+}
+
+.bc-item:hover{
+  color: #078FD8;
+}
+
+.bc-divider{
+  color: #078FD8;
+}
+
+/*========================================================================================================================
                                                         Header                                                           
 /*========================================================================================================================*/
 
@@ -918,7 +782,11 @@ textarea:focus{
   background: rgb(2,0,36);
   background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
   position: sticky;
-  top: 0;
+  left: 0; top: 0; right: 0;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
   z-index: 100;
 }
 
@@ -1114,26 +982,53 @@ a.head-item:hover{
   color: white;
 }
 
-.head-cart-box{
-  cursor: auto;
+.head-cart::before{
+  content: 'Xem giỏ hàng';
   position: absolute;
-  top: 100%; left: -100px;
-  width: 500px;
-  border-radius: 10px;
-  max-height: 600px; overflow: auto;
-  z-index: 90;
-  background-color: white;
+  left: 100%;
+  margin-left: 20px;
+  width: 120px;
+  padding: 5px;
+  text-align: center;
+  color: white;
+  background-color: black;
+  opacity: 0.8;
+  border-radius: 5px;
   display: none;
 }
 
-.cart-img-pro{
-  width: 80px;
+.head-cart::after{
+  content: '';
+  position: absolute;
+  left: 100%; top: 10px;
+  margin-left: 10px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-right: 10px solid black;
+  border-bottom: 5px solid transparent;
+  opacity: 0.8;
+  display: none;
 }
 
-.cart-pro-info{
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
+.head-cart:hover{
+  color: white;
+}
+
+.head-cart:hover::before, .head-cart:hover::after{
+  display: block;
+}
+
+.head-qty-cart{
+  position: absolute;
+  top: -10px; right: -10px;
+  color: white;
+  background-color: #e52e4f;
+  padding: 4px 7px;
+  border-radius: 100%;
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .minus{
@@ -1154,44 +1049,25 @@ a.head-item:hover{
   color: #078fd8;
 }
 
-.btn-view-cart{
-  border: 1px solid #078fd8;
-  border-radius: 5px;
-  padding: 10px 20px;
-  background-color: white;
-  color: #078fd8;
-  margin-right: 10px;
-  transition: 0.25s;
-}
-
-.btn-view-cart:hover{
-  box-shadow: 0 0 0 2px #078fd8;
-}
-
-.btn-checkout{
-  border-radius: 10px;
-  padding: 10px 20px;
-  background-color: #078fd8;
-  color: white;
-  transition: 0.25s;
-}
-
-.btn-checkout:hover{
-  color: white;
-  background-color: black;
-}
-
-.head-qty-cart{
+.add-cart-success{
   position: absolute;
-  top: 0;
-  right: -10px;
-  color: white;
-  background-color: #e52e4f;
-  padding: 4px 5px;
-  border-radius: 100%;
-  font-size: 10px;
-  font-weight: 600;
-  text-align: center;
+  top: 100%; left: 0;
+  width: 350px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.16);
+}
+
+.add-cart-success::before{
+  content: '';
+  position: absolute;
+  left: 35px; top: -10px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid white;
 }
 
 .head-account{
@@ -1354,7 +1230,7 @@ a.head-item:hover{
 }
 
 .index-promotion-phone:hover{
-  border: 4px solid #078FD8;
+  border: 4px solid orangered;
 }
 
 .index-featured-phone{
@@ -1453,77 +1329,26 @@ a.head-item:hover{
                                                     Account profile                                                           
 /*========================================================================================================================*/
 
-/*=======================================================
-                       Cover image 
-=========================================================*/
-
-.account-cover-avatar-div{
-  position: relative;
-}
-
-.account-cover-img{
-  background-image: url(../images/cover-image-blank.png);
-  background-repeat: no-repeat;
-  border-radius: 10px;
-  height: 250px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: .5s ease;
-  backface-visibility: hidden;
-}
-
-.account-cover-avatar-div:hover .overlay-cover{
-  bottom: 0;
-  height: 100%;
-}
-
-.overlay-cover{
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  background-color: #078fd8;
-  overflow: hidden;
-  width: 100%;
-  height:0;
-  transition: .5s ease;
-  border-radius: 10px;
-}
-
-#pre-cover-big{
-  width: 100%;
-  max-height: 250px;
-}
-
-.preview-cover{
-  overflow: hidden;
-  width: 100%;
-  height: 200px;
-  max-height: 250px;
-}
-
-.avt-temp{
-  position: absolute;
-  right: 5%; bottom: -50px;
-  width: 100px;
-  height: 100px;
+.account-div-border{
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px 1px #078FD8;
 }
 
 /*=======================================================
                        Avatar image 
 =========================================================*/
 
-.account-cover-avatar-div:hover .overlay-avatar{
-  -webkit-transform: scale(1);
-  -ms-transform: scale(1);
+.account-avatar-div:hover .overlay-avatar{
   transform: scale(1);
 }
 
 .account-avatar-div{
   position: relative;
-  top: -90px;
-  padding: 0 50px 0;
+  left: 50%;
+  margin: 0 0 20px -80px;
+  width: 160px;
+  height: 160px;
 }
 
 .overlay-avatar{
@@ -1578,13 +1403,6 @@ a.head-item:hover{
 
 .account-change-img:hover{
   color: white;
-}
-
-.account-profile-title{
-  background-color: #F2F2F2;
-  color: black;
-  padding: 15px;
-  border-radius: 10px;
 }
 
 /*========================================================================================================================
@@ -2021,11 +1839,11 @@ a.head-item:hover{
 .shop-sort-box{
   position: absolute;
   right: 0;
-  width: 250px;
+  width: 200px;
   margin-top: 10px;
   background-color: white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 5px;
   z-index: 1;
   display: none;
 }
@@ -2235,6 +2053,28 @@ a.head-item:hover{
 
 .uncheck{
   color:gainsboro
+}
+
+.choose-color-item{
+  width: 20%;
+  padding: 5px;
+  margin: 0 10px 10px 0;
+  background-color: white;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 2px solid #dcdcdc;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.choose-color-item:hover{
+  border: 2px solid #078FD8;
+}
+
+
+.choose-color-selected{
+  border: 2px solid #078FD8;
 }
 
 /*========================================================================================================================
@@ -2604,56 +2444,19 @@ a.head-item:hover{
                                                         Cart                                                           
 /*========================================================================================================================*/
 
-.cart-box{
-  border-radius: 10px;
+.header-cart{
+  position: sticky;
+  top: 80px;
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.16);
 }
 
-.cart-title{
-  font-size: 26px;
-  font-weight: 600;
-  text-align: right;
-}
-
-.cart-single-item{
-  padding: 20px
-}
-
-.cart-promotion{
-  background-color: #fff9ac;
-}
-
-.btn-promotion-info{
-  position: relative;
-}
-
-.btn-promotion-info::before{
-  content: 'Xem chi tiết';
-  position: absolute;
-  left: -35px; bottom: 100%; right: -35px;
-  padding: 5px;
-  z-index: 1;
-  background-color: black;
-  border-radius: 5px;
-  font-size: 14px;
-  text-align: center;
-  color: white;
-  opacity: 0.8;
-  display: none;
-}
-
-.btn-promotion-info:hover::before{
-  display: block;
-}
-
-.cart-btn-info-promotion{
-  background-color: none;
-  border: none;
-}
-
-.cart-img-product{
-  width: 30%;
-  display: block;
-  margin: auto;
+.remove-all-cart{
+  cursor: pointer;
+  font-size: 18px;
 }
 
 .cart-qty-input{
@@ -2661,20 +2464,43 @@ a.head-item:hover{
   padding: 5px 10px;
 }
 
-.cart-voucher-input{
-  width: 50%;
-  border: 1px solid gainsboro;
-  padding: 5px;
-}
-
-.cart-voucher-input:focus{
-  outline: 2px solid #078FD8
-}
-
 .cart-list-pro{
   max-height: 500px;
   overflow-y: visible;
   overflow-x: hidden;
+}
+
+.remove-all-cart:hover::before, .remove-all-cart:hover::after{
+  display: block;
+}
+
+.remove-all-cart::before{
+  content: 'Xóa tất cả';
+  position: absolute;
+  left: -40px; top: 100%;
+  margin-top: 10px;
+  width: 100px;
+  padding: 5px;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  background-color: black;
+  opacity: 0.8;
+  border-radius: 5px;
+  display: none;
+}
+
+.remove-all-cart::after{
+  content: '';
+  position: absolute;
+  top: 100%; left: 5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid black;
+  opacity: 0.8;
+  display: none;
 }
 
 /*========================================================================================================================

@@ -82,7 +82,7 @@ class IndexController extends Controller
         $lst_temp = $this->getAllProductByCapacity();
 
         // sắp xếp khuyến mãi giảm dần
-        $lst_product = $this->sortProductsByPromotionASC($lst_temp);
+        $lst_product = $this->sortProductByPromotion($lst_temp, 'desc');
 
         // lấy 10 sản phẩm có khuyến mãi cao nhất
         for($i = 0; $i < 10; $i++){
@@ -158,11 +158,28 @@ class IndexController extends Controller
     public function AjaxFilterProduct(Request $request)
     {
         if($request->ajax()){
-            $dataFilter = $request->dataFilter;
+            $data = $request->dataFilterSort;
+
+            $filter = null;
+            
+            if(array_key_exists('filter', $data)){
+                $filter = $request->dataFilterSort['filter'];
+            }
+            
+            $sort = $request->dataFilterSort['sort'];
 
             // nếu gỡ bỏ hết bộ lọc thì trả về tất cả sản phẩm
-            if(empty($dataFilter)){
-                return $this->getAllProductByCapacity();
+            if(!$filter){
+                // sắp xếp
+                if($sort == ''){
+                    return $this->getAllProductByCapacity();
+                } elseif($sort == 'high-to-low'){
+                    return $this->sortPrice($this->getAllProductByCapacity(), 'desc');
+                } elseif($sort == 'low-to-high'){
+                    return $this->sortPrice($this->getAllProductByCapacity());
+                } else {
+                    return $this->sortProductByPromotion($this->getAllProductByCapacity(), 'desc');
+                }
             }
 
             $time_filter = [];
@@ -173,8 +190,8 @@ class IndexController extends Controller
 
             // lọc theo tiêu chí đầu tiên
             // lấy mảng dữ liệu được lọc, sử dụng tiếp cho các lần lọc tiếp theo
-            if(array_keys($dataFilter)[0] == 'brand'){
-                foreach($dataFilter[array_keys($dataFilter)[0]] as $supplier){
+            if(array_keys($filter)[0] == 'brand'){
+                foreach($filter['brand'] as $supplier){
                     $lst_temp = $this->getAllProductBySupplierId(NHACUNGCAP::where('tenncc', 'like', $supplier.'%')->first()->id);
                     foreach($lst_temp as $key){
                         $lst_product[$i] = $key;
@@ -183,10 +200,10 @@ class IndexController extends Controller
                 }
                 $time_filter[$idxTime] = $lst_product;
                 $idxTime++;
-            } elseif(array_keys($dataFilter)[0] == 'price'){
+            } elseif(array_keys($filter)[0] == 'price'){
                 $lst_temp = $this->getAllProductByCapacity();
 
-                foreach($dataFilter[array_keys($dataFilter)[0]] as $price){
+                foreach($filter['price'] as $price){
                     if($price == '2'){
                         foreach($lst_temp as $product){
                             if($product['gia'] < 2000000){
@@ -233,8 +250,8 @@ class IndexController extends Controller
                 }
                 $time_filter[$idxTime] = $lst_product;
                 $idxTime++;
-            } elseif(array_keys($dataFilter)[0] == 'os'){
-                foreach($dataFilter[array_keys($dataFilter)[0]] as $os){
+            } elseif(array_keys($filter)[0] == 'os'){
+                foreach($filter['os'] as $os){
                     if($os == 'Android'){
                         foreach(NHACUNGCAP::where('id', '!=' , NHACUNGCAP::where('tenncc', 'like', 'Apple%')->first()->id)->get() as $supplier){
                             foreach($this->getAllProductBySupplierId($supplier['id']) as $product){
@@ -251,9 +268,9 @@ class IndexController extends Controller
                 }
                 $time_filter[$idxTime] = $lst_product;
                 $idxTime++;
-            } elseif(array_keys($dataFilter)[0] == 'ram'){
+            } elseif(array_keys($filter)[0] == 'ram'){
                 $lst_temp = $this->getAllProductByCapacity();
-                foreach($dataFilter[array_keys($dataFilter)[0]] as $os){
+                foreach($filter['ram'] as $os){
                     foreach($lst_temp as $product){
                         if(strcmp(explode(' ', $product['ram'])[0].explode(' ', $product['ram'])[1], $os) == 0){
                             $lst_product[$i] = $product;
@@ -263,11 +280,11 @@ class IndexController extends Controller
                 }
                 $time_filter[$idxTime] = $lst_product;
                 $idxTime++;
-            } else{
+            } elseif(array_keys($filter)[0] == 'capacity') {
                 $lst_temp = $this->getAllProductByCapacity();
-                foreach($dataFilter[array_keys($dataFilter)[0]] as $os){
+                foreach($filter['capacity'] as $capacity){
                     foreach($lst_temp as $product){
-                        if(strcmp(explode(' ', $product['dungluong'])[0].explode(' ', $product['dungluong'])[1], $os) == 0){
+                        if(strcmp(explode(' ', $product['dungluong'])[0].explode(' ', $product['dungluong'])[1], $capacity) == 0){
                             $lst_product[$i] = $product;
                             $i++;
                         }
@@ -278,19 +295,30 @@ class IndexController extends Controller
             }
 
             // nếu chỉ có 1 tiêu chí lọc thì trả về kết quả
-            if(count($dataFilter) == 1){
-                return $time_filter[0];
+            if(count($filter) == 1){
+                // kiểm tra sắp xếp
+                if($sort == ''){
+                    return $time_filter[0];
+                } else {
+                    if($sort == 'high-to-low'){
+                        return $this->sortPrice($time_filter[0], 'desc');
+                    } elseif($sort == 'low-to-high'){
+                         return $this->sortPrice($time_filter[0]);
+                    } else {
+                        return $this->sortProductByPromotion($time_filter[0], 'desc');
+                    }
+                }
             }
 
             unset($lst_product);
 
             // lọc tiếp tục các tiêu chí khác
-            for($i = 1; $i < count($dataFilter); $i++){
+            for($i = 1; $i < count($filter); $i++){
                 $lst_product = [];
                 $j = 0;
 
-                if(array_keys($dataFilter)[$i] == 'brand'){
-                    foreach($dataFilter[array_keys($dataFilter)[$i]] as $supplier){
+                if(array_keys($filter)[$i] == 'brand'){
+                    foreach($filter[array_keys($filter)[$i]] as $supplier){
                         foreach(NHACUNGCAP::find(NHACUNGCAP::where('tenncc', 'like', $supplier.'%')->first()->id)->mausp as $model){
                             foreach($time_filter[$i - 1] as $product){
                                 if($product['id_msp'] == $model['id']){
@@ -302,8 +330,8 @@ class IndexController extends Controller
                     }
                     $time_filter[$idxTime] = $lst_product;
                     $idxTime++;
-                } elseif(array_keys($dataFilter)[$i] == 'price'){
-                    foreach($dataFilter[array_keys($dataFilter)[$i]] as $price){
+                } elseif(array_keys($filter)[$i] == 'price'){
+                    foreach($filter[array_keys($filter)[$i]] as $price){
                         if($price == '2'){
                             foreach($time_filter[$i - 1] as $product){
                                 if(intval($product['gia']) < 2000000){
@@ -350,8 +378,8 @@ class IndexController extends Controller
                     }
                     $time_filter[$idxTime] = $lst_product;
                     $idxTime++;
-                } elseif(array_keys($dataFilter)[$i] == 'os'){
-                    foreach($dataFilter[array_keys($dataFilter)[$i]] as $os){
+                } elseif(array_keys($filter)[$i] == 'os'){
+                    foreach($filter[array_keys($filter)[$i]] as $os){
                         if($os == 'Android'){
                             foreach(NHACUNGCAP::where('id', '!=', NHACUNGCAP::where('tenncc', 'like', 'Apple%')->first()->id)->get() as $supplier){
                                 foreach(NHACUNGCAP::find($supplier['id'])->mausp as $model){
@@ -378,8 +406,8 @@ class IndexController extends Controller
                             $idxTime++;
                         }
                     }
-                } elseif(array_keys($dataFilter)[$i] == 'ram'){
-                    foreach($dataFilter[array_keys($dataFilter)[$i]] as $ram){
+                } elseif(array_keys($filter)[$i] == 'ram'){
+                    foreach($filter[array_keys($filter)[$i]] as $ram){
                         foreach($time_filter[$i - 1] as $product){
                             if(strcmp(explode(' ', $product['ram'])[0].explode(' ', $product['ram'])[1], $ram) == 0){
                                 $lst_product[$j] = $product;
@@ -389,8 +417,8 @@ class IndexController extends Controller
                     }
                     $time_filter[$idxTime] = $lst_product;
                     $idxTime++;
-                } elseif(array_keys($dataFilter)[$i] == 'capacity'){
-                    foreach($dataFilter[array_keys($dataFilter)[$i]] as $capacity){
+                } elseif(array_keys($filter)[$i] == 'capacity'){
+                    foreach($filter[array_keys($filter)[$i]] as $capacity){
                         foreach($time_filter[$i - 1] as $product){
                             if(strcmp(explode(' ', $product['dungluong'])[0].explode(' ', $product['dungluong'])[1], $capacity) == 0){
                                 $lst_product[$j] = $product;
@@ -404,7 +432,52 @@ class IndexController extends Controller
             }
 
             // trả về danh sách kết quả cuối cùng
-            return $time_filter[count($time_filter) - 1];
+            // kiểm tra sắp xếp
+            if($sort == ''){
+                return $time_filter[count($time_filter) - 1];
+            } else {
+                if($sort == 'high-to-low'){
+                    return $this->sortPrice($time_filter[count($time_filter) - 1], 'desc');
+                } elseif($sort == 'low-to-high'){
+                     return $this->sortPrice($time_filter[count($time_filter) - 1]);
+                } else {
+                    return $this->sortProductByPromotion($time_filter[count($time_filter) - 1], 'desc');
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // chọn màu sắc
+    public function AjaxChooseColor(Request $request)
+    {
+        if($request->ajax()){
+            $product = $this->getProductById($request->id_sp)[0];
+
+            $lst_color = [
+                'mausac' => [],
+                'tensp' => $product['tensp'],
+                'giakhuyenmai' => $product['giakhuyenmai'],
+                'gia' => $product['gia'],
+                'url_phone' => 'images/phone/',
+            ];
+
+            $i = 0;
+
+            foreach(MAUSP::find(SANPHAM::where('id', $request->id_sp)->first()->id_msp)->sanpham as $key){
+                if($key['dungluong'] == $product['dungluong'] && $key['ram'] == $product['ram']){
+                    $lst_color['mausac'][$i] = [
+                        'id' => $key['id'],
+                        'mausac' => $key['mausac'],
+                        'hinhanh' => $key['hinhanh'],
+                    ];
+
+                    $i++;
+                }
+            }
+
+            return $lst_color;
         }
 
         return false;
@@ -545,6 +618,7 @@ class IndexController extends Controller
         $phone = [
             'id' => $id,
             'tensp' => '',
+            'tensp_url' => $name,
             'hinhanh' => $SANPHAM->hinhanh,
             'mausac' => $SANPHAM->mausac,
             'ram' => $SANPHAM->ram,
@@ -1441,20 +1515,62 @@ class IndexController extends Controller
         return $warranty >= $today ? true : false;
     }
 
-    // sắp xếp danh sách sp theo khuyến mãi giảm dần
-    public function sortProductsByPromotionASC($lst)
+    // sắp xếp danh sách sp theo khuyến mãi
+    public function sortProductByPromotion($lst, $type = 'asc')
     {
-        for($i = 0; $i < count($lst) - 1; $i++){
-            for($j = $i+1; $j < count($lst); $j++){
-                if($lst[$i]['khuyenmai'] < $lst[$j]['khuyenmai']){
-                    $temp = $lst[$i];
-                    $lst[$i] = $lst[$j];
-                    $lst[$j] = $temp;
+        if($type == 'asc'){
+            for($i = 0; $i < count($lst) - 1; $i++){
+                for($j = $i+1; $j < count($lst); $j++){
+                    if($lst[$i]['khuyenmai'] > $lst[$j]['khuyenmai']){
+                        $temp = $lst[$i];
+                        $lst[$i] = $lst[$j];
+                        $lst[$j] = $temp;
+                    }
+                }
+            }
+        } else {
+            for($i = 0; $i < count($lst) - 1; $i++){
+                for($j = $i+1; $j < count($lst); $j++){
+                    if($lst[$i]['khuyenmai'] < $lst[$j]['khuyenmai']){
+                        $temp = $lst[$i];
+                        $lst[$i] = $lst[$j];
+                        $lst[$j] = $temp;
+                    }
                 }
             }
         }
+        
 
         return $lst;
+    }
+
+    // sắp xếp theo giá giảm dần
+    public function sortPrice($lst_product, $type = 'asc')
+    {
+        if($type == 'asc'){
+            for($i = 0; $i < count($lst_product) - 1; $i++){
+                for($j = $i+1; $j < count($lst_product); $j++){
+                    if($lst_product[$i]['gia'] > $lst_product[$j]['gia']){
+                        $temp = $lst_product[$i];
+                        $lst_product[$i] = $lst_product[$j];
+                        $lst_product[$j] = $temp;
+                    }
+                }
+            }
+        } else {
+            for($i = 0; $i < count($lst_product) - 1; $i++){
+                for($j = $i+1; $j < count($lst_product); $j++){
+                    if($lst_product[$i]['gia'] < $lst_product[$j]['gia']){
+                        $temp = $lst_product[$i];
+                        $lst_product[$i] = $lst_product[$j];
+                        $lst_product[$j] = $temp;
+                    }
+                }
+            }
+        }
+        
+
+        return $lst_product;
     }
 
     /*==========================================================================================================

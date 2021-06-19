@@ -14,6 +14,7 @@ class CreateGiohangTable extends Migration
     public function up()
     {
         Schema::create('giohang', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->unsignedInteger('id_sp');
             $table->integer('sl')->unsigned();

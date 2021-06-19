@@ -1,10 +1,14 @@
 @extends("user.layout")
 @section("content")
 
-@section("direct")SẢN PHẨM @stop
+@section("breadcrumb")
+    <a href="{{route('user/dien-thoai')}}" class="bc-item">Điện thoại</a>
+    <div class="bc-divider"><i class="fas fa-chevron-right"></i></div>
+    <a href="{{route('user/chi-tiet', ['name' => $phone['tensp_url']])}}" class="bc-item active">{{$phone['tensp']}}</a>
+@stop
 @include("user.content.section.sec-thanh-dieu-huong")
 
-<section class='product-shop-wrapper pb-30'>
+<section class='pt-10 pb-50'>
     <div class='container'>
         {{-- tên điện thoại, sao, lượt đánh giá --}}
         <div class='d-flex flex-row align-items-center justify-content-between'>

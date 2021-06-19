@@ -2,7 +2,9 @@
 
 @section("content")
 
-@section("direct")TRA CỨU @stop
+@section("breadcrumb")
+    <a href="{{route('user/tra-cuu')}}" class="bc-item active">Tra cứu</a>
+@stop
 @include("user.content.section.sec-thanh-dieu-huong")
 
 <section class="pt-100 pb-100">

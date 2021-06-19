@@ -11,6 +11,8 @@ class GIOHANG extends Model
 
     protected $table = 'giohang';
 
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'id_tk',
         'id_sp',

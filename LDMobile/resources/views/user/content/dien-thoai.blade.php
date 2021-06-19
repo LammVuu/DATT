@@ -1,7 +1,9 @@
 @extends("user.layout")
 @section("content")
 
-@section("direct")SẢN PHẨM @stop
+@section("breadcrumb")
+    <a href="{{route('user/dien-thoai')}}" class="bc-item active">Điện thoại</a>
+@stop
 @include("user.content.section.sec-thanh-dieu-huong")
 
 <section class="pt-50">
@@ -15,7 +17,7 @@
                 <div id="lst_product" class="row">
                     @foreach ($lst_product as $key)
                     <div class='col-lg-3 col-md-4 col-sm-6'>
-                        <div class='shop-product-card box-shadow'>
+                        <div id="product_{{$key['id']}}" class='shop-product-card box-shadow'>
                             {{-- khuyến mãi tag --}}
                             <div class='shop-promotion-tag'>
                                 @if($key['khuyenmai'] != 0)
@@ -25,7 +27,7 @@
 
                             {{-- thêm giỏ hàng --}}
                             <div class='shop-overlay-product'></div>
-                            <a href="#" class='shop-cart-link'><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</a>
+                            <div type="button" data-id="{{$key['id']}}" class='shop-cart-link'><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                             <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='shop-detail-link'>Xem chi tiết</a>
                             {{-- thông tin sản phẩm --}}
                             <div>
@@ -35,8 +37,8 @@
                                 <div class='pb-20 text-center d-flex flex-column'>
                                     <b class='mb-10'>{{ $key['tensp'] }}</b>
                                     <div>
-                                        <span class='font-weight-600 price-color'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
-                                        <span class='ml-5 text-strike'>{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                        <span class='font-weight-600 price-color'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                                        <span class='ml-5 text-strike'>{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                                     </div>
                                     <div>
                                         <div class='flex-row pt-5'>
@@ -62,5 +64,62 @@
         </div>
     </div>
 </section>
+
+{{-- modal yêu cầu đăng nhập --}}
+<div class="modal fade" id="login-requied-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div type="button" class="btn-close" data-bs-dismiss="modal"></div>
+                <div class="p-10 text-center">
+                    <i class="fas fa-info-circle fz-100 main-color-text"></i>
+                    <div class="mt-40 mb-40 fz-20">Vui lòng đăng nhập để thực hiện chức năng này</div>
+                    <a href="{{route('user/dang-nhap')}}" class="main-btn p-10">Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- modal chọn màu sản phẩm --}}
+<div class="modal fade" id="choose-color-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div type="button" class="btn-close" data-bs-dismiss="modal"></div>
+                <div class="p-20">
+                    {{-- tên sản phẩm --}}
+                    <div id="choose-color-phone-name" class="fz-20 font-weight-600"></div>
+
+                    {{-- giá --}}
+                    <div class="d-flex align-items-center">
+                        <div id="choose-color-promotion-price" class="price-color"></div>
+                        <div id="choose-color-price" class="ml-20 gray-1 text-strike"></div>
+                    </div><hr>
+
+                    {{-- chọn màu --}}
+                    <div class="font-weight-600">Chọn màu</div>
+                    <div>
+                        <div id="phone-color" class="d-flex flex-wrap p-5"></div>
+                    </div>
+
+                    {{-- số lượng --}}
+                    <div class="d-flex align-items-center mt-30 mb-30">
+                        <div class="font-weight-600 mr-20">Chọn số lượng</div>
+                        <div class='cart-qty-input'>
+                            <button type='button' data-id="color" class='update-qty plus'><i class="fas fa-plus"></i></button>
+                            <b id="qty">1</b>
+                            <button type='button' data-id="color" class='update-qty minus'><i class="fas fa-minus"></i></button>
+                        </div>
+                    </div>
+
+                    {{-- nút thêm giỏ hàng --}}
+                    <div id="btn-add-cart" class="main-btn p-10 w-100">Thêm vào giỏ hàng</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('user.content.section.sec-logo')
 @stop
