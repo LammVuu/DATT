@@ -33,8 +33,13 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('slideshow-product/{id}','SanPhamController@getSlideShowOfProduct');
     Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
     Route::delete('log-out','UserController@logout');
+    Route::post('change-avatar/{id}', 'UserController@changeAvatar');
+    Route::put('change-info/{id}','UserController@changeInfoUser');
+    Route::post('check-password','UserController@checkPassword');
+    
    
 });
 Route::post('check-number-phone','API\UserController@checkNumberPhone');
 Route::post('log-in','API\UserController@login');
 Route::post('sign-up','API\UserController@signup');
+Route::put('change-password', 'API\UserController@changePassword');
