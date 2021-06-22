@@ -19,7 +19,7 @@ class CreateDonhangTable extends Migration
             $table->string('diachigiaohang', 200);
             $table->unsignedInteger('id_tk');
             $table->string('pttt', 100);
-            $table->unsignedInteger('id_vc');
+            $table->unsignedInteger('id_vc')->nullable();
             $table->string('hinhthuc', 50);
             $table->integer('tongtien');
             $table->string('trangthaidonhang', 50);

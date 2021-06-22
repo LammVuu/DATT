@@ -15,9 +15,10 @@ class THONGBAO extends Model
 
     protected $fillable = [
         'id_tk',
+        'tieude',
         'noidung',
         'thoigian',
-        'trangthai',
+        'trangthaithongbao',
     ];
 
     public $timestamps = false;

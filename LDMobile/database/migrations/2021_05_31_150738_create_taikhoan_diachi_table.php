@@ -17,7 +17,10 @@ class CreateTaikhoanDiachiTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->string('hoten', 100);
-            $table->string('diachi', 200);
+            $table->string('diachi', 100);
+            $table->string('phuongxa', 100);
+            $table->string('quanhuyen', 100);
+            $table->string('tinhthanh', 100);
             $table->string('sdt', 10);
             $table->boolean('macdinh');
             $table->boolean('trangthai');

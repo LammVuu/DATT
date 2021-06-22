@@ -37,12 +37,29 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::post('add-to-cart/{id}','CartController@addToCart');
     Route::put('update-cart/{id}','CartController@updateCart');
     Route::delete('delete-product-in-cart/{id}','CartController@deleteProductInCart');
+    Route::get('my-voucher/{id}', 'CartController@getMyVoucher');
+    Route::delete('delete-voucher/{id}', 'CartController@deleteMyVoucher');
+    Route::post('create-order/{id}','CartController@createOrder');
+    Route::get('province-store', 'CartController@getProvinceStore');
+    Route::get('address-store/{id}', 'CartController@getAddressStore');
+
+    Route::put('my-address/{id}','CartController@updateMyAddress');
+    Route::post('my-address','CartController@createMyAddress');
+    Route::get('my-address/{id}','CartController@getMyAddress');
+    Route::delete('my-address/{id}','CartController@deleteMyAddress');
+    Route::get('id-address','CartController@getID');
+    Route::get('city','CartController@getProvince');
+    Route::get('district','CartController@getDistrict');
+    Route::get('ward','CartController@getWard');
+
+    Route::get('total-notification/{id}','UserController@getTotalNotification');
+    Route::get('notification/{id}','UserController@getNotification');
+    Route::put('notification/{id}','UserController@updateNotification');
+    Route::delete('notification/{id}','UserController@deleteNotification');
     Route::delete('log-out','UserController@logout');
     Route::post('change-avatar/{id}', 'UserController@changeAvatar');
     Route::put('change-info/{id}','UserController@changeInfoUser');
     Route::post('check-password','UserController@checkPassword');
-    
-   
 });
 Route::post('check-number-phone','API\UserController@checkNumberPhone');
 Route::post('log-in','API\UserController@login');
