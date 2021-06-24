@@ -11,6 +11,7 @@ use App\Models\GIOHANG;
 // use App\Models\CHITIETGIOHANG;
 use App\Models\DONHANG;
 use App\Models\CTDH;
+use App\Models\KHO;
 use App\Models\TAIKHOAN;
 use App\Models\KHUYENMAI;
 use App\Models\THONGBAO;
@@ -46,6 +47,7 @@ class CartController extends Controller
             $product->discount = KHUYENMAI::find($pro->id_km)->chietkhau;
             $product->price = $pro->gia-($pro->gia*$product->discount);
             $product->priceRoot =  $pro->gia;
+            $product->isAvailable = true;
         
         }
         return response()->json([
@@ -307,9 +309,13 @@ class CartController extends Controller
         $newAddress->trangthai = 1;
         if(request('macdinh')==1){
             $oldDefault = TAIKHOAN_DIACHI::where('macdinh', 1)->get();
-            $oldAddress = TAIKHOAN_DIACHI::find($oldDefault[0]->id);
-            $oldAddress->macdinh = 0;
-            $oldAddress->update();
+            $count = count($oldDefault);
+            if($count > 0){
+                $oldAddress = TAIKHOAN_DIACHI::find($oldDefault[0]->id);
+                $oldAddress->macdinh = 0;
+                $oldAddress->update();
+            }
+            
         }
         if($newAddress->save()){
             return response()->json([
@@ -335,6 +341,15 @@ class CartController extends Controller
         $updateAddress->tinhthanh = request('tinhthanh');
         $updateAddress->sdt = request('sdt');
         $updateAddress->macdinh = request('macdinh');
+        if(request('macdinh')==1){
+            $oldDefault = TAIKHOAN_DIACHI::where('macdinh', 1)->get();
+            $count = count($oldDefault);
+            if($count > 0){
+                $oldAddress = TAIKHOAN_DIACHI::find($oldDefault[0]->id);
+                $oldAddress->macdinh = 0;
+                $oldAddress->update();
+            }
+        }
         if($updateAddress->update()){
             return response()->json([
                 'status' => true,
@@ -348,12 +363,12 @@ class CartController extends Controller
             'data' =>  null
         ]);
     }
-    public function deleteNotification($id){
+    public function deleteMyAddress($id){
         $deleteAddress = TAIKHOAN_DIACHI::find($id);
         if($deleteAddress->delete()){
             return response()->json([
                 'status' => true,
-                'messages' => "Xóat hành công",
+                'message' => "Xóa địa chỉ thành công",
                 'data' => null
             ]);
         }
@@ -363,5 +378,35 @@ class CartController extends Controller
             'data' =>  null
         ]);
        
+    }
+    public function getMyAddressDefault(){
+        $myAddress = TAIKHOAN_DIACHI::where("macdinh", 1)->get();
+        $count = count($myAddress);
+        if($count>0){
+            return response()->json($myAddress[0]); 
+        }else return response()->json(null); 
+        
+    }
+    public function checkProductInStore($id, Request $request){
+        $listValid= array();
+        $listInvalid= array();
+   
+        foreach(request('listID') as $pro){
+            $exist = KHO::where('id_cn', $id)->where('id_sp', $pro)->get();
+            $count = count($exist);
+            if($count == 0){
+                array_push($listInvalid, $pro);
+            }else if($exist[0]->sl_ton==0){
+                array_push($listInvalid, $pro);
+            }else  array_push($listValid, $pro);
+        }
+        return response()->json([
+            'status' => true,
+            'message' => '',
+            'data' =>  ([
+                "exist"=> $listValid,
+                "nonExist"=> $listInvalid,
+            ])
+        ]);
     }
 }

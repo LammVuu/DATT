@@ -42,11 +42,12 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::post('create-order/{id}','CartController@createOrder');
     Route::get('province-store', 'CartController@getProvinceStore');
     Route::get('address-store/{id}', 'CartController@getAddressStore');
-
+    Route::post('check-product/{id}','CartController@checkProductInStore');
     Route::put('my-address/{id}','CartController@updateMyAddress');
     Route::post('my-address','CartController@createMyAddress');
     Route::get('my-address/{id}','CartController@getMyAddress');
     Route::delete('my-address/{id}','CartController@deleteMyAddress');
+    Route::get('my-address-default','CartController@getMyAddressDefault');
     Route::get('id-address','CartController@getID');
     Route::get('city','CartController@getProvince');
     Route::get('district','CartController@getDistrict');
