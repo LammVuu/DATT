@@ -52,11 +52,14 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('city','CartController@getProvince');
     Route::get('district','CartController@getDistrict');
     Route::get('ward','CartController@getWard');
-
+    Route::get('my-order/{id}','CartController@getMyOrder');
+    Route::post('cancel-order/{id}','CartController@cancelOrder');
+    Route::get('detail-order/{id}','CartController@getDetailOrder');
     Route::get('total-notification/{id}','UserController@getTotalNotification');
     Route::get('notification/{id}','UserController@getNotification');
     Route::put('notification/{id}','UserController@updateNotification');
     Route::delete('notification/{id}','UserController@deleteNotification');
+    
     Route::delete('log-out','UserController@logout');
     Route::post('change-avatar/{id}', 'UserController@changeAvatar');
     Route::put('change-info/{id}','UserController@changeInfoUser');

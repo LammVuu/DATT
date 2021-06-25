@@ -231,6 +231,7 @@ class UserController extends Controller
     }
     public function updateNotification($id){
         $notification = THONGBAO::find($id);
+        $notification->trangthaithongbao = 1;
         if($notification->update()){
             return response()->json([
                 'status' => true,

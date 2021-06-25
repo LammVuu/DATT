@@ -140,11 +140,11 @@ class CartController extends Controller
             $infoVoucher = VOUCHER::find($voucher->id_vc);
             array_push($listResult, $infoVoucher);
         }
-        $currentDate = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y');
-      
+        $currentDate = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
+     
         foreach($listResult as $voucher){
-            $date1 = Carbon :: createFromFormat ('d/m/Y', $currentDate);
-            $date2 = Carbon :: createFromFormat ('d/m/Y', $voucher->ngayketthuc);
+            $date1 = Carbon :: createFromFormat ('d/m/Y H:i', $currentDate);
+            $date2 = Carbon :: createFromFormat ('d/m/Y H:i', $voucher->ngayketthuc);
            if($date2->gte($date1)){
             $voucher->active = true;
            }else $voucher->active = false;
@@ -181,7 +181,7 @@ class CartController extends Controller
         $order->hinhthuc = request('hinhthuc');
         $order->trangthaidonhang = "Đã tiếp nhận";
         $order->diachigiaohang= request('diachigiaohang');
-        $order->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y');
+        $order->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
         $order->tongtien = request('tongtien');
         $order->trangthai = 1;
         if($order->save()){
@@ -201,7 +201,7 @@ class CartController extends Controller
             $notification->id_tk = $id;
             $notification->tieude = "Đơn đã tiếp nhận";
             $notification->noidung = "Đã tiếp nhận đơn hàng số #".$order->id;
-            $notification->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y');
+            $notification->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
             $notification->trangthaithongbao = 0;
             $notification->save();
             return response()->json([
@@ -406,6 +406,77 @@ class CartController extends Controller
             'data' =>  ([
                 "exist"=> $listValid,
                 "nonExist"=> $listInvalid,
+            ])
+        ]);
+    }
+    public function getMyOrder($id, Request $request){
+        if($request->state == "all"){
+            $listOrder = DONHANG::where('id_tk', $id)->get();
+        }else if($request->state == "Đã tiếp nhận"){
+            $listOrder = DONHANG::where('trangthaidonhang', 'Đã tiếp nhận')->where('id_tk', $id)->get();
+        }else if($request->state == "Đã xác nhận"){
+            $listOrder = DONHANG::where('trangthaidonhang', 'Đã xác nhận')->where('id_tk', $id)->get();
+        }else if($request->state == "Đang giao hàng"){
+            $listOrder = DONHANG::where('trangthaidonhang', 'Đang giao hàng')->where('id_tk', $id)->get();
+        }else if($request->state == "Thành công"){
+            $listOrder = DONHANG::where('trangthaidonhang', 'Thành công')->where('id_tk', $id)->get();
+        }
+        else if($request->state == "Đã hủy"){
+            $listOrder = DONHANG::where('trangthaidonhang', 'Đã hủy')->where('id_tk', $id)->get();
+        }
+        
+        return response()->json([
+            'status' => true,
+            'message' => '',
+            'data' => $listOrder
+        ]);
+    }
+    public function cancelOrder($id){
+        $order = DONHANG::find($id);
+        $order->trangthaidonhang = "Đã hủy";
+        if($order->update()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Đã hủy thành công',
+                'data' => null
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => 'Có lỗi xảy ra',
+            'data' => null
+        ]);
+    }
+    public function getDetailOrder($id){
+        $listProduct = [];
+        $order = DONHANG::find($id);
+        $detailOrder = CTDH::where("id_dh", $order->id)->get();
+        if($order->hinhthuc=="Nhận hàng tại cửa hàng"){
+            $addressDefault = TAIKHOAN_DIACHI::where('id_tk', $order->id_tk)->where('macdinh', 1)->get();
+            $order->infoUser =  $addressDefault[0];
+        }
+      
+        if(!empty($order->id_vc)){
+                $order->id_vc = (VOUCHER::find($order->id_vc)->chietkhau)*100;
+        }
+        foreach($detailOrder as $product){
+            $pro = SANPHAM::find($product->id_sp);
+            $product->name = $pro->tensp;
+            $product->avatar = Helper::$URL."phone/".$pro->hinhanh;
+            $product->color = $pro->mausac;
+            $product->storage = $pro->dungluong;
+            $product->discount = KHUYENMAI::find($pro->id_km)->chietkhau;
+            $product->price = $pro->gia-($pro->gia*$product->discount);
+            $product->priceRoot =  $pro->gia;
+            $product->isAvailable = true;
+            array_push($listProduct, (["product"=>$product,"qty"=>$product->sl]));
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Đã hủy thành công',
+            'data' =>  ([
+                "infoOrder"=> $order,
+                "listProduct"=> $listProduct,
             ])
         ]);
     }
