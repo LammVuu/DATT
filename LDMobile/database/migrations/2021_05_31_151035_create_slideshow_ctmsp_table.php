@@ -14,6 +14,7 @@ class CreateSlideshowCtmspTable extends Migration
     public function up()
     {
         Schema::create('slideshow_ctmsp', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('id_msp');
             $table->string('hinhanh', 100);
         });

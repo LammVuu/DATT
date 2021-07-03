@@ -12,6 +12,7 @@ class SLIDESHOW_CTMSP extends Model
     protected $table = 'slideshow_ctmsp';
 
     protected $fillable = [
+        'id',
         'id_msp',
         'hinhanh',
     ];

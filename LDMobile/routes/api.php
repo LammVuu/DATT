@@ -32,6 +32,19 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('banner','SanPhamController@getBanner');
     Route::get('slideshow-product/{id}','SanPhamController@getSlideShowOfProduct');
     Route::get('change-color-storage/{id}','SanPhamController@changeColorOrStorageProduct');
+    Route::get('list-comment/{id}','SanPhamController@getComment');
+    Route::get('check-comment/{id}','SanPhamController@checkComment');
+    Route::put('update-comment/{id}','SanPhamController@updateComment');
+    Route::delete('delete-comment/{id}','SanPhamController@deleteComment');
+    Route::post('update-image-new-comment/{id}','SanPhamController@updateImageNewComment');
+    Route::post('update-image-old-comment/{id}','SanPhamController@updateImageOldComment');
+    Route::post('upload-image-comment/{id}','SanPhamController@uploadImageComment');
+    Route::post('list-product-comment','SanPhamController@getInfoProductByListID');
+    Route::post('comment','SanPhamController@postComment');
+    Route::post('reply','SanPhamController@postReply');
+    Route::post('like/{id}', 'SanPhamController@postLike');
+    Route::delete('like/{id}', 'SanPhamController@deleteLike');
+    Route::get('list-reply/{id}','SanPhamController@getReply');
     Route::get('my-cart/{id}','CartController@getMyCart');
     Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
     Route::post('add-to-cart/{id}','CartController@addToCart');
@@ -59,7 +72,6 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('notification/{id}','UserController@getNotification');
     Route::put('notification/{id}','UserController@updateNotification');
     Route::delete('notification/{id}','UserController@deleteNotification');
-    
     Route::delete('log-out','UserController@logout');
     Route::post('change-avatar/{id}', 'UserController@changeAvatar');
     Route::put('change-info/{id}','UserController@changeInfoUser');

@@ -12,6 +12,7 @@ class CTDG extends Model
     protected $table = 'ctdg';
 
     protected $fillable = [
+        'id',
         'id_dg',
         'hinhanh',
     ];

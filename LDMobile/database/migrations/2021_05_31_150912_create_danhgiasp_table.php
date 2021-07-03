@@ -17,7 +17,7 @@ class CreateDanhgiaspTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->unsignedInteger('id_sp');
-            $table->text('noidung');
+            $table->text('noidung')->nullable();
             $table->string('thoigian', 20);
             $table->integer('soluotthich');
             $table->tinyInteger('danhgia');

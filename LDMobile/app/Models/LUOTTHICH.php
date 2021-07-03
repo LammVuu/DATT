@@ -12,6 +12,7 @@ class LUOTTHICH extends Model
     protected $table = 'luotthich';
 
     protected $fillable = [
+        'id',
         'id_tk',
         'id_dg',
     ];

@@ -48,7 +48,7 @@ class CartController extends Controller
             $product->price = $pro->gia-($pro->gia*$product->discount);
             $product->priceRoot =  $pro->gia;
             $product->isAvailable = true;
-        
+            $product->isQtyAvailable = true;
         }
         return response()->json([
             'status' => true,
@@ -177,10 +177,17 @@ class CartController extends Controller
         $order = new DONHANG();
         $order->id_tk = $id;
         $order->pttt = request('pttt');
+        if(!empty(request('id_tk_dc'))){
+            $order->id_tk_dc = request('id_tk_dc');
+        }else $order->id_cn = request('id_cn');
+        if(!empty(request('id_vc'))){
+            $voucher = TAIKHOAN_VOUCHER::where('id_vc',(request('id_vc')))->get();
+            $myVoucher= TAIKHOAN_VOUCHER::find($voucher[0]->id);
+            $myVoucher->delete();
+        }
         $order->id_vc = request('id_vc');
         $order->hinhthuc = request('hinhthuc');
         $order->trangthaidonhang = "Đã tiếp nhận";
-        $order->diachigiaohang= request('diachigiaohang');
         $order->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
         $order->tongtien = request('tongtien');
         $order->trangthai = 1;
@@ -194,8 +201,54 @@ class CartController extends Controller
                 $detailOrder->giamgia = $product['discount'];
                 $detailOrder->thanhtien =  $product['price']*$product['sl'];
                 $detailOrder->save();
+
                 $cart = GIOHANG::find($product['id']);
                 $cart->delete();
+                //kho
+                if(!empty(request('id_tk_dc'))){
+                    $city = TAIKHOAN_DIACHI::find(request('id_tk_dc'))->value('tinhthanh');
+                    $id_city = TINHTHANH::where('tentt', $city)->get();
+                    $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
+                    $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
+                    $wareHouse = KHO::find($ware[0]->id);
+                    if($wareHouse->sl_ton>0){
+                        if($wareHouse->sl_ton==1&&$product['sl']==2){
+                            if($city == "Hồ Chí Minh"){
+                                $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
+                            }else if($city == "Hà Nội"){
+                                $id_city = TINHTHANH::where('tentt', "Hồ Chí Minh")->get();
+                            }
+                            $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
+                            $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
+                            $wareHouse = KHO::find($ware[0]->id);
+                            $wareHouse->sl_ton--;
+                            $wareHouse->update();
+                        }else{
+                            $wareHouse->sl_ton--;
+                            $wareHouse->update();
+                        }
+                        
+                    }else{
+                        if($city == "Hồ Chí Minh"){
+                            $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
+                        }else if($city == "Hà Nội"){
+                            $id_city = TINHTHANH::where('tentt', "Hồ Chí Minh")->get();
+                        }
+                        $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
+                        $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
+                        $wareHouse = KHO::find($ware[0]->id);
+                        $wareHouse->sl_ton--;
+                        $wareHouse->update();
+                    }
+                    
+
+                }else{
+                    $ware = KHO::where('id_cn', request('id_cn'))->where('id_sp', $product['id_sp'])->get();
+                    $wareHouse = KHO::find($ware[0]->id);
+                    $wareHouse->sl_ton--;
+                    $wareHouse->update();
+                }
+                
             }
             $notification = new THONGBAO();
             $notification->id_tk = $id;
@@ -204,6 +257,7 @@ class CartController extends Controller
             $notification->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
             $notification->trangthaithongbao = 0;
             $notification->save();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Đặt hàng thành công',
@@ -215,6 +269,19 @@ class CartController extends Controller
             'message' => 'Có lỗi xảy ra',
             'data' =>null
         ]);
+    }
+    public function checkProduct($id, Request $request){
+        
+        return response()->json([
+            'status' => true,
+            'message' => '',
+            'data' =>  ([
+                "exist"=> $listValid,
+                "nonExist"=> $listInvalid,
+                "downOne"=> $listDecrease,
+            ])
+        ]);
+    
     }
     public function getProvinceStore(){
         $listProvince = TINHTHANH::all();
@@ -344,7 +411,7 @@ class CartController extends Controller
         if(request('macdinh')==1){
             $oldDefault = TAIKHOAN_DIACHI::where('macdinh', 1)->get();
             $count = count($oldDefault);
-            if($count > 0){
+            if($count > 1){
                 $oldAddress = TAIKHOAN_DIACHI::find($oldDefault[0]->id);
                 $oldAddress->macdinh = 0;
                 $oldAddress->update();
@@ -390,15 +457,76 @@ class CartController extends Controller
     public function checkProductInStore($id, Request $request){
         $listValid= array();
         $listInvalid= array();
-   
-        foreach(request('listID') as $pro){
-            $exist = KHO::where('id_cn', $id)->where('id_sp', $pro)->get();
-            $count = count($exist);
-            if($count == 0){
-                array_push($listInvalid, $pro);
-            }else if($exist[0]->sl_ton==0){
-                array_push($listInvalid, $pro);
-            }else  array_push($listValid, $pro);
+        $listDecrease = array();
+        if($request->method=="store"){
+            foreach(request('listID') as $pro){
+                $exist = KHO::where('id_cn', $id)->where('id_sp', $pro['id'])->get();
+                $count = count($exist);
+                if($count == 0){
+                    array_push($listInvalid, $pro['id']);
+                }else if($exist[0]->sl_ton==0){
+                    array_push($listInvalid, $pro['id']);
+                }else if($exist[0]->sl_ton==1&&$pro['qty']==2){
+                    array_push($listDecrease, $pro['id']);
+                }else  array_push($listValid, $pro['id']);
+            }
+        }else{
+            $check = true;
+            $city = TAIKHOAN_DIACHI::find($id)->value('tinhthanh');
+            $id_city = TINHTHANH::where('tentt', $city)->get();
+            $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
+            foreach(request('listID') as $pro){
+                $exist = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $pro['id'])->get();
+                $count = count($exist);
+                if($count == 0){
+                    array_push($listInvalid, $pro['id']);
+                    $check = false;
+                }else if($exist[0]->sl_ton==0){
+                    array_push($listInvalid, $pro['id']);
+                    $check = false;
+                }else if($exist[0]->sl_ton==1&&$pro['qty']==2){
+                    $check = false;
+                    array_push($listDecrease, $pro['id']);
+                }else  array_push($listValid, $pro['id']);
+            }
+            
+            if($check == false){
+               
+                if($city == "Hồ Chí Minh"){
+                    $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
+                }else if($city == "Hà Nội"){
+                    $id_city = TINHTHANH::where('tentt', "Hồ Chí Minh")->get();
+                }
+                $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
+                $sizeInvalid = count($listInvalid); 
+                $sizeDecrease= count($listDecrease); 
+                for($i=0;$i<$sizeInvalid;$i++){
+                    $exist = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $listInvalid[$i])->get();
+                    $count = count($exist);
+                    $qty = 0;
+                    foreach(request('listID') as $pro){
+                        if($listInvalid[$i]==$pro['id']){
+                            $qty = $pro['qty'];
+                            break;
+                        }
+                    }
+                    if($exist[0]->sl_ton==1&&$qty==2){
+                        unset($listInvalid[$i]);
+                        array_push($listDecrease, $listInvalid[$i]);
+                    }else if($exist[0]->sl_ton>0){
+                        
+                        unset($listInvalid[$i]);
+                    }  
+                }
+                for($i=0;$i<$sizeDecrease;$i++){
+                    $exist = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $listDecrease[$i])->get();
+                    $count = count($exist);
+                    $qty = 0;
+                    if($exist[0]->sl_ton>=2){
+                        unset($listDecrease[$i]);
+                    }  
+                }  
+            }
         }
         return response()->json([
             'status' => true,
@@ -406,6 +534,7 @@ class CartController extends Controller
             'data' =>  ([
                 "exist"=> $listValid,
                 "nonExist"=> $listInvalid,
+                "downOne"=> $listDecrease,
             ])
         ]);
     }
@@ -433,6 +562,30 @@ class CartController extends Controller
     }
     public function cancelOrder($id){
         $order = DONHANG::find($id);
+        $detailOrder = CTDH::where('id_dh', $id)->get();
+        if(!empty($order->id_vc)){
+            $voucher = new TAIKHOAN_VOUCHER();
+            $voucher->id_tk = $order->id_tk;
+            $voucher->id_vc = $order->id_vc;
+            $voucher->save();
+        }
+        foreach($detailOrder as $detail){
+            if(!empty($order->id_tk_dc)){
+                $city = TAIKHOAN_DIACHI::find($order->id_tk_dc)->value('tinhthanh');
+                $id_city = TINHTHANH::where('tentt', $city)->get();
+                $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
+                $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $detail->id_sp)->get();
+                $wareHouse = KHO::find($ware[0]->id);
+                $wareHouse->sl_ton++;
+                $wareHouse->update();
+            }else{
+                $ware = KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->get();
+                $wareHouse = KHO::find($ware[0]->id);
+                $wareHouse->sl_ton++;
+                $wareHouse->update();
+            }
+        }
+        
         $order->trangthaidonhang = "Đã hủy";
         if($order->update()){
             return response()->json([
@@ -452,10 +605,16 @@ class CartController extends Controller
         $order = DONHANG::find($id);
         $detailOrder = CTDH::where("id_dh", $order->id)->get();
         if($order->hinhthuc=="Nhận hàng tại cửa hàng"){
-            $addressDefault = TAIKHOAN_DIACHI::where('id_tk', $order->id_tk)->where('macdinh', 1)->get();
-            $order->infoUser =  $addressDefault[0];
+            $user = TAIKHOAN::find($order->id_tk);
+            $order->hoten = $user->hoten;
+            $order->sdt =$user->sdt;
+            $order->diachigiaohang = CHINHANH::find($order->id_cn)->diachi;
+        }else{
+            $infoAddress =  TAIKHOAN_DIACHI::find($order->id_tk_dc);
+            $order->diachigiaohang = $infoAddress->diachi.", ".$infoAddress->phuongxa.", ".$infoAddress->quanhuyen.", ".$infoAddress->tinhthanh;
+            $order->hoten = $infoAddress->hoten;
+            $order->sdt =$infoAddress->sdt;
         }
-      
         if(!empty($order->id_vc)){
                 $order->id_vc = (VOUCHER::find($order->id_vc)->chietkhau)*100;
         }
@@ -469,6 +628,7 @@ class CartController extends Controller
             $product->price = $pro->gia-($pro->gia*$product->discount);
             $product->priceRoot =  $pro->gia;
             $product->isAvailable = true;
+            $product->isQtyAvailable = true;
             array_push($listProduct, (["product"=>$product,"qty"=>$product->sl]));
         }
         return response()->json([

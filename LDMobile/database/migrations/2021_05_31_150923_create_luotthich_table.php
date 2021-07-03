@@ -14,6 +14,7 @@ class CreateLuotthichTable extends Migration
     public function up()
     {
         Schema::create('luotthich', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->unsignedInteger('id_dg');
         });

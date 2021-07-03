@@ -12,6 +12,7 @@ class SP_YEUTHICH extends Model
     protected $table = 'sp_yeuthich';
 
     protected $fillable = [
+        'id',
         'id_tk',
         'id_sp',
     ];

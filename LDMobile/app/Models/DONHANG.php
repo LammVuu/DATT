@@ -15,8 +15,10 @@ class DONHANG extends Model
 
     protected $fillable = [
         'thoigian',
-        'diachigiaohang',
         'id_tk',
+        'id_tk_dc',
+        'ic_cn',
+        'id_dh',
         'pttt',
         'id_vc',
         'hinhthuc',

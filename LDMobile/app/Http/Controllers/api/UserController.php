@@ -247,10 +247,10 @@ class UserController extends Controller
        
     }
     public function getNotification($id){
-        $notification = THONGBAO::where('id_tk', $id)->get();
+        $notification = THONGBAO::orderBy("id","desc")->where('id_tk', $id)->get();
         return response()->json([
             'status' => true,
-            'messages' => "Xóa thông báo thành công",
+            'messages' => "",
             'data' => $notification
         ]);
     }
