@@ -16,8 +16,11 @@ use App\Models\DONHANG;
 use App\Models\CTDH;
 use App\Models\LUOTTHICH;
 use App\Models\CTDG;
+use App\Models\BAOHANH;
+use App\Models\IMEI;
 use App\Models\THONGBAO;
 use App\Models\TAIKHOAN;
+use App\Models\SP_YEUTHICH;
 use Carbon\Carbon;
 use App\Classes\Helper;
 class SanPhamController extends Controller
@@ -123,7 +126,9 @@ class SanPhamController extends Controller
                    }
             }
             $product->tongluotvote = $totalVote;
-            $product->tongdanhgia =  $totalJudge ;
+            $product->tongdanhgia =  $totalJudge;
+            
+            
         }
         return response()->json([
             'status' => true,
@@ -238,7 +243,7 @@ class SanPhamController extends Controller
     		'data' => $listProductNew
     	]);
     }
-    public function getDetailProduct($id){
+    public function getDetailProduct($id, Request $request){
         $color = array();
         array_push($color, "M.Sắc");
         $storage = array();
@@ -262,7 +267,11 @@ class SanPhamController extends Controller
         $cateProduct->nhacungcap = $nhacungcap;
         $cateProduct->mausac = $color;
         $cateProduct->dungluong = $storage;
-      
+        $wish = SP_YEUTHICH::where('id_tk', $request->id_tk)->where('id_sp', $id)->get();
+        $count = count($wish);
+        if($count > 0){
+            $cateProduct->like = true;
+        }else  $cateProduct->like = false;
         return response()->json([
             'status' => true,
             'message' => '',
@@ -304,6 +313,11 @@ class SanPhamController extends Controller
                 }
                 $pro->tongluotvote = $totalVote;
                 $pro->tongdanhgia = count($allJudge);
+                $wish = SP_YEUTHICH::where('id_tk', $request->id_tk)->where('id_sp', $pro->id)->get();
+                $count = count($wish);
+                if($count > 0){
+                    $pro->like = true;
+                }else  $pro->like = false;
             }
             
             return response()->json([
@@ -450,8 +464,8 @@ class SanPhamController extends Controller
     public function getRamAndStorage(){
         $listRam  = array();
         $listStorage = array();
-        $ram = SANPHAM::select('ram')->distinct()->get();
-        $storage =  SANPHAM::select('dungluong')->distinct()->get();
+        $ram = SANPHAM::orderBy('ram','desc')->select('ram')->distinct()->get();
+        $storage =  SANPHAM::orderBy('dungluong','desc')->select('dungluong')->distinct()->get();
         foreach($ram as $s){
             array_push($listRam, $s->ram);
         }
@@ -947,6 +961,142 @@ class SanPhamController extends Controller
                     $i++;
                 }
             }
+            return response()->json([
+                'status' => true,
+                'message' => '',
+                'data' => null
+        ]);
         }
     }
-}
+    public function checkWarranty(Request $request){
+        $warranty = BAOHANH::where('imei', $request->imei)->get();
+        $size = count($warranty);
+        if($size > 0){
+            $imei = IMEI::find($warranty[0]->id_imei);
+            $product = SANPHAM::find($imei->id_sp);
+            $warranty[0]->image = Helper::$URL."phone/". $product->hinhanh;
+            $warranty[0]->name = $product->tensp;
+            $warranty[0]->color = $product->mausac;
+            $warranty[0]->storage = $product->dungluong;
+            return response()->json([
+                'status' => true,
+                'message' => '',
+                'data' => $warranty[0]
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => 'Imei không tồn tại',
+            'data' => null
+        ]);
+    }
+    public function addToWishList(Request $request){
+        $wishList = new SP_YEUTHICH();
+        $wishList->id_tk = $request->id_tk;
+        $wishList->id_sp = $request->id_sp;
+        if($wishList->save()){
+            return response()->json([
+                'status' => true,
+                'message' => "",
+                'data' => null
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => "Có lỗi xảy ra",
+            'data' => null
+        ]);
+    }
+
+    public function deleteProductInWishList(Request $request){
+        $wishList = SP_YEUTHICH::where("id_sp", $request->id_sp)->where("id_tk", $request->id_tk)->get();
+        $wishList1 = SP_YEUTHICH::find($wishList[0]->id);
+        if($wishList1->delete()){
+            return response()->json([
+                'status' => true,
+                'message' => "",
+                'data' => null
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => "Có lỗi xảy ra",
+            'data' => null
+        ]);
+    }
+
+    public function getWishList($id){
+        $listID = array();
+        $wishList = SP_YEUTHICH::where("id_tk", $id)->get();
+        foreach($wishList as $wish){
+            array_push($listID, $wish->id_sp);
+        }
+        $listProduct = SANPHAM::whereIn('id', $listID)->get();
+        foreach($listProduct as $pro){
+            $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
+            $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+            $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
+            $totalVote = 0;
+            $totalJudge = 0;
+            $idUser = -1;
+            foreach($allJudge as $judge){
+                if($judge->id_tk != $idUser){
+                    $totalVote += $judge->danhgia;
+                    $time =$judge->thoigian;
+                    $idUser = $judge->id_tk;
+                    $totalJudge++;
+                   }else{
+                       if($judge->thoigian != $time){
+                        $totalVote += $judge->danhgia;
+                        $totalJudge++; 
+                       }  
+                        $time = $judge->thoigian;
+                        $content = $judge->noidung;
+                        $idUser = $judge->id_tk;           
+                   }
+            }
+            $pro->tongluotvote = $totalVote;
+            $pro->tongdanhgia = count($allJudge);
+        }
+       return response()->json([
+                'status' => true,
+                'message' => "",
+                'data' => $listProduct
+            ]);
+        }
+        public function searchName(Request $request){
+            $listProduct = SANPHAM::where("tensp", 'like','%'.$request->q.'%')->groupBy("tensp")->get();
+            foreach($listProduct as $pro){
+                $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
+                $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+                $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
+                $totalVote = 0;
+                $totalJudge = 0;
+                $idUser = -1;
+                foreach($allJudge as $judge){
+                    if($judge->id_tk != $idUser){
+                        $totalVote += $judge->danhgia;
+                        $time =$judge->thoigian;
+                        $idUser = $judge->id_tk;
+                        $totalJudge++;
+                       }else{
+                           if($judge->thoigian != $time){
+                            $totalVote += $judge->danhgia;
+                            $totalJudge++; 
+                           }  
+                            $time = $judge->thoigian;
+                            $content = $judge->noidung;
+                            $idUser = $judge->id_tk;           
+                       }
+                }
+                $pro->tongluotvote = $totalVote;
+                $pro->tongdanhgia = count($allJudge);
+            }
+            return response()->json([
+                'status' => true,
+                'message' => "",
+                'data' => $listProduct
+            ]);
+        }
+    }
+   

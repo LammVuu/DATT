@@ -27,6 +27,7 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::get('detail-product/{id}','SanPhamController@getDetailProduct');
     Route::get('compare-product/{id}','SanPhamController@getCompareProduct');
     Route::get('ram-storage','SanPhamController@getRamAndStorage');
+    Route::get('search','SanPhamController@searchName');
     Route::get('all-product','SanPhamController@getAllProduct');
     Route::get('filter-product','SanPhamController@getProductFilter');
     Route::get('banner','SanPhamController@getBanner');
@@ -45,6 +46,10 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::post('like/{id}', 'SanPhamController@postLike');
     Route::delete('like/{id}', 'SanPhamController@deleteLike');
     Route::get('list-reply/{id}','SanPhamController@getReply');
+    Route::get('add-to-wishlist','SanPhamController@addToWishList');
+    Route::delete('delete-wishlist','SanPhamController@deleteProductInWishList');
+    Route::get('wishlist/{id}','SanPhamController@getWishList');
+    Route::get('check-warranty','SanPhamController@checkWarranty');
     Route::get('my-cart/{id}','CartController@getMyCart');
     Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
     Route::post('add-to-cart/{id}','CartController@addToCart');
