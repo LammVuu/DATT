@@ -14,6 +14,7 @@ class CreateSpYeuthichTable extends Migration
     public function up()
     {
         Schema::create('sp_yeuthich', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->unsignedInteger('id_sp');
         });

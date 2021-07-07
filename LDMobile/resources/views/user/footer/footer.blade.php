@@ -6,7 +6,7 @@
                 <div class="row">
                     <div class="col-md-8">
                         <div class="p-40">
-                            <div class="fz-36 font-weight-600">ĐĂNG KÝ NGAY</div>
+                            <div class="fz-36 fw-600">ĐĂNG KÝ NGAY</div>
                             <div class="mt-20 gray-1">
                                 Đăng ký để trở thành người đầu tiên đón nhận được những tin tức mới nhất về sản phẩm của chúng tôi cũng như mức giá ưu đãi.
                             </div>
@@ -15,7 +15,7 @@
                     <div class="col-md-4 main-color-bg">
                         <div class="d-flex flex-column justify-content-center h-100">
                             <div>
-                                <label for="email" class="form-label font-weight-600 white">Nhập Email của bạn</label>
+                                <label for="email" class="form-label fw-600 white">Nhập Email của bạn</label>
                                 <div id='email' class="relative d-flex align-items-center">
                                     <input type="email" placeholder="abc@gmail.com" style="padding-right: 30px">
                                     <div type='button' class="input-icon-right"><i class="fas fa-paper-plane"></i></div>
@@ -42,30 +42,30 @@
                         <div class="d-flex justify-content-between">
                             {{-- sản phẩm --}}
                             <div>
-                                <div class="font-weight-600 fz-20">Điện thoại</div>
+                                <div class="fw-600 fz-20">Điện thoại</div>
                                 <div class="d-flex flex-column mt-20">
                                     <a href="#" class="gray-1 mb-5">Apple</a>
                                     <a href="#" class="gray-1 mb-5">Samsung</a>
                                     <a href="#" class="gray-1 mb-5">Xiaomi</a>
                                     <a href="#" class="gray-1 mb-5">Oppo</a>
                                     <a href="#" class="gray-1 mb-20">Vivo</a>
-                                    <a href="#" class="gray-1 mb-5">Tra cứu</a>
+                                    <a href="{{route('user/tra-cuu')}}" class="gray-1 mb-5">Tra cứu</a>
                                 </div>
                             </div>
 
                             {{-- tài khoản --}}
                             <div>
-                                <div class="font-weight-600 fz-20">Tài khoản</div>
+                                <div class="fw-600 fz-20">Tài khoản</div>
                                 <div class="d-flex flex-column mt-20">
-                                    <a href="#" class="gray-1 mb-5">Quản lý tài khoản</a>
-                                    <a href="#" class="gray-1 mb-5">Lịch sử mua hàng</a>
-                                    <a href="#" class="gray-1 mb-5">Sản phẩm yêu thích</a>
+                                    <a href="{{route('user/tai-khoan')}}" class="gray-1 mb-5">Quản lý tài khoản</a>
+                                    <a href="{{route('user/tai-khoan-don-hang')}}" class="gray-1 mb-5">Lịch sử mua hàng</a>
+                                    <a href="{{route('user/tai-khoan-yeu-thich')}}" class="gray-1 mb-5">Sản phẩm yêu thích</a>
                                 </div>
                             </div>
 
                             {{-- tổng đài hỗ trợ --}}
                             <div>
-                                <div class="font-weight-600 fz-20">Tổng đài hỗ trợ</div>
+                                <div class="fw-600 fz-20">Tổng đài hỗ trợ</div>
                                 <div class="d-flex flex-column mt-20">
                                     <div>Gọi mua:  <b>077 979 2000</b></div>
                                     <div>Kỹ thuật: <b>038 415 1501</b></div>
@@ -74,9 +74,8 @@
 
                             {{-- về chúng tôi --}}
                             <div>
-                                <div class="font-weight-600 fz-20">Về chúng tôi</div>
+                                <div class="fw-600 fz-20">Về chúng tôi</div>
                                 <div class="d-flex flex-column mt-20">
-                                    <a href={{route('user/ve-chung-toi')}} class="gray-1 mb-5">Giới thiệu</a>
                                     <a href={{route('user/lien-he')}} class="gray-1 mb-5">Liên hệ</a>
                                 </div>
                             </div>

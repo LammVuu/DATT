@@ -11,6 +11,8 @@ class CTDG extends Model
 
     protected $table = 'ctdg';
 
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'id_dg',
         'hinhanh',

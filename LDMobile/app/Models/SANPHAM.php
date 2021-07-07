@@ -48,19 +48,19 @@ class SANPHAM extends Model
     // giohang
     public function giohang()
     {
-        return $this->belongsToMany(TAIKHOAN::class, 'giohang', 'id_sp', 'id_tk');
+        return $this->belongsToMany(TAIKHOAN::class, 'giohang', 'id_sp', 'id_tk')->withPivot('id', 'sl');
     }
 
     // sp_yeuthich
     public function sp_yeuthich()
     {
-        return $this->belongsToMany(TAIKHOAN::class, 'sp_yeuthich', 'id_sp', 'id_tk');
+        return $this->belongsToMany(TAIKHOAN::class, 'sp_yeuthich', 'id_sp', 'id_tk')->withPivot('id');
     }
 
     // ctdh
     public function ctdh()
     {
-        return $this->belongsToMany(DONHANG::class, 'ctdh', 'id_sp', 'id_tk')->withPivot('gia', 'sl', 'giamgia', 'thanhtien');
+        return $this->belongsToMany(DONHANG::class, 'ctdh', 'id_sp', 'id_dh')->withPivot('gia', 'sl', 'giamgia', 'thanhtien');
     }
 
     // khuyenmai

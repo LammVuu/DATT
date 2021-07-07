@@ -25,6 +25,7 @@ class TAIKHOAN extends Authenticatable
         'htdn',
         'remember_token',
         'user_social_token',
+        'login_status',
         'trangthai',
     ];
 
@@ -45,7 +46,7 @@ class TAIKHOAN extends Authenticatable
     // taikhoan_voucher
     public function taikhoan_voucher()
     {
-        return $this->belongsToMany(VOUCHER::class, 'taikhoan_voucher', 'id_tk', 'id_vc')->withPivot('id', 'trangthai');
+        return $this->belongsToMany(VOUCHER::class, 'taikhoan_voucher', 'id_tk', 'id_vc')->withPivot('id');
     }
 
     // phanhoi
@@ -69,13 +70,13 @@ class TAIKHOAN extends Authenticatable
     // giohang
     public function giohang()
     {
-        return $this->belongsToMany(SANPHAM::class, 'giohang', 'id_tk', 'id_sp')->withPivot('sl');
+        return $this->belongsToMany(SANPHAM::class, 'giohang', 'id_tk', 'id_sp')->withPivot('id', 'sl');
     }
 
     // sp_yeuthich
     public function sp_yeuthich()
     {
-        return $this->belongsToMany(SANPHAM::class, 'sp_yeuthich', 'id_tk', 'id_sp');
+        return $this->belongsToMany(SANPHAM::class, 'sp_yeuthich', 'id_tk', 'id_sp')->withPivot('id');;
     }
 
     // donhang

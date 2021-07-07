@@ -3,10 +3,13 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Models\NHACUNGCAP;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use Session;
+
+use App\Models\NHACUNGCAP;
+use App\Models\TAIKHOAN;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,10 +30,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // check facebook login
-        
-
-
         // supplier
         $lst_brand = [];
         $i = 0;
@@ -41,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
             $i++;
         }
 
-        // url
+        // url user
         View::share('lst_brand', $lst_brand);
         View::share('url_phone', 'images/phone/');
         View::share('url_logo', 'images/logo/');
@@ -50,5 +49,6 @@ class AppServiceProvider extends ServiceProvider
         View::share('url_json', 'json/');
         View::share('url_model_slide', 'images/phone/slideshow/');
         View::share('url_user', 'images/user/');
+        View::share('url_evaluate', 'images/evaluate/');
     }
 }

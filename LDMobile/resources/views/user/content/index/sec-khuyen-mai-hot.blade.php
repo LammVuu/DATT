@@ -1,6 +1,6 @@
 <section class="index-bg pt-40">
     <div class="container white-bg border p-0">
-        <div class="d-flex align-items-center fz-22 font-weight-600 p-20">
+        <div class="d-flex align-items-center fz-22 fw-600 p-20">
             <div>KHUYẾN MÃI HOT NHẤT</div>
             <div class="relative ml-10">
                 <div class="fire-animation"><i class="fas fa-fire"></i></div>
@@ -15,20 +15,20 @@
                     <img src="{{ $url_phone.$key['hinhanh'] }}">
                     
                     {{-- tên sản phẩm --}}
-                    <div class='font-weight-600 black text-center'>{{ $key['tensp'] }}</div>
+                    <div class='fw-600 black text-center'>{{ $key['tensp'] }}</div>
 
                     <div>
                         <div class='index-sale-tag'>{{ 'SALE '.($key['khuyenmai'] * 100).'%' }}</div>
 
                         <div class="pt-20">
-                            <span class="price-color font-weight-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                            <span class="price-color fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                             <span class="text-strike gray-1 ml-10">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                         </div>
                         
                         <div class='d-flex align-items-center pt-20'>
                             @if ($key['danhgia']['qty'] != 0)
                             @for ($i = 1; $i <= 5; $i++)
-                                @if($key['danhgia']['star'] > $i)
+                                @if($key['danhgia']['star'] >= $i)
                                 <i class="fas fa-star checked"></i>
                                 @else
                                 <i class="fas fa-star uncheck"></i>

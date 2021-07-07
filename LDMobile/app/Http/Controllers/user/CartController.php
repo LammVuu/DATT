@@ -3,23 +3,307 @@
 namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Session;
 
 use App\Models\TAIKHOAN;
 use App\Models\GIOHANG;
 use App\Models\SANPHAM;
+use App\Models\KHO;
+use App\Models\TINHTHANH;
+use App\Models\CHINHANH;
+use App\Models\DONHANG;
+use App\Models\CTDH;
+use App\Models\TAIKHOAN_VOUCHER;
+use App\Models\VOUCHER;
+use App\Models\TAIKHOAN_DIACHI;
+
 
 class CartController extends Controller
 {
-    //
     public function __construct()
     {
         $this->viewprefix='user.pages.';
         $this->user='user/content/';
+        $this->IndexController = new IndexController;
     }
+
+    /*======================================================================================================
+                                                    Page
+    ========================================================================================================*/
     public function GioHang(){
         return view($this->user."gio-hang");
+    }
+
+    public function ThanhToan(){
+        $json_file = file_get_contents('TinhThanh.json');
+        $tinhThanh = json_decode($json_file, true);
+
+        $json_file = file_get_contents('QuanHuyen.json');
+        $quanHuyen = json_decode($json_file, true);
+
+        $tinhThanhID_0 = $tinhThanh[0]['ID'];
+
+        $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
+
+        $data = [
+            'defaultAdr' => $this->IndexController->getAddressDefault(session('user')->id),
+            'lstTinhThanh' => $tinhThanh,
+            'lstQuanHuyen' => $lstQuanHuyen,
+            'lstKhuVuc' => TINHTHANH::all(),
+            'lstChiNhanh' => CHINHANH::all(),
+            'cartRequired' => count(TAIKHOAN::find(session('user')->id)->giohang) == 0 ? true : false,
+        ];
+        
+        return view($this->user."thanh-toan")->with($data);
+    }
+
+    public function ThanhCong(Request $request)
+    {
+        // đã thanh toán
+        if($request->id){
+            $data = [
+                'order' => DONHANG::find($request->id),
+            ];
+
+            return view($this->user.'thanh-cong')->with($data);
+        }
+
+        return back();
+    }
+
+    /*======================================================================================================
+                                                Function route
+    ========================================================================================================*/
+
+    public function Checkout(Request $request)
+    {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $order = [
+            'thoigian' => date('d/m/Y H:i:s'),
+            'id_tk' => session('user')->id,
+            'id_tk_dc' => $request->receciveMethod == 'Giao hàng tận nơi' ? $request->id_tk_dc : null,
+            'id_cn' => $request->receciveMethod == 'Nhận tại cửa hàng' ? $request->id_cn : null,
+            'pttt' => $request->paymentMethod == 'cash' ? 'Thanh toán khi nhận hàng' : 'Thanh toán ZaloPay',
+            'id_vc' => $request->id_vc,
+            'hinhthuc' => $request->receciveMethod,
+            'tongtien' => $request->cartTotal,
+            'trangthaidonhang' => 'Đã tiếp nhận',
+            'trangthai' => 1,
+        ];
+
+        // thanh toán khi nhận hàng
+        if($request->paymentMethod == 'cash'){
+            // tạo đơn hàng
+            $create = DONHANG::create($order);
+
+            //chi tiết đơn hàng & trừ số lượng kho
+            $cart = $this->IndexController->getCart(session('user')->id);
+
+            foreach($cart['cart'] as $key){
+                $detail = [
+                    'id_dh' => $create->id,
+                    'id_sp' => $key['sanpham']['id'],
+                    'gia' => $key['sanpham']['gia'],
+                    'sl' => $key['sl'],
+                    'giamgia' => $key['sanpham']['khuyenmai'],
+                    'thanhtien' => $key['thanhtien'],
+                ];
+
+                CTDH::create($detail);
+
+                // trừ số lượng kho
+                if($order['hinhthuc'] == 'Giao hàng tận nơi'){
+                    // lấy sản phẩm ở chi nhánh có tỉnh thành giống với tỉnh thành của người đặt hàng
+                    $userCity = TAIKHOAN_DIACHI::find($order['id_tk_dc'])->tinhthanh;
+
+                    // Kho
+                    $warehouse = KHO::where('id_cn', CHINHANH::where('id_tt', TINHTHANH::where('tentt', $userCity)->first()->id)->first()->id)
+                        ->where('id_sp', $detail['id_sp'])->first();
+
+                    // slton
+                    $slton = intval($warehouse->slton);
+
+                    // cập nhật số lượng
+                    // nếu kho tại chi nhánh không đủ thì lấy tiếp từ kho ở chi nhánh khác
+                    if($warehouse->slton < $detail['sl']){
+                        $missingQty = $detail['sl'] - $warehouse->slton;
+
+                        $warehouse->slton = 0;
+                        $warehouse->save();
+
+                        $anotherBranch = KHO::where('id_cn', '!=', CHINHANH::where('id_tt', TINHTHANH::where('tentt', $userCity)->first()->id)->first()->id)
+                        ->where('id_sp', $detail['id_sp'])->first();
+
+                        $anotherBranch->slton -= $missingQty;
+                        $anotherBranch->save();
+                    }
+                    // ngược lại trừ số lượng kho tại chi nhánh bình thường
+                    else {
+                        $warehouse->slton -= $detail['sl'];
+                        $warehouse->save();
+                    }
+                } else{
+                    // Kho
+                    $warehouse = KHO::where('id_cn', $order['id_cn'])->where('id_sp', $detail['id_sp'])->first();
+
+                    // slton
+                    $slton = intval($warehouse->slton);
+
+                    // cập nhật số lượng
+                    $warehouse->slton = $slton - $detail['sl'];
+                    $warehouse->save();
+                }
+            }
+
+            // xóa giỏ hàng
+            GIOHANG::where('id_tk', session('user')->id)->delete();
+
+            // xóa voucher đã áp dụng
+            if($request->id_vc){
+                TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->where('id_vc', $request->id_vc)->delete();
+            }
+
+            // xóa voucher trong session
+            Session::forget('voucher');
+
+            return redirect()->route('user/thanhcong', ['id' => $create->id]);
+        }
+        // thanh toán zalo pay
+        else {
+            $config = [
+                "app_id" => 2553,
+                "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
+                "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
+                "endpoint" => "https://sb-openapi.zalopay.vn/v2/create"
+            ];
+    
+            $embeddata = '{}'; // Merchant's data
+            $items = '[]'; // Merchant's data
+            $transID =  rand(0,1000000);
+            $order = [
+                "app_id" => $config["app_id"],
+                "app_user" => session('user')->id,
+                "app_trans_id" => date("ymd") . "_" . $transID, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+                "app_time" => round(microtime(true) * 1000), // miliseconds
+                "amount" => $order['tongtien'],
+                "item" => $items,
+                "embed_data" => $embeddata,
+                "description" => "LDMobile - Thanh toán đơn hàng",
+                "bank_code" => ""
+            ];
+    
+            // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+            $data = $order["app_id"] . "|" . $order["app_trans_id"] . "|" . $order["app_user"] . "|" . $order["amount"]
+                . "|" . $order["app_time"] . "|" . $order["embed_data"] . "|" . $order["item"];
+            $order["mac"] = hash_hmac("sha256", $data, $config["key1"]);
+    
+            $context = stream_context_create([
+                "http" => [
+                    "header" => "Content-type: application/x-www-form-urlencoded\r\n",
+                    "method" => "POST",
+                    "content" => http_build_query($order)
+                ]
+            ]);
+    
+            $resp = file_get_contents($config["endpoint"], false, $context);
+            $result = json_decode($resp, true);
+    
+            return redirect($result['order_url']);
+    
+            // foreach ($result as $key => $value) {
+            //     echo "$key: $value<br>";
+            // }
+            
+            // return false;
+        }
+    }
+
+    public function ZaloPayCallback(Request $request)
+    {
+        $result = [];
+
+        try {
+            $key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+            $postdata = file_get_contents('php://input');
+            $postdatajson = json_decode($postdata, true);
+            $mac = hash_hmac("sha256", $postdatajson["data"], $key2);
+
+            $requestmac = $postdatajson["mac"];
+
+            // kiểm tra callback hợp lệ (đến từ ZaloPay server)
+            if (strcmp($mac, $requestmac) != 0) {
+                // callback không hợp lệ
+                $result["return_code"] = -1;
+                $result["return_message"] = "mac not equal";
+            } else {
+                // thanh toán thành công
+                // merchant cập nhật trạng thái cho đơn hàng
+                $datajson = json_decode($postdatajson["data"], true);
+                // echo "update order's status = success where app_trans_id = ". $dataJson["app_trans_id"];
+
+                $result["return_code"] = 1;
+                $result["return_message"] = "success";
+            }
+        } catch (Exception $e) {
+        $result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
+        $result["return_message"] = $e->getMessage();
+        }
+
+        // thông báo kết quả cho ZaloPay server
+        echo json_encode($result);
+    }
+
+    public function KetQuaThanhToan()
+    {
+        $key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+        $data = $_GET;
+        $checksumData = $data["appid"] ."|". $data["apptransid"] ."|". $data["pmcid"] ."|". $data["bankcode"] ."|". $data["amount"] ."|". $data["discountamount"] ."|". $data["status"];
+        $mac = hash_hmac("sha256", $checksumData, $key2);
+
+        if (strcmp($mac, $data["checksum"]) != 0) {
+        http_response_code(400);
+        echo "Bad Request";
+        } else {
+            // kiểm tra xem đã nhận được callback hay chưa, nếu chưa thì tiến hành gọi API truy vấn trạng thái thanh toán của đơn hàng để lấy kết quả cuối cùng
+            $config = [
+                "app_id" => 2554,
+                "key1" => "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn",
+                "key2" => "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf",
+                "endpoint" => "https://sb-openapi.zalopay.vn/v2/query"
+            ];
+            
+            $app_trans_id = $data["apptransid"];  // Input your app_trans_id
+            $data_2 = $config["app_id"]."|".$app_trans_id."|".$config["key1"]; // app_id|app_trans_id|key1
+            $params = [
+                "app_id" => $config["app_id"],
+                "app_trans_id" => $app_trans_id,
+                "mac" => hash_hmac("sha256", $data_2, $config["key1"])
+            ];
+            
+            $context = stream_context_create([
+                "http" => [
+                    "header" => "Content-type: application/x-www-form-urlencoded\r\n",
+                    "method" => "POST",
+                    "content" => http_build_query($params)
+                ]
+            ]);
+            
+            $resp = file_get_contents($config["endpoint"], false, $context);
+            $result = json_decode($resp, true);
+
+            if($result['return_code'] == 1){
+                http_response_code(200);
+                return redirect('/thanhcong');
+            } else {
+                foreach ($result as $key => $value) {
+                    echo "$key: $value<br>";
+                }
+                return false;
+            }
+        }
     }
 
     public function AjaxAddCart(Request $request)
@@ -52,6 +336,20 @@ class CartController extends Controller
                     if($cart->pivot->id_sp == $request->id_sp){
                         $sl = Intval(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()->sl);
                         $sl += $request->sl;
+
+                        // số lượng tồn kho hiện tại
+                        $qtyInStock = 0;
+                        foreach(KHO::where('id_sp', $request->id_sp)->get() as $key){
+                            $qtyInStock += $key['slton'];
+                        }
+
+                        // so sánh số lượng tồn với số lượng trong giỏ hàng
+                        // mua quá số lượng
+                        if($sl > $qtyInStock){
+                            return [
+                                'status' => 'invalid qty',
+                            ];
+                        }
                         GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->update(['sl' => $sl]);
 
                         return [
@@ -69,6 +367,43 @@ class CartController extends Controller
         }
 
         return false;
+    }
+
+    public function AjaxBuyNow(Request $request)
+    {
+        if($request->ajax()){
+            // chưa đăng nhập
+            if(!session('user')){
+                return [
+                    'status' => 'login required'
+                ];
+            }
+            // đã có sản phẩm trong giỏ hàng thì sang trang giỏ hàng
+            elseif(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()){
+                return [
+                    'status' => 'redirect cart'
+                ];
+            }
+            // sản phẩm hết hàng
+            $qtyInStock = KHO::where('id_sp', $request->id_sp)->count('slton');
+            if($qtyInStock == 0){
+                return [
+                    'status' => 'out of stock'
+                ];
+            }
+            // thêm sản phẩm vào giỏ hàng
+            else {
+                GIOHANG::create([
+                    'id_tk' => session('user')->id,
+                    'id_sp' => $request->id_sp,
+                    'sl' => 1,
+                ]);
+
+                return [
+                    'status' => 'redirect cart'
+                ];
+            }
+        }
     }
 
     public function AjaxRemoveAllCart(Request $request)
@@ -95,282 +430,33 @@ class CartController extends Controller
             $data = [
                 'newQty' => '',
                 'newPrice' => '',
+                'provisional' => 0,
             ];
+
+            $cart = GIOHANG::where('id', $request->id)->first();
+            $qty = intval($cart->sl);
 
             // tăng số lượng
             if($request->type == 'plus'){
-                $qty = Intval(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()->sl);
-                $qty++;
-                GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->update(['sl' => $qty]);
+                GIOHANG::where('id', $request->id)->update(['sl' => ++$qty]);
             } 
             // giảm số lượng
             else {
-                $qty = Intval(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()->sl);
-                $qty--;
-                GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->update(['sl' => $qty]);
+                GIOHANG::where('id', $request->id)->update(['sl' => --$qty]);
             }
 
             // trả dữ liệu về view
             $data['newQty'] = $qty;
-            $data['newPrice'] = Intval($this->getProductById($request->id_sp)['giakhuyenmai'] * $qty);
+            $data['newPrice'] = intval($this->IndexController->getProductById($cart->id_sp)['giakhuyenmai'] * $qty);
+
+            // tạm tính
+            foreach(TAIKHOAN::find(session('user')->id)->giohang as $key){
+                $data['provisional'] += intval($key->pivot->sl * $this->IndexController->getProductById($key->pivot->id_sp)['giakhuyenmai']);
+            }
 
             return $data;
         }
 
         return false;
-    }
-
-    // lấy sao đánh giá, số lượt đánh giá của mẫu sản phẩm theo dung lượng
-    public function starRatingByCapacity($lst_product)
-    {
-        $lst_evaluate = [];
-        $i = 0;
-
-        // tính sao đánh giá từng sản phẩm
-        foreach($lst_product as $key){
-            $evaluate = $key['danhgia'];
-            if($evaluate['qty'] == 0){
-                continue;
-            }
-
-            $lst_evaluate[$i] = $evaluate;
-            $i++;
-        }
-
-        // chưa có đánh giá
-        if(count($lst_evaluate) == 0){
-            return [
-                'qty' => 0,
-                'star' => 0,
-            ];
-        }
-
-        // tính sao đánh giá mẫu sản phẩm theo dung lượng
-        // công thức: trung bình tổng các sao đánh giá sản phẩm
-        $total = 0;
-
-        // tổng số lượng đánh giá của mẫu sp theo dung lượng
-        $qtyEvaluate = 0;
-
-        // số lượng sp có đánh giá
-        $qty = 0;
-
-        foreach($lst_evaluate as $key){
-            $qtyEvaluate += $key['qty'];
-            $total += $key['star'];
-            $qty++;
-        }
-
-        // tổng đánh giá sao
-        $totalEvaluate = round(($total / $qty), 1);
-
-        return [
-            'qty' => $qtyEvaluate,
-            'star' => $totalEvaluate,
-        ];
-    }
-
-    // lấy sao đánh giá, số lượt đánh giá của sản phẩm theo id_sp
-    public function starRatingProduct($id_sp)
-    {
-        // danh sách đánh giá theo id_sp
-        $lst_evaluate = SANPHAM::find($id_sp)->danhgiasp;
-
-        // số lượng đánh giá
-        $qty = count($lst_evaluate);
-
-        if($qty == 0){
-            return [
-                'qty' => 0,
-                'star' => 0
-            ];
-        }
-
-        $_1s = 0; $_2s = 0; $_3s = 0; $_4s = 0; $_5s = 0;
-
-        foreach($lst_evaluate as $key){
-            if($key->pivot->danhgia == 1){
-                $_1s++;
-            } elseif($key->pivot->danhgia == 2){
-                $_2s++;
-            } elseif($key->pivot->danhgia == 3){
-                $_3s++;
-            } elseif($key->pivot->danhgia == 4){
-                $_4s++;
-            } else {
-                $_5s++;
-            }
-        }
-
-        $star = round(((($_1s * 1) + ($_2s * 2) + ($_3s * 3) + ($_4s * 4) + ($_5s * 5)) / $qty),1);
-
-        return [
-            'qty' => $qty,
-            'star' => $star,
-        ];
-    }
-
-    // lấy mẫu sp theo dung lượng
-    public function getProductByCapacity($lst)
-    {
-        // dung lượng: 64 GB / 128 GB
-        $capacity = $lst[0]['dungluong'];
-        $ram = $lst[0]['ram'];
-
-        $promotin = 0;
-
-        $lst_temp = [];
-        $i = 0;
-
-        // lọc mảng sp theo dung lượng
-        foreach($lst as $key){
-            if($key['dungluong'] == $capacity && $key['ram'] == $ram){
-                if($this->promotionCheck($key['id'])){
-                    $promotion = SANPHAM::find($key['id'])->khuyenmai->chietkhau;
-                }
-
-                $lst_temp[$capacity.'_'.$ram][$i] = [
-                    'id' => $key['id'],
-                    'id_msp' => $key['id_msp'],
-                    'tensp' => $key['tensp'],
-                    'tensp_url' => str_replace(' ', '-', $key['tensp']),
-                    'hinhanh' => $key['hinhanh'],
-                    'mausac' => $key['mausac'],
-                    'ram' => $key['ram'],
-                    'dungluong' => $key['dungluong'],
-                    'gia' => $key['gia'],
-                    'khuyenmai' => $promotion,
-                    'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
-                    'danhgia' => $this->starRatingProduct($key['id']),
-                    'trangthai' => $key['trangthai'],
-                ];
-
-                $i++;
-            } else {
-                $capacity = $key['dungluong'];
-                $ram = $key['ram'];
-
-                $i = 0;
-
-                if($this->promotionCheck($key['id'])){
-                    $promotion = SANPHAM::find($key['id'])->khuyenmai->chietkhau;
-                }
-
-                $lst_temp[$capacity.'_'.$ram][$i] = [
-                    'id' => $key['id'],
-                    'id_msp' => $key['id_msp'],
-                    'tensp' => $key['tensp'],
-                    'tensp_url' => str_replace(' ', '-', $key['tensp']),
-                    'hinhanh' => $key['hinhanh'],
-                    'mausac' => $key['mausac'],
-                    'ram' => $key['ram'],
-                    'dungluong' => $key['dungluong'],
-                    'gia' => $key['gia'],
-                    'khuyenmai' => $promotion,
-                    'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
-                    'danhgia' => $this->starRatingProduct($key['id']),
-                    'trangthai' => $key['trangthai'],
-                ];
-
-                $i++;
-            }
-        }
-
-        $lst_product = [];
-
-        // Kiểm tra cùng dung lượng nhưng khác ram
-        if(count($lst_temp) > 1){
-            $key_1 = explode('_', array_keys($lst_temp)[0])[0];
-            $key_2 = explode('_', array_keys($lst_temp)[1])[0];
-
-            // nếu có
-            if(strcmp($key_1, $key_2) == 0){
-                for($i = 0; $i < count($lst_temp); $i++){
-                    $key = $lst_temp[array_keys($lst_temp)[$i]];
-                    
-                    $rand = mt_rand(0, count($key) - 1);
-                    $tensp_url = $key[$rand]['tensp_url'].' '.$key[$rand]['ram'].' '.$key[$rand]['dungluong'];
-
-                    $lst_product[$i] = [
-                        'id' => $key[$rand]['id'],
-                        'id_msp' => $key[$rand]['id_msp'],
-                        'tensp' => $key[$rand]['tensp'].' '.$key[$rand]['ram'].' '.$key[$rand]['dungluong'],
-                        'tensp_url' => str_replace(' ', '-', $tensp_url),
-                        'hinhanh' => $key[$rand]['hinhanh'],
-                        'mausac' => $key[$rand]['mausac'],
-                        'ram' => $key[$rand]['ram'],
-                        'dungluong' => $key[$rand]['dungluong'],
-                        'gia' => $key[$rand]['gia'],
-                        'khuyenmai' => $key[$rand]['khuyenmai'],
-                        'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
-                        'danhgia' => $this->starRatingByCapacity($key),
-                        'trangthai' => $key[$rand]['trangthai'],
-                    ];
-                }
-            } else {
-                for($i = 0; $i < count($lst_temp); $i++){
-                    $key = $lst_temp[array_keys($lst_temp)[$i]];
-    
-                    $rand = mt_rand(0, count($key) - 1);
-                    $tensp_url = $key[$rand]['tensp_url'].' '.$key[$rand]['dungluong'];
-    
-                    $lst_product[$i] = [
-                        'id' => $key[$rand]['id'],
-                        'id_msp' => $key[$rand]['id_msp'],
-                        'tensp' => $key[$rand]['tensp'].' '.$key[$rand]['dungluong'],
-                        'tensp_url' => str_replace(' ', '-', $tensp_url),
-                        'hinhanh' => $key[$rand]['hinhanh'],
-                        'mausac' => $key[$rand]['mausac'],
-                        'ram' => $key[$rand]['ram'],
-                        'dungluong' => $key[$rand]['dungluong'],
-                        'gia' => $key[$rand]['gia'],
-                        'khuyenmai' => $key[$rand]['khuyenmai'],
-                        'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
-                        'danhgia' => $this->starRatingByCapacity($key),
-                        'trangthai' => $key[$rand]['trangthai'],
-                    ];
-                }
-            }
-        } else {
-            for($i = 0; $i < count($lst_temp); $i++){
-                $key = $lst_temp[array_keys($lst_temp)[$i]];
-
-                $rand = mt_rand(0, count($key) - 1);
-                $tensp_url = $key[$rand]['tensp_url'].' '.$key[$rand]['dungluong'];
-
-                $lst_product[$i] = [
-                    'id' => $key[$rand]['id'],
-                    'id_msp' => $key[$rand]['id_msp'],
-                    'tensp' => $key[$rand]['tensp'].' '.$key[$rand]['dungluong'],
-                    'tensp_url' => str_replace(' ', '-', $tensp_url),
-                    'hinhanh' => $key[$rand]['hinhanh'],
-                    'mausac' => $key[$rand]['mausac'],
-                    'ram' => $key[$rand]['ram'],
-                    'dungluong' => $key[$rand]['dungluong'],
-                    'gia' => $key[$rand]['gia'],
-                    'khuyenmai' => $key[$rand]['khuyenmai'],
-                    'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
-                    'danhgia' => $this->starRatingByCapacity($key),
-                    'trangthai' => $key[$rand]['trangthai'],
-                ];
-            }
-        }
-
-        return $lst_product;
-    }
-
-    // lấy sp theo id_sp
-    public function getProductById($id_sp)
-    {
-        return $temp = $this->getProductByCapacity(SANPHAM::where('id', $id_sp)->get())[0];
-    }
-
-    // kiểm tra còn hạn khuyến mãi không
-    public function promotionCheck($id_sp)
-    {
-        $warranty = SANPHAM::find($id_sp)->khuyenmai->ngayketthuc;
-        $today = date('d/m/Y');
-
-        return $warranty >= $today ? true : false;
     }
 }

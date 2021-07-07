@@ -3,8 +3,8 @@
     <!-- avatar -->
     <div class="sidebar-avt">
         <div class="d-flex flex-column">
-            <img src="../images/avt1620997169.jpg" alt="" width="80px" class="circle-img">
-            <div class="white mt-10">Hoàng Lâm</div>
+            <img src="{{$url_user.$user->anhdaidien}}" alt="" width="80px" class="circle-img">
+            <div class="white mt-10">{{$user->hoten}}</div>
         </div>
     </div>
 

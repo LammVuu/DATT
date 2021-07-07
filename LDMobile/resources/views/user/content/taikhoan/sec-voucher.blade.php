@@ -5,15 +5,15 @@
     </div>
     <div class='col-md-9'>
         @if (count($data['lst_voucher']) != 0)
-            <div class="font-weight-600 fz-22 p-10 box-shadow">Mã giảm giá của tôi</div>
+            <div class="fw-600 fz-22 p-10 box-shadow">Mã giảm giá của tôi</div>
             @foreach ($data['lst_voucher'] as $key)
-                <div class='row mt-50'>
+                <div class='row mt-30'>
                     {{-- mã giảm giá --}}
                     <div class='col-md-7 col-sm-12'>
                         <div class='account-voucher'>
                             {{-- số phần trăm giảm --}}
                             <div class='voucher-left w-20 p-70'>
-                                <div class='voucher-left-content fz-40'>-10%</div>
+                                <div class='voucher-left-content fz-40'>-{{$key->chietkhau*100}}%</div>
                             </div>
                             {{-- nội dung --}}
                             <div class='voucher-right w-80'>
@@ -27,21 +27,27 @@
                                                     <tbody>
                                                         <tr>
                                                             <td class='w-40'>Mã</td>
-                                                            <td><b>ABCDEF</b></td>
+                                                            <td><b>{{$key->code}}</b></td>
                                                         </tr>
                                                         <tr>
-                                                            <td class='w-40'>Hạn sử dụng</td>
-                                                            <td>31/12/2021</td>
+                                                            <td class='w-40'>Nội dung</td>
+                                                            <td>{{$key->noidung}}</td>
                                                         </tr>
                                                         <tr>
                                                             <td colspan="2" class='w-40'>
                                                                 <div class='d-flex flex-column'>
-                                                                    <span>Điều kiện:</span>
-                                                                    <ul class='mt-10'>
-                                                                        <li>Áp dụng cho đơn hàng từ 5.000.000 VND</li>
-                                                                    </ul>
+                                                                    <span>Điều kiện</span>
+                                                                    @if ($key->dieukien != 0)
+                                                                        <ul class='mt-10'>
+                                                                            <li>Áp dụng cho đơn hàng từ {{number_format($key->dieukien, 0, '', '.')}}<sup>đ</sup></li>
+                                                                        </ul>
+                                                                    @endif
                                                                 </div>
                                                             </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class='w-40'>Hạn sử dụng</td>
+                                                            <td>{{$key->ngayketthuc}}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -50,11 +56,11 @@
                                     </div>
                                     {{-- nội dung --}}
                                     <div class="flex-fill">
-                                        <span>Áp dụng cho đơn hàng từ 5.000.000 VND</span>
+                                        <span>{{$key->noidung}}</span>
                                     </div>
                                     {{-- hạn sử dụng --}}
                                     <div>
-                                        <span>HSD: 31/12/2021</span>
+                                        <span>HSD: {{$key->ngayketthuc}}</span>
                                     </div>
                                 </div>
                             </div>

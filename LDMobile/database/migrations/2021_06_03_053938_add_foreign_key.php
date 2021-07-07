@@ -29,25 +29,28 @@ class AddForeignKey extends Migration
             $table->foreign('id_vc')->references('id')->on('voucher');
         });
 
+        // đánh giá sp
+        Schema::table('danhgiasp', function (Blueprint $table) {
+            $table->foreign('id_tk')->references('id')->on('taikhoan');
+            $table->foreign('id_sp')->references('id')->on('sanpham');
+        });
+
         // phản hồi
         Schema::table('phanhoi', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_dg')->references('id')->on('danhgiasp');
         });
 
-
         // ctdg
         Schema::table('ctdg', function (Blueprint $table) {
             $table->foreign('id_dg')->references('id')->on('danhgiasp');
         });
-
 
         // lượt thích
         Schema::table('luotthich', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_dg')->references('id')->on('danhgiasp');
         });
-
 
         // giỏ hàng
         Schema::table('giohang', function (Blueprint $table) {
@@ -60,7 +63,6 @@ class AddForeignKey extends Migration
             $table->foreign('id_msp')->references('id')->on('mausp');
         });
 
-
         // slideshow ctmsp
         Schema::table('slideshow_ctmsp', function (Blueprint $table) {
             $table->foreign('id_msp')->references('id')->on('mausp');
@@ -70,7 +72,6 @@ class AddForeignKey extends Migration
         Schema::table('mausp', function (Blueprint $table) {
             $table->foreign('id_ncc')->references('id')->on('nhacungcap');
         });
-
 
         // ctdh
         Schema::table('ctdh', function (Blueprint $table) {
@@ -82,6 +83,12 @@ class AddForeignKey extends Migration
         Schema::table('sanpham', function (Blueprint $table) {
             $table->foreign('id_msp')->references('id')->on('mausp');
             $table->foreign('id_km')->references('id')->on('khuyenmai');
+        });
+
+        // sp yêu thích
+        Schema::table('sp_yeuthich', function (Blueprint $table) {
+            $table->foreign('id_tk')->references('id')->on('taikhoan');
+            $table->foreign('id_sp')->references('id')->on('sanpham');
         });
 
         // imei
@@ -98,6 +105,8 @@ class AddForeignKey extends Migration
         Schema::table('donhang', function (Blueprint $table) {
             $table->foreign('id_tk')->references('id')->on('taikhoan');
             $table->foreign('id_vc')->references('id')->on('voucher');
+            $table->foreign('id_tk_dc')->references('id')->on('taikhoan_diachi');
+            $table->foreign('id_cn')->references('id')->on('chinhanh');
         });
 
         // kho

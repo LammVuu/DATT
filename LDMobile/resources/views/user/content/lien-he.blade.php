@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-md-6 d-flex flex-column justify-content-between pr-20 pb-20">
                             {{-- title --}}
-                            <div class="fz-50 font-weight-600 main-color-text text-end">Liên hệ</div>
+                            <div class="fz-50 fw-600 main-color-text text-end">Liên hệ</div>
 
                             {{-- hình minh họa --}}
                             <img src="images/customer-service-cartoon.png" alt="" class="center-img pt-40 pb-40">

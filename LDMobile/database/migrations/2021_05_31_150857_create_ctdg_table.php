@@ -14,6 +14,7 @@ class CreateCtdgTable extends Migration
     public function up()
     {
         Schema::create('ctdg', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('id_dg');
             $table->string('hinhanh', 100);
         });

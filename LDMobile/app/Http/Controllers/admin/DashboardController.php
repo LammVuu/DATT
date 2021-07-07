@@ -16,4 +16,26 @@ class DashboardController extends Controller
     {
         return view($this->admin.'index');
     }
+
+    /*============================================================================================================
+                                                        Ajax
+    ==============================================================================================================*/
+
+    public function AjaxGetHinhAnh(Request $request)
+    {
+        if($request->ajax()){
+            return 'success';
+        }
+    }
+
+    public function AjaxDeleteObject(Request $request)
+    {
+        if($request->ajax()){
+            // xóa hình ảnh
+            if($request->object == 'hinhanh'){
+                // xử lý xóa
+                return 'success';
+            }
+        }
+    }
 }

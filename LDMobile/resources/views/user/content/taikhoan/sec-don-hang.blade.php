@@ -5,70 +5,133 @@
     </div>
     <div class='col-md-9'>
         @if (count($data['lst_order']['order']) != 0)
+            {{-- đơn hàng đang xử lý --}}
+            <?php $processing = false ?>
             @foreach ($data['lst_order']['order'] as $key)
-                <table class='table border'>
+                @if ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy')
+                    <?php $processing = true ?>
+                    @break
+                @endif
+            @endforeach
+
+            @if ($processing)
+                <table class='table box-shadow mb-50'>
                     <thead>
                         <tr>
-                            <th>
-                                <div class='pt-15 pb-15'>Mã đơn hàng</div>
-                            </th>
-                            <th>
-                                <div class='pt-15 pb-15'>Ngày mua</div>
-                            </th>
-                            <th>
-                                <div class='pt-15 pb-15'>Sản phẩm</div>
-                            </th>
-                            <th>
-                                <div class='pt-15 pb-15'>Tổng tiền</div>
-                            </th>
-                            <th>
-                                <div class='pt-15 pb-15'>Trạng thái đơn hàng</div>
-                            </th>
+                            <th><div class="pt-10 pb-10">Mã đơn hàng</div></th>
+                            <th><div class="pt-10 pb-10">Thời gian</div></th>
+                            <th><div class="pt-10 pb-10">Sản phẩm</div></th>
+                            <th><div class="pt-10 pb-10">Tổng tiền</div></th>
+                            <th><div class="pt-10 pb-10">Trạng thái đơn hàng</div></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for($i = 0; $i < 5; $i++) : ?>
-                        <tr>
-                            {{-- mã đơn hàng --}}
-                            <td class='vertical-center'>
-                                <div class='p-20'>
-                                    <a href="{{route('user/tai-khoan-chi-tiet-don-hang')}}"><?php echo $i ?></a>
-                                </div>
-                            </td>
-                            {{-- ngày mua --}}
-                            <td class='vertical-center'>
-                                <div>18/04/2021</div>
-                            </td>
-                            {{-- sản phẩm mua --}}
-                            <td class='w-40 vertical-center'>
-                                <div class='pt-15 pb-15'>
-                                    <div class='d-flex justify-content-between align-items-end'>
-                                        <div id=<?php echo 'temp_' . $i ?> class='d-flex'>
-                                            <img src="images/phone/iphone_12_red.jpg" alt="" width="60px">
-                                            <div class="d-flex flex-column fz-14">
-                                                <div><span>iPhone 12 Pro Max</span><span class='ml-10'>Màu: Đỏ</span></div>
-                                                <span>Dung lượng: 128GB</span>
-                                                <span>Số lượng: 2
-                                                    <a type='button' data-bs-toggle='modal' data-bs-target='#view-more-order' class="ml-20">Xem thêm</a>
-                                                </span>
+                        @foreach ($data['lst_order']['order'] as $key)
+                            @if ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy')
+                            <tr>
+                                {{-- mã đơn hàng --}}
+                                <td class='vertical-center'>
+                                    <div class='p-20'>
+                                        <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">{{$key['id']}}</a>
+                                    </div>
+                                </td>
+                                {{-- ngày mua --}}
+                                <td class='vertical-center'>
+                                    <div>{{explode(' ', $key['thoigian'])[0]}}</div>
+                                </td>
+                                {{-- sản phẩm mua --}}
+                                <?php $detail = $data['lst_order']['detail'][$key['id']] ?>
+                                <td class='w-40 vertical-center'>
+                                    <div class='pt-15 pb-15'>
+                                        <div class='d-flex'>
+                                            <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="90px">
+                                            <div class="d-flex flex-column">
+                                                <div class="fw-600">{{$detail[0]['sanpham']['tensp'].' - '.$detail[0]['sanpham']['mausac']}}</div>
+                                                <div class="fz-14">Dung lượng: {{$detail[0]['sanpham']['dungluong']}}</div>
+                                                <div class="fz-14">Số lượng: {{$detail[0]['sl']}}{{count($detail) > 1 ? ' ... và '.count($detail).' sản phẩm khác' : ''}}</div>
+                                                <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">Xem chi tiết</a>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                            {{-- giá  --}}
-                            <td class='vertical-center'>
-                                <div>15.000.000 VND</div>
-                            </td>
-                            {{-- trạng thái đơn hàng --}}
-                            <td class='vertical-center'>
-                                <div>Giao hàng thành công</div>
-                            </td>
-                        </tr>
-                        <?php endfor ?>
+                                </td>
+                                {{-- giá  --}}
+                                <td class='vertical-center'>
+                                    <div>{{number_format($key['tongtien'], 0, '', '.')}}<sup>đ</sup></div>
+                                </td>
+                                {{-- trạng thái đơn hàng --}}
+                                <td class='vertical-center'>
+                                    <div>{{$key['trangthaidonhang']}}</div>
+                                </td>
+                            </tr>
+                            @endif
+                        @endforeach
                     </tbody>
                 </table>
+            @endif
+
+            {{-- đơn hàng đã xử lý --}}
+            <?php $done = false ?>
+            @foreach ($data['lst_order']['order'] as $key)
+                @if ($key->trangthaidonhang == 'Thành công' || $key->trangthaidonhang == 'Đã hủy')
+                    <?php $done = true ?>
+                    @break
+                @endif
             @endforeach
+
+            @if ($done)
+                <table class='table box-shadow'>
+                    <thead>
+                        <tr>
+                            <th><div class="pt-10 pb-10">Mã đơn hàng</div></th>
+                            <th><div class="pt-10 pb-10">Thời gian</div></th>
+                            <th><div class="pt-10 pb-10">Sản phẩm</div></th>
+                            <th><div class="pt-10 pb-10">Tổng tiền</div></th>
+                            <th><div class="pt-10 pb-10">Trạng thái đơn hàng</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($data['lst_order']['order'] as $key)
+                            @if ($key->trangthaidonhang == 'Thành công' || $key->trangthaidonhang == 'Đã hủy')
+                                <tr>
+                                    {{-- mã đơn hàng --}}
+                                    <td class='vertical-center'>
+                                        <div class='p-20'>
+                                            <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">{{$key['id']}}</a>
+                                        </div>
+                                    </td>
+                                    {{-- ngày mua --}}
+                                    <td class='vertical-center'>
+                                        <div>{{explode(' ', $key['thoigian'])[0]}}</div>
+                                    </td>
+                                    {{-- sản phẩm mua --}}
+                                    <?php $detail = $data['lst_order']['detail'][$key['id']] ?>
+                                    <td class='w-40 vertical-center'>
+                                        <div class='pt-15 pb-15'>
+                                            <div class='d-flex'>
+                                                <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="90px">
+                                                <div class="d-flex flex-column">
+                                                    <div class="fw-600">{{$detail[0]['sanpham']['tensp'].' - '.$detail[0]['sanpham']['mausac']}}</div>
+                                                    <div class="fz-14">Dung lượng: {{$detail[0]['sanpham']['dungluong']}}</div>
+                                                    <div class="fz-14">Số lượng: 2{{count($detail) > 1 ? ' ... và '.count($detail).' sản phẩm khác' : ''}}</div>
+                                                    <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">Xem chi tiết</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {{-- giá  --}}
+                                    <td class='vertical-center'>
+                                        <div>{{number_format($key['tongtien'], 0, '', '.')}}<sup>đ</sup></div>
+                                    </td>
+                                    {{-- trạng thái đơn hàng --}}
+                                    <td class='vertical-center'>
+                                        <div>{{$key['trangthaidonhang']}}</div>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         @else
             <div class="p-70 box-shadow text-center">
                 Bạn chưa có đơn hàng nào. <a href="{{route('user/dien-thoai')}}" class="ml-5">Mua hàng</a>
@@ -109,14 +172,14 @@
                                         <div class="d-flex">
                                             <img src="images/phone/iphone_12_black.jpg" alt="" width="100px">
                                             <div class="ml-10">
-                                                <a href="#" class="font-weight-600 mb-5 black">iPhone 12 PRO MAX</a>
+                                                <a href="#" class="fw-600 mb-5 black">iPhone 12 PRO MAX</a>
                                                 <div class="fz-14">Dung lượng: 128GB</div>
                                                 <div class="fz-14">Màu sắc: Đen</div>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="vertical-center text-center font-weight-600">x1</td>
+                                <td class="vertical-center text-center fw-600">x1</td>
                             </tr>
                         @endfor
                         </tbody>

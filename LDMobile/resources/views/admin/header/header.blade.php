@@ -4,7 +4,7 @@
     <div class="w-30">
         <div class="d-flex align-items-center">
             <a href={{route('admin/dashboard')}} class="d-flex align-items-center">
-                <img src="images/LDMobile-logo.png" alt="" width="40px">
+                <img src="images/logo/LDMobile-logo.png" alt="" width="40px">
                 <div class="fz-22 ml-10 white">ADMIN</div>
             </a>
             <div id='btn-expand-menu' aria-expanded="true"><i class="far fa-bars"></i></div>
@@ -17,10 +17,10 @@
             <!-- account -->
             <div class="d-flex align-items-center">
                 {{-- avatar --}}
-                <img src="images/avt1620997169.jpg" alt="" width="40px" class="circle-img mr-10">
+                <img src="{{$url_user.$user->anhdaidien}}" alt="" width="40px" class="circle-img mr-10">
                 <!-- name -->
                 <div id='btn-expand-account' class="d-flex align-items-center">
-                    <div class="pointer-cs white">Hoàng Lâm<i class="far fa-chevron-down ml-10 fz-14"></i></div>
+                    <div class="pointer-cs white">{{$user->hoten}}<i class="far fa-chevron-down ml-10 fz-14"></i></div>
                 </div>
             </div>
 

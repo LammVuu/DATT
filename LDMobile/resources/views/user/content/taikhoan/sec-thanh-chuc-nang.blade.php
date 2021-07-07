@@ -5,12 +5,12 @@
     <a href="{{route('user/tai-khoan-thong-bao')}}" class='account-sidebar-tag @yield('acc-noti-active')'>
         <i class="fas fa-bell mr-20"></i>Thông báo
         @if (count($data['lst_noti']['noti']) != 0)
-            <span class='head-number ml-20 fz-12'>{{$data['lst_noti']['not-seen']}}</span>
+            <span id="not-seen-qty" class='head-number ml-20 fz-12'>{{$data['lst_noti']['not-seen']}}</span>
         @endif
     </a>
     <a href="{{route('user/tai-khoan-don-hang')}}" class='account-sidebar-tag @yield('acc-order-active')'>
         <i class="fas fa-box mr-20"></i>Quản lý đơn hàng
-        @if (count($data['lst_order']['order']) != 0)
+        @if ($data['lst_order']['processing'] != 0)
             <span class='head-number ml-20 fz-12'>{{$data['lst_order']['processing']}}</span>
         @endif
     </a>
@@ -24,7 +24,7 @@
         <i class="fas fa-ticket-alt mr-20"></i>Mã giảm giá
     </a>
     <hr>
-    <a href="#" class='account-sidebar-tag price-color'>
+    <a href="{{route('user/logout')}}" class='account-sidebar-tag price-color'>
         <i class="far fa-power-off mr-20"></i>Đăng xuất
     </a>
 </div>

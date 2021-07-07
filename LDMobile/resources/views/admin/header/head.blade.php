@@ -3,20 +3,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <base href="{{asset("user/")}}">
 
-    <meta name="keywords" content="bootstrap, bootstrap ../admin template, ../admin theme, ../admin dashboard, dashboard template, ../admin template, responsive" />
-    <meta name="author" content="Codedthemes" />
-    <base href="{{asset("admin_src/")}}/">
     <!-- Favicon icon -->
-    <link rel="icon" href="../images/logo/LDMobile-logo.png" type="image/x-icon">
-    <!-- bootstrap -->
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-    {{-- font awesome --}}
-    <link rel="stylesheet" href="font/font-awesome/css/all.min.css">
-    {{-- style --}}
+    <link rel="icon" href="images/logo/LDMobile-logo.png" type="image/x-icon">
+    {{-- bootstrap --}}
+    <link rel="stylesheet" href="css/bootstrap.css">
+
+    {{-- owl-carousel --}}
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+    {{-- cropper --}}
+    <link rel="stylesheet" href="css/cropper.css">
+    
+    {{-- jquery-ui --}}
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+
+    {{-- css --}}
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/default.css">
-    {{-- simple scrollbar --}}
-    <link rel="stylesheet"href="https://unpkg.com/simplebar@latest/dist/simplebar.css"/>
+
+    {{-- font-awesome --}}
+    <link rel="stylesheet" href="fonts/font-awesome/css/all.css">
     
 </head>

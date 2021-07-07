@@ -4,67 +4,69 @@
         @include("user.content.taikhoan.sec-thanh-chuc-nang")
     </div>
     <div class='col-md-9'>
-        <table class='table border'>
-            <thead>
-                <th class='center-td'>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class='ml-20 font-weight-600'>Danh sách yêu thích</h4>
-                        {{-- nút 3 chấm --}}
-                        <div class='d-flex justify-content-end fz-24'>
-                            <div class='account-btn-option' aria-expanded="false">
-                                <i class="far fa-ellipsis-v"></i>
-                                <div class='account-option-div border font-weight-300 fz-16'>
-                                    <div class='d-flex flex-column text-center'>
-                                        <div id='fav-btn-delete-all' class='pointer-cs black p-10'>Bỏ thích tất cả</div>
-                                    </div>
-                                </div>
+        {{-- favorite header --}}
+        <div class="p-10 box-shadow mb-20">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-600 fz-24">Danh sách yêu thích</div>
+                {{-- nút 3 chấm --}}
+                <div class='d-flex justify-content-end fz-24'>
+                    <div class='account-btn-option' aria-expanded="false">
+                        <i class="far fa-ellipsis-v"></i>
+                        <div class='account-option-div border font-weight-300 fz-16'>
+                            <div class='d-flex flex-column text-center'>
+                                <div id='fav-btn-delete-all' class='pointer-cs black p-10'>Bỏ thích tất cả</div>
                             </div>
                         </div>
                     </div>
-                </th>
-            </thead>
-            <tbody>
-                @if (count($data['lst_favorite']) != 0)
-                    @foreach ($data['lst_favorite'] as $key)
-                        <tr class="relative block-dp">
-                            <td class="block-dp">
-                                <div class='d-flex justify-content-between'>
-                                    <div class="d-flex p-20">
-                                        <img src="images/phone/iphone_12_black.jpg" alt="" width="150px">
-                                        <div class='d-flex flex-column'>
-                                            <a href="#" class="font-weight-600 black">iPhone 12 PRO MAX</a>
-                                            <div class='d-flex mt-10'>
+                </div>
+            </div>
+        </div>
+
+        {{-- danh sách yêu thích --}}
+        <div id="lst_favorite">
+            @if (count($data['lst_favorite']) != 0)
+                @foreach ($data['lst_favorite'] as $key)
+                    <div id="favorite-{{$key['id']}}" class="single-favorite box-shadow mb-30">
+                        <div class="d-flex justify-content-between">
+                            {{-- điện thoại --}}
+                            <div class="d-flex p-20">
+                                <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" width="150px">
+                                <div class='d-flex flex-column'>
+                                    <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}" class="fw-600 black">{{$key['sanpham']['tensp']}}</a>
+                                    <div class='d-flex mt-10'>
+                                        @if ($key['sanpham']['danhgia']['qty'] != 0)
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if($key['sanpham']['danhgia']['star'] >= $i)
                                                 <i class="fas fa-star checked"></i>
-                                                <i class="fas fa-star checked"></i>
-                                                <i class="fas fa-star checked"></i>
-                                                <i class="fas fa-star checked"></i>
+                                                @else
                                                 <i class="fas fa-star uncheck"></i>
-                                                <span class='fz-14 ml-10'>21 đánh giá</span>
-                                            </div>
-                                            <span class='mt-10'>Màu sắc: Đen</span>
-                                            <span>Dung Lượng: 128GB</span>
-                                        </div>
+                                                @endif
+                                            @endfor
+                                            <span class='fz-14 ml-10'>{{ $key['sanpham']['danhgia']['qty'] . ' đánh giá'}}</span>
+                                        @endif
                                     </div>
-                                    <div class="d-flex flex-fill justify-content-end p-20">
-                                        <div class='d-flex flex-column'>
-                                            <b class='price-color'>21.000.000 VND</b>
-                                            <span><span class='text-strike fz-14'>25.000.000 VND</span>
-                                        </div>
-                                    </div>
-                                    {{-- nút xóa --}}
-                                    <i class="fav-btn-delete far fa-times fz-26 gray-1 mr-5"></i>
+                                    <span class='mt-10'>Màu sắc: {{$key['sanpham']['mausac']}}</span>
+                                    <span>Dung Lượng: {{$key['sanpham']['dungluong']}}</span>
                                 </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                @else
-                    <tr>
-                        <td>
-                            <div class="p-70 text-center">Chưa có sản phẩm nào. <a href="{{route('user/dien-thoai')}}" class="ml-5">Xem sản phẩm</a></div>
-                        </td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
+                            </div>
+
+                            {{-- giá & nút xóa --}}
+                            <div class="d-flex">
+                                <div class='d-flex flex-column p-20'>
+                                    <b class='price-color fz-20'>{{number_format($key['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></b>
+                                    <span class='text-strike fz-14'>{{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>
+                                </div>
+                                {{-- nút xóa --}}
+                                <div type="button" data-id="{{$key['id']}}" class="fav-btn-delete d-flex align-items-center h-100 p-10"><i class="fal fa-trash-alt fz-24"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="p-70 box-shadow d-flex justify-content-center">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div>
+            @endif
+        </div>
     </div>
 </div>
+
+<div id="toast"></div>

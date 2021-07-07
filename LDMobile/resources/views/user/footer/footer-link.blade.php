@@ -11,9 +11,6 @@
 {{-- cropper --}}
 <script src='{{asset('js/cropper.js')}}'></script>
 
-{{-- font awesome --}}
-<script src='{{asset('fonts/font-awesome/js/all.js')}}'></script>
-
 {{-- firebase --}}
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-auth.js"></script>

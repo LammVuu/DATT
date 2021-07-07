@@ -24,7 +24,6 @@
     <link rel="stylesheet" href="css/jquery-ui.min.css">
 
     {{-- css --}}
-    <link rel="stylesheet" href="css/default.css">
     <link rel="stylesheet" href="css/style.css">
 
     {{-- font-awesome --}}

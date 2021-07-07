@@ -14,7 +14,7 @@
     
                             <form action="#" method="POSt">
                                 @csrf
-                                <div class="font-weight-600 mb-10">Thông tin cá nhân</div>
+                                <div class="fw-600 mb-10">Thông tin cá nhân</div>
             
                                 {{-- họ và tên --}}
                                 <div class='input-group mb-3'>
@@ -34,7 +34,7 @@
                                     <input type='text' class='form-control' placeholder='Địa chỉ'>
                                 </div>
             
-                                <div class="font-weight-600 mb-10">Thông tin tài khoản</div>
+                                <div class="fw-600 mb-10">Thông tin tài khoản</div>
             
                                 {{-- email --}}
                                 <div class='input-group mb-3'>
@@ -71,7 +71,7 @@
                             <div class="signup-image">
                                 <img src="images/signup-des-bg.jpg" alt="">
                                 <div class="text-center main-color-text p-10">
-                                    <div class="fz-18 font-weight-600">Mua hàng tại LDMoible</div>
+                                    <div class="fz-18 fw-600">Mua hàng tại LDMoible</div>
                                     <div>Cập nhật sản phẩm mới nhất mức giá ưu đãi</div>
                                 </div>
                             </div>
@@ -117,7 +117,7 @@
                         <div id='enter-information'>
                             {{-- title --}}
                             <div class="mb-30">
-                                <h2 class="font-weight-600">Đăng ký</h2>
+                                <h2 class="fw-600">Đăng ký</h2>
                             </div>
 
                             {{-- họ tên --}}
@@ -176,7 +176,7 @@
                             </div>
 
                             <div class="mb-30">
-                                <h3 class="font-weight-600">Nhập mã xác thực</h3>
+                                <h3 class="fw-600">Nhập mã xác thực</h3>
                                 <div>Mã xác thực đã được gửi đến số điện thoại <b id="tel-confirm"></b></div>
                             </div>
                             
@@ -190,17 +190,17 @@
                         {{-- enter password --}}
                         <div id='enter-password' class="none-dp">
                             <div class="mb-30">
-                                <h3 class="font-weight-600">Tạo mật khẩu</h3>
+                                <h3 class="fw-600">Tạo mật khẩu</h3>
                             </div>
                             {{-- mật khẩu --}}
                             <div class="mb-3">
-                                <label for="su_pw" class="font-weight-600 form-label">Mật khẩu</label>
+                                <label for="su_pw" class="fw-600 form-label">Mật khẩu</label>
                                 <input type='password' id="su_pw" name="su_pw">
                             </div>
 
                             {{-- nhập lại mật khẩu --}}
                             <div class="mb-3">
-                                <label for="su_re_pw" class="font-weight-600 form-label">Nhập lại mật khẩu</label>
+                                <label for="su_re_pw" class="fw-600 form-label">Nhập lại mật khẩu</label>
                                 <input type='password' id="su_re_pw" name="su_re_pw">
                             </div>
 

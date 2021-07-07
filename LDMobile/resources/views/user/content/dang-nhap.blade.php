@@ -12,7 +12,7 @@
                     @elseif (session('error_message'))
                         <div class="error-message mb-20">{{ session('error_message') }}</div>
                     @endif
-                    <h3 class='pb-30 font-weight-600'>Đăng nhập</h3>
+                    <h3 class='pb-30 fw-600'>Đăng nhập</h3>
     
                     <form id="login-form" action="{{route('user/login')}}" method="POST">
                         @csrf
@@ -29,7 +29,7 @@
                         <!-- lưu đăng nhập & quên mật khẩu -->
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <input type="checkbox" id='remember' name="remember">
+                                <input type="checkbox" id='remember' name="remember" value="0">
                                 <label for="remember" class='form-check-label'>Lưu đăng nhập</label>
                             </div>
                             <a class="forget" href="#">Quên mật khẩu?</a>

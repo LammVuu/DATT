@@ -35,6 +35,8 @@
                                     <i class="fas fa-shopping-cart fz-32"></i>
                                     @if (session('user') && $data['cart']['qty'] != 0)
                                         <span class='head-qty-cart'>{{ $data['cart']['qty'] }}</span>
+                                    @else
+                                        <span class='head-qty-cart none-dp'>0</span>
                                     @endif
                                 </a>
                                 <div id="add-cart-success"></div>
@@ -47,7 +49,7 @@
                             <div class='head-item mr-20'>
                                 <div class='d-flex'>
                                     <?php $user = session('user'); ?>
-                                    <img src="{{ $user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
+                                    <img id="avt-header" src="{{ $user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
                                     
                                     <div class='d-flex flex-column justify-content-end'>
                                         <i class='white fz-14'>Xin Chào!</i>
@@ -57,13 +59,15 @@
                                                 <a href="{{route('user/tai-khoan-thong-bao')}}" class='head-account-option'>
                                                     <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
                                                     @if (count($data['lst_noti']['noti']) != 0)
-                                                        <div class='head-number fz-12'>{{$data['lst_noti']['not-seen']}}</div>    
+                                                        <div id="not-seen-qty-header" class='head-number fz-12'>{{$data['lst_noti']['not-seen']}}</div>
+                                                    @else
+                                                        <div class='head-number fz-12 none-dp'>0</div>
                                                     @endif
                                                 </a>
                                                 <a href="{{route('user/tai-khoan-don-hang')}}" class='head-account-option'>
                                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                                    @if (count($data['lst_order']['order']) != 0)
-                                                        <div class='head-number fz-12'>{{$data['lst_order']['processing']}}</div>    
+                                                    @if ($data['lst_order']['processing'] != 0)
+                                                        <span class='head-number ml-20 fz-12'>{{$data['lst_order']['processing']}}</span>
                                                     @endif
                                                 </a>
                                                 <a href="{{route('user/logout')}}" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
@@ -101,39 +105,41 @@
             <div class='d-flex flex-column justify-content-center'>
                 <img src="images/logo/LDMobile-logo.png" class='head-offcanvas-img'><hr>
 
-                 {{-- đăng nhập/ đăng ký --}}
-                <div class='d-flex justify-content-center align-items-center'>
-                    <div class='head-offcanvas-avatar mr-20'>
-                        <img src="images/profile-photo.png" alt="">
-                    </div>
-                    <div class='d-flex align-items-center'>
-                        <div class='head-offcanvas-account'>
-                            <b>Vũ Hoàng Lâm</b><i class="fas fa-caret-down ml-10"></i>
-                            <div class='head-offcanvas-account-option'>
-                                <div class='d-flex flex-column fz-14'>
-                                    <a href="#" class='options black'><i class="fas fa-user mr-10"></i>Xem tài khoản</a>
-                                    <a href="#" class='d-flex align-items-center options black'>
-                                        <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                        <div><div class='head-number fz-12'>50</div></div>
-                                    </a>
-                                    <a href="#" class="d-flex align-items-center options black">
-                                        <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
-                                        <div class='head-number fz-12'>5</div>
-                                    </a>
-                                    <hr class='m-0'>
-                                    <a href="#" class='options price-color'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
+                 @if (session('user'))
+                    <div class='d-flex justify-content-center align-items-center'>
+                        <div class='head-offcanvas-avatar mr-20'>
+                            <img src="{{$user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="avatar" class="circle-img">
+                        </div>
+                        <div class='d-flex align-items-center'>
+                            <div class='head-offcanvas-account'>
+                                <b>Vũ Hoàng Lâm</b><i class="fas fa-caret-down ml-10"></i>
+                                <div class='head-offcanvas-account-option'>
+                                    <div class='d-flex flex-column fz-14'>
+                                        <a href="#" class='options black'><i class="fas fa-user mr-10"></i>Xem tài khoản</a>
+                                        <a href="#" class='d-flex align-items-center options black'>
+                                            <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
+                                            <div><div class='head-number fz-12'>50</div></div>
+                                        </a>
+                                        <a href="#" class="d-flex align-items-center options black">
+                                            <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
+                                            <div class='head-number fz-12'>5</div>
+                                        </a>
+                                        <hr class='m-0'>
+                                        <a href="#" class='options price-color'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div><hr>
-
-                {{-- <div class='d-flex justify-content-center align-items-center'>
-                    <i class="fas fa-user mr-10"></i>
-                    <a href="#" class='black font-weight-600'>Đăng nhập</a>
-                    <b class='ml-10 mr-10'>|</b>
-                    <a href="#" class='main-btn p-5'>Đăng ký</a>
-                </div><hr> --}}
+                @else
+                    <div class='d-flex justify-content-center align-items-center'>
+                        <i class="fas fa-user mr-10"></i>
+                        <a href="{{route('user/dang-nhap')}}" class='black fw-600'>Đăng nhập</a>
+                        <b class='ml-10 mr-10'>|</b>
+                        <a href="{{route('user/dang-ky')}}" class='main-btn p-5'>Đăng ký</a>
+                    </div>
+                @endif
+                <hr>
                 
                 {{-- tìm kiếm --}}
                 <div class='d-flex justify-content-center relative'>
@@ -152,7 +158,7 @@
                                 <div class="d-flex flex-column w-75 p-10">
                                     <b>iPhone 12 PRO MAX 128GB</b>
                                     <div class="d-flex align-items-center mt-5">
-                                        <span class="price-color font-weight-600">25.000.000<sup>đ</sup></span>
+                                        <span class="price-color fw-600">25.000.000<sup>đ</sup></span>
                                         <span class="text-strike ml-10">29.000.000<sup>đ</sup></span>
                                         <span class="price-color ml-10">-10%</span>
                                     </div>
@@ -166,70 +172,7 @@
             
                 {{-- điện thoại --}}
                 <div class='head-drop-2 head-offcanvas-item text-center pb-20'>
-                    <a href="{{route('user/dien-thoai')}}">Điện thoại<i class="fas fa-caret-right ml-5"></i></a>
-                    <div class='head-drop-content-2 box-shadow pt-50 pb-50 pl-50 pr-50 fz-16'>
-                            {{-- Apple --}}
-                            <div>
-                                <div class='d-flex flex-column'>
-                                    <a href="#" class='black font-weight-600 fz-20'>Apple</a>
-                                    <div class='d-flex flex-column pt-10'>
-                                        <a href="#" class='black'>iPhone 12 Series</a>
-                                        <a href="#" class='black'>iPhone 11 Series</a>
-                                        <a href="#" class='black'>iPhone SE 2020</a>
-                                        <a href="#" class='black'>iPhone XR | XS</a>
-                                    </div>
-                                </div><hr>
-                            </div>
-            
-                            {{-- Samsung --}}
-                            <div>
-                                <div class='d-flex flex-column'>
-                                    <a href="#" class='black font-weight-600 fz-20'>Samsung</a>
-                                    <div class='d-flex flex-column pt-10'>
-                                        <a href="#" class='black'>Galaxy Note</a>
-                                        <a href="#" class='black'>Galaxy S</a>
-                                        <a href="#" class='black'>Galaxy A</a>
-                                        <a href="#" class='black'>Galaxy Z</a>
-                                    </div>
-                                </div><hr>
-                            </div>
-            
-                            {{-- xiaomi --}}
-                            <div>
-                                <div class='d-flex flex-column'>
-                                    <a href="#" class='black font-weight-600 fz-20'>Xiaomi</a>
-                                    <div class='d-flex flex-column pt-10'>
-                                        <a href="#" class='black'>Redmi</a>
-                                        <a href="#" class='black'>Mi</a>
-                                        <a href="#" class='black'>POCO</a>
-                                    </div>
-                                </div><hr>
-                            </div>
-            
-                            {{-- oppo --}}
-                            <div>
-                                <div class='d-flex flex-column'>
-                                    <a href="#" class='black font-weight-600 fz-20'>Oppo</a>
-                                    <div class='d-flex flex-column pt-10'>
-                                        <a href="#" class='black'>Oppo A</a>
-                                        <a href="#" class='black'>Oppo Reno</a>
-                                        <a href="#" class='black'>Oppo FindX</a>
-                                    </div>
-                                </div><hr>
-                            </div>
-            
-                            {{-- vivo --}}
-                            <div>
-                                <div class='d-flex flex-column'>
-                                    <a href="#" class='black font-weight-600 fz-20'>Vivo</a>
-                                    <div class='d-flex flex-column pt-10'>
-                                        <a href="#" class='black'>Vivo V</a>
-                                        <a href="#" class='black'>Vivo Y</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <a href="{{route('user/dien-thoai')}}">Điện thoại</a>
                 </div>
 
                 {{-- giỏ hàng --}}
@@ -237,7 +180,11 @@
                     <div class='d-flex align-items-center justify-content-center'>
                         <a href="{{route('user/gio-hang')}}">
                             <div class='d-flex align-items-center'>Giỏ hàng
-                                <div class='head-number'>5</div>
+                                @if (session('user') && $data['cart']['qty'] != 0)
+                                    <span class='head-number'>{{ $data['cart']['qty'] }}</span>
+                                @else
+                                    <span class='head-number none-dp'>0</span>
+                                @endif
                             </div>
                         </a>
                     </div>

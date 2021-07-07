@@ -24,4 +24,16 @@ class DANHGIASP extends Model
     ];
 
     public $timestamps = false;
+
+    // ctdg
+    public function ctdg()
+    {
+        return $this->hasMany(CTDG::class, 'id_dg');
+    }
+
+    // phanhoi
+    public function phanhoi()
+    {
+        return $this->hasMany(PHANHOI::class, 'id_dg');
+    }
 }
