@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Classes\Helper;
 use App\Models\User;
+use App\Models\THONGBAO;
 use Illuminate\Http\Request;
 use Hash;
 use Auth;
@@ -204,4 +205,54 @@ class UserController extends Controller
             'data' => null
         ]);
     }
+    public function getTotalNotification($id){
+        $notification = THONGBAO::where('id_tk', $id)->where('trangthaithongbao', 0)->get();
+      
+        return response()->json([
+            'status' => true,
+            'messages' => "",
+            'data' => $notification
+        ]);
+    }
+    public function deleteNotification($id){
+        $notification = THONGBAO::find($id);
+        if($notification->delete()){
+            return response()->json([
+                'status' => true,
+                'messages' => "Xóa thông báo thành công",
+                'data' => null
+            ]);
+        };
+        return response()->json([
+            'status' => false,
+            'messages' => "Có lỗi xảy ra, vui lòng thử lại sau...",
+            'data' => null
+        ]);
+    }
+    public function updateNotification($id){
+        $notification = THONGBAO::find($id);
+        $notification->trangthaithongbao = 1;
+        if($notification->update()){
+            return response()->json([
+                'status' => true,
+                'messages' => "",
+                'data' => null
+            ]);
+        };
+        return response()->json([
+            'status' => false,
+            'messages' => "Có lỗi xảy ra, vui lòng thử lại sau...",
+            'data' => null
+        ]);
+       
+    }
+    public function getNotification($id){
+        $notification = THONGBAO::orderBy("id","desc")->where('id_tk', $id)->get();
+        return response()->json([
+            'status' => true,
+            'messages' => "",
+            'data' => $notification
+        ]);
+    }
+    
 }

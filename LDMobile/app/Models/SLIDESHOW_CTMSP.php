@@ -14,6 +14,7 @@ class SLIDESHOW_CTMSP extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'id',
         'id_msp',
         'hinhanh',
     ];

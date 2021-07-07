@@ -14,6 +14,7 @@ class LUOTTHICH extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'id',
         'id_tk',
         'id_dg',
     ];

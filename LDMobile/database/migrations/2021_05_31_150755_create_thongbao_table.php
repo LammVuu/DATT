@@ -16,7 +16,7 @@ class CreateThongbaoTable extends Migration
         Schema::create('thongbao', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('id_tk');
-            $table->string('tieude', 100);
+            $table->string('tieude', 200);
             $table->text('noidung');
             $table->string('thoigian', 20);
             $table->boolean('trangthaithongbao');

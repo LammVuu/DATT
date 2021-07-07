@@ -18,6 +18,8 @@ class DONHANG extends Model
         'id_tk',
         'id_tk_dc',
         'id_cn',
+        'ic_cn',
+        'id_dh',
         'pttt',
         'id_vc',
         'hinhthuc',
