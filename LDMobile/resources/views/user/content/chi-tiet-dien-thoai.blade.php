@@ -531,7 +531,7 @@
                                                 <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
                                             </div>
                                             {{-- sao đánh giá --}}
-                                            <input type="hidden" id="evalute-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
+                                            <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
                                             <div>{{ $key['thoigian']}}</div>
                                         </div>
                                     </div>

@@ -699,7 +699,7 @@ class SanPhamController extends Controller
         foreach($listComment as $comment){
             $listAttachment = CTDG::Where('id_dg', $comment->id)->get();
             foreach($listAttachment as $attachemnt){
-                $attachemnt->hinhanh = Helper::$URL."evalute/". $attachemnt->hinhanh;
+                $attachemnt->hinhanh = Helper::$URL."evaluate/". $attachemnt->hinhanh;
             }
             $comment->dsHinhAnh = $listAttachment;
             $listReply = PHANHOI::where('id_dg',$comment->id)->orderBy('id',"desc")->take(5)->get();
@@ -791,7 +791,6 @@ class SanPhamController extends Controller
             $comment->noidung = request('noidung');
             $comment->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
             $comment->soluotthich = 0;
-            $comment->trangthai = 1;
             $comment->danhgia = request('danhgia');
             $comment->save();
             if($check==true){
@@ -813,7 +812,6 @@ class SanPhamController extends Controller
         $comment->noidung = request('noidung');
         $comment->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
         $comment->id_tk = request('id_tk');
-        $comment->trangthai = 1;
         $comment->danhgia = request('danhgia');
         $comment->update();
         return response()->json([
@@ -848,7 +846,6 @@ class SanPhamController extends Controller
         $reply->id_dg = request('id_dg');
         $reply->noidung = request('noidung');
         $reply->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
-        $reply->trangthai = 1;
         $comment = DANHGIASP::find(request('id_dg'));
         if(request('id_tk') != $comment->id_tk){
             $sanpham = SANPHAM::find($comment->id);
@@ -916,7 +913,7 @@ class SanPhamController extends Controller
                     'image_'.$i => 'required|image|mimes:jpeg,png,jpg,gif,svg',
                 ]);
                 $imageName = time().$i.'.'. $image->getClientOriginalExtension();
-                $image->move('images/evalute/', $imageName);
+                $image->move('images/evaluate/', $imageName);
                 $detailComment->hinhanh = $imageName;
                 $detailComment->id_dg = $id;
                 $detailComment->save();
@@ -954,7 +951,7 @@ class SanPhamController extends Controller
                         'image_'.$i => 'required|image|mimes:jpeg,png,jpg,gif,svg',
                     ]);
                     $imageName = time().$i.'.'. $image->getClientOriginalExtension();
-                    $image->move('images/evalute/', $imageName);
+                    $image->move('images/evaluate/', $imageName);
                     $detailComment->hinhanh = $imageName;
                     $detailComment->id_dg = $id;
                     $detailComment->save();

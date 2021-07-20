@@ -7,6 +7,7 @@ use App\Classes\Helper;
 use App\Models\User;
 use App\Models\THONGBAO;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Hash;
 use Auth;
 class UserController extends Controller
@@ -28,6 +29,7 @@ class UserController extends Controller
                 'anhdaidien' => $request->anhdaidien,
                 'loaitk'=>0,
                 'htdn'=>$request->htdn,
+                'thoigian'=> Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y'),
                 'trangthai'=>1,
             ]);
             if($user->save()){
@@ -45,6 +47,7 @@ class UserController extends Controller
             'anhdaidien' => "avatar-default.png",
             'loaitk'=>0,
             'htdn'=>$request->htdn,
+            'thoigian'=> Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y'),
             'trangthai'=>1,
         ]);
         if($user->save()){

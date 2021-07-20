@@ -23,7 +23,6 @@ class CreateTaikhoanDiachiTable extends Migration
             $table->string('tinhthanh', 100);
             $table->string('sdt', 10);
             $table->boolean('macdinh');
-            $table->boolean('trangthai');
         });
     }
 

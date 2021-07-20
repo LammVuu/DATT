@@ -2257,7 +2257,7 @@ $(function() {
             $('#evaluate_id').val(id_dg);
 
             // gán sao
-            var star = $('#evalute-rating-' + id_dg).val();
+            var star = $('#evaluate-rating-' + id_dg).val();
             $('#edit_star_rating').val(star);
             for(var i = 1; i <= star; i++){
                 $('.edit-star-rating[data-id="'+i+'"]').css('color' , 'orange');

@@ -2,7 +2,6 @@
 @section("sidebar-image") sidebar-link-selected @stop
 @section("content-title") Hình ảnh @stop
 @section("content")
-
 {{-- function button --}}
 <div class="d-flex justify-content-between align-items-center mb-20">
     {{-- create button --}}
@@ -73,7 +72,7 @@
 
 {{-- modal thêm|sửa hình ảnh --}}
 <div class="modal fade" id="hinhanh-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scollable">
         <div class="modal-content">
             {{-- modal header --}}
             <div class="modal-header">

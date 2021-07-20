@@ -20,4 +20,9 @@ class LUOTTHICH extends Model
     ];
 
     public $timestamps = false;
+
+    public function danhgiasp()
+    {
+        return $this->belongsToMany(DANHGIASP::class, 'id_dg');
+    }
 }

@@ -20,8 +20,7 @@ class VOUCHER extends Model
         'dieukien',
         'ngaybatdau',
         'ngayketthuc',
-        'sl',
-        'trangthai',
+        'sl'
     ];
 
     public $timestamps = false;

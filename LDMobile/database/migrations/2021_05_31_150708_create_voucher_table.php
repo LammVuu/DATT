@@ -22,7 +22,6 @@ class CreateVoucherTable extends Migration
             $table->string('ngaybatdau', 20);
             $table->string('ngayketthuc', 20);
             $table->integer('sl')->nullable()->unsigned();
-            $table->boolean('trangthai');
         });
     }
 

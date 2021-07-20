@@ -17,7 +17,7 @@ class CreateKhoTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_cn');
             $table->unsignedInteger('id_sp');
-            $table->integer('sl_ton')->unsigned();
+            $table->integer('slton')->unsigned();
             $table->boolean('trangthai');
         });
     }

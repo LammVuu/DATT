@@ -1,4 +1,3 @@
-
 $(function() {
     $(window).on('load', function(){
         var scroll_chitiet = sessionStorage.getItem('reload_chitiet');

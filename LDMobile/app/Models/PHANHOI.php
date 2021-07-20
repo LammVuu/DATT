@@ -17,8 +17,7 @@ class PHANHOI extends Model
         'id_tk',
         'id_dg',
         'noidung',
-        'thoigian',
-        'trangthai',
+        'thoigian'
     ];
 
     public $timestamps = false;

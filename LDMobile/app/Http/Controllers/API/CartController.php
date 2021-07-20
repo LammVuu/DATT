@@ -211,8 +211,8 @@ class CartController extends Controller
                     $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
                     $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
                     $wareHouse = KHO::find($ware[0]->id);
-                    if($wareHouse->sl_ton>0){
-                        if($wareHouse->sl_ton==1&&$product['sl']==2){
+                    if($wareHouse->slton>0){
+                        if($wareHouse->slton==1&&$product['sl']==2){
                             if($city == "Hồ Chí Minh"){
                                 $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
                             }else if($city == "Hà Nội"){
@@ -221,10 +221,10 @@ class CartController extends Controller
                             $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
                             $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
                             $wareHouse = KHO::find($ware[0]->id);
-                            $wareHouse->sl_ton--;
+                            $wareHouse->slton--;
                             $wareHouse->update();
                         }else{
-                            $wareHouse->sl_ton--;
+                            $wareHouse->slton--;
                             $wareHouse->update();
                         }
                         
@@ -237,7 +237,7 @@ class CartController extends Controller
                         $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
                         $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
                         $wareHouse = KHO::find($ware[0]->id);
-                        $wareHouse->sl_ton--;
+                        $wareHouse->slton--;
                         $wareHouse->update();
                     }
                     
@@ -245,7 +245,7 @@ class CartController extends Controller
                 }else{
                     $ware = KHO::where('id_cn', request('id_cn'))->where('id_sp', $product['id_sp'])->get();
                     $wareHouse = KHO::find($ware[0]->id);
-                    $wareHouse->sl_ton--;
+                    $wareHouse->slton--;
                     $wareHouse->update();
                 }
                 
@@ -373,7 +373,6 @@ class CartController extends Controller
         $newAddress->tinhthanh = request('tinhthanh');
         $newAddress->sdt = request('sdt');
         $newAddress->macdinh = request('macdinh');
-        $newAddress->trangthai = 1;
         if(request('macdinh')==1){
             $oldDefault = TAIKHOAN_DIACHI::where('macdinh', 1)->get();
             $count = count($oldDefault);
@@ -464,9 +463,9 @@ class CartController extends Controller
                 $count = count($exist);
                 if($count == 0){
                     array_push($listInvalid, $pro['id']);
-                }else if($exist[0]->sl_ton==0){
+                }else if($exist[0]->slton==0){
                     array_push($listInvalid, $pro['id']);
-                }else if($exist[0]->sl_ton==1&&$pro['qty']==2){
+                }else if($exist[0]->slton==1&&$pro['qty']==2){
                     array_push($listDecrease, $pro['id']);
                 }else  array_push($listValid, $pro['id']);
             }
@@ -481,10 +480,10 @@ class CartController extends Controller
                 if($count == 0){
                     array_push($listInvalid, $pro['id']);
                     $check = false;
-                }else if($exist[0]->sl_ton==0){
+                }else if($exist[0]->slton==0){
                     array_push($listInvalid, $pro['id']);
                     $check = false;
-                }else if($exist[0]->sl_ton==1&&$pro['qty']==2){
+                }else if($exist[0]->slton==1&&$pro['qty']==2){
                     $check = false;
                     array_push($listDecrease, $pro['id']);
                 }else  array_push($listValid, $pro['id']);
@@ -510,10 +509,10 @@ class CartController extends Controller
                             break;
                         }
                     }
-                    if($exist[0]->sl_ton==1&&$qty==2){
+                    if($exist[0]->slton==1&&$qty==2){
                         unset($listInvalid[$i]);
                         array_push($listDecrease, $listInvalid[$i]);
-                    }else if($exist[0]->sl_ton>0){
+                    }else if($exist[0]->slton>0){
                         
                         unset($listInvalid[$i]);
                     }  
@@ -522,7 +521,7 @@ class CartController extends Controller
                     $exist = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $listDecrease[$i])->get();
                     $count = count($exist);
                     $qty = 0;
-                    if($exist[0]->sl_ton>=2){
+                    if($exist[0]->slton>=2){
                         unset($listDecrease[$i]);
                     }  
                 }  
@@ -576,12 +575,12 @@ class CartController extends Controller
                 $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
                 $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $detail->id_sp)->get();
                 $wareHouse = KHO::find($ware[0]->id);
-                $wareHouse->sl_ton++;
+                $wareHouse->slton++;
                 $wareHouse->update();
             }else{
                 $ware = KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->get();
                 $wareHouse = KHO::find($ware[0]->id);
-                $wareHouse->sl_ton++;
+                $wareHouse->slton++;
                 $wareHouse->update();
             }
         }
