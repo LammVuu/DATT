@@ -1136,7 +1136,7 @@ $(function() {
                                                 '<b class="mb-10">'+ data[i]['tensp'] +'</b>' +
                                                 '<div>' +
                                                     '<span class="fw-600 price-color">'+ numberWithDot(data[i]['giakhuyenmai']) +'<sup>đ</sup></span>' +
-                                                    '<span class="ml-5 text-strike">'+ numberWithDot(data[i]['gia']) +'<sup>đ</sup></span>' +
+                                                    '<span data-id="'+data[i]['id']+'" class="discount-price ml-5 text-strike">'+ numberWithDot(data[i]['gia']) +'<sup>đ</sup></span>' +
                                                 '</div>' +
                                                 '<div>' +
                                                     '<div id="evaluate_'+ i +'" class="flex-row pt-5">' +
@@ -1155,6 +1155,8 @@ $(function() {
                                             '<span class="shop-promotion-text">'+ (data[i]['khuyenmai']*100) + '%' +'</span>' +
                                         '</div>');
                     $('#product_' + data[i]['id']).prepend(promotionTag);
+                } else {
+                    $('.discount-price[data-id="'+data[i]['id']+'"]').remove();
                 }
 
                 // đánh giá
@@ -1324,7 +1326,7 @@ $(function() {
                     }
 
                     var addCartSuccess = $('<div class="add-cart-success">' +
-                                                '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color-2 mr-10"></i>Thêm giỏ hàng thành công!</div>' +
+                                                '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
                                                 '<a href="giohang" class="checkout-btn p-10 w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
                                             '</div>');
                     addCartSuccess.appendTo($('#add-cart-success'));
@@ -2257,7 +2259,7 @@ $(function() {
             $('#evaluate_id').val(id_dg);
 
             // gán sao
-            var star = $('#evalute-rating-' + id_dg).val();
+            var star = $('#evaluate-rating-' + id_dg).val();
             $('#edit_star_rating').val(star);
             for(var i = 1; i <= star; i++){
                 $('.edit-star-rating[data-id="'+i+'"]').css('color' , 'orange');
@@ -2637,7 +2639,7 @@ $(function() {
                                                     '<div>ram: '+data[i]['ram']+'</div>'+
                                                     '<div class="d-flex align-items-center">'+
                                                         '<b>'+data[i]['trangthai']+'</b>'+
-                                                        '<i class="fas fa-check-circle success-color-2 ml-10"></i>' +
+                                                        '<i class="fas fa-check-circle success-color ml-10"></i>' +
                                                     '</div>'+
                                                 '</div>'+
                                             '</div>');
@@ -2948,7 +2950,7 @@ $(function() {
                                                 '</div>'+
                                                 '<div class="d-flex fz-20 mt-10">'+
                                                     '<div>Trạng thái bảo hành:</div>';
-                                                    elmnt += $warrantyStatus == true ? '<b class="success-color-2 ml-10">Trong bảo hành</b>' : '<b class="warning-color ml-10">Hết hạn bảo hành</b>';
+                                                    elmnt += $warrantyStatus == true ? '<b class="success-color ml-10">Trong bảo hành</b>' : '<b class="warning-color ml-10">Hết hạn bảo hành</b>';
                                                     elmnt += '</div>'+
                                                 '<div class="mt-10">Bảo hành: <b>'+data['product']['baohanh']+'</b></div>'+
                                                 '<div class="d-flex mt-10">'+
@@ -3618,6 +3620,9 @@ $(function() {
                         return;
                     } 
                 }
+                if(qty == 2){
+                    return;
+                }
                 
                 $('#qty').text(++qty);
             } else {
@@ -3629,16 +3634,24 @@ $(function() {
             }
         } else {
             var id = $(this).data('id').split('_')[1];
+            var qty = parseInt($('#qty_' + id).text());
             
             var type = $(this).hasClass('plus') ? 'plus' : 'minus';
 
-            if(type == 'minus' && parseInt($('#qty_' + id).text()) == 1){
+            // giảm số lượng về 0
+            if(type == 'minus' && qty == 1){
                 $('#delete-content').text('Bạn có muốn xóa sản phẩm này?')
                 $('#delete-btn').attr('data-object', 'item-cart');
                 $('#delete-btn').attr('data-id', id);
                 $('#delete-modal').modal('show');
                 return;
             }
+
+            // số lượng tối đa là 2
+            if(qty == 2){
+                return;
+            }
+
 
             $.ajax({
                 headers: {

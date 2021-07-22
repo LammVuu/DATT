@@ -22,21 +22,23 @@
             @foreach($lst_featured as $key)
             <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class="index-featured-phone w-20 relative">
                 {{-- khuyến mãi tag --}}
-                <div class='shop-promotion-tag'>
-                    @if($key['khuyenmai'] != 0)
-                    <span class='shop-promotion-text'>{{ '-'.($key['khuyenmai']*100).'%'}}</span>
-                    @endif
-                </div>
+                @if($key['khuyenmai'] != 0)
+                    <div class='shop-promotion-tag'>
+                        <span class='shop-promotion-text'>{{ '-'.($key['khuyenmai']*100).'%'}}</span>
+                    </div>
+                @endif
                 {{-- hình ảnh --}}
                 <img src="{{ $url_phone.$key['hinhanh'] }}">
 
                 {{-- tên sản phẩm --}}
                 <div class='fw-600 black text-center'>{{ $key['tensp'] }}</div>
 
-                <div>
+                <div class="text-center">
                     <div class="pt-10">
-                        <span class="price-color fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                        <span class="price-color fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>    
+                        @if ($key['khuyenmai'] != 0)
                         <span class="text-strike gray-1 ml-10">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
+                        @endif
                     </div>
                     @if ($key['danhgia']['qty'] != 0)
                     <div class='d-flex align-items-center pt-10'>

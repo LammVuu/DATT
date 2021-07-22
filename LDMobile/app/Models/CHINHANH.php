@@ -25,7 +25,7 @@ class CHINHANH extends Model
     // kho
     public function kho()
     {
-        return $this->belongsToMany(SANPHAM::class, 'kho', 'id_cn', 'id_sp')->withPivot('id', 'slton', 'trangthai');
+        return $this->belongsToMany(SANPHAM::class, 'kho', 'id_cn', 'id_sp')->withPivot('id', 'slton');
     }
 
     // tinhthanh

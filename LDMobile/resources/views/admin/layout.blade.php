@@ -30,6 +30,7 @@
         </div>
     </div>
     
+    <div id='btn-scroll-top'><i class="fas fa-chevron-up"></i></div>
 
     @include("admin/footer/foot")
 </body>

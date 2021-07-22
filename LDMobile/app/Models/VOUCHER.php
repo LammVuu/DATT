@@ -21,7 +21,6 @@ class VOUCHER extends Model
         'ngaybatdau',
         'ngayketthuc',
         'sl',
-        'trangthai',
     ];
 
     public $timestamps = false;
@@ -29,7 +28,7 @@ class VOUCHER extends Model
     // taikhoan_voucher
     public function taikhoan_voucher()
     {
-        return $this->belongsToMany(TAIKHOAN::class, 'taikhoan_voucher', 'id_vc', 'id_tk')->withPivot('id', 'trangthai');
+        return $this->belongsToMany(TAIKHOAN::class, 'taikhoan_voucher', 'id_vc', 'id_tk')->withPivot('id');
     }
 
     // donhang

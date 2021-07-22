@@ -699,7 +699,7 @@ class SanPhamController extends Controller
         foreach($listComment as $comment){
             $listAttachment = CTDG::Where('id_dg', $comment->id)->get();
             foreach($listAttachment as $attachemnt){
-                $attachemnt->hinhanh = Helper::$URL."evalute/". $attachemnt->hinhanh;
+                $attachemnt->hinhanh = Helper::$URL."evaluate/". $attachemnt->hinhanh;
             }
             $comment->dsHinhAnh = $listAttachment;
             $listReply = PHANHOI::where('id_dg',$comment->id)->orderBy('id',"desc")->take(5)->get();
@@ -916,7 +916,7 @@ class SanPhamController extends Controller
                     'image_'.$i => 'required|image|mimes:jpeg,png,jpg,gif,svg',
                 ]);
                 $imageName = time().$i.'.'. $image->getClientOriginalExtension();
-                $image->move('images/evalute/', $imageName);
+                $image->move('images/evaluate/', $imageName);
                 $detailComment->hinhanh = $imageName;
                 $detailComment->id_dg = $id;
                 $detailComment->save();
@@ -954,7 +954,7 @@ class SanPhamController extends Controller
                         'image_'.$i => 'required|image|mimes:jpeg,png,jpg,gif,svg',
                     ]);
                     $imageName = time().$i.'.'. $image->getClientOriginalExtension();
-                    $image->move('images/evalute/', $imageName);
+                    $image->move('images/evaluate/', $imageName);
                     $detailComment->hinhanh = $imageName;
                     $detailComment->id_dg = $id;
                     $detailComment->save();

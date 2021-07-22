@@ -52,7 +52,7 @@
                                 <div class="d-flex">
                                     <b id="adr-fullname-{{$addressDefault->id}}" class="text-uppercase">{{ $addressDefault->hoten }}</b>
                                     @if ($addressDefault->macdinh == 1)
-                                        <div class="d-flex align-items-center success-color-2 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>    
+                                        <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>    
                                     @endif
                                 </div>
                                 <div class="d-flex">
@@ -85,7 +85,7 @@
                 @if (session('user')->htdn == 'nomal')
                     <div id='btn-change-pw' type="button" data-bs-toggle="modal" data-bs-target="#change-pw-modal" class="d-flex align-items-center main-color-text"><i class="fas fa-key mr-10"></i>Thay đổi mật khẩu</div>
                 @else
-                    <div>Tài khoản liên kết: <b>{{session('user')->htdn}} <i class="fas fa-check-circle success-color-2 ml-5"></i></b></div>
+                    <div>Tài khoản liên kết: <b>{{session('user')->htdn}} <i class="fas fa-check-circle success-color ml-5"></i></b></div>
                 @endif
                 
             </div>

@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use File;
 use Session;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 use App\Models\BANNER;
 use App\Models\BAOHANH;
@@ -73,6 +70,10 @@ class IndexController extends Controller
             // danh sách sản phẩm theo id_msp
             $SANPHAM = MAUSP::find($model->id)->sanpham;
 
+            if(count($SANPHAM) == 0){
+                continue;
+            }
+
             // lấy mẫu sp theo dung lượng
             $lst_temp = $this->getProductByCapacity($SANPHAM);
 
@@ -105,13 +106,11 @@ class IndexController extends Controller
 
         $lst_product = $this->getAllProductByCapacity();
 
-        $paginate = $this->paginate($lst_product);
-
         // các loại ram hiện có
-        $lst_ram = $this->getRamAllProduct($this->getAllProductByCapacity());
+        $lst_ram = $this->getRamAllProduct();
 
         // các loại dung lượng hiện có
-        $lst_capacity = $this->getCapacityAllProduct($this->getAllProductByCapacity());
+        $lst_capacity = $this->getCapacityAllProduct();
 
         // số lượng sản phẩm
         $qty = count($lst_product);
@@ -247,7 +246,7 @@ class IndexController extends Controller
             'giakhuyenmai' => '',
             'cauhinh' => $this->getSpecifications($id),
             'baohanh' => MAUSP::where('id', $id_msp)->first()->baohanh,
-            'khuyenmai' => $this->getPromotionById($id_km),
+            'khuyenmai' => $id_km != null ? $this->getPromotionById($id_km) : [],
             'id_youtube' => $model->id_youtube,
             'trangthai' => $SANPHAM->trangthai,
         ];
@@ -448,127 +447,6 @@ class IndexController extends Controller
         return view($this->user.'lien-he');
     }
 
-    public function createDataAPI()
-    {
-        //========================== tỉnh thành ===================
-
-        // $response = Http::get('https://api.mysupership.vn/v1/partner/areas/province')->json();
-        // $TinhThanh = $response['results'];
-        // $count = count($TinhThanh);
-
-        // $data = [];
-        
-        // for($i = 0; $i < $count; $i++){ 
-        //     $data[$i]['ID'] = $TinhThanh[$i]['code'];
-        //     $data[$i]['Name'] = $TinhThanh[$i]['name'];
-        // }
-
-        // sort($data);
-
-        // $fileName = 'TinhThanh.json';
-        // $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        // file_put_contents($fileName, $json);
-        
-        
-        // echo '<pre>';
-        // print_r('ok');
-        // echo '</pre>';
-
-        //============================== Quận huyện =============================
-        
-        // $data = [];
-        // $id;
-        // for($i = 1; $i <= 96; $i++){
-        //     if($i < 10){
-        //         $id = '0' . $i;
-        //         $url = 'https://api.mysupership.vn/v1/partner/areas/district?province=' . $id;
-        //     } else {
-        //         $id = $i;
-        //         $url = 'https://api.mysupership.vn/v1/partner/areas/district?province=' . $id;
-        //     }
-            
-            
-        //     $response = Http::get($url)->json();
-        //     $response = $response['results'];
-
-        //     $count = count($response);
-
-        //     if($count == 0) continue;
-
-        //     $temp = [];
-
-        //     for($j = 0; $j < $count; $j++){ 
-        //         $temp[$j]['ID'] = $response[$j]['code'];
-        //         $temp[$j]['Name'] = $response[$j]['name'];
-        //         $temp[$j]['province'] = $response[$j]['province'];
-        //     }
-
-        //     sort($temp);
-
-        //     $data[$id] = $temp;
-        // }
-        
-
-        // $fileName = 'QuanHuyen.json';
-        // $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        // file_put_contents($fileName, $json);
-
-        // echo '<pre>';
-        // print_r('ok');
-        // echo '</pre>';
-        
-        //============================== phường xã =============================
-
-        // $data = [];
-        // $id;
-        // for($i = 900; $i <= 973; $i++){
-        //     if($i < 10){
-        //         $id = '00' . $i;
-        //         $url = 'https://api.mysupership.vn/v1/partner/areas/commune?district=' . $id;
-        //     } elseif($i < 100) {
-        //         $id = '0' . $i;
-        //         $url = 'https://api.mysupership.vn/v1/partner/areas/commune?district=' . $id;
-        //     } else {
-        //         $id = $i;
-        //         $url = 'https://api.mysupership.vn/v1/partner/areas/commune?district=' . $id;
-        //     }
-            
-            
-        //     $response = Http::get($url)->json();
-        //     $response = $response['results'];
-
-        //     $count = count($response);
-
-        //     if($count == 0) continue;
-
-        //     $temp = [];
-
-        //     for($j = 0; $j < $count; $j++){ 
-        //         $temp[$j]['ID'] = $response[$j]['code'];
-        //         $temp[$j]['Name'] = $response[$j]['name'];
-        //         $temp[$j]['District'] = $response[$j]['district'];
-        //         $temp[$j]['Province'] = $response[$j]['province'];
-        //     }
-
-        //     sort($temp);
-
-        //     $data[$id] = $temp;
-        // }
-        
-
-        // $fileName = 'PhuongXa7.json';
-        // $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        // file_put_contents($fileName, $json);
-
-        // echo '<pre>';
-        // print_r('ok');
-        // echo '</pre>';
-        
-            
-
-        // return false;
-    }
-
     public function SoSanh($str){
         $lst_urlName = explode('vs', $str);
 
@@ -665,18 +543,6 @@ class IndexController extends Controller
                 return $phuongXa;
             }
         }
-    }
-
-    public function test5()
-    {
-        for($i = 1; $i <= 9; $i++){
-            // if($i == 2 || $i == 5 || $i == 10 || $i == 12){
-            //     echo 'samsung_zfold2_5g_slide_' . $i . '.gif' . '<br>';
-            //     continue;
-            // }
-            echo 'xiaomi_redmi_note_9_pro_slide_' . $i . '.jpg' . '<br>';
-        }
-        return false;
     }
 
     /*==========================================================================================================
@@ -1149,43 +1015,26 @@ class IndexController extends Controller
     public function AjaxCheckImei(Request $request)
     {
         if($request->ajax()){
-            $imei = IMEI::where('imei', $request->imei)->where('trangthai', 1)->first();
+            $warranty = BAOHANH::where('imei', $request->imei)->first();
 
             // imei không hợp lệ hoặc chưa kích hoạt
-            if(!$imei){
+            if(!$warranty){
                 return ['status' => 'invalid imei'];
             }
             // imei hợp lệ
             else {
                 // sản phẩm
-                $product = $this->getProductById($imei->id_sp);
+                $product = $this->getProductById(IMEI::find($warranty->id_imei)->id_sp);
 
                 // bảo hành
                 $product['baohanh'] = MAUSP::find($product['id_msp'])->baohanh;
 
-                // ngày bắt đầu bảo hành (từ ngày giao đơn hàng thành công)
-                // đơn hàng của người dùng
-                $flag = 0;
-                foreach(DONHANG::where('trangthaidonhang', 'Thành công')->get() as $order){
-                    if($flag == 1){
-                        break;
-                    }
-                    // chi tiết đơn hàng
-                    foreach(DONHANG::find($order['id'])->ctdh as $detail){
-                        // đơn hàng có id_sp trùng với imei
-                        if($detail->pivot->id_sp == $imei->id_sp){
-                            $product['ngaymua'] = explode(' ', $order['thoigian'])[0];
-                            // thời gian bảo hành
-                            $warranty = intval(explode(' ', $product['baohanh'])[0]);
-                            // tính thời gian bảo hành
-                            $product['ngayketthuc'] = date('d/m/Y', strtotime('+'.$warranty.' months', strtotime(str_replace('/', '-', $product['ngaymua']))));
-                            // trạng thái bảo hành
-                            $product['trangthaibaohanh'] = strtotime(str_replace('/', '-', $product['ngayketthuc'])) >= time() ? 'true' : 'false';
-                            $flag = 1;
-                            break;
-                        }
-                    }
-                }
+                $product['ngaymua'] = $warranty->ngaymua;
+
+                $product['ngayketthuc'] = $warranty->ngayketthuc;
+
+                // trạng thái bảo hành
+                $product['trangthaibaohanh'] = strtotime(str_replace('/', '-', $product['ngayketthuc'])) >= time() ? 'true' : 'false';
 
                 return [
                     'status' => 'success',
@@ -1320,6 +1169,10 @@ class IndexController extends Controller
             // danh sách sản phẩm theo id_msp
             $SANPHAM = MAUSP::find($model->id)->sanpham;
 
+            if(count($SANPHAM) == 0){
+                continue;
+            }
+
             // lấy mẫu sp theo dung lượng
             $lst_temp = $this->getProductByCapacity($SANPHAM);
 
@@ -1363,6 +1216,7 @@ class IndexController extends Controller
                     'gia' => $key['gia'],
                     'khuyenmai' => $promotion,
                     'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
+                    'cauhinh' => $key['cauhinh'],
                     'trangthai' => $key['trangthai'],
                 ];
 
@@ -1389,6 +1243,7 @@ class IndexController extends Controller
                     'gia' => $key['gia'],
                     'khuyenmai' => $promotion,
                     'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
+                    'cauhinh' => $key['cauhinh'],
                     'trangthai' => $key['trangthai'],
                 ];
 
@@ -1429,6 +1284,7 @@ class IndexController extends Controller
                             'qty' => $starRating['total-rating'],
                             'star' => $starRating['total-star'],
                         ],
+                        'cauhinh' => $key[$rand]['cauhinh'],
                         'trangthai' => $key[$rand]['trangthai'],
                     ];
                 }
@@ -1457,6 +1313,7 @@ class IndexController extends Controller
                             'qty' => $starRating['total-rating'],
                             'star' => $starRating['total-star'],
                         ],
+                        'cauhinh' => $key[$rand]['cauhinh'],
                         'trangthai' => $key[$rand]['trangthai'],
                     ];
                 }
@@ -1486,6 +1343,7 @@ class IndexController extends Controller
                         'qty' => $starRating['total-rating'],
                         'star' => $starRating['total-star'],
                     ],
+                    'cauhinh' => $key[$rand]['cauhinh'],
                     'trangthai' => $key[$rand]['trangthai'],
                 ];
             }
@@ -1499,15 +1357,41 @@ class IndexController extends Controller
     {
         $product = SANPHAM::find($id_sp);
         $capacity = $product->dungluong;
+        $ram = $product->ram;
         $id_msp = $product->id_msp;
 
         $lst_id = [];
 
-        foreach(SANPHAM::where('id_msp', $id_msp)->where('dungluong', $capacity)->get() as $key){
+        foreach(SANPHAM::where('id_msp', $id_msp)->where('dungluong', $capacity)->where('ram', $ram)->get() as $key){
             array_push($lst_id, $key['id']);
         }
 
         return $lst_id;
+    }
+
+    // lấy danh sách id_sp cùng mẫu
+    public function getListIdByModel($id_msp)
+    {
+        $lst_result = [];
+        $temp = SANPHAM::select('id')->distinct()->where('id_msp', $id_msp)->get();
+        foreach($temp as $key){
+            array_push($lst_result, $key->id);
+        }
+
+        return $lst_result;
+    }
+
+    // lấy danh sách id_sp cùng ncc
+    public function getListIdBySupplier($id_ncc)
+    {
+        $lst_result = [];
+        foreach(MAUSP::where('id_ncc', $id_ncc)->get() as $model){
+            foreach(SANPHAM::select('id')->distinct()->where('id_msp', $model->id)->get() as $product){
+                array_push($lst_result, $product->id);
+            }
+        }
+
+        return $lst_result;
     }
 
     // lấy sp theo id_sp
@@ -1562,8 +1446,13 @@ class IndexController extends Controller
     // kiểm tra còn hạn khuyến mãi không
     public function promotionCheck($id_sp)
     {
-        $warranty = SANPHAM::find($id_sp)->khuyenmai->ngayketthuc;
-        $today = date('d/m/Y');
+        // không có khuyến mãi
+        if(!SANPHAM::find($id_sp)->khuyenmai){
+            return false;
+        }
+
+        $warranty = strtotime(str_replace('/', '-', SANPHAM::find($id_sp)->khuyenmai->ngayketthuc));
+        $today = time();
 
         return $warranty >= $today ? true : false;
     }
@@ -1627,32 +1516,23 @@ class IndexController extends Controller
     }
 
     // lấy các loại ram hiện có
-    public function getRamAllProduct($allProduct)
+    public function getRamAllProduct()
     {
         $lst_ram = [];
-        $i = 0;
-
-        foreach($allProduct as $key){
-            if(!in_array($key['ram'], $lst_ram)){
-                $lst_ram[$i] = $key['ram'];
-                $i++;
-            }
+        foreach(SANPHAM::select('ram')->distinct()->get() as $ram){
+            array_push($lst_ram, $ram->ram);
         }
 
         return $lst_ram;
     }
 
     // lấy các loại dung lượng hiện có
-    public function getCapacityAllProduct($allProduct)
+    public function getCapacityAllProduct()
     {
         $lst_capacity = [];
-        $i = 0;
 
-        foreach($allProduct as $key){
-            if(!in_array($key['dungluong'], $lst_capacity)){
-                $lst_capacity[$i] = $key['dungluong'];
-                $i++;
-            }
+        foreach(SANPHAM::select('dungluong')->distinct()->get() as $dungluong){
+            array_push($lst_capacity, $dungluong->dungluong);
         }
 
         return $lst_capacity;
@@ -1738,8 +1618,14 @@ class IndexController extends Controller
             'chietkhau' => $temp->chietkhau,
             'ngaybatdau' => $temp->ngaybatdau,
             'ngayketthuc' => $temp->ngayketthuc,
+            'trangthaikhuyenmai' => true,
             'trangthai' => $temp->trangthai,
         ];
+
+        // hết hạn
+        if(strtotime(str_replace('/', '-', $temp->ngayketthuc)) < time()){
+            $promotion['trangthaikhuyenmai'] = false;
+        }
 
         return $promotion;
     }
@@ -1792,13 +1678,27 @@ class IndexController extends Controller
     {
         $models = NHACUNGCAP::find($id_ncc)->mausp;
         $lst_product = [];
+
+        $lst_id_msp = [];
+        foreach($models as $model){
+            array_push($lst_id_msp, $model['id']);
+        }
         
         // random mẫu sản phẩm không trùng nhau
-        $lst_model = $this->getUniqueRandomNumber($models[0]['id'], $models[count($models) - 1]['id'], $qty);
+        // $lst_model = $this->getUniqueRandomNumber($models[0]['id'], $models[count($models) - 1]['id'], $qty);
+        $lst_model = [];
+
+        for($i = 0; $i < $qty; $i++){
+            array_push($lst_model, $lst_id_msp[array_rand($lst_id_msp)]);
+        }
 
         // random sản phẩm theo id_msp
         for($i = 0; $i < count($lst_model); $i++){
             $phones = SANPHAM::where('id_msp', $lst_model[$i])->get();
+
+            if(count($phones) == 0){
+                continue;
+            }
 
             $phonesByCapacity = $this->getProductByCapacity($phones);
             $lst_product[$i] = $phonesByCapacity[mt_rand(0 , count($phonesByCapacity) - 1)];
@@ -1840,6 +1740,9 @@ class IndexController extends Controller
             }
 
             $phoneByModel = SANPHAM::where('id_msp', $model->id)->get();
+            if(count($phoneByModel) == 0){
+                continue;
+            }
             $phoneByCapacity = $this->getProductByCapacity($phoneByModel);
 
             foreach($phoneByCapacity as $key){
@@ -2137,7 +2040,7 @@ class IndexController extends Controller
     // hàm loại bỏ ký tự có dấu
     public function unaccent($str) {
 
-        $transliteration = [
+        $array = [
             'á' => 'a', 'à' => 'a', 'ả' => 'a', 'ã' => 'a', 'ạ' => 'a',
             'â' => 'a', 'ấ' => 'a', 'ầ' => 'a', 'ẩ' => 'a', 'ẫ' => 'a', 'ậ' => 'a',
             'ă' => 'a', 'ắ' => 'a', 'ằ' => 'a', 'ẳ' => 'a', 'ẵ' => 'a', 'ặ' => 'a',
@@ -2151,11 +2054,22 @@ class IndexController extends Controller
             'ú' => 'u', 'ù' => 'u', 'ủ' => 'u', 'ũ' => 'u', 'ụ' => 'u',
             'ư' => 'u', 'ứ' => 'u', 'ừ' => 'u', 'ử' => 'u', 'ữ' => 'u', 'ự' => 'u',
             'ý' => 'y', 'ỳ' => 'y', 'ỷ' => 'y', 'ỹ' => 'y', 'ỵ' => 'y',
+            'A' => 'A', 'À' => 'A', 'Ả' => 'A', 'Ã' => 'A', 'Ạ' => 'A',
+            'Â' => 'A', 'Ấ' => 'A', 'Ầ' => 'A', 'Ẩ' => 'A', 'Ẫ' => 'A', 'Ậ' => 'A',
+            'Ă' => 'A', 'Ắ' => 'A', 'Ằ' => 'A', 'Ẳ' => 'A', 'Ẵ' => 'A', 'Ặ' => 'A',
+            'Đ' => 'D',
+            'É' => 'E', 'È' => 'E', 'Ẻ' => 'E', 'Ẽ' => 'E', 'Ẹ' => 'E',
+            'Ê' => 'E', 'Ế' => 'E', 'Ề' => 'E', 'Ể' => 'E', 'Ễ' => 'E', 'Ệ' => 'E',
+            'Í' => 'I', 'Ì' => 'I', 'Ỉ' => 'I', 'Ĩ' => 'I', 'Ị' => 'I',
+            'Ó' => 'O', 'Ò' => 'O', 'Ỏ' => 'O', 'Õ' => 'O', 'Ọ' => 'O',
+            'Ô' => 'O', 'Ố' => 'O', 'Ồ' => 'O', 'Ổ' => 'O', 'Ỗ' => 'O', 'Ộ' => 'O',
+            'Ơ' => 'O', 'Ớ' => 'O', 'Ờ' => 'O', 'Ở' => 'O', 'Ỡ' => 'O', 'Ợ' => 'O',
+            'Ú' => 'U', 'Ù' => 'U', 'Ủ' => 'U', 'Ũ' => 'U', 'Ụ' => 'U',
+            'Ư' => 'U', 'Ứ' => 'U', 'Ừ' => 'U', 'Ử' => 'U', 'Ữ' => 'U', 'Ự' => 'U',
+            'Ý' => 'Y', 'Ỳ' => 'Y', 'Ỷ' => 'Y', 'Ỹ' => 'Y', 'Ỵ' => 'Y'
         ];
 
-        $str = str_replace( array_keys( $transliteration ),
-                            array_values( $transliteration ),
-                            $str);
+        $str = str_replace(array_keys($array), array_values($array), $str);
         return $str;
     }
 
@@ -2249,10 +2163,4 @@ class IndexController extends Controller
         return $lst_detail;
     }
 
-    public function paginate($items, $perPage = 5, $page = null, $options = [])
-    {
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
-    }
 }

@@ -190,14 +190,164 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Chec
     Route::resource("donhang", DonHangController::class);
     Route::resource("baohanh", BaoHanhController::class);
     Route::resource("taikhoan", TaiKhoanController::class);
+    Route::resource("slideshow-msp", SlideshowMSPController::class);
+    Route::resource("kho", KhoController::class);
+    Route::resource("chinhanh", ChiNhanhController::class);
+    Route::resource("tinhthanh", TinhThanhController::class);
+    Route::resource("voucher", VoucherController::class);
+    Route::resource("imei", ImeiController::class);
 
     /*=======================================================================================================
                                                         Ajax
     =========================================================================================================*/
-    
-    Route::post("ajax-delete-object", [DashboardController::class, "AjaxDeleteObject"]);
 
-    Route::post("ajax-get-hinhanh", [DashboardController::class, "AjaxGetHinhAnh"]);
+    Route::post("ajax-load-more", [DashboardController::class, "AjaxLoadMore"]);
+
+    /*=======================================================================================================
+                                                        Mẫu sp
+    =========================================================================================================*/
+    
+    Route::post("mausanpham/ajax-get-mausp", [App\Http\Controllers\admin\MauSanPhamController::class, "AjaxGetMausp"]);
+
+    Route::post("mausanpham/ajax-restore", [App\Http\Controllers\admin\MauSanPhamController::class, "AjaxRestore"]);
+    
+    Route::post("mausanpham/ajax-search", [App\Http\Controllers\admin\MauSanPhamController::class, "AjaxSearch"]);
+
+    Route::post("mausanpham/ajax-filter", [App\Http\Controllers\admin\MauSanPhamController::class, "AjaxFilter"]);
+
+    /*=======================================================================================================
+                                                        Khuyến mãi
+    =========================================================================================================*/
+
+    Route::post("khuyenmai/ajax-get-khuyenmai", [App\Http\Controllers\admin\KhuyenMaiController::class, "AjaxGetKhuyenMai"]);
+
+    Route::post("khuyenmai/ajax-search", [App\Http\Controllers\admin\KhuyenMaiController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Sản phẩm
+    =========================================================================================================*/
+
+    Route::post("sanpham/ajax-get-sanpham", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetSanPham"]);
+
+    Route::post("sanpham/ajax-get-promotionID-by-modelID", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetPromotionIDByModelID"]);
+
+    Route::post("sanpham/ajax-restore", [App\Http\Controllers\admin\SanPhamController::class, "AjaxRestore"]);
+
+    Route::post("sanpham/ajax-search", [App\Http\Controllers\admin\SanPhamController::class, "AjaxSearch"]);
+
+    Route::post("sanpham/ajax-get-model-status-false", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetModelStatusFalse"]);
+
+    Route::post("sanpham/ajax-filtersort", [App\Http\Controllers\admin\SanPhamController::class, "AjaxFilterSort"]);
+
+    /*=======================================================================================================
+                                                        Nhà cung cấp
+    =========================================================================================================*/
+
+    Route::post("nhacungcap/ajax-get-ncc", [App\Http\Controllers\admin\NhaCungCapController::class, "AjaxGetNCC"]);
+
+    Route::post("nhacungcap/ajax-restore", [App\Http\Controllers\admin\NhaCungCapController::class, "AjaxRetore"]);
+
+    Route::post("nhacungcap/ajax-search", [App\Http\Controllers\admin\NhaCungCapController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Slideshow msp
+    =========================================================================================================*/
+
+    Route::post("slideshow-msp/ajax-get-slideshow-msp", [App\Http\Controllers\admin\SlideshowMSPController::class, "AjaxGetSlideshowMSP"]);
+
+    Route::POST("slideshow-msp/ajax-get-model-havenot-slideshow", [App\Http\Controllers\admin\SlideshowMSPController::class, "AjaxGetModelHaveNotSlideshow"]);
+
+    Route::post("slideshow-msp/ajax-search", [App\Http\Controllers\admin\SlideshowMSPController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Hình ảnh
+    =========================================================================================================*/
+
+    Route::post("hinhanh/ajax-get-model-havenot-image", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxGetModelHaveNotImage"]);
+
+    Route::post("hinhanh/ajax-get-hinhanh", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxGetHinhAnh"]);
+
+    Route::post("hinhanh/ajax-search", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Kho
+    =========================================================================================================*/
+
+    Route::post("kho/ajax-get-kho", [App\Http\Controllers\admin\KhoController::class, "AjaxGetKho"]);
+
+    Route::post("kho/ajax-get-product-isnot-in-stock", [App\Http\Controllers\admin\KhoController::class, "AjaxGetProductIsNotInStock"]);
+
+    Route::post("kho/ajax-get-product-by-id", [App\Http\Controllers\admin\KhoController::class, "AjaxGetProductById"]);
+
+    Route::post("kho/ajax-search", [App\Http\Controllers\admin\KhoController::class, "AjaxSearch"]);
+
+    Route::post("kho/ajax-filter", [App\Http\Controllers\admin\KhoController::class, "AjaxFilter"]);
+
+    /*=======================================================================================================
+                                                        Chi nhánh
+    =========================================================================================================*/
+
+    Route::post("chinhanh/ajax-get-chinhanh", [App\Http\Controllers\admin\ChiNhanhController::class, "AjaxGetChiNhanh"]);
+
+    Route::post("chinhanh/ajax-restore", [App\Http\Controllers\admin\ChiNhanhController::class, "AjaxRestore"]);
+
+    Route::post("chinhanh/ajax-search", [App\Http\Controllers\admin\ChiNhanhController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Tỉnh thành
+    =========================================================================================================*/
+
+    Route::post("tinhthanh/ajax-get-tinhthanh", [App\Http\Controllers\admin\TinhThanhController::class ,"AjaxGetTinhThanh"]);
+
+    Route::post("tinhthanh/ajax-search", [App\Http\Controllers\admin\TinhThanhController::class ,"AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Voucher
+    =========================================================================================================*/
+
+    Route::post("voucher/ajax-get-voucher", [App\Http\Controllers\admin\VoucherController::class, "AjaxGetVoucher"]);
+
+    Route::post("voucher/ajax-search", [App\Http\Controllers\admin\VoucherController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Đơn hàng
+    =========================================================================================================*/
+
+    Route::post("donhang/ajax-get-donhang", [App\Http\Controllers\admin\DonHangController::class, "AjaxGetDonHang"]);
+
+    Route::post("donhang/ajax-order-confirmation", [App\Http\Controllers\admin\DonHangController::class, "AjaxOrderConfirmation"]);
+
+    Route::post("donhang/ajax-successful-order", [App\Http\Controllers\admin\DonHangController::class, "AjaxSuccessfulOrder"]);
+
+    Route::post("donhang/ajax-search", [App\Http\Controllers\admin\DonHangController::class, "AjaxSearch"]);
+
+    Route::post("donhang/ajax-filter-sort", [App\Http\Controllers\admin\DonHangController::class, "AjaxFilterSort"]);
+
+    /*=======================================================================================================
+                                                        Bảo hành
+    =========================================================================================================*/
+
+    Route::post("baohanh/ajax-get-baohanh", [App\Http\Controllers\admin\BaoHanhController::class, "AjaxGetBaoHanh"]);
+
+    Route::post("baohanh/ajax-search", [App\Http\Controllers\admin\BaoHanhController::class, "AjaxSearch"]);
+
+    /*=======================================================================================================
+                                                        Slideshow
+    =========================================================================================================*/
+
+    Route::post("slideshow/ajax-get-slideshow", [App\Http\Controllers\admin\SlideshowController::class, "AjaxGetslideshow"]);
+
+    /*=======================================================================================================
+                                                        Banner
+    =========================================================================================================*/
+
+    Route::post("banner/ajax-get-banner", [App\Http\Controllers\admin\BannerController::class, "AjaxGetBanner"]);
+
+    /*=======================================================================================================
+                                                        IMEI
+    =========================================================================================================*/
+
+    Route::post("imei/ajax-search", [App\Http\Controllers\admin\ImeiController::class, "AjaxSearch"]);
 });
 
 /*

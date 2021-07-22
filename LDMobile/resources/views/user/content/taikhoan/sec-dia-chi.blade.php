@@ -16,7 +16,7 @@
                         <div class="d-flex justify-content-between pb-10">
                             <div class="d-flex">
                                 <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
-                                <div class="d-flex align-items-center success-color-2 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
+                                <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
                             </div>
                             <div class="d-flex">
                                 <div type="button" data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
@@ -70,7 +70,7 @@
                                 <div class="gray-1">Điện thoại:</div>
                                 <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
                             </div>
-                            <div type="button" data-id="{{$key['id']}}" class="btn-set-default-btn success-color-2">Đặt làm mặc định</div>
+                            <div type="button" data-id="{{$key['id']}}" class="btn-set-default-btn success-color">Đặt làm mặc định</div>
                         </div>
                     </div>
                 @endif

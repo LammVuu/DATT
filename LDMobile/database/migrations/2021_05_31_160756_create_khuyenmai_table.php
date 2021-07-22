@@ -20,7 +20,6 @@ class CreateKhuyenmaiTable extends Migration
             $table->float('chietkhau');
             $table->string('ngaybatdau', 20);
             $table->string('ngayketthuc', 20);
-            $table->boolean('trangthai');   
         });
     }
 

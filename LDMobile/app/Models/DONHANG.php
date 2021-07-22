@@ -25,7 +25,6 @@ class DONHANG extends Model
         'hinhthuc',
         'tongtien',
         'trangthaidonhang',
-        'trangthai',
     ];
 
     public $timestamps = false;

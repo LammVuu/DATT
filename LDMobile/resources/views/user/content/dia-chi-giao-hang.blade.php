@@ -27,7 +27,7 @@
                                 <div class="d-flex justify-content-between pb-10">
                                     <div class="d-flex">
                                         <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
-                                        <div class="d-flex align-items-center success-color-2 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
+                                        <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
                                     </div>
                                 </div>
                     

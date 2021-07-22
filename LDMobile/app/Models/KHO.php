@@ -17,7 +17,6 @@ class KHO extends Model
         'id_cn',
         'id_sp',
         'slton',
-        'trangthai',
     ];
 
     public $timestamps = false;

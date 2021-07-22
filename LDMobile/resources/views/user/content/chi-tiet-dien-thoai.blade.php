@@ -63,11 +63,13 @@
                     {{-- giá --}}
                     <div class='d-flex flex-row align-items-end'>
                         <div class='fw-600 price-color fz-26'>{{ number_format($phone['giakhuyenmai']) }}<sup>đ</sup></div>
-                        <div class="d-flex align-items-end ml-20">
-                            <div class="fz-14">Giá niêm yết :</div>
-                            <b class='ml-5 text-strike fz-16'>{{ number_format($phone['gia']) }}<sup>đ</sup></b>
-                        </div>
-                        
+                        {{-- khuyến mãi còn hạn --}}
+                        @if (!empty($phone['khuyenmai']) && $phone['khuyenmai']['trangthaikhuyenmai'])
+                            <div class="d-flex align-items-end ml-20">
+                                <div class="fz-14">Giá niêm yết :</div>
+                                <b class='ml-5 text-strike fz-16'>{{ number_format($phone['gia']) }}<sup>đ</sup></b>
+                            </div>    
+                        @endif
                     </div>
                     {{-- dung lượng --}}
                     <div class='detail-title pt-10'>Dung lượng</div>
@@ -112,15 +114,18 @@
                     </div>
 
                     {{-- khuyến mãi --}}
-                    <div class='detail-promotion mt-40 mb-10'>
-                        <div class='detail-promotion-text'><i class="fas fa-gift mr-5"></i>KHUYẾN MÃI</div>
-                        <div class='detail-title'><i class="fas fa-check-circle mr-5 main-color-text"></i>{{ $phone['khuyenmai']['tenkm']}}</div>
-                        <div class='detail-promotion-content'>
-                            {{ $phone['khuyenmai']['noidung'] }}                           
+                    {{-- khuyến mãi còn hạn --}}
+                    @if (!empty($phone['khuyenmai']) && $phone['khuyenmai']['trangthaikhuyenmai'])
+                        <div class='detail-promotion mt-40'>
+                            <div class='detail-promotion-text'><i class="fas fa-gift mr-5"></i>KHUYẾN MÃI</div>
+                            <div class='detail-title'><i class="fas fa-check-circle mr-5 main-color-text"></i>{{ $phone['khuyenmai']['tenkm']}}</div>
+                            <div class='detail-promotion-content'>
+                                {{ $phone['khuyenmai']['noidung'] }}                           
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     {{-- mua ngay --}}
-                    <div type="button" data-id="{{$phone['id']}}" class='buy-now main-btn p-5 fz-20 fw-600'>MUA NGAY</div>
+                    <div type="button" data-id="{{$phone['id']}}" class='buy-now main-btn p-5 fz-20 fw-600 mt-20'>MUA NGAY</div>
                 </div>
             </div>
 
@@ -289,11 +294,14 @@
                                 <div>
                                     <div class='d-flex flex-column fz-14'>
                                         <span class="price-color fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
-                                        <div>
-                                            <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
-                                            <span class='pl-5 pr-5'>|</span>
-                                            <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
-                                        </div>
+                                        {{-- khuyến mãi hết hạn --}}
+                                        @if($key['khuyenmai'] != 0)
+                                            <div>
+                                                <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                                <span class='pl-5 pr-5'>|</span>
+                                                <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     {{-- đánh giá --}}
                                     <div class='pt-10'>
@@ -351,11 +359,14 @@
                                 <div>
                                     <div class='d-flex flex-column fz-14'>
                                         <span class="price-color fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
-                                        <div>
-                                            <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
-                                            <span class='pl-5 pr-5'>|</span>
-                                            <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
-                                        </div>
+                                        {{-- khuyến mãi hết hạn --}}
+                                        @if($key['khuyenmai'] != 0)
+                                            <div>
+                                                <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                                <span class='pl-5 pr-5'>|</span>
+                                                <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     {{-- đánh giá --}}
                                     <div class='pt-10'>
@@ -516,7 +527,7 @@
                                         <div class='d-flex flex-column justify-content-between pl-20'>
                                             <div class="d-flex align-items-center">
                                                 <b>{{ $key['taikhoan']['hoten'] }}</b>
-                                                <div class="ml-10 success-color-2 fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
+                                                <div class="ml-10 success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
                                             </div>
                                             
                                             <div class='d-flex align-items-center'>
@@ -531,7 +542,7 @@
                                                 <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
                                             </div>
                                             {{-- sao đánh giá --}}
-                                            <input type="hidden" id="evalute-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
+                                            <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
                                             <div>{{ $key['thoigian']}}</div>
                                         </div>
                                     </div>
@@ -657,7 +668,7 @@
                                         <div class='d-flex flex-column justify-content-between pl-20'>
                                             <div class="d-flex align-items-center">
                                                 <b>{{ $key['taikhoan']['hoten'] }}</b>
-                                                <div class="ml-10 success-color-2 fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
+                                                <div class="ml-10 success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
                                             </div>
                                             <div class='d-flex align-items-center'>
                                                 @for ($i = 1; $i <= 5; $i++)

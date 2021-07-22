@@ -54,7 +54,9 @@
                             <div class="d-flex">
                                 <div class='d-flex flex-column p-20'>
                                     <b class='price-color fz-20'>{{number_format($key['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></b>
-                                    <span class='text-strike fz-14'>{{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>
+                                    @if ($key['sanpham']['khuyenmai'] != 0)
+                                        <span class='text-strike fz-14'>{{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>    
+                                    @endif
                                 </div>
                                 {{-- nút xóa --}}
                                 <div type="button" data-id="{{$key['id']}}" class="fav-btn-delete d-flex align-items-center h-100 p-10"><i class="fal fa-trash-alt fz-24"></i></div>

@@ -22,7 +22,7 @@ class CreateSanphamTable extends Migration
             $table->string('ram', 10);
             $table->string('dungluong', 10);
             $table->integer('gia');
-            $table->unsignedInteger('id_km');
+            $table->unsignedInteger('id_km')->nullable();
             $table->string('cauhinh', 100);
             $table->boolean('trangthai');
         });

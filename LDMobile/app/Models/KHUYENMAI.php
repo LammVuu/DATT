@@ -19,7 +19,6 @@ class KHUYENMAI extends Model
         'chietkhau',
         'ngaybatdau',
         'ngayketthuc',
-        'trangthai',
     ];
 
     public $timestamps = false;

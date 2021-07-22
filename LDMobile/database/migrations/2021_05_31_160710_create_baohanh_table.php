@@ -19,7 +19,6 @@ class CreateBaohanhTable extends Migration
             $table->string('imei', 15)->unique();
             $table->string('ngaymua', 20);
             $table->string('ngayketthuc', 20);
-            $table->boolean('trangthai');
         });
     }
 

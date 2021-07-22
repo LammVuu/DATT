@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-lg-12">
                 {{-- thanh bộ lọc & sắp xếp --}}
-                @include('user.content.dienthoai.bo-loc-sap-xep')
+                @include("user.content.dienthoai.bo-loc-sap-xep")
 
                 {{-- danh sách sản phẩm --}}
                 <div id="lst_product" class="row">
@@ -19,11 +19,11 @@
                         <div class='col-lg-3 col-md-4 col-sm-6'>
                             <div id="product_{{$key['id']}}" class='shop-product-card box-shadow'>
                                 {{-- khuyến mãi tag --}}
-                                <div class='shop-promotion-tag'>
-                                    @if($key['khuyenmai'] != 0)
-                                    <span class='shop-promotion-text'>{{ '-'.($key['khuyenmai']*100).'%'}}</span>
-                                    @endif
-                                </div>
+                                @if($key['khuyenmai'] != 0)
+                                    <div class='shop-promotion-tag'>
+                                        <span class='shop-promotion-text'>{{ '-'.($key['khuyenmai']*100).'%'}}</span>
+                                    </div>
+                                @endif
 
                                 {{-- thêm giỏ hàng --}}
                                 <div class='shop-overlay-product'></div>
@@ -40,7 +40,9 @@
                                         {{-- giá --}}
                                         <div>
                                             <span class='fw-600 price-color'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
-                                            <span class='ml-5 text-strike'>{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
+                                            @if ($key['khuyenmai'] != 0)
+                                                <span class='ml-5 text-strike'>{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>    
+                                            @endif
                                         </div>
                                         {{-- sao đánh giá --}}
                                         <div class='flex-row pt-5'>

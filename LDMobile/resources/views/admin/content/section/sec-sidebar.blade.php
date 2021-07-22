@@ -3,7 +3,7 @@
     <!-- avatar -->
     <div class="sidebar-avt">
         <div class="d-flex flex-column">
-            <img src="{{$url_user.$user->anhdaidien}}" alt="" width="80px" class="circle-img">
+            <img src="{{$url_user.$user->anhdaidien}}" alt="" width="80px" class="circle-img center-img">
             <div class="white mt-10">{{$user->hoten}}</div>
         </div>
     </div>
@@ -19,13 +19,25 @@
 
         <a href={{route('hinhanh.index')}} class="sidebar-link @yield('sidebar-image')"><i class="fas fa-image mr-10"></i>Hình ảnh</a>
 
-        <a href={{route('banner.index')}} class="sidebar-link @yield('sidebar-banner')"><i class="fas fa-ad mr-10"></i>Banner</a>
+        <a href={{route('banner.index')}} class="sidebar-link @yield('sidebar-banner')"><i class="fab fa-adversal mr-10"></i>Banner</a>
 
         <a href={{route('slideshow.index')}} class="sidebar-link @yield('sidebar-slideshow')"><i class="fas fa-images mr-10"></i>Slideshow</a>
+
+        <a href={{route('slideshow-msp.index')}} class="sidebar-link @yield('sidebar-slideshow-msp')"><i class="fas fa-images mr-10"></i>Slideshow MSP</a>
 
         <a href={{route('mausanpham.index')}} class="sidebar-link @yield('sidebar-product-samples')"><i class="fas fa-th-list mr-10"></i>Mẫu sản phẩm</a>
 
         <a href={{route('sanpham.index')}} class="sidebar-link @yield('sidebar-product')"><i class="fas fa-mobile-alt mr-10"></i>Sản phẩm</a>
+
+        <a href={{route('imei.index')}} class="sidebar-link @yield('sidebar-imei')"><i class="fas fa-barcode mr-10"></i>IMEI</a>
+
+        <a href={{route('kho.index')}} class="sidebar-link @yield('sidebar-warehouse')"><i class="fad fa-warehouse mr-10"></i>Kho</a>
+
+        <a href={{route('chinhanh.index')}} class="sidebar-link @yield('sidebar-branch')"><i class="far fa-code-branch mr-10"></i>Chi nhánh</a>
+
+        <a href={{route('tinhthanh.index')}} class="sidebar-link @yield('sidebar-province')"><i class="fad fa-city mr-10"></i>Tỉnh thành</a>
+
+        <a href={{route('voucher.index')}} class="sidebar-link @yield('sidebar-voucher')"><i class="fas fa-ticket-alt mr-10"></i>Voucher</a>
 
         <a href={{route('nhacungcap.index')}} class="sidebar-link @yield('sidebar-supplier')"><i class="fas fa-building mr-10"></i>Nhà cung cấp</a>
 

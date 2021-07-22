@@ -118,7 +118,9 @@
                             {{-- số lượng --}}
                             <td class="vertical-center">{{$key['sl']}}</td>
                             {{-- giảm giá --}}
-                            <td class="vertical-center">-{{$key['sanpham']['khuyenmai']*100}}%</td>
+                            <td class="vertical-center">
+                                {{$key['sanpham']['khuyenmai'] != 0 ? '-'.$key['sanpham']['khuyenmai']*100 .'%' : '0'}}
+                            </td>
                             {{-- tạm tính --}}
                             <td class="vertical-center">{{number_format($key['sanpham']['giakhuyenmai']*$key['sl'], 0, '', '.')}}<sup>đ</sup></td>
                             <?php $provisional += $key['sanpham']['giakhuyenmai']*$key['sl'] ?>

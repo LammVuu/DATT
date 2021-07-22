@@ -14,11 +14,10 @@ class BAOHANH extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'id_sp',
+        'id_imei',
         'imei',
         'ngaymua',
         'ngayketthuc',
-        'trangthai',
     ];
 
     public $timestamps = false;

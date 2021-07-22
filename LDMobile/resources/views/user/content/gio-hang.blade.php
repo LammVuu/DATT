@@ -37,7 +37,10 @@
                             <div class="w-25 d-flex align-items-center">
                                 <div class="ml-10">
                                     <div class="fw-600">{{ number_format($key['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
-                                    <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>
+                                    {{-- hết hạn khuyến mãi --}}
+                                    @if ($key['sanpham']['khuyenmai'] != 0)
+                                    <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>    
+                                    @endif
                                 </div>
                             </div>
                             {{-- số lượng --}}

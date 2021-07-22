@@ -24,7 +24,6 @@ class CreateDonhangTable extends Migration
             $table->string('hinhthuc', 50);
             $table->integer('tongtien');
             $table->string('trangthaidonhang', 50);
-            $table->boolean('trangthai');
         });
     }
 

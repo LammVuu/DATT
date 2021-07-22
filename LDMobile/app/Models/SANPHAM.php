@@ -18,6 +18,7 @@ class SANPHAM extends Model
         'id_msp',
         'hinhanh',
         'mausac',
+        'ram',
         'dungluong',
         'gia',
         'id_km',
@@ -72,7 +73,7 @@ class SANPHAM extends Model
     // kho
     public function kho()
     {
-        return $this->belongsToMany(CHINHANH::class, 'kho', 'id_sp', 'id_cn')->withPivot('id', 'slton', 'trangthai');
+        return $this->belongsToMany(CHINHANH::class, 'kho', 'id_sp', 'id_cn')->withPivot('id', 'slton');
     }
 
     // baohanh
