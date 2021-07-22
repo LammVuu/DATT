@@ -19,8 +19,7 @@ class DANHGIASP extends Model
         'noidung',
         'thoigian',
         'soluotthich',
-        'danhgia',
-        'trangthai',
+        'danhgia'
     ];
 
     public $timestamps = false;
@@ -35,5 +34,10 @@ class DANHGIASP extends Model
     public function phanhoi()
     {
         return $this->hasMany(PHANHOI::class, 'id_dg');
+    }
+
+    public function luotthich()
+    {
+        return $this->hasMany(LUOTTHICH::class, 'id_dg');
     }
 }

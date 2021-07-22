@@ -21,8 +21,7 @@ class TAIKHOAN_DIACHI extends Model
         'quanhuyen',
         'tinhthanh',
         'sdt',
-        'macdinh',
-        'trangthai',
+        'macdinh'
     ];
 
     public $timestamps = false;

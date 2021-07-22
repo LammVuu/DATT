@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 
 use App\Models\BAOHANH;
@@ -13,24 +12,19 @@ use App\Models\IMEI;
 
 class BaoHanhController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function __construct()
     {
         $this->admin='admin/content/';
         $this->IndexController = new IndexController;
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
+
     public function index()
     {
         $lst_warranty = BAOHANH::limit(10)->get();
         foreach($lst_warranty as $i => $key){
             $lst_warranty[$i]->sanpham = SANPHAM::find(IMEI::find($key->id_imei)->id_sp);
         }
-
         $data = [
             'lst_warranty' => $lst_warranty,
         ];
@@ -42,7 +36,6 @@ class BaoHanhController extends Controller
     {
         if($request->ajax()){
             $warranty = BAOHANH::find($request->id);
-
             $id_sp = IMEI::find($warranty->id_imei)->id_sp;
 
             $warranty->sanpham = SANPHAM::find($id_sp);
@@ -53,6 +46,7 @@ class BaoHanhController extends Controller
         }
     }
 
+    // kiểm tra còn bảo hành không
     public function warrantyStatus($dateEnd){
         $status = 0;
 

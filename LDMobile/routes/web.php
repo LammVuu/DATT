@@ -197,6 +197,14 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Chec
     Route::resource("voucher", VoucherController::class);
     Route::resource("imei", ImeiController::class);
 
+    Route::resource("giohang", GioHangController::class);
+    Route::resource("spyeuthich", SPYeuThichController::class);
+    Route::resource("luotthich", LuotThichController::class);
+    Route::resource("phanhoi", PhanHoiController::class);
+    Route::resource("taikhoandiachi", TaiKhoanDiaChiController::class);
+    Route::resource("thongbao", ThongBaoController::class);
+    Route::resource("taikhoanvoucher", TaiKhoanVoucherController::class);
+    Route::resource("chitietdanhgia", CTDGController::class);
     /*=======================================================================================================
                                                         Ajax
     =========================================================================================================*/
@@ -348,6 +356,19 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Chec
     =========================================================================================================*/
 
     Route::post("imei/ajax-search", [App\Http\Controllers\admin\ImeiController::class, "AjaxSearch"]);
+    Route::post("ajax-get-hinhanh", [DashboardController::class, "AjaxGetHinhAnh"]);
+
+    Route::get("checkPhone", [App\Http\Controllers\admin\TaiKhoanController::class, "checkPhone"]);
+    Route::get("searchAccount", [App\Http\Controllers\admin\TaiKhoanController::class, "searchName"]);
+    Route::get("filterAccount", [App\Http\Controllers\admin\TaiKhoanController::class, "filterAccount"]);
+    Route::get("filterNotification", [App\Http\Controllers\admin\ThongBaoController::class, "filterNotification"]);
+    Route::get("searchReview", [App\Http\Controllers\admin\DANHGIAController::class, "searchReview"]);
+    Route::get("filterReview", [App\Http\Controllers\admin\DANHGIAController::class, "filterReview"]);
+    Route::get("searchAccountAddress", [App\Http\Controllers\admin\TaiKhoanDiaChiController::class, "searchAccountAddress"]);
+    Route::get("searchAccountVoucher", [App\Http\Controllers\admin\TaiKhoanVoucherController::class, "searchAccountVoucher"]);
+    Route::get("searchCart", [App\Http\Controllers\admin\GioHangController::class, "searchCart"]);
+    Route::get("searchWishList", [App\Http\Controllers\admin\SPYeuThichController::class, "searchWishList"]);
+    Route::get("searchNotification", [App\Http\Controllers\admin\ThongBaoController::class, "searchNotification"]);
 });
 
 /*

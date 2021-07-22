@@ -19,7 +19,6 @@ class BannerController extends Controller
         $data = [
             'banner' => BANNER::all(),
         ];
-
         return view($this->admin."banner")->with($data);
     }
 
@@ -36,7 +35,6 @@ class BannerController extends Controller
                 // tạo thư mục lưu hình
                 mkdir('images/banner', 0777, true);
             }
-
             // lưu hình
             $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
             $image = base64_decode($base64);

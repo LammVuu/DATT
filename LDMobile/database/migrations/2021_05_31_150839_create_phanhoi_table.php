@@ -19,7 +19,6 @@ class CreatePhanhoiTable extends Migration
             $table->unsignedInteger('id_dg');
             $table->text('noidung');
             $table->string('thoigian', 20);
-            $table->boolean('trangthai');
         });
     }
 

@@ -2,7 +2,6 @@
 @section("sidebar-image") sidebar-link-selected @stop
 @section("content-title") Hình ảnh @stop
 @section("content")
-
 {{-- function button --}}
 <div class="d-flex justify-content-between align-items-center mb-20">
     {{-- create button --}}

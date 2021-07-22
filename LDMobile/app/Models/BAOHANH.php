@@ -17,7 +17,7 @@ class BAOHANH extends Model
         'id_imei',
         'imei',
         'ngaymua',
-        'ngayketthuc',
+        'ngayketthuc'
     ];
 
     public $timestamps = false;

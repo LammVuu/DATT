@@ -354,7 +354,6 @@ class UserController extends Controller
                 'tinhthanh' => $request->TinhThanh_name_inp,
                 'sdt' => $request->adr_tel_inp,
                 'macdinh' => $request->set_default_address == null ? 0 : 1,
-                'trangthai' => 1,
             ];
 
             if($data['macdinh'] == null || $data['macdinh'] == 0){
@@ -378,7 +377,6 @@ class UserController extends Controller
                 'tinhthanh' => $request->TinhThanh_name_inp,
                 'sdt' => $request->adr_tel_inp,
                 'macdinh' => $request->set_default_address == null ? 0 : 1,
-                'trangthai' => 1,
             ];
 
             if($data['macdinh'] == null || $data['macdinh'] == 0){
@@ -828,7 +826,6 @@ class UserController extends Controller
                     'thoigian' => date('d/m/Y H:i:s'),
                     'soluotthich' => 0,
                     'danhgia' => $request->evaluateStarRating,
-                    'trangthai' => 1,
                 ];
 
                 $create = DANHGIASP::create($data);
@@ -844,7 +841,6 @@ class UserController extends Controller
                     'thoigian' =>$time,
                     'soluotthich' => 0,
                     'danhgia' => $request->evaluateStarRating,
-                    'trangthai' => 1,
                 ];
 
                 $create = DANHGIASP::create($data);
@@ -963,7 +959,6 @@ class UserController extends Controller
                 'id_dg' => $request->id_dg,
                 'noidung' => $request->replyContent,
                 'thoigian' => date('d/m/Y H:i:s'),
-                'trangthai' => 1,
             ]);
         }
     }

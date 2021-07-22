@@ -51,6 +51,16 @@
 
         <a href={{route('taikhoan.index')}} class="sidebar-link @yield('sidebar-account')"><i class="fas fa-user mr-10"></i>Tài khoản</a>
 
+        <a href={{route('giohang.index')}} class="sidebar-link @yield('sidebar-cart')"><i class="fas fa-shopping-cart mr-10"></i>Giỏ Hàng</a>
+
+        <a href={{route('spyeuthich.index')}} class="sidebar-link @yield('sidebar-wishlist')"><i class="fas fa-heart mr-10"></i>Sản Phẩm Yêu Thích</a>
+
+        <a href={{route('taikhoandiachi.index')}} class="sidebar-link @yield('sidebar-account-address')"><i class="fas fa-map-marker mr-10"></i>Tài Khoản Địa Chỉ</a>
+
+        <a href={{route('thongbao.index')}} class="sidebar-link @yield('sidebar-notification')"><i class="fas fa-bell mr-10"></i>Thông Báo</a>
+
+        <a href={{route('taikhoanvoucher.index')}} class="sidebar-link @yield('sidebar-account-voucher')"><i class="fas fa-ticket-alt mr-10"></i>Tài Khoản Voucher</a>
+
         <div class="ml-20 mr-20"><hr></div>
     </div>
 </div>

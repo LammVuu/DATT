@@ -28,6 +28,8 @@ class User extends Authenticatable
         'htdn',
         'remember_token',
         'user_social_token',
+        'login_status',
+        'thoigian',
         'trangthai',
     ];
     public $timestamps = false;

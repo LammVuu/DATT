@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDanhgiaspTable extends Migration
+class CreateLuotTruyCapsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateDanhgiaspTable extends Migration
      */
     public function up()
     {
-        Schema::create('danhgiasp', function (Blueprint $table) {
+        Schema::create('luottruycap', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('id_tk');
-            $table->unsignedInteger('id_sp');
-            $table->text('noidung')->nullable();
+            $table->string('nentang', 5);
             $table->string('thoigian', 20);
-            $table->integer('soluotthich');
-            $table->tinyInteger('danhgia');
         });
     }
 
@@ -31,6 +27,6 @@ class CreateDanhgiaspTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('danhgiasp');
+        Schema::dropIfExists('luottruycap');
     }
 }

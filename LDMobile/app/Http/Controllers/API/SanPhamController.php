@@ -791,7 +791,6 @@ class SanPhamController extends Controller
             $comment->noidung = request('noidung');
             $comment->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
             $comment->soluotthich = 0;
-            $comment->trangthai = 1;
             $comment->danhgia = request('danhgia');
             $comment->save();
             if($check==true){
@@ -813,7 +812,6 @@ class SanPhamController extends Controller
         $comment->noidung = request('noidung');
         $comment->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
         $comment->id_tk = request('id_tk');
-        $comment->trangthai = 1;
         $comment->danhgia = request('danhgia');
         $comment->update();
         return response()->json([
@@ -848,7 +846,6 @@ class SanPhamController extends Controller
         $reply->id_dg = request('id_dg');
         $reply->noidung = request('noidung');
         $reply->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
-        $reply->trangthai = 1;
         $comment = DANHGIASP::find(request('id_dg'));
         if(request('id_tk') != $comment->id_tk){
             $sanpham = SANPHAM::find($comment->id);

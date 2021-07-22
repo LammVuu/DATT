@@ -373,7 +373,6 @@ class CartController extends Controller
         $newAddress->tinhthanh = request('tinhthanh');
         $newAddress->sdt = request('sdt');
         $newAddress->macdinh = request('macdinh');
-        $newAddress->trangthai = 1;
         if(request('macdinh')==1){
             $oldDefault = TAIKHOAN_DIACHI::where('macdinh', 1)->get();
             $count = count($oldDefault);

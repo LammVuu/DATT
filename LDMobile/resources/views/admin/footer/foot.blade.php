@@ -7,3 +7,4 @@
 <script src='{{asset('js/owl.carousel.min.js')}}'></script>
 
 <script type="text/javascript" src="js/admin_main.js "></script>
+<script type="text/javascript" src="js/admin2_main.js "></script>
