@@ -19,7 +19,7 @@
         </div>
         {{-- filter --}}
         <div class="relative">
-            <div class="filter-sort-btn filter-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+            <div id="filter-sanpham" class="filter-sort-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
             <div class="filter-badge"></div>
             <div class="filter-div">
                 <div class="row">
@@ -57,7 +57,7 @@
         </div>
         {{-- sort --}}
         <div class="relative">
-            <div class="filter-sort-btn sort-btn ml-20"><i class="far fa-sort mr-5"></i>Sắp xếp</div>
+            <div id="sort-sanpham" class="filter-sort-btn ml-20"><i class="far fa-sort mr-5"></i>Sắp xếp</div>
             <div class="sort-badge"></div>
             <div class="sort-div">
                 <div class="mb-5">

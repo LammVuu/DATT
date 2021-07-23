@@ -396,10 +396,6 @@ $(function() {
         return true;
     }
 
-    function numberWithDot(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
     function capitalize (text) {
         var textArray = text.split(' ');
         var capitalizedText = '';
@@ -407,7 +403,7 @@ $(function() {
           capitalizedText += textArray[i].charAt(0).toUpperCase() + textArray[i].slice(1) + ' '
         }
         return capitalizedText.trim();
-      }
+    }
     
     /*=======================================================================================================================
                                                            Header
@@ -926,7 +922,7 @@ $(function() {
 
         var arrFilter = {};
         // show lọc
-        $('.filter-btn').click(function(){
+        $('#filter-mausp').click(function(){
             $('.filter-div').toggle('blind');
         });
 
@@ -2425,13 +2421,13 @@ $(function() {
         });
 
         // show bộ lọc
-        $('.filter-btn').click(function(){
+        $('#filter-sanpham').click(function(){
             $('.filter-div').toggle('blind');
             $('.sort-div').hide('blind');
         });
 
         // show sắp xếp
-        $('.sort-btn').click(function(){
+        $('#sort-sanpham').click(function(){
             $('.filter-div').hide('blind');
             $('.sort-div').toggle('blind');
         });
@@ -4332,7 +4328,7 @@ $(function() {
         });
 
         // show lọc
-        $('.filter-btn').click(function(){
+        $('#filter-kho').click(function(){
             $('.filter-div').toggle('blind');
         });
 
@@ -5636,13 +5632,13 @@ $(function() {
             sort: '',
         };
         // show lọc
-        $('.filter-btn').click(function(){
+        $('#filter-donhang').click(function(){
             $('.filter-div').toggle('blind');
             $('.sort-div').hide('blind');
         });
 
         // show sắp xếp
-        $('.sort-btn').click(function(){
+        $('#sort-donhang').click(function(){
             $('.filter-div').hide('blind');
             $('.sort-div').toggle('blind');
         });

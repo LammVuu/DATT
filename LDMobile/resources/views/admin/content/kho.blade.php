@@ -20,7 +20,7 @@
     
         {{-- filter --}}
         <div class="relative">
-            <div class="filter-sort-btn filter-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+            <div id="filter-kho" class="filter-sort-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
             <div class="filter-badge"></div>
             <div class="filter-div">
                 <div class="mb-10 fw-600">Chi nhánh</div>

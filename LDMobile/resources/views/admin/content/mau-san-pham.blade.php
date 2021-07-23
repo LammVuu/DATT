@@ -19,7 +19,7 @@
         </div>
         
         <div class="relative">
-            <div class="filter-sort-btn filter-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+            <div id="filter-mausp" class="filter-sort-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
             <div class="filter-badge"></div>
             <div class="filter-div">
                 <div class="row">

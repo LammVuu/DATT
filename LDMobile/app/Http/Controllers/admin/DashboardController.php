@@ -54,7 +54,39 @@ class DashboardController extends Controller
         $accounts= TAIKHOAN::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
         $totalAccountInMonth = count($accounts);
 
-        return view($this->admin.'index', compact('totalBillInMonth', 'totalMoneyInMonth', 'totalAccountInMonth','currentMonth'));
+        /*==========================================================
+                        trạng thái đơn hàng trong tháng
+        ============================================================*/
+        // tháng hiện tại
+        $month = date('m');
+        // danh sách trạng thái
+        $lst_orderStatus = [
+            'total' => 0,
+            'received' => 0,
+            'confirmed' => 0,
+            'success' => 0,
+            'cancelled' => 0,
+        ];
+        foreach(DONHANG::all() as $order){
+            // tháng của đơn hàng
+            $orderMonth = explode('/', explode(' ', $order->thoigian)[0])[1];
+            if($orderMonth == $month){
+                // thêm vào danh sách trạng thái
+                if($order->trangthaidonhang == 'Đã tiếp nhận'){
+                    $lst_orderStatus['received']++;
+                } elseif($order->trangthaidonhang == 'Đã xác nhận'){
+                    $lst_orderStatus['confirmed']++;
+                } elseif($order->trangthaidonhang == 'Thành công'){
+                    $lst_orderStatus['success']++;
+                } else {
+                    $lst_orderStatus['cancelled']++;
+                }
+
+                $lst_orderStatus['total']++;
+            }
+        }
+
+        return view($this->admin.'index', compact('totalBillInMonth', 'totalMoneyInMonth', 'totalAccountInMonth','currentMonth', 'lst_orderStatus'));
     }
 
     /*============================================================================================================

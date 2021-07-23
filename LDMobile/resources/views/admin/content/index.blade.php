@@ -130,12 +130,12 @@
     <div class="col-lg-12">
         <div class="box-shadow-border-radius">
             <div class="row">
-                <input type="hidden" id="total-order" value="100">
+                <input type="hidden" id="total-order" value="{{$lst_orderStatus['total']}}">
                 <div class="col-lg-3">
                     <div class="p-20">
                         <div>Đơn hàng tiếp nhận</div>
-                        <div class="fz-26 fw-600 mb-10">5</div>
-                        <div id="received-order" data-qty="5" class="order-progress-bar">
+                        <div class="fz-26 fw-600 mb-10">{{$lst_orderStatus['received']}}</div>
+                        <div id="received-order" data-qty="{{$lst_orderStatus['received']}}" class="order-progress-bar">
                             <div class="received-progress-bar"></div>
                         </div>
                     </div>
@@ -143,8 +143,8 @@
                 <div class="col-lg-3">
                     <div class="p-20">
                         <div>Đơn hàng xác nhận</div>
-                        <div class="fz-26 fw-600 mb-10">10</div>
-                        <div id="confirmed-order" data-qty="10" class="order-progress-bar">
+                        <div class="fz-26 fw-600 mb-10">{{$lst_orderStatus['confirmed']}}</div>
+                        <div id="confirmed-order" data-qty="{{$lst_orderStatus['confirmed']}}" class="order-progress-bar">
                             <div class="confirmed-progress-bar"></div>
                         </div>
                     </div>
@@ -152,8 +152,8 @@
                 <div class="col-lg-3">
                     <div class="p-20">
                         <div>Đơn hàng thành công</div>
-                        <div class="fz-26 fw-600 mb-10">70</div>
-                        <div id="successfull-order" data-qty="70" class="order-progress-bar">
+                        <div class="fz-26 fw-600 mb-10">{{$lst_orderStatus['success']}}</div>
+                        <div id="successfull-order" data-qty="{{$lst_orderStatus['success']}}" class="order-progress-bar">
                             <div class="success-progress-bar"></div>
                         </div>
                     </div>
@@ -161,8 +161,8 @@
                 <div class="col-lg-3">
                     <div class="p-20">
                         <div>Đơn hàng đã hủy</div>
-                        <div class="fz-26 fw-600 mb-10">15</div>
-                        <div id="cancelled-order" data-qty="15" class="order-progress-bar">
+                        <div class="fz-26 fw-600 mb-10">{{$lst_orderStatus['cancelled']}}</div>
+                        <div id="cancelled-order" data-qty="{{$lst_orderStatus['cancelled']}}" class="order-progress-bar">
                             <div class="cancelled-progress-bar"></div>
                         </div>
                     </div>
