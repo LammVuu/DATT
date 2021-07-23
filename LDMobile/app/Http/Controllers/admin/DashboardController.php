@@ -20,6 +20,7 @@ use App\Models\DONHANG;
 use App\Models\TAIKHOAN;
 use App\Models\BAOHANH;
 use App\Models\IMEI;
+use App\Models\CTDH;
 
 use Carbon\Carbon;
 use DB;
@@ -53,8 +54,9 @@ class DashboardController extends Controller
         //thong ke thanh vien
         $accounts= TAIKHOAN::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
         $totalAccountInMonth = count($accounts);
+        $bestSellers = $this->getTopProductBestSellers($currentDate, $dateFirstOfMonth);
 
-        return view($this->admin.'index', compact('totalBillInMonth', 'totalMoneyInMonth', 'totalAccountInMonth','currentMonth'));
+        return view($this->admin.'index', compact('totalBillInMonth', 'totalMoneyInMonth', 'totalAccountInMonth','currentMonth', 'bestSellers'));
     }
 
     /*============================================================================================================
@@ -694,7 +696,34 @@ class DashboardController extends Controller
             }
         }
     }
+
     public function mainStatic(){
        
+    }
+    public function getTopProductBestSellers($currentDate, $dateFirstOfMonth){
+        $listTop5IDs = array();
+        $listIDBills = array();
+        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        foreach($bills as $bill){
+            array_push($listIDBills, $bill->id);
+        }
+        $listIDs = CTDH::select('id_sp')
+                        ->groupBy('id_sp')
+                        ->orderByRaw('COUNT(*) DESC')
+                        ->whereIn('id_dh', $listIDBills)
+                        ->take(5)
+                        ->get();
+        foreach($listIDs as $id){
+            array_push($listTop5IDs, $id->id_sp);
+        }
+        $bestSellers = SANPHAM::whereIn('id', $listTop5IDs)->get();
+        foreach($bestSellers as $product){
+            $list = CTDH::where('id_sp', $product->id)->get();
+            $product->total = count($list);
+        }
+        $result = $bestSellers->sortByDesc(function($pro) {
+            return $pro->total;
+        });
+        return $result;   
     }
 }
