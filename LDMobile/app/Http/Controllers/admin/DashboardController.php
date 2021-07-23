@@ -34,11 +34,16 @@ class DashboardController extends Controller
 
     public function Index()
     {
-        //thong ke don hang va doanh thu
+        //lay ngay hien tai va ngay dau tien cua thang
         $currentMonth =  Carbon::now('Asia/Ho_Chi_Minh')->format('m/Y');
         $currentDate =  Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d');
-        $DateofBeforeMonth =  Carbon::now('Asia/Ho_Chi_Minh')->subMonths(1)->format('Y-m-d');
-        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $DateofBeforeMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        $dateFirstOfMonth = Carbon::now()->year;
+        if(Carbon::now()->month<10){
+            $dateFirstOfMonth .="-0".Carbon::now()->month.'-01';
+        }else $dateFirstOfMonth .="-".Carbon::now()->month.'-01';
+
+        //thong ke don hang va doanh thu
+        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
         $totalBillInMonth = count($bills);
         $totalMoneyInMonth = 0;
         foreach($bills as $bill){
@@ -46,7 +51,7 @@ class DashboardController extends Controller
         }
 
         //thong ke thanh vien
-        $accounts= TAIKHOAN::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $DateofBeforeMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        $accounts= TAIKHOAN::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
         $totalAccountInMonth = count($accounts);
 
         return view($this->admin.'index', compact('totalBillInMonth', 'totalMoneyInMonth', 'totalAccountInMonth','currentMonth'));
