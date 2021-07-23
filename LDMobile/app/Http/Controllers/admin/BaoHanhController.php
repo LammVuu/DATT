@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 
 use App\Models\BAOHANH;

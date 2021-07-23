@@ -4,6 +4,10 @@ $(function() {
     });
 
     var url = window.location.pathname.split('/')[2];
+    if(url == undefined){
+        url = '';
+    }
+    console.log(url);
 
     const SUCCESS = '#D2F4EA';
     const DANGER = '#F8D7DA';
@@ -436,13 +440,43 @@ $(function() {
     $('#btn-expand-account').click(function(){
         $('.account-option').toggle('blind', 300);
     });
-    
-    // toast thông báo
-    if($('#toast-message').length){
-        var toast = $('<div id="message" class="alert-toast"><div class="d-flex align-items-center"><span>'+ $('#toast-message').data('message') +'</span></div></div>');
-        $("#toast-message").after(toast);
-        showToast('#message');
-        $('#toast-message').remove();
+    /*=======================================================================================================================
+                                                           Dashboard
+    =======================================================================================================================*/
+    if(url == ''){
+        // phần trăm trạng thái đơn hàng
+        orderStatusPercent();
+
+        function orderStatusPercent(){
+            // tổng số lượng đơn hàng
+            var total = $('#total-order').val();
+            // số lượng đơn tiếp nhận
+            var receivedQty = $('#received-order').data('qty');
+            // số lượng đơn xác nhận
+            var confirmedQty = $('#confirmed-order').data('qty');
+            // số lượng đơn thành công
+            var successQty = $('#successfull-order').data('qty');
+            // số lượng đơn đã hủy
+            var cancelledQty = $('#cancelled-order').data('qty');
+            console.log(total, receivedQty, confirmedQty, successQty, cancelledQty);
+
+            var avg = 0;
+            // progress bar tiếp nhận
+            avg = (receivedQty / total) * 100;
+            $('.received-progress-bar').css('width', avg + '%');
+
+            // progress bar xác nhận
+            avg = (confirmedQty / total) * 100;
+            $('.confirmed-progress-bar').css('width', avg + '%');
+
+            // progress bar thành công
+            avg = (successQty / total) * 100;
+            $('.success-progress-bar').css('width', avg + '%');
+
+            // progress bar tiếp nhận
+            avg = (cancelledQty / total) * 100;
+            $('.cancelled-progress-bar').css('width', avg + '%');
+        }
     }
     /*=======================================================================================================================
                                                            Mẫu sp

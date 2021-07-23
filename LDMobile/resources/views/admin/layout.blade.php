@@ -5,11 +5,6 @@
 <?php $user = session('user') ?> 
 
 <body style="background-color: #eff5f7;">
-    {{-- toast --}}
-    @if (session('toast_message'))
-        <div id="toast-message" data-message="{{session('toast_message')}}"></div>
-    @endif
-
     @include("admin/header/header")
     @include("admin.content.section.sec-sidebar")
 
