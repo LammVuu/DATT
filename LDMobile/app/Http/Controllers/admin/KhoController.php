@@ -405,19 +405,20 @@ class KhoController extends Controller
             $arrFilter = $request->arrFilter;
             $lst_temp = [];
             $lst_result = [];
+            $lst_search = [];
             $html = '';
 
             // có danh sách tìm kiếm
             if($request->keyword){
                 $keyword = $this->IndexController->unaccent($request->keyword);
-                $lst_temp = $this->search($keyword);
+                $lst_search = $this->search($keyword);
             }
 
             // gỡ bỏ lọc
-            if(empty($arrFilter)){
+            if(!isset($arrFilter)){
                 // có danh sách tìm kiếm
-                if(!empty($lst_temp)){
-                    foreach($lst_temp as $key){
+                if(!empty($lst_search)){
+                    foreach($lst_search as $key){
                         $address = CHINHANH::find($key->id_cn)->diachi;
                         $product = SANPHAM::find($key->id_sp);
 
@@ -497,11 +498,11 @@ class KhoController extends Controller
             }
 
             // lọc trên danh sách tìm kiếm
-            if(!empty($lst_temp)){
+            if(!empty($lst_search)){
                 foreach($arrFilter as $filter){
-                    foreach($lst_temp as $key){
+                    foreach($lst_search as $key){
                         if($key->id_cn == $filter){
-                            array_push($lst_result, $key);
+                            array_push($lst_temp, $key);
                         }
                     }
                 }
@@ -511,11 +512,13 @@ class KhoController extends Controller
                 foreach($arrFilter as $filter){
                     foreach(KHO::all() as $key){
                         if($key->id_cn == $filter){
-                            array_push($lst_result, $key);
+                            array_push($lst_temp, $key);
                         }
                     }
                 }
             }
+
+            $lst_result = $lst_temp;
 
             foreach($lst_result as $key){
                 $address = CHINHANH::find($key->id_cn)->diachi;

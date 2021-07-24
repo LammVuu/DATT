@@ -182,7 +182,7 @@ $(function() {
             // hiển thị modal
             $('#taikhoan-modal').modal('show');
     });
-    $('.filter-sort-taikhoan-btn').off('click').click(function(){
+    $('#filter-taikhoan').off('click').click(function(){
           
             $('#filter-modal-title').text('Lọc');
     
@@ -1197,7 +1197,7 @@ $('body').on('click', '#delete-notification-btn', function () {
         $('#status').attr("disabled", true);
         $('#status').attr("hidden", false);
     }
-    $('.filter-sort-thongbao-btn').click(function (){
+    $('#filter-thongbao').click(function (){
         $('#filter-modal-title').text('Lọc');
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');

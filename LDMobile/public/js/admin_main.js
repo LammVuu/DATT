@@ -1,13 +1,21 @@
 $(function() {
-    $(window).on('load', function(){
-        $('.loader').fadeOut(250);
-    });
-
     var url = window.location.pathname.split('/')[2];
     if(url == undefined){
         url = '';
     }
     console.log(url);
+
+    $(window).on('load', function(){
+        $('.loader').fadeOut(250);
+        // cuộn sidebar tới link đang chọn
+        setTimeout(() => {
+            var position = $('.sidebar-link.sidebar-link-selected').position().top;
+            if(position > 700){
+                $('.sidebar.custom-scrollbar').animate({scrollTop: position});
+            }
+        }, 300);
+    });
+
 
     const SUCCESS = '#D2F4EA';
     const DANGER = '#F8D7DA';
@@ -64,9 +72,12 @@ $(function() {
                                     $('#lst_data').append(data);
                                 } else {
                                     $('#lst_data').attr('data-loadmore', 'done');
+                                    $('#loadmore').hide();
                                 }
                             }
                         });
+                    } else {
+                        $('#loadmore').hide();
                     }
                 } else if(url == 'sanpham'){
                     if($('#lst_data').attr('data-loadmore') != 'done'){
@@ -88,9 +99,12 @@ $(function() {
                                     $('#lst_data').append(data);
                                 } else {
                                     $('#lst_data').attr('data-loadmore', 'done');
+                                    $('#loadmore').hide();
                                 }
                             }
                         });
+                    } else {
+                        $('#loadmore').hide();
                     }
                 } else if(url == 'imei'){
                     if($('#lst_data').attr('data-loadmore') != 'done'){
@@ -113,6 +127,8 @@ $(function() {
                                 }
                             }
                         });
+                    } else {
+                        $('#loadmore').hide();
                     }
                 } else {
                     if($('#lst_data').attr('data-loadmore') != 'done'){
@@ -130,6 +146,7 @@ $(function() {
                                     $('#lst_data').append(data);
                                 } else {
                                     $('#lst_data').attr('data-loadmore', 'done');
+                                    $('#loadmore').hide();
                                 }
                             }
                         });
@@ -4305,23 +4322,23 @@ $(function() {
             timer = setTimeout(() => {
                 if(arrFilter.length != 0){
                     filter();
-                    return;
+                } else {
+                    var keyword = $(this).val().toLocaleLowerCase();
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: 'admin/kho/ajax-search',
+                        type: 'POST',
+                        data: {'keyword': keyword},
+                        success: function(data){
+                            $('#lst_data').children().remove();
+                            $('#lst_data').append(data);
+                            loadMoreFlag = keyword == '' ? false : true;
+                            $('#loadmore').hide();
+                        }
+                    });
                 }
-                var keyword = $(this).val().toLocaleLowerCase();
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: 'admin/kho/ajax-search',
-                    type: 'POST',
-                    data: {'keyword': keyword},
-                    success: function(data){
-                        $('#lst_data').children().remove();
-                        $('#lst_data').append(data);
-                        loadMoreFlag = keyword == '' ? false : true;
-                        $('#loadmore').hide();
-                    }
-                });
             }, 500);
             $('#lst_data').children().remove();
             $('#loadmore').show();
@@ -5603,7 +5620,7 @@ $(function() {
         $('#search').keyup(function(){
             clearTimeout(timer);
             timer = setTimeout(() => {
-                if(Object.keys(arrFilterSort.filter).length != 0 || Object.keys(arrFilterSort.sort).length != 0){
+                if(Object.keys(arrFilterSort.filter).length != 0 || Object.keys(arrFilterSort.sort) != ''){
                     filterSort();
                 } else {
                     var keyword = $(this).val().toLocaleLowerCase();
