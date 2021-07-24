@@ -22,6 +22,7 @@ use App\Models\BAOHANH;
 use App\Models\IMEI;
 use App\Models\CTDH;
 use App\Models\LUOTTRUYCAP;
+use App\Models\DANHGIASP;
 
 use Carbon\Carbon;
 use DB;
@@ -71,6 +72,16 @@ class DashboardController extends Controller
 
         $accessTimesOnWeb = $this->getAccessTimesOnWeb($currentMonthYear);
 
+          /*==========================================================
+                        lượt truy cập app trong tháng
+        ============================================================*/
+
+        $accessTimesOnApp = $this->getAccessAppInMonth($currentDate, $dateFirstOfMonth);
+        
+            /*==========================================================
+                        lượt truy cập app trong tháng
+        ============================================================*/
+        $totalReviewInMonth = $this->getTotalReviewInMonth($currentDate, $dateFirstOfMonth);
         $data = [
             'totalBillInMonth' => $totalBillInMonth,
             'totalMoneyInMonth' => $totalMoneyInMonth,
@@ -79,6 +90,8 @@ class DashboardController extends Controller
             'bestSellers' => $bestSellers,
             'lst_orderStatus' => $lst_orderStatus,
             'accessTimesOnWeb' => $accessTimesOnWeb,
+            'accessTimesOnApp' => $accessTimesOnApp,
+            'totalReviewInMonth' => $totalReviewInMonth
         ];
 
         return view($this->admin.'index')->with($data);
@@ -809,5 +822,15 @@ class DashboardController extends Controller
         }
 
         return $lst_orderStatus;
+    }
+    public function getAccessAppInMonth($currentDate, $dateFirstOfMonth){
+        $apps= LUOTTRUYCAP::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('nentang', 'app')->get();
+        $result = count($apps);
+        return $result;
+    }
+    public function getTotalReviewInMonth($currentDate, $dateFirstOfMonth){
+        $reviews= DANHGIASP::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        $result = count($reviews);
+        return $result;
     }
 }

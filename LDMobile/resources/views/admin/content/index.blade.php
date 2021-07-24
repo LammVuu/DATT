@@ -94,7 +94,7 @@
         {{-- số lượt đánh giá --}}
         <div class="box-shadow-border-radius d-flex justify-content-between mb-30">
             <div class="p-20">
-                <div class="fz-22 fw-600 black">100</div>
+                <div class="fz-22 fw-600 black">{{$totalReviewInMonth}}</div>
                 <div class="text-color">Lượt đánh giá trong tháng</div>
             </div>
             <div class="icon-right-stats purple-bg">
@@ -114,7 +114,7 @@
         {{-- số lượt truy cập app --}}
         <div class="box-shadow-border-radius d-flex justify-content-between mb-30">
             <div class="p-20">
-                <div class="fz-22 fw-600 black">100</div>
+                <div class="fz-22 fw-600 black">{{$accessTimesOnApp}}</div>
                 <div class="text-color">Lượt truy cập trên App trong tháng</div>
             </div>
             <div class="icon-right-stats success-bg">
