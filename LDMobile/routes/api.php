@@ -81,6 +81,7 @@ Route::group(['namespace' => 'API','middleware'=>'auth:api'],function (){
     Route::post('change-avatar/{id}', 'UserController@changeAvatar');
     Route::put('change-info/{id}','UserController@changeInfoUser');
     Route::post('check-password','UserController@checkPassword');
+    Route::post('increase-view','UserController@increaseView');
 });
 Route::post('check-number-phone','API\UserController@checkNumberPhone');
 Route::post('log-in','API\UserController@login');

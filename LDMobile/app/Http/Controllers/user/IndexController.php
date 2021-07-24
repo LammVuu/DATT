@@ -388,8 +388,6 @@ class IndexController extends Controller
 
         // đã đăng nhập
         if(session('user')){
-            date_default_timezone_set('Asia/Ho_Chi_Minh');
-
             // đơn hàng của người dùng
             foreach(DONHANG::where('id_tk', session('user')->id)->get() as $order){
                 // chi tiết đơn hàng
@@ -403,7 +401,20 @@ class IndexController extends Controller
                         $evaluate = DANHGIASP::where('id_tk', session('user')->id)->where('id_sp', $product->id)->get();
                         // không có id_sp trong bảng đánh giá
                         if(count($evaluate) == 0){
-                            array_push($haveNotEvaluated, $this->getProductById($product->id));
+                            // nếu đã thêm vào mảng chưa đánh giá rồi thì tiếp tục
+                            $flag = 0;
+                            if(!empty($haveNotEvaluated)){
+                                foreach($haveNotEvaluated as $arr){
+                                    if($arr['id'] == $product->id){
+                                        $flag = 1;
+                                    }
+                                }
+                                if($flag == 0){
+                                    array_push($haveNotEvaluated, $this->getProductById($product->id));    
+                                }
+                            } else {
+                                array_push($haveNotEvaluated, $this->getProductById($product->id));
+                            }
                         }
                         // đã có id_sp trong bảng đánh giá. kiểm tra ngày mua với ngày đánh giá
                         else {

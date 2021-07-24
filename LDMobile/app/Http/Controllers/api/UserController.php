@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Classes\Helper;
 use App\Models\User;
 use App\Models\THONGBAO;
+use App\Models\LUOTTRUYCAP;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Hash;
@@ -256,6 +257,19 @@ class UserController extends Controller
             'messages' => "",
             'data' => $notification
         ]);
+    }
+    public function increaseView(){
+        $view = new LUOTTRUYCAP();
+        $view->nentang = "app";
+        $view->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
+        if($view->save()){
+            return response()->json([
+                'status' => true,
+                'message' => "",
+                'data' => null
+            ]);
+        }
+        
     }
     
 }

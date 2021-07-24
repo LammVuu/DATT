@@ -51,7 +51,8 @@
             {{-- list best sellers --}}
             <table class="table">
                 <tbody>
-                    @for ($i = 1; $i <= 5; $i++)
+                    <?php $i = 1; ?>
+                    @foreach ($bestSellers as $product)
                     <tr>
                         <td class="p-0">
                             <div class="best-sellers">
@@ -68,23 +69,22 @@
                                         </div>
                                     @endif
                                     <div class="d-flex ml-40">
-                                        <img src="images/phone/iphone_12_red.jpg" alt="best seller product" width="70px">
+                                        <img src="{{$url_phone.$product->hinhanh}}" alt="best seller product" width="70px">
                                         <div class="ml-10">
                                             <div class="d-flex align-items-center fw-600">
-                                                iPhone 12
-                                                <i class="fas fa-circle ml-5 mr-5 fz-5"></i>
-                                                Đỏ
+                                               {{$product->tensp.' '.$product->mausac}}
                                             </div>
-                                            <div class="fz-14">Ram: 4 GB</div>
-                                            <div class="fz-14">Dung lượng: 64 GB</div>
+                                            <div class="fz-14">Ram: {{$product->ram}}</div>
+                                            <div class="fz-14">Dung lượng: {{$product->dungluong}}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div>Đã bán: 10 chiếc<i class="fas fa-trophy-alt ml-10 yellow"></i></div>
+                                <div style="color: green">Đã bán: {{$product->total}} chiếc<i class="fas fa-trophy-alt ml-10 yellow"></i></div>
                             </div>
                         </td>
                     </tr>
-                    @endfor
+                    <?php $i++; ?>
+                    @endforeach
                 </tbody>
             </table>
         </div>
