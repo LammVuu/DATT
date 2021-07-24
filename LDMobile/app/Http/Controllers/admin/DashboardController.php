@@ -21,6 +21,7 @@ use App\Models\TAIKHOAN;
 use App\Models\BAOHANH;
 use App\Models\IMEI;
 use App\Models\CTDH;
+use App\Models\LUOTTRUYCAP;
 
 use Carbon\Carbon;
 use DB;
@@ -59,34 +60,16 @@ class DashboardController extends Controller
         /*==========================================================
                         trạng thái đơn hàng trong tháng
         ============================================================*/
-        // tháng hiện tại
-        $month = date('m');
-        // danh sách trạng thái
-        $lst_orderStatus = [
-            'total' => 0,
-            'received' => 0,
-            'confirmed' => 0,
-            'success' => 0,
-            'cancelled' => 0,
-        ];
-        foreach(DONHANG::all() as $order){
-            // tháng của đơn hàng
-            $orderMonth = explode('/', explode(' ', $order->thoigian)[0])[1];
-            if($orderMonth == $month){
-                // thêm vào danh sách trạng thái
-                if($order->trangthaidonhang == 'Đã tiếp nhận'){
-                    $lst_orderStatus['received']++;
-                } elseif($order->trangthaidonhang == 'Đã xác nhận'){
-                    $lst_orderStatus['confirmed']++;
-                } elseif($order->trangthaidonhang == 'Thành công'){
-                    $lst_orderStatus['success']++;
-                } else {
-                    $lst_orderStatus['cancelled']++;
-                }
+        // tháng/năm hiện tại
+        $currentMonthYear = date('m/Y');
 
-                $lst_orderStatus['total']++;
-            }
-        }
+        $lst_orderStatus = $this->getOrderStatus($currentMonthYear);
+        
+        /*==========================================================
+                        lượt truy cập web trong tháng
+        ============================================================*/
+
+        $accessTimesOnWeb = $this->getAccessTimesOnWeb($currentMonthYear);
 
         $data = [
             'totalBillInMonth' => $totalBillInMonth,
@@ -95,6 +78,7 @@ class DashboardController extends Controller
             'currentMonth' => $currentMonth,
             'bestSellers' => $bestSellers,
             'lst_orderStatus' => $lst_orderStatus,
+            'accessTimesOnWeb' => $accessTimesOnWeb,
         ];
 
         return view($this->admin.'index')->with($data);
@@ -741,6 +725,7 @@ class DashboardController extends Controller
     public function mainStatic(){
        
     }
+
     public function getTopProductBestSellers($currentDate, $dateFirstOfMonth){
         $listTop5IDs = array();
         $listIDBills = array();
@@ -769,5 +754,60 @@ class DashboardController extends Controller
             return $pro->total;
         });
         return $result;   
+    }
+
+    // lượt truy cập trên web trong tháng
+    public function getAccessTimesOnWeb($currentMonthYear)
+    {
+        $count = 0;
+        
+        foreach(LUOTTRUYCAP::where('nentang', 'web')->get() as $key){
+            // array [ngày, tháng, năm] lượt truy cập
+            $accessTimesDate = explode('/', explode(' ', $key->thoigian)[0]);
+            // tháng/năm của lượt truy cập
+            $accessTimesMonthYear = $accessTimesDate[1] . '/' . $accessTimesDate[2];
+
+            if($accessTimesMonthYear == $currentMonthYear){
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    // trạng thái đơn hàng trong tháng
+    public function getOrderStatus($currentMonthYear)
+    {
+        // danh sách trạng thái
+        $lst_orderStatus = [
+            'total' => 0,
+            'received' => 0,
+            'confirmed' => 0,
+            'success' => 0,
+            'cancelled' => 0,
+        ];
+        foreach(DONHANG::all() as $order){
+            // array [ngày, tháng, năm] đơn hàng
+            $orderDate = explode('/', explode(' ', $order->thoigian)[0]);
+            // tháng/năm của đơn hàng
+            $orderMonthYear = $orderDate[1] . '/' . $orderDate[2];
+
+            if($orderMonthYear == $currentMonthYear){
+                // thêm vào danh sách trạng thái
+                if($order->trangthaidonhang == 'Đã tiếp nhận'){
+                    $lst_orderStatus['received']++;
+                } elseif($order->trangthaidonhang == 'Đã xác nhận'){
+                    $lst_orderStatus['confirmed']++;
+                } elseif($order->trangthaidonhang == 'Thành công'){
+                    $lst_orderStatus['success']++;
+                } else {
+                    $lst_orderStatus['cancelled']++;
+                }
+
+                $lst_orderStatus['total']++;
+            }
+        }
+
+        return $lst_orderStatus;
     }
 }

@@ -74,6 +74,7 @@ class UserController extends Controller
             'anhdaidien' => 'avatar-default.png',
             'loaitk' => 0,
             'htdn' => 'nomal',
+            'thoigian' => date('d/m/Y'),
             'trangthai' => 1,
         ];
 
@@ -149,6 +150,7 @@ class UserController extends Controller
                     'htdn' => 'facebook',
                     'user_social_token' => $user->token,
                     'login_status' => 1,
+                    'thoigian' => date('d/m/Y'),
                     'trangthai' => 1,
                 ]);
                 
@@ -157,8 +159,8 @@ class UserController extends Controller
                 return redirect('/')->with('toast_message', 'Đăng nhập thành công');
             }
         } catch(Exception $e){
-            //return redirect('dangnhap')->with('error_message', 'Đã có lỗi xảy ra. Vui lòng thử lại');
-            $this->print($e->getMessage());
+            return redirect('dangnhap')->with('error_message', 'Đã có lỗi xảy ra. Vui lòng thử lại');
+            $this->IndexController->print($e->getMessage());
         }
     }
 
@@ -194,6 +196,7 @@ class UserController extends Controller
                 'htdn' => 'google',
                 'user_social_token' => $user->token,
                 'login_status' => 1,
+                'thoigian' => date('d/m/Y'),
                 'trangthai' => 1,
             ]);
 

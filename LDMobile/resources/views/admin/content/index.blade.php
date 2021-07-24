@@ -104,7 +104,7 @@
         {{-- số lượt truy cập web --}}
         <div class="box-shadow-border-radius d-flex justify-content-between mb-30">
             <div class="p-20">
-                <div class="fz-22 fw-600 black">100</div>
+                <div class="fz-22 fw-600 black">{{$accessTimesOnWeb}}</div>
                 <div class="text-color">Lượt truy cập trên Web trong tháng</div>
             </div>
             <div class="icon-right-stats blue-bg">

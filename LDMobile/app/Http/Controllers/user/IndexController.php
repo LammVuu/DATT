@@ -38,6 +38,7 @@ use App\Models\TAIKHOAN;
 use App\Models\THONGBAO;
 use App\Models\TINHTHANH;
 use App\Models\VOUCHER;
+use App\Models\LUOTTRUYCAP;
 
 class IndexController extends Controller
 {

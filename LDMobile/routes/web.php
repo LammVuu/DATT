@@ -17,7 +17,7 @@ use App\Http\Controllers\user\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::group(["prefix" => "", "namespace" => "user"], function() {
+Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTimes"], function() {
 
     /*=======================================================================================================
                                                         Page
@@ -97,7 +97,7 @@ Route::group(["prefix" => "", "namespace" => "user"], function() {
 
     route::get("test5", "IndexController@test5");
 
-    Route::group(["middleware" => "CheckLogin"], function(){
+    Route::middleware(["CheckLogin", "AccessTimes"])->group(function(){
         /*=======================================================================================================
                                                         Page
         =========================================================================================================*/

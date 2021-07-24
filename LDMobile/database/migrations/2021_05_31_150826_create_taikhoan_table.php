@@ -26,7 +26,7 @@ class CreateTaikhoanTable extends Migration
             $table->boolean('login_status')->nullable();
             $table->string('remember_token', 500)->nullable();
             $table->string('user_social_token', 500)->nullable();
-            $table->boolean('login_status');
+            $table->boolean('login_status')->nullable();
             $table->string('thoigian', 20);
             $table->boolean('trangthai');
         });
