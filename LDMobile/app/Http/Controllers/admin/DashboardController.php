@@ -709,7 +709,7 @@ class DashboardController extends Controller
         }
         $listIDs = CTDH::select('id_sp')
                         ->groupBy('id_sp')
-                        ->orderByRaw('COUNT(*) DESC')
+                        ->orderByRaw('COUNT(sl) DESC')
                         ->whereIn('id_dh', $listIDBills)
                         ->take(5)
                         ->get();
@@ -719,7 +719,10 @@ class DashboardController extends Controller
         $bestSellers = SANPHAM::whereIn('id', $listTop5IDs)->get();
         foreach($bestSellers as $product){
             $list = CTDH::where('id_sp', $product->id)->get();
-            $product->total = count($list);
+            $product->total = 0;
+            foreach($list as $detail){
+                $product->total += $detail->sl;
+            }
         }
         $result = $bestSellers->sortByDesc(function($pro) {
             return $pro->total;
