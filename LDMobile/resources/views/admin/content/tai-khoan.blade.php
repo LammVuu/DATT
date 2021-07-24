@@ -13,7 +13,7 @@
             <input type="text" class='head-search-input border' id="name-search" placeholder="Tìm kiếm id, email, sdt,...">
             <span  class='input-icon-right' id="submit-search"><i class="fal fa-search"></i></span>
         </div>
-        <div class="filter-sort-btn mr-20" style="margin-left:10px;height: 48px"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+        <div class="filter-sort-taikhoan-btn mr-20" style="margin-left:10px;height: 48px"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
     </div>
     <input id="page" value="1" hidden>
 </div>
