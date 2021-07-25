@@ -11,9 +11,9 @@
     <div class="d-flex">
         <div class="head-input-grp pb-20 w-70 ">
             <input type="text" class='head-search-input border' id="name-search" placeholder="Tìm kiếm id, email, sdt,...">
-            <span  class='input-icon-right' id="submit-search"><i class="fal fa-search"></i></span>
+            <span  class='input-icon-right' data-user="{{session('user')->id}}" id="submit-search"><i class="fal fa-search"></i></span>
         </div>
-        <div id="filter-taikhoan" class="filter-sort-btn mr-20" style="margin-left:10px;height: 48px"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+        <div id="filter-taikhoan" data-user="{{session('user')->id}}" class="filter-sort-btn mr-20" style="margin-left:10px;height: 48px"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
     </div>
     <input id="page" value="1" hidden>
 </div>
@@ -44,9 +44,15 @@
                 <div class="d-flex justify-content-evenly">
                     <div data-id="{{$account->id}}" class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
                     <div data-id="{{$account->id}}" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
+                    @if(session('user')->id != $account->id)
                     <div data-id="{{$account->id}}" data-status="{{$account->trangthai}}" class="delete-taikhoan-btn delete-btn" style="background-color: {{$account->trangthai==1? "red" : "gray"}}">
                         <i class="fas fa-trash"></i>
                     </div>
+                    @else 
+                    <div data-id="{{$account->id}}" data-status="{{$account->trangthai}}" data-user="{{session('user')->id}}" class="delete-taikhoan-btn delete-btn" style="background-color: gray">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    @endif
                 </div>
             </td>
         </tr>
@@ -177,15 +183,16 @@
                     <div id="filter-content" class="fz-20">
                         <div class="row mb-3">
                             <div class="col-lg-6">
-                                <label for="mausp_name" class="mb-5 fw-600">Loại tài khoản</label>
-                            <select class="form-select" id='loai_tk' name="loai_tk" aria-label="Default select example">
+                                <label for="mausp_name" class="mb-5 fw-600">Hình thức</label>
+                            <select class="form-select" id='loaitk' name="hinhthuc"  aria-label="Default select example">
                                 <option value="0">user</option>
                                 <option value="1">admin</option>
+                             
                             </select>
                             </div>
                             <div class="col-lg-6">
-                                <label for="mausp_name" class="mb-5 fw-600">Trạng thái</label>
-                            <select class="form-select" id='trangthai' name="trangthai"  aria-label="Default select example">
+                                <label for="mausp_name" class="mb-5 fw-600">Hình thức</label>
+                            <select class="form-select" id='trangthaitk' name="hinhthuc"  aria-label="Default select example">
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Khóa</option>
                             </select>
@@ -203,7 +210,7 @@
 
                     <div class="mt-30 d-flex justify-content-between">
                         <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
-                        <div id="filter-account-btn" data-id="" class="checkout-btn p-10 w-48">Xóa</div>
+                        <div id="filter-account-btn" data-user="" data-id="" class="checkout-btn p-10 w-48">Xóa</div>
                     </div>
                 </div>
                 <input type="hidden" id="id" name="id">

@@ -186,10 +186,8 @@ $(function() {
           
             $('#filter-modal-title').text('Lọc');
     
-            // thiết lập nút gửi là thêm mới
-        
             $('#filter-account-btn').text('Lọc');
-    
+            $('#filter-account-btn').attr('data-user', $(this).data('user'));
             // hiển thị modal
             $('#filter-taikhoan-modal').modal('show');
 
@@ -204,8 +202,9 @@ $(function() {
             type: 'GET',
             data: {
                 'formality': $('#hinhthuc').val(),
-                'cate': $('#loai_tk').val(),
-                'status':$('#trangthai').val(),
+                'cate': $('#loaitk').val(),
+                'status':$('#trangthaitk').val(),
+                'idUser': $(this).data('user')
             },
             success:function(data){
                 console.log(data);
@@ -218,13 +217,17 @@ $(function() {
     });
     $('body').on('click', '.delete-taikhoan-btn', function () {
         // gán dữ liệu cho modal xóa
-        if($(this).data('status')==1){
-            $('#delete-content').text('Khóa tài khoản này?')
-            $('#lock-account-btn').attr('data-object', 'taikhoan');
-            $('#lock-account-btn').attr('data-id', $(this).data('id'));
-            $('#lock-account-btn').text('Khóa');
-            $('#delete-taikhoan-modal').modal('show');
+        var currentUser = $(this).data('user');
+        if(currentUser != $(this).data('id')){
+            if($(this).data('status')==1){
+                $('#delete-content').text('Khóa tài khoản này?')
+                $('#lock-account-btn').attr('data-object', 'taikhoan');
+                $('#lock-account-btn').attr('data-id', $(this).data('id'));
+                $('#lock-account-btn').text('Khóa');
+                $('#delete-taikhoan-modal').modal('show');
+            }
         }
+        
       
     });
 
@@ -582,7 +585,8 @@ $(function() {
             url: 'admin/searchAccount',
             type: 'GET',
             data: {
-                'search': $('#name-search').val()
+                'search': $('#name-search').val(),
+                'idUser': $(this).data('user')
             },
             success:function(data){
                 console.log(data);
@@ -600,11 +604,12 @@ $('#filter-review').off('click').click(function(){
     $('#filter-modal-title').text('Lọc');
 
     // thiết lập nút gửi là thêm mới
-
+    $('#filter-account-btn').attr('data-user', $(this).data('user'));
     $('#filter-account-btn').text('Lọc');
 
     // hiển thị modal
     $('#filter-review-modal').modal('show');
+
 
 });
 $('#filter-review-btn').off('click').click(function(){

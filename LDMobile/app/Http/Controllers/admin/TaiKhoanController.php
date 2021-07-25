@@ -310,20 +310,30 @@ class TaiKhoanController extends Controller
             <td class="vertical-center w-10">'.$account->id.'</td>
             <td class="vertical-center w-20">'.$account->sdt.'</td>
             <td class="vertical-center w-20">'.$account->email.'</td>
-            <td class="vertical-center w-20">'.$account->loaitk.'</td>
+            <td class="vertical-center w-20">'.$cate.'</td>
             <td class="vertical-center w-10">'.$account->htdn.'</td>
             <td class="vertical-center w-55" style="color: '.$color.'">'.$status.'</td>
             {{-- nút --}}
             <td class="vertical-center w-15">
                 <div class="d-flex justify-content-evenly">
                     <div data-id="'.$account->id.'" class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
-                    <div data-id="'.$account->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
-                    <div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
+                    <div data-id="'.$account->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>';
+                    if($request->idUser!=$account->id){
+                        $html .=   '<div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
                         <i class="fas fa-trash"></i>
                     </div>
                 </div>
             </td>
         </tr>';
+                    }else{
+                        $html .=   '<div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" data-user="'.$request->idUser.'" class="delete-taikhoan-btn delete-btn" style="background-color: gray">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            </td>
+        </tr>';
+                    }
+                    
         }
         $html .='</tbody>';
         return $html;
@@ -353,20 +363,29 @@ class TaiKhoanController extends Controller
             <td class="vertical-center w-10">'.$account->id.'</td>
             <td class="vertical-center w-20">'.$account->sdt.'</td>
             <td class="vertical-center w-20">'.$account->email.'</td>
-            <td class="vertical-center w-20">'.$account->loaitk.'</td>
+            <td class="vertical-center w-20">'.$cate.'</td>
             <td class="vertical-center w-10">'.$account->htdn.'</td>
             <td class="vertical-center w-55" style="color: '.$color.'">'.$status.'</td>
             {{-- nút --}}
             <td class="vertical-center w-15">
                 <div class="d-flex justify-content-evenly">
-                    <div data-id="'.$account->id.'" class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
-                    <div data-id="'.$account->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
-                    <div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
+                    <div data-id="'.$account->id.'" class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
+                    <div data-id="'.$account->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>';
+                    if($request->idUser!=$account->id){
+                        $html .=   '<div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
                         <i class="fas fa-trash"></i>
                     </div>
                 </div>
             </td>
         </tr>';
+                    }else{
+                        $html .=   '<div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" data-user="'.$request->idUser.'" class="delete-taikhoan-btn delete-btn" style="background-color: gray">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            </td>
+        </tr>';
+                    }
         }
         $html .='</tbody>';
         return $html;
