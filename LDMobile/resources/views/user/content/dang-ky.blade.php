@@ -6,108 +6,8 @@
     <section class='login-signup-sec'>
         <div class='container'>
             <div class='row'>
-                {{-- Full signup --}}
-                <!-- <div class='col-md-10 mx-auto box-shadow login-signup-box'>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h3 class='mb-30 text-center'>Đăng Ký</h3>
-    
-                            <form action="#" method="POSt">
-                                @csrf
-                                <div class="fw-600 mb-10">Thông tin cá nhân</div>
-            
-                                {{-- họ và tên --}}
-                                <div class='input-group mb-3'>
-                                    <span class='input-group-text'><i class="fas fa-user"></i></span>
-                                    <input type='text' class='form-control' placeholder='Họ và tên'>
-                                </div>
-            
-                                {{-- sdt --}}
-                                <div class='input-group mb-3'>
-                                    <span class='input-group-text'><i class="fas fa-phone"></i></span>
-                                    <input type='tel' pattern="[0-9][0-9][0-9]" class='form-control' placeholder='Số điện thoại'>
-                                </div>
-            
-                                {{-- địa chỉ --}}
-                                <div class='input-group mb-3'>
-                                    <span class='input-group-text'><i class="fas fa-map-marker-alt"></i></span>
-                                    <input type='text' class='form-control' placeholder='Địa chỉ'>
-                                </div>
-            
-                                <div class="fw-600 mb-10">Thông tin tài khoản</div>
-            
-                                {{-- email --}}
-                                <div class='input-group mb-3'>
-                                    <span class='input-group-text'><i class="fas fa-envelope"></i></span>
-                                    <input type='email' class='form-control' placeholder='Email'>
-                                </div>
-            
-                                {{-- mật khẩu --}}
-                                <div class='input-group mb-3'>
-                                    <span class='input-group-text'><i class="fas fa-key"></i></span>
-                                    <input type='password' class='form-control' placeholder='Mật khẩu'>
-                                </div>
-            
-                                {{-- nhập lại mật khẩu --}}
-                                <div class='input-group mb-3'>
-                                    <span class='input-group-text'><i class="fas fa-key"></i></span>
-                                    <input type='password' class='form-control' placeholder='Nhập lại mật khẩu'>
-                                </div>
-            
-                                {{-- nút đăng ký --}}
-                                <a href="#" class='main-btn p-10 w-100'>Đăng ký</a>
-                                <div class="mt-20 text-center">
-                                    <div>Đã có tài khoản? <a href={{route('user/dang-nhap')}}>Đăng nhập</a></div>
-                                </div>
-
-                                {{-- về trang chủ --}}
-                                <div class="mt-30">
-                                    <a href={{route('user/index')}} class="d-flex align-items-center"><i class="far fa-chevron-left mr-10 fz-14"></i>Về trang chủ</a>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-md-6">
-                            {{-- hình ảnh --}}
-                            <div class="signup-image">
-                                <img src="images/signup-des-bg.jpg" alt="">
-                                <div class="text-center main-color-text p-10">
-                                    <div class="fz-18 fw-600">Mua hàng tại LDMoible</div>
-                                    <div>Cập nhật sản phẩm mới nhất mức giá ưu đãi</div>
-                                </div>
-                            </div>
-
-                            {{-- đang nhập khác --}}
-                            <div class='d-flex flex-column align-items-center mt-20'>
-                                <div class="login-with w-90"></div>
-    
-                                <a href="#" class='btn-login-signup-with box-shadow'>
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <img src="images/icon/facebook-icon.png" alt='fb-icon' class="mr-20">
-                                            </div>
-                                            <div class="col-sm-8 d-flex align-items-center">Facebook</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#" class='btn-login-signup-with box-shadow'>
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <img src="images/icon/google-icon.png" alt='fb-icon' class="mr-20">
-                                            </div>
-                                            <div class="col-sm-8 d-flex align-items-center">Google</div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div> -->
-
-                {{-- quick signup --}}
                 <div class="col-md-5 col-sm-10 mx-auto box-shadow login-signup-box">
+                    {{-- session message --}}
                     @if(session('error_message'))
                         <div class="error-message mb-20">{{ session('error_message') }}</div>
                     @endif
@@ -128,6 +28,10 @@
                             {{-- SDT --}}
                             <div class="mb-3">
                                 <input type='text' id='su_tel' name="su_tel" maxlength="10" placeholder='Số điện thoại' required>
+                            </div>
+
+                            <div class="mb-3">
+                                <div id="recaptcha-container"></div>
                             </div>
 
                             {{-- nút tiếp tục --}}

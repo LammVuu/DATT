@@ -61,12 +61,6 @@ class UserController extends Controller
 
     public function SignUp(Request $request)
     {
-        $exist = TAIKHOAN::where('sdt', $request->su_tel)->first();
-
-        if($exist){
-            return redirect('/dangky')->with('error_message', 'Số điện thoại '.$request->su_tel.' đã được đăng ký');
-        }
-
         $data = [
             'sdt' => $request->su_tel,
             'password' => Hash::make($request->su_pw),
@@ -96,11 +90,17 @@ class UserController extends Controller
             Session::regenerate();
 
             $user = TAIKHOAN::where('sdt', $data['sdt'])->first();
+            TAIKHOAN::where('id', $user->id)->update(['login_status' => 1]);
             session(['user' => $user]);
 
+            // quay về url trước đó
             $prev_url = session('prev_url');
-            Session::forget('prev_url');
-            return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
+            if($prev_url){
+                Session::forget('prev_url');
+                return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
+            }
+
+            return redirect('/')->with('toast_message', 'Đăng nhập thành công');
         }
 
         return back()->with('error_message', 'số điện thoại hoặc mật khẩu không chính xác');
@@ -213,9 +213,17 @@ class UserController extends Controller
     public function LogOut()
     {
         Auth::logout();
+        TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
         Session::flush();
-        DB::table('taikhoan')->update(['login_status' => 0]);
+        Session::put('visitor', 'true');
         return redirect('/')->with('toast_message', 'Đã đăng xuất');
+    }
+
+    public function AjaxPhoneNumberIsExists(Request $request)
+    {
+        if($request->ajax()){
+            return TAIKHOAN::where('sdt', $request->sdt)->first() ? 'exists' : 'valid';
+        }
     }
 
     /*============================================================================================================

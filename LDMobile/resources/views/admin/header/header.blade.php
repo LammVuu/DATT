@@ -28,7 +28,7 @@
             <div class="account-option">
                 <a href="#" class="single-option"><i class="fas fa-user-alt mr-10"></i>Xem tài khoản</a>
                 <a href="#" class="single-option"><i class="fas fa-palette mr-10"></i>Giao diện</a>
-                <a href="#" class="single-option"><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
+                <a href="{{route('user/logout')}}" class="single-option"><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
             </div>
         </div>
     </div>

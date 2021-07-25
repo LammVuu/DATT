@@ -227,15 +227,27 @@ $(function() {
         firebase.auth().useDeviceLanguage();
         firebase.auth().signOut();
 
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('signup-step-1', {
-            'size': 'invisible',
+        // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('signup-step-1', {
+        //     'size': 'invisible',
+        //     'callback': (response) => {
+        //         sendVerifyCode();
+        //     },
+        //     'expired-callback': () => {
+        //         location.reload();
+        //     }
+        // });
+        var verifier = '';
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            'size': 'normal',
             'callback': (response) => {
-                sendVerifyCode();
+                verifier = response;
+                console.log(verifier)
+                //sendVerifyCode();
             },
             'expired-callback': () => {
                 location.reload();
             }
-        });
+          });
 
         recaptchaVerifier.render().then(function(widgetId) {
             window.recaptchaWidgetId = widgetId;
@@ -248,6 +260,104 @@ $(function() {
         $('#signup-step-1').click(function(){
             sendVerifyCode();
         });
+
+        $('#recaptcha-container').click(function(){
+            $(this).next().remove();
+        });
+
+        // gửi mã xác nhận
+        function sendVerifyCode(){
+            var nameInp = $('#su_fullname');
+            var telInp = $('#su_tel');
+
+            // kiểm tra bẫy lỗi
+            var valiPhone = validateInformationSignUp(nameInp, telInp);
+
+            // sdt không hợp lệ
+            if(!valiPhone || verifier == ''){
+                return;
+            }
+
+            $('.loader').fadeIn();
+            // kiểm tra đã sdt đã được đăng ký chưa
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: 'ajax-phone-number-is-exists',
+                type: 'POST',
+                data: {'sdt': telInp.val()},
+                success: function(data){
+                    if(data == 'valid'){
+                        if($('.error-message').length){
+                            $('.error-message').remove();
+                        }
+
+                        var tel = '+1' + telInp.val();
+                        var appVerifier = window.recaptchaVerifier;
+
+                        // gửi mã thành công
+                        firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
+                            window.confirmationResult = confirmationResult;
+                            coderesult = confirmationResult;
+
+                            // tiếp tục bước tiếp theo
+                            $('#enter-information').addClass('none-dp');
+
+                            // hiển thị gửi code vào số điện thoại
+                            var displayTel = tel.replace('+1','');
+                            $('#tel-confirm').text(displayTel);
+                            $('#enter-verify-code').removeClass('none-dp');
+
+                        }).catch(function (error) { // gửi mã thất bại
+                            console.log(error);
+                            alert('Đã có lỗi xảy ra vui lòng thử lại')
+                            grecaptcha.reset(window.recaptchaWidgetId);
+                            location.reload();
+                        });
+                    } else {
+                        // reset sdt
+                        $('#su_tel').val('');
+                        // reset reCAPTCHA
+                        grecaptcha.reset(window.recaptchaWidgetId)
+                        verifier = '';
+
+                        if(!$('.error-message').length){
+                            var message = $('<div class="error-message mb-20">Số điện thoại '+telInp.val()+' đã được đăng ký</div>');
+                            $('#signup-form').before(message);
+                        }
+                    }
+                }
+            });
+            $('.loader').fadeOut();
+        }
+
+        function codeVerify(codeInput) {
+            $('.loader').fadeIn();
+
+            var code = codeInput.val();
+        
+            // xác nhận code hợp lệ
+            coderesult.confirm(code).then(function (result) {
+                window.verifyingCode = false;
+                window.confirmationResult = null;
+
+                // tạo mật khẩu
+                $('#enter-verify-code').addClass('none-dp');
+                $('#enter-password').removeClass('none-dp');
+
+            }).catch(function (error) { // code không hợp lệ
+                window.verifyingCode = false;
+                console.log(error);
+
+                // hiển thị thông báo lỗi
+                codeInput.addClass('required');(errMessage);
+                var errMessage = $('<div class="required-text text-center">Mã xác thực không hợp lệ, vui lòng kiểm tra lại</div>');
+                codeInput.after(errMessage);
+            });
+
+            $('.loader').fadeOut();
+        }
 
         $('#su_fullname').keyup(function(){
             if($(this).hasClass('required')){
@@ -275,7 +385,7 @@ $(function() {
             window.confirmationResult = null;
 
             // quay lại phần nhập sdt
-            $('#enter-phone-number').removeClass('none-dp');
+            $('#enter-information').removeClass('none-dp');
             $('#enter-verify-code').addClass('none-dp');
         });
 
@@ -3340,49 +3450,6 @@ $(function() {
         $('#PhuongXa-box').hide('blind', 250);
     });
 
-    // gửi mã xác nhận
-    function sendVerifyCode(){
-        var nameInp = $('#su_fullname');
-        var telInp = $('#su_tel');
-
-        // kiểm tra bẫy lỗi
-        var valiPhone = validateInformationSignUp(nameInp, telInp);
-
-        // sdt không hợp lệ
-        if(!valiPhone){
-            return;
-        }  
-
-        $('.loader').fadeIn();
-        var tel = '+1' + telInp.val();
-        var appVerifier = window.recaptchaVerifier;
-
-        window.signingIn = true;
-
-        // gửi mã thành công
-        firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
-            window.confirmationResult = confirmationResult;
-            coderesult = confirmationResult;
-            window.signingIn = false;
-
-            // tiếp tục bước tiếp theo
-            $('#enter-information').addClass('none-dp');
-
-            // hiển thị gửi code vào số điện thoại
-            var displayTel = tel.replace('+1','');
-            $('#tel-confirm').text(displayTel);
-            $('#enter-verify-code').removeClass('none-dp');
-
-        }).catch(function (error) { // gửi mã thất bại
-            console.log(error);
-            window.signingIn = false;
-            alert('Đã có lỗi xảy ra vui lòng thử lại')
-            grecaptcha.reset(window.recaptchaWidgetId);
-            location.reload();
-        });
-        $('.loader').fadeOut();
-    }
-
     function validateInformationSignUp(nameInp, telInp){
         // nếu đã kiểm tra rồi thì return
         if(nameInp.hasClass('required') || telInp.hasClass('required')){
@@ -3468,33 +3535,7 @@ $(function() {
         codeInput.after(errMessage);
         return false;
     }
-
-    function codeVerify(codeInput) {
-        $('.loader').fadeIn();
-
-        var code = codeInput.val();
     
-        // xác nhận code hợp lệ
-        coderesult.confirm(code).then(function (result) {
-            window.verifyingCode = false;
-            window.confirmationResult = null;
-
-            // tạo mật khẩu
-            $('#enter-verify-code').addClass('none-dp');
-            $('#enter-password').removeClass('none-dp');
-
-        }).catch(function (error) { // code không hợp lệ
-            window.verifyingCode = false;
-            console.log(error);
-
-            // hiển thị thông báo lỗi
-            codeInput.addClass('required');(errMessage);
-            var errMessage = $('<div class="required-text text-center">Mã xác thực không hợp lệ, vui lòng kiểm tra lại</div>');
-            codeInput.after(errMessage);
-        });
-
-        $('.loader').fadeOut();
-    }
 
     function validatePassword(passwordInp, rePasswordInp){
         var pw = passwordInp.val();
@@ -3552,7 +3593,7 @@ $(function() {
                 $(id).css({
                     'transform': 'translateY(100px)'
                 });
-            }, 5000);
+            }, 3000);
     
             $(id).css({
                 'transform': 'translateY(0)'

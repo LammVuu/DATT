@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 use App\Models\TAIKHOAN;
 use Hash;
@@ -17,6 +18,7 @@ class TaiKhoanController extends Controller
     public function __construct()
     {
         $this->admin='admin/content/';
+        $this->IndexController = new IndexController;
     }
     public function index(Request $request)
     {
@@ -195,6 +197,9 @@ class TaiKhoanController extends Controller
         $cate = "";
         $colorDelete ="";
         if($user->update()){
+            // cập nhật session user
+            $this->IndexController->userSessionUpdate();
+
             if($user->trangthai==1){
                 $status = "Hoạt động";
                 $color = "green";

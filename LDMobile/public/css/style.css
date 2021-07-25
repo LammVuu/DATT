@@ -4272,9 +4272,9 @@ a.head-item:hover{
 }
 
 /* hide reCAPTCHA */
-.grecaptcha-badge { 
+/* .grecaptcha-badge { 
   visibility: hidden;
-}
+} */
 
 /*========================================================================================================================
                                                       Compare                                                           

@@ -4,10 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\LUOTTRUYCAP;
+use Illuminate\Support\Facades\Auth;
 use Session;
 
-class AccessTimes
+class IsAdmin
 {
     /**
      * Handle an incoming request.
@@ -18,13 +18,10 @@ class AccessTimes
      */
     public function handle(Request $request, Closure $next)
     {
-        if(!Session::get('visitor')){
-            Session::put('visitor', 'true');
-            LUOTTRUYCAP::create([
-                'nentang' => 'web',
-                'thoigian' => date('d/m/Y H:i:s')
-            ]);
+        if(Auth::check() && Auth::user()->loaitk == 1 && Auth::user()->login_status == 1){
+            return redirect('/admin');
         }
+
         return $next($request);
     }
 }

@@ -12,12 +12,18 @@ use App\Http\Controllers\user\UserController;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
+| Here is where you can register web Routes for your application. These
+| Routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTimes"], function() {
+Route::post("signup", [UserController::class, "SignUp"])->name("user/signup");
+
+Route::post("login", [UserController::class, "Login"])->name("user/login");
+
+Route::get("logout", [UserController::class, "LogOut"])->name("user/logout");
+
+Route::group(["prefix" => "", "namespace" => "user", "middleware" => "IsAdmin"], function() {
 
     /*=======================================================================================================
                                                         Page
@@ -35,12 +41,6 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTime
 
     Route::get("auth/google/callback", [UserController::class, "GoogleCallback"]);
 
-    Route::post("signup", [UserController::class, "SignUp"])->name("user/signup");
-
-    Route::post("login", [UserController::class, "Login"])->name("user/login");
-
-    Route::get("logout", [UserController::class, "LogOut"])->name("user/logout");
-
     Route::get("/",[IndexController::class, "Index"])->name("user/index");
 
     Route::get("dienthoai", [IndexController::class, "DienThoai"])->name("user/dien-thoai");
@@ -51,13 +51,13 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTime
 
     Route::get("dienthoai/{name}", [IndexController::class, "ChiTiet"])->name("user/chi-tiet");
 
-    route::get("sosanh/{str}", [IndexController::class, "SoSanh"])->name("user/so-sanh");
+    Route::get("sosanh/{str}", [IndexController::class, "SoSanh"])->name("user/so-sanh");
 
-    route::get("thanhcong", [CartController::class, "ThanhCong"])->name("user/thanhcong");
+    Route::get("thanhcong", [CartController::class, "ThanhCong"])->name("user/thanhcong");
 
-    route::get("tracuu", [IndexController::class, "TraCuu"])->name("user/tra-cuu");
+    Route::get("tracuu", [IndexController::class, "TraCuu"])->name("user/tra-cuu");
 
-    route::get("lienhe", [IndexController::class, "LienHe"])->name("user/lien-he");
+    Route::get("lienhe", [IndexController::class, "LienHe"])->name("user/lien-he");
 
     /*=======================================================================================================
                                                         Ajax
@@ -89,15 +89,17 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTime
 
     Route::post("ajax-like-comment", [UserController::class, "AjaxLikeComment"]);
 
-    route::post("ajax-change-location", [IndexController::class, "AjaxChangeLocation"]);
+    Route::post("ajax-change-location", [IndexController::class, "AjaxChangeLocation"]);
 
     Route::post("ajax-check-imei", [IndexController::class, "AjaxCheckImei"]);
 
-    route::post("zalopay/callback", [IndexController::class, "ZaloPayCallback"]);
+    Route::post("zalopay/callback", [IndexController::class, "ZaloPayCallback"]);
 
-    route::get("test5", "IndexController@test5");
+    Route::post("ajax-phone-number-is-exists", [UserController::class, "AjaxPhoneNumberIsExists"]);
 
-    Route::middleware(["CheckLogin", "AccessTimes"])->group(function(){
+    Route::get("test5", "IndexController@test5");
+
+    Route::middleware("CheckLogin")->group(function(){
         /*=======================================================================================================
                                                         Page
         =========================================================================================================*/
@@ -136,7 +138,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTime
 
         Route::post("ajax-change-avatar", [UserController::class, "AjaxChangeAvatar"])->name("user/ajax-change-avatar");
 
-        route::post("checkout", [CartController::class, "Checkout"])->name("user/checkout");
+        Route::post("checkout", [CartController::class, "Checkout"])->name("user/checkout");
 
         /*=======================================================================================================
                                                         Ajax
@@ -166,7 +168,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTime
 
         Route::post("ajax-choose-phone-to-evaluate", [UserController::class, "AjaxChoosePhoneToEvaluate"]);
 
-        route::get("ketquathanhtoan", [CartController::class, "ketQuaThanhToan"]);
+        Route::get("ketquathanhtoan", [CartController::class, "ketQuaThanhToan"]);
 
         Route::post("ajax-create-evaluate", [UserController::class, "AjaxCreateEvaluate"]);
 
@@ -174,10 +176,9 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => "AccessTime
 
         Route::post("ajax-reply", [UserController::class, "AjaxReply"]);
     });
-    
 });
 
-Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "CheckLogin"], function() {
+Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "AdminLogin"], function() {
     Route::get("/", [DashboardController::class, "index"])->name("admin/dashboard");
     Route::resource("hinhanh", HinhAnhController::class);
     Route::resource("banner", BannerController::class);
@@ -370,6 +371,8 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Chec
     Route::get("searchWishList", [App\Http\Controllers\admin\SPYeuThichController::class, "searchWishList"]);
     Route::get("searchNotification", [App\Http\Controllers\admin\ThongBaoController::class, "searchNotification"]);
 });
+
+
 
 /*
 GET	    /product	        		index	product.index
