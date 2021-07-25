@@ -443,6 +443,7 @@ $(function() {
     }
     function editToAccount(){
         var id =  $("#idAccount").val();
+        var idCurrent = $("#idAccountCurrent").val();
         var form_data = new FormData();
         var file_data = $('#ful').prop('files')[0];
         var hoten = $("#fullname").val(); 
@@ -471,11 +472,13 @@ $(function() {
                 if($('#toast').children().length){
                     $('#toast').children().remove();
                 }
-                $("#avatarHeaderUser").prop('src', 'images/user/'+ data[1].anhdaidien);
-                $("#avatarUser").prop('src', 'images/user/'+ data[1].anhdaidien);
-                $("#avatarSideBarUser").prop('src', 'images/user/'+ data[1].anhdaidien);
-                $('#nameSideBar').text(data[1].hoten);
-                $('#nameHeader').text(data[1].hoten);
+                if(idCurrent==id){
+                    $("#avatarHeaderUser").prop('src', 'images/user/'+ data[1].anhdaidien);
+                    $("#avatarSideBarUser").prop('src', 'images/user/'+ data[1].anhdaidien);
+                    $('#nameSideBar').text(data[1].hoten);
+                    $('#nameHeader').text(data[1].hoten);
+                }
+                
                 $('#toast').append('<span id="create-hinhanh-toast" class="alert-toast-right alert-toast-right-success">Chỉnh sửa thành công</span>');
                 showToast('#create-hinhanh-toast');
             }

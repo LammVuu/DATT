@@ -86,6 +86,7 @@
                         <center>
                         <div class="mb-3">
                             <input id='idAccount' hidden>
+                            <input id='idAccountCurrent' value="{{session('user')->id}}" hidden>
                             <div class="form-group">
                                 <img id="imgPre" width="10%" src="{{asset('images/user/avatar-default.png')}}" alt="no img" class="img-thumbnail" />
                             </div>
@@ -151,7 +152,7 @@
                     </div>  
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn p-10" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-taikhoan-btn" class="main-btn p-10 ml-10"></div>
+                        <div id="action-taikhoan-btn" data-user="" class="main-btn p-10 ml-10"></div>
                     </div>
             </div>
         </div>
