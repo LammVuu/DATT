@@ -17,10 +17,10 @@
             <!-- account -->
             <div class="d-flex align-items-center">
                 {{-- avatar --}}
-                <img src="{{$url_user.$user->anhdaidien}}" alt="" width="40px" class="circle-img mr-10">
+                <img src="{{$url_user.$user->anhdaidien}}" id="avatarHeaderUser" alt="" width="40px" class="circle-img mr-10">
                 <!-- name -->
                 <div id='btn-expand-account' class="d-flex align-items-center">
-                    <div class="pointer-cs white">{{$user->hoten}}<i class="far fa-chevron-down ml-10 fz-14"></i></div>
+                    <div class="pointer-cs white" id="nameHeader">{{$user->hoten}}<i class="far fa-chevron-down ml-10 fz-14"></i></div>
                 </div>
             </div>
 

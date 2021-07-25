@@ -465,12 +465,17 @@ $(function() {
                 $('#taikhoan-modal').modal('hide');
                 $('.loader').fadeOut();
                 // thay thế dòng hiện tại bằng dòng mới chỉnh sửa
-                $('tr[data-id="'+id+'"]').replaceWith(data);
+                $('tr[data-id="'+id+'"]').replaceWith(data[0]);
                 
                 // toast
                 if($('#toast').children().length){
                     $('#toast').children().remove();
                 }
+                $("#avatarHeaderUser").prop('src', 'images/user/'+ data[1].anhdaidien);
+                $("#avatarUser").prop('src', 'images/user/'+ data[1].anhdaidien);
+                $("#avatarSideBarUser").prop('src', 'images/user/'+ data[1].anhdaidien);
+                $('#nameSideBar').text(data[1].hoten);
+                $('#nameHeader').text(data[1].hoten);
                 $('#toast').append('<span id="create-hinhanh-toast" class="alert-toast-right alert-toast-right-success">Chỉnh sửa thành công</span>');
                 showToast('#create-hinhanh-toast');
             }

@@ -3,8 +3,8 @@
     <!-- avatar -->
     <div class="sidebar-avt">
         <div class="d-flex flex-column">
-            <img src="{{$url_user.$user->anhdaidien}}" alt="" width="80px" class="circle-img center-img">
-            <div class="white mt-10">{{$user->hoten}}</div>
+            <img src="{{$url_user.$user->anhdaidien}}" id="avatarSideBarUser" alt="" width="80px" class="circle-img center-img">
+            <div class="white mt-10" id="nameSideBar">{{$user->hoten}}</div>
         </div>
     </div>
 

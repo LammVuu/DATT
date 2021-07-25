@@ -231,7 +231,8 @@ class TaiKhoanController extends Controller
                 </div>
             </td>
         </tr>';
-        return $html;
+        $result = [$html, $user];
+        return $result;
         }
     }
 
@@ -395,4 +396,5 @@ class TaiKhoanController extends Controller
         $html .='</tbody>';
         return $html;
     }
+    
 }
