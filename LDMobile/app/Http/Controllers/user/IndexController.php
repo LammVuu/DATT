@@ -49,7 +49,7 @@ class IndexController extends Controller
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
     public function Index(){
-        
+        // $this->print(Session::all()); return false;
         /*=================================
                     hotsale
         ===================================*/

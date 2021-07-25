@@ -23,10 +23,9 @@ Route::post("login", [UserController::class, "Login"])->name("user/login");
 
 Route::get("logout", [UserController::class, "LogOut"])->name("user/logout");
 
-Route::group(["prefix" => "", "namespace" => "user", "middleware" => "IsAdmin"], function() {
-
+Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin", "AccessTimes"]], function(){
     /*=======================================================================================================
-                                                        Page
+                                                                Page
     =========================================================================================================*/
     
     Route::get("dangnhap", [UserController::class, "DangNhap"])->name("user/dang-nhap");

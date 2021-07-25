@@ -212,10 +212,14 @@ class UserController extends Controller
 
     public function LogOut()
     {
+        if(!session('user')){
+            return back();
+        }
+
         Auth::logout();
         TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
         Session::flush();
-        Session::put('visitor', 'true');
+        Session::put('visitor', '1');
         return redirect('/')->with('toast_message', 'Đã đăng xuất');
     }
 

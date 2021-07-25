@@ -19,7 +19,7 @@ class AccessTimes
     public function handle(Request $request, Closure $next)
     {
         if(!Session::get('visitor')){
-            Session::put('visitor', 'true');
+            Session::put('visitor', '1');
             LUOTTRUYCAP::create([
                 'nentang' => 'web',
                 'thoigian' => date('d/m/Y H:i:s')

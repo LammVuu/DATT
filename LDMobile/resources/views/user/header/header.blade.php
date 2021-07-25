@@ -112,18 +112,12 @@
                         </div>
                         <div class='d-flex align-items-center'>
                             <div class='head-offcanvas-account'>
-                                <b>Vũ Hoàng Lâm</b><i class="fas fa-caret-down ml-10"></i>
+                                <b>{{$user->hoten}}</b><i class="fas fa-caret-down ml-10"></i>
                                 <div class='head-offcanvas-account-option'>
                                     <div class='d-flex flex-column fz-14'>
-                                        <a href="#" class='options black'><i class="fas fa-user mr-10"></i>Xem tài khoản</a>
-                                        <a href="#" class='d-flex align-items-center options black'>
-                                            <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                            <div><div class='head-number fz-12'>50</div></div>
-                                        </a>
-                                        <a href="#" class="d-flex align-items-center options black">
-                                            <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
-                                            <div class='head-number fz-12'>5</div>
-                                        </a>
+                                        <a href="{{route('user/tai-khoan')}}" class='options black'><i class="fas fa-user mr-10"></i>Xem tài khoản</a>
+                                        <a href="{{route('user/tai-khoan-don-hang')}}" class='d-flex align-items-center options black'><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</a>
+                                        <a href="#" class="d-flex align-items-center options black"><i class="fas fa-bell mr-10"></i>Thông báo</a>
                                         <hr class='m-0'>
                                         <a href="#" class='options price-color'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
                                     </div>
