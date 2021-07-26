@@ -39,7 +39,7 @@
                 <td class="vertical-center w-25">{{$notification->tieude}}</td>
                 <td class="vertical-center w-20">{{$notification->noidung}}</td>
                 <td class="vertical-center w-10">{{$notification->thoigian}}</td>
-                <td class="vertical-center w-20" style="color:{{$notification->trangthaithongbao==1? "green" : "red"}}">{{$notification->trangthaithongbao==1? "Chưa đọc" : "Đã đọc"}}</td>
+                <td class="vertical-center w-20" style="color:{{$notification->trangthaithongbao==1? "green" : "red"}}">{{$notification->trangthaithongbao==1? "Đã đọc" : "Chưa đọc"}}</td>
                 {{-- nút --}}
                 <td class="vertical-center w-15">
                     <div class="d-flex justify-content-evenly">
@@ -101,8 +101,8 @@
                     <div class="col-lg-6">
                         <label for="mausp_name" class="mb-5 fw-600">Trạng thái thông báo</label>
                     <select class="form-select" id='status' hidden name="account" aria-label="Default select example">
-                        <option value="1">Chưa đọc</option>
-                        <option value="0">Đã đọc</option>
+                        <option value="0">Chưa đọc</option>
+                        <option value="1">Đã đọc</option>
                     </select>
                     </div>
                     
@@ -159,8 +159,8 @@
                             <div class="col-lg-6">
                                 <label for="mausp_name" class="mb-5 fw-600">Trạng thái thông báo</label>
                             <select class="form-select" id='status-notification' name="status"  aria-label="Default select example">
-                                <option value="1">Chưa đọc</option>
-                                <option value="0">Đã đọc</option>
+                                <option value="0">Chưa đọc</option>
+                                <option value="1">Đã đọc</option>
                             </select>
                             </div>
                         </div>

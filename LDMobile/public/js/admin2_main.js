@@ -1188,7 +1188,7 @@ $('body').on('click', '#delete-notification-btn', function () {
                 $('#title').val(data.tieude);
                 $('#content').val(data.noidung);
                 $('#account').val(data.id_tk);
-                $('#status').val(data.trangthaithongbao)
+                $("#status option[value="+data.trangthaithongbao+"]").prop('selected', true);
                 $('#notification-modal').modal('show');
             }
         });
