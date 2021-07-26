@@ -1,3 +1,6 @@
+:root{
+  --red: #FF5252;
+}
 /* Color */
 .main-color-text{
 	color: #078FD8;
@@ -24,7 +27,7 @@
 }
 
 .red{
-  color: #FF5252;
+  color: var(--red);
 }
 
 .red-bg{
@@ -2529,8 +2532,8 @@ textarea:focus{
 
 .head-offcanvas-account-option{
   position: absolute;
-  left: -20%; right: -40%; top: 100%;
-  height: auto;
+  left: 0; top: 100%;
+  height: auto; width: 200px;
   border: 1px solid #dcdcdc;
   background-color: white;
   transition: 1s;
@@ -2574,15 +2577,6 @@ a.head-item:hover{
   color: white;
 }
 
-.head-number{
-  background-color: #ee1010;
-  color: white;
-  font-size: 14px;
-  text-align: center;
-  border-radius: 100%;
-  padding: 2px 7px;
-  margin-left: 10px;
-}
 
 .head-brand-item{
   padding: 10px;
@@ -3011,6 +3005,18 @@ a.head-item:hover{
   background-color: #9eddff;
 }
 
+.number-badge{
+  width: 25px; height: 20px;
+  padding: 2px;
+  border-radius: 30px;
+  background-color: var(--red);
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /*========================================================================================================================
                                                     Account profile                                                           
 /*========================================================================================================================*/
@@ -3107,6 +3113,27 @@ a.head-item:hover{
   height: auto; width: 200px;
   background-color: white;
   display: none;
+}
+
+.noti-type{
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 50px;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 0 2px #888888;
+}
+
+.noti-type:hover{
+  background-color: #dcf3ff;
+  box-shadow: 0 0 0 2px #078FD8;
+}
+
+.noti-type-selected{
+  background-color: #dcf3ff;
+  box-shadow: 0 0 0 2px #078FD8;
 }
 
 .account-noti-checked{

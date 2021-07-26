@@ -13,6 +13,7 @@ use App\Models\VOUCHER;
 use App\Models\DONHANG;
 use App\Models\CHINHANH;
 use App\Models\TAIKHOAN_DIACHI;
+use App\Models\THONGBAO;
 
 class UserComposer
 {
@@ -49,7 +50,7 @@ class UserComposer
             return $lst_noti;
         }
 
-        $lst_noti['noti'] = TAIKHOAN::find($id_tk)->thongbao;
+        $lst_noti['noti'] = THONGBAO::orderBy('id', 'desc')->get();
 
         foreach(TAIKHOAN::find($id_tk)->thongbao as $key){
             if($key['trangthaithongbao'] == 0){

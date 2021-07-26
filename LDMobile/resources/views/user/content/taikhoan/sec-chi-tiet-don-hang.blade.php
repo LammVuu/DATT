@@ -189,7 +189,7 @@
                     
                     {{-- tính tiền --}}
                     <tr>
-                        <td colspan="w-40 vertical-center">
+                        <td class="vertical-center">
                             <div class='p-20'>
                                 <div class='d-flex justify-content-between pb-10'>
                                     <div class="gray-1">Tạm tính:</div>
@@ -208,6 +208,7 @@
                                 </div>
                             </div>
                         </td>
+                        <td colspan="4"></td>
                     </tr>
                     {{-- quay về --}}
                     <tr>

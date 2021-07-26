@@ -716,7 +716,10 @@ $(function() {
                     type: 'POST',
                     data: {'hoten':$('input[name="new_fullname_inp"]').val() },
                     success:function(data){
+                        // thay đổi họ tên
                         $('#user_fullname').text(data);
+                        $($('.head-account').children()[0]).text(data);
+                        $('.head-offcanvas-account').find('b').text(data);
 
                         var toast = $('<div id="avt-toast" class="alert-toast"><div class="d-flex align-items-center"><span>Cập nhật họ và tên thành công</span></div></div>');
                         $("#toast").after(toast);

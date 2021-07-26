@@ -21,54 +21,66 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex align-items-center justify-content-between mb-20">
+            <div data-type="all" class="noti-type noti-type-selected">
+                <i class="fas fa-list mr-10"></i>Tất cả
+            </div>
+            <div data-type="not-seen" class="noti-type">
+                <i class="fas fa-eye-slash mr-10"></i>Chưa đọc
+            </div>
+            <div data-type="seen" class="noti-type">
+                <i class="fas fa-eye mr-10"></i>Đã đọc
+            </div>
+            <div data-type="order" class="noti-type">
+                <i class="fas fa-truck mr-10"></i>Đơn hàng
+            </div>
+            <div data-type="voucher" class="noti-type">
+                <i class="fas fa-badge-percent mr-10"></i>Mã giảm giá
+            </div>
+            <div data-type="reply" class="noti-type">
+                <i class="fas fa-reply mr-10"></i>Phản hồi
+            </div>
+            <div data-type="other" class="noti-type">
+                <i class="fal fa-ellipsis-h-alt mr-10"></i>Khác
+            </div>
+        </div>
 
         {{-- danh sách thông báo --}}
         @if (count($data['lst_noti']['noti']) != 0)
             <div id="lst_noti">
                 @foreach ($data['lst_noti']['noti'] as $key)
-                    @if ($key['trangthaithongbao'] == 0)
-                        <div id={{ 'noti-' . $key['id'] }} class='single-noti account-noti-wait box-shadow mb-20'>
-                            {{-- tiêu đề --}}
-                            <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
-                                <div class="d-flex align-items-end">
-                                    <b>{{$key['tieude']}}</b>
-                                    
-                                    <div class="fz-14 ml-25">{{$key['thoigian']}}</div>
+                    <div id={{ 'noti-' . $key['id'] }} class='single-noti {{$key['trangthaithongbao'] == 0 ? 'account-noti-wait' : 'account-noti-checked'}} box-shadow mb-20'>
+                        {{-- tiêu đề --}}
+                        <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    @if ($key['tieude'] == 'Đơn đã tiếp nhận')
+                                        <i class="fas fa-file-alt fz-28 info-color"></i>
+                                    @elseif ($key['tieude'] == 'Đơn đã xác nhận')
+                                        <i class="fas fa-file-check fz-28 success-color"></i>
+                                    @elseif ($key['tieude'] == 'Giao hàng thành công')
+                                        <i class="fas fa-box-check fz-28 success-color"></i>
+                                    @elseif ($key['tieude'] == 'Mã giảm giá')
+                                        <i class="fas fa-badge-percent fz-28 yellow"></i>
+                                    @endif
                                 </div>
-                                
-                                <div class="d-flex">
-                                    <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$key['id']}}'>Đánh dấu đã đọc</div>
-                                    <div type="button" class='noti-btn-delete price-color' data-id='{{$key['id']}}'>xóa</div>
-                                </div>
+                                <div class="fw-600 ml-10">{{$key['tieude']}}</div>
                             </div>
-                            {{-- nội dung --}}
-                            <div class="d-flex p-10">
-                                <div id={{ 'noti-content-' . $key['id'] }}>
-                                    <div>{{ $key['noidung'] }}</div> 
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <div id={{ 'noti-' . $key['id'] }} class='single-noti account-noti-checked box-shadow mb-20'>
-                            {{-- tiêu đề --}}
-                            <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
-                                <div class="d-flex align-items-end">
-                                    <b>{{$key['tieude']}}</b>
-                                    
-                                    <div class="fz-14 ml-25">{{$key['thoigian']}}</div>
-                                </div>
-                                <div class="d-flex align-items-end">
-                                    <div type="button" class='noti-btn-delete price-color' data-id='{{$key['id']}}'>xóa</div>
-                                </div>
-                            </div>
-                            {{-- nội dung --}}
-                            <div class="d-flex p-10">
-                                <div id={{ 'noti-content-' . $key['id'] }}>
-                                    <div>{{ $key['noidung'] }}</div> 
-                                </div>
+                            <div class="d-flex align-items-end">
+                                @if ($key['trangthaithongbao'] == 0)
+                                <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$key['id']}}'>Đánh dấu đã đọc</div>
+                                @endif
+                                <div type="button" class='noti-btn-delete price-color' data-id='{{$key['id']}}'>xóa</div>
                             </div>
                         </div>
-                    @endif
+                        {{-- nội dung --}}
+                        <div class="d-flex pt-20 pb-20 pl-10 pr-10">
+                            <div id={{ 'noti-content-' . $key['id'] }}>
+                                <div>{!! $key['noidung'] !!}</div>
+                                <div class="mt-10 fz-14">{{$key['thoigian']}}</div>
+                            </div>
+                        </div>
+                    </div>
                 @endforeach
             </div>
         @else

@@ -63,6 +63,8 @@ class DashboardController extends Controller
         ============================================================*/
         // tháng/năm hiện tại
         $currentMonthYear = date('m/Y');
+        // năm hiện tại
+        $currentYear = date('Y');
 
         $lst_orderStatus = $this->getOrderStatus($currentMonthYear);
         
@@ -78,10 +80,18 @@ class DashboardController extends Controller
 
         $accessTimesOnApp = $this->getAccessAppInMonth($currentDate, $dateFirstOfMonth);
         
-            /*==========================================================
+        /*==========================================================
                         lượt truy cập app trong tháng
         ============================================================*/
         $totalReviewInMonth = $this->getTotalReviewInMonth($currentDate, $dateFirstOfMonth);
+
+        /*==========================================================
+                            Doanh thu trong năm
+        ============================================================*/
+
+        $salesOfYear = $this->getSalesOfYear($currentYear);
+        // $this->IndexController->print($salesOfYear); return false;
+
         $data = [
             'totalBillInMonth' => $totalBillInMonth,
             'totalMoneyInMonth' => $totalMoneyInMonth,
@@ -91,7 +101,8 @@ class DashboardController extends Controller
             'lst_orderStatus' => $lst_orderStatus,
             'accessTimesOnWeb' => $accessTimesOnWeb,
             'accessTimesOnApp' => $accessTimesOnApp,
-            'totalReviewInMonth' => $totalReviewInMonth
+            'totalReviewInMonth' => $totalReviewInMonth,
+            'salesOfYear' => $salesOfYear,
         ];
 
         return view($this->admin.'index')->with($data);
@@ -832,5 +843,144 @@ class DashboardController extends Controller
         $reviews= DANHGIASP::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
         $result = count($reviews);
         return $result;
+    }
+
+    // thống kê doanh thu trong năm
+    public function getSalesOfYear($year)
+    {
+        $sales = [];
+        $str = '';
+
+        foreach(DONHANG::all() as $order){
+            // năm của đơn hàng
+            $orderYear = explode('/', explode(' ', $order->thoigian)[0])[2];
+            // tháng của đơn hàng
+            $orderMonth = explode('/', explode(' ', $order->thoigian)[0])[1];
+
+            if($orderYear == $year){
+                switch($orderMonth){
+                    case '01':
+                        if(!key_exists('1', $sales)){
+                            $sales['1'] = 0;
+                        }
+                        $sales['1'] += $order->tongtien;
+                        break;
+                    case '02':
+                        if(!key_exists('2', $sales)){
+                            $sales['2'] = 0;
+                        }
+                        $sales['2'] += $order->tongtien;
+                        break;
+                    case '03':
+                        if(!key_exists('3', $sales)){
+                            $sales['3'] = 0;
+                        }
+                        $sales['3'] += $order->tongtien;
+                        break;
+                    case '04':
+                        if(!key_exists('4', $sales)){
+                            $sales['4'] = 0;
+                        }
+                        $sales['4'] += $order->tongtien;
+                        break;
+                    case '05':
+                        if(!key_exists('5', $sales)){
+                            $sales['5'] = 0;
+                        }
+                        $sales['5'] += $order->tongtien;
+                        break;
+                    case '06':
+                        if(!key_exists('6', $sales)){
+                            $sales['6'] = 0;
+                        }
+                        $sales['6'] += $order->tongtien;
+                        break;
+                    case '07':
+                        if(!key_exists('7', $sales)){
+                            $sales['7'] = 0;
+                        }
+                        $sales['7'] += $order->tongtien;
+                        break;
+                    case '08':
+                        if(!key_exists('8', $sales)){
+                            $sales['8'] = 0;
+                        }
+                        $sales['8'] += $order->tongtien;
+                        break;
+                    case '09':
+                        if(!key_exists('9', $sales)){
+                            $sales['9'] = 0;
+                        }
+                        $sales['9'] += $order->tongtien;
+                        break;
+                    case '10':
+                        if(!key_exists('10', $sales)){
+                            $sales['10'] = 0;
+                        }
+                        $sales['10'] += $order->tongtien;
+                        break;
+                    case '11':
+                        if(!key_exists('11', $sales)){
+                            $sales['11'] = 0;
+                        }
+                        $sales['11'] += $order->tongtien;
+                        break;
+                    case '12':
+                        if(!key_exists('12', $sales)){
+                            $sales['12'] = 0;
+                        }
+                        $sales['12'] += $order->tongtien;
+                        break;
+                }
+            }
+        }
+
+        // không có dữ liệu
+        if(count($sales) == 0){
+            return '';
+        }
+
+        // năm hiện tại: những tháng cũ, doanh thu = 0
+        $largestMonth = array_key_last($sales);
+        if($year == date('Y')){
+            for($i = 1; $i < $largestMonth; $i++){
+                if(!key_exists($i, $sales)){
+                    $sales[$i] = 0;
+                }
+            }
+        }
+        // năm cũ: thêm vào trước và sau tháng tìm thấy, doanh thu = 0
+        else {
+            for($i = 1; $i < 13; $i++){
+                if(key_exists($i, $sales)){
+                    continue;
+                }
+                $sales[$i] = 0;
+            }
+        }
+
+        // sắp xếp mảng theo thứ tự tháng tăng dần
+        $arr = [];
+        ksort($sales);
+        foreach($sales as $i => $key){
+            $arr[$i] = $key;
+        }
+
+        // chuyển sang chuỗi
+        foreach($arr as $key){
+            $str .= $key .'-';
+        }
+
+        // cắt bỏ dấu '-' cuối chuỗi
+        $str = substr_replace($str, '', strlen($str) - 1);
+
+        return $str;
+    }
+
+    public function AjaxGetSalesOfYear(Request $request)
+    {
+        if($request->ajax()){
+            return $this->getSalesOfYear($request->year);
+        }
     }
 }
