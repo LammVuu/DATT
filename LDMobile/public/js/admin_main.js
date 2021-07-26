@@ -490,6 +490,58 @@ $(function() {
             avg = (cancelledQty / total) * 100;
             $('.cancelled-progress-bar').css('width', avg + '%');
         }
+
+        // area chart
+        var myChart = new Chart($('#sales-chart')[0], {
+            type: 'line',
+            data: {
+                labels: [
+                    'T1',
+                    'T2',
+                    'T3',
+                    'T4',
+                    'T5',
+                    'T6',
+                    'T7',
+                    'T8',
+                    'T9',
+                    'T10',
+                    'T11',
+                    'T12',
+                ],
+                datasets: [{
+                    label: 'Doanh thu',
+                    backgroundColor: '#9EF1F4',
+                    borderColor: '#9EF1F4',
+                    fill: {
+                        target: 'origin',
+                        above: '#9EF1F4',
+                        below: '#9EF1F4'
+                      },
+                    data: [0, 10, 5, 2, 20, 30, 0, 10, 5, 2, 20, 30],
+                }]
+            }, options: {
+                elements: {
+                    point: {
+                        radius: 0
+                    },
+                }
+            }
+        });
+
+        /*Donut chart*/
+        window.areaChart = Morris.Donut({
+            element: 'branch-chart',
+            redraw: true,
+            data: [
+                { label: "Samsung", value: 50 },
+                { label: "Apple", value: 15 },
+                { label: "Oppo", value: 20 },
+                { label: "Xiaomi", value: 10 },
+                { label: "Vivo", value: 5 },
+            ],
+            colors: ['#5FBEAA', '#34495E', '#FF9F55']
+        });
     }
     /*=======================================================================================================================
                                                            Mẫu sp

@@ -2,55 +2,68 @@
 @section("sidebar-notification") sidebar-link-selected @stop
 @section("content-title")Thông báo @stop
 @section("content")
-{{-- function button --}}
-<div class="d-flex justify-content-between align-items-center mb-20">
-    {{-- create button --}}
-    <div type="button" class="create-notification-modal-show create-btn"><i class="fas fa-plus"></i></div>
 
-    {{-- filter & sort --}}
-    <div class="d-flex">
-        <div class="head-input-grp pb-20 w-70 ">
-            <input type="text" class='head-search-input border' id="notification-search" placeholder="Tìm kiếm id, id_tk,...">
-            <span  class='input-icon-right' id="submit-search-notification"><i class="fal fa-search"></i></span>
+<div class="white-bg p-20">
+    {{-- function button --}}
+    <div class="d-flex justify-content-between align-items-center mb-20">
+        {{-- create button --}}
+        <div type="button" class="create-notification-modal-show create-btn"><i class="fas fa-plus"></i></div>
+
+        {{-- filter & sort --}}
+        <div class="d-flex">
+            <div class="head-input-grp pb-20 w-70 ">
+                <input type="text" class='head-search-input border' id="notification-search" placeholder="Tìm kiếm id, id_tk,...">
+                <span  class='input-icon-right' id="submit-search-notification"><i class="fal fa-search"></i></span>
+            </div>
+            <div id="filter-thongbao" class="filter-sort-btn mr-20" style="margin-left:10px;height: 48px"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
         </div>
-        <div id="filter-thongbao" class="filter-sort-btn mr-20" style="margin-left:10px;height: 48px"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+    </div>
+
+    {{-- table --}}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID_TK</th>
+                <th>Tiêu đề</th>
+                <th>Nội dung</th>
+                <th>Thời gian</th>
+                <th>Trạng thái thông báo</th>
+            </tr>
+        </thead>
+        <tbody id="lst_notification">
+            @foreach ($listNotification as $notification)
+            <tr data-id="{{$notification->id}}">
+                <td class="vertical-center w-10">{{$notification->id}}</td>
+                <td class="vertical-center w-20">{{$notification->id_tk}}</td>
+                <td class="vertical-center w-25">{{$notification->tieude}}</td>
+                <td class="vertical-center w-20">{{$notification->noidung}}</td>
+                <td class="vertical-center w-10">{{$notification->thoigian}}</td>
+                <td class="vertical-center w-20" style="color:{{$notification->trangthaithongbao==1? "green" : "red"}}">{{$notification->trangthaithongbao==1? "Chưa đọc" : "Đã đọc"}}</td>
+                {{-- nút --}}
+                <td class="vertical-center w-15">
+                    <div class="d-flex justify-content-evenly">
+                        <div data-id="{{$notification->id}}" class="edit-notification-modal-show edit-btn"><i class="fas fa-pen"></i></div>
+                        <div data-id="{{$notification->id}}" data-object="notification" class="delete-notification-btn delete-btn">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div class="auto-load text-center">
+        <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+            x="0px" y="0px" height="60" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+            <path fill="#078FDB"
+                d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s"
+                    from="0 50 50" to="360 50 50" repeatCount="indefinite" />
+            </path>
+        </svg>
     </div>
 </div>
-
-{{-- table --}}
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>ID_TK</th>
-            <th>Tiêu đề</th>
-            <th>Nội dung</th>
-            <th>Thời gian</th>
-            <th>Trạng thái thông báo</th>
-        </tr>
-    </thead>
-    <tbody id="lst_notification">
-        @foreach ($listNotification as $notification)
-        <tr data-id="{{$notification->id}}">
-            <td class="vertical-center w-10">{{$notification->id}}</td>
-            <td class="vertical-center w-20">{{$notification->id_tk}}</td>
-            <td class="vertical-center w-25">{{$notification->tieude}}</td>
-            <td class="vertical-center w-20">{{$notification->noidung}}</td>
-            <td class="vertical-center w-10">{{$notification->thoigian}}</td>
-            <td class="vertical-center w-20" style="color:{{$notification->trangthaithongbao==1? "green" : "red"}}">{{$notification->trangthaithongbao==1? "Chưa đọc" : "Đã đọc"}}</td>
-            {{-- nút --}}
-            <td class="vertical-center w-15">
-                <div class="d-flex justify-content-evenly">
-                    <div data-id="{{$notification->id}}" class="edit-notification-modal-show edit-btn"><i class="fas fa-pen"></i></div>
-                    <div data-id="{{$notification->id}}" data-object="notification" class="delete-notification-btn delete-btn">
-                        <i class="fas fa-trash"></i>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
 
 {{-- modal thêm|sửa hình ảnh --}}
 <div class="modal fade" id="notification-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -104,16 +117,7 @@
         </div>
     </div>
 </div>
-<div class="auto-load text-center">
-    <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-        x="0px" y="0px" height="60" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
-        <path fill="#078FDB"
-            d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
-            <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s"
-                from="0 50 50" to="360 50 50" repeatCount="indefinite" />
-        </path>
-    </svg>
-</div>
+
 <div class="modal fade" id="delete-notification-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

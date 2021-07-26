@@ -3,147 +3,149 @@
 @section("content-title") Sản phẩm @stop
 @section("content")
 
-{{-- function button --}}
-<div class="d-flex justify-content-between align-items-center mb-20">
-    {{-- create button --}}
-    <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
+<div class="white-bg p-20">
+    {{-- function button --}}
+    <div class="d-flex justify-content-between align-items-center mb-20">
+        {{-- create button --}}
+        <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
 
-    {{-- filter & sort --}}
-    <div class="d-flex">
-        {{-- search --}}
-        <div class='relative mr-10'>
-            <div class="head-input-grp">
-                <input type="text" id="search" placeholder="Tìm kiếm">
-                <span class='input-icon-right'><i class="fal fa-search"></i></span>
+        {{-- filter & sort --}}
+        <div class="d-flex">
+            {{-- search --}}
+            <div class='relative mr-10'>
+                <div class="head-input-grp">
+                    <input type="text" id="search" placeholder="Tìm kiếm">
+                    <span class='input-icon-right'><i class="fal fa-search"></i></span>
+                </div>
             </div>
-        </div>
-        {{-- filter --}}
-        <div class="relative">
-            <div id="filter-sanpham" class="filter-sort-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
-            <div class="filter-badge"></div>
-            <div class="filter-div">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="mb-10 fw-600">Ram</div>
-                        @foreach ($lst_ram as $i => $key)
-                            <div class="mb-5">
-                                <input type="checkbox" name="filter" data-object="ram" id="{{'ram-'.$i}}" value="{{$key->ram}}">
-                                <label for="{{'ram-'.$i}}">{{$key->ram}}</label>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="mb-10 fw-600">Dung lượng</div>
-                        @foreach ($lst_capacity as $i => $key)
-                            <div class="mb-5">
-                                <input type="checkbox" name="filter" data-object="capacity" id="{{'capacity-'.$i}}" value="{{$key->dungluong}}">
-                                <label for="{{'capacity-'.$i}}">{{$key->dungluong}}</label>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="mb-10 fw-600">Trạng thái</div>
-                        <div class="mb-5">
-                            <input type="checkbox"name="filter" data-object="status" id="status-1" value="1">
-                            <label for="status-1">Kinh doanh</label>
+            {{-- filter --}}
+            <div class="relative mr-10">
+                <div id="filter-sanpham" class="filter-sort-btn"><i class="far fa-filter"></i>Bộ lọc</div>
+                <div class="filter-badge"></div>
+                <div class="filter-div">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="mb-10 fw-600">Ram</div>
+                            @foreach ($lst_ram as $i => $key)
+                                <div class="mb-5">
+                                    <input type="checkbox" name="filter" data-object="ram" id="{{'ram-'.$i}}" value="{{$key->ram}}">
+                                    <label for="{{'ram-'.$i}}">{{$key->ram}}</label>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="mb-5">
-                            <input type="checkbox"name="filter" data-object="status" id="status-0" value="0">
-                            <label for="status-0">Ngừng kinh doanh</label>
+                        <div class="col-lg-4">
+                            <div class="mb-10 fw-600">Dung lượng</div>
+                            @foreach ($lst_capacity as $i => $key)
+                                <div class="mb-5">
+                                    <input type="checkbox" name="filter" data-object="capacity" id="{{'capacity-'.$i}}" value="{{$key->dungluong}}">
+                                    <label for="{{'capacity-'.$i}}">{{$key->dungluong}}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-10 fw-600">Trạng thái</div>
+                            <div class="mb-5">
+                                <input type="checkbox"name="filter" data-object="status" id="status-1" value="1">
+                                <label for="status-1">Kinh doanh</label>
+                            </div>
+                            <div class="mb-5">
+                                <input type="checkbox"name="filter" data-object="status" id="status-0" value="0">
+                                <label for="status-0">Ngừng kinh doanh</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {{-- sort --}}
-        <div class="relative">
-            <div id="sort-sanpham" class="filter-sort-btn ml-20"><i class="far fa-sort mr-5"></i>Sắp xếp</div>
-            <div class="sort-badge"></div>
-            <div class="sort-div">
-                <div class="mb-5">
-                    <input type="radio" name="sort" id="id-asc" value="id-asc">
-                    <label for="id-asc">ID tăng dần</label>
-                </div>
-                <div class="mb-5">
-                    <input type="radio" name="sort" id="id-desc" value="id-desc">
-                    <label for="id-desc">ID giảm dần</label>
-                </div>
-                <div class="mb-5">
-                    <input type="radio" name="sort" id="price-asc" value="price-asc">
-                    <label for="price-asc">Giá từ thấp tới cao</label>
-                </div>
-                <div class="mb-5">
-                    <input type="radio" name="sort" id="price-desc" value="price-desc">
-                    <label for="price-desc">Giá cao tới thấp</label>
-                </div>
-                <div class="mb-5">
-                    <input type="radio" name="sort" id="discount-desc" value="discount-desc">
-                    <label for="discount-desc">Phần trăm giảm</label>
+            {{-- sort --}}
+            <div class="relative">
+                <div id="sort-sanpham" class="filter-sort-btn"><i class="far fa-sort mr-5"></i>Sắp xếp</div>
+                <div class="sort-badge"></div>
+                <div class="sort-div">
+                    <div class="mb-5">
+                        <input type="radio" name="sort" id="id-asc" value="id-asc">
+                        <label for="id-asc">ID tăng dần</label>
+                    </div>
+                    <div class="mb-5">
+                        <input type="radio" name="sort" id="id-desc" value="id-desc">
+                        <label for="id-desc">ID giảm dần</label>
+                    </div>
+                    <div class="mb-5">
+                        <input type="radio" name="sort" id="price-asc" value="price-asc">
+                        <label for="price-asc">Giá từ thấp tới cao</label>
+                    </div>
+                    <div class="mb-5">
+                        <input type="radio" name="sort" id="price-desc" value="price-desc">
+                        <label for="price-desc">Giá cao tới thấp</label>
+                    </div>
+                    <div class="mb-5">
+                        <input type="radio" name="sort" id="discount-desc" value="discount-desc">
+                        <label for="discount-desc">Phần trăm giảm</label>
+                    </div>
                 </div>
             </div>
+            
         </div>
-        
     </div>
-</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Sản phẩm</th>
-            <th>Màu sắc</th>
-            <th>Ram</th>
-            <th>Dung lượng</th>
-            <th>Giá</th>
-            <th>Khuyến mãi</th>
-            <th>Trạng thái</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="lst_data">
-        @foreach ($lst_product as $key)
-            <tr data-id="{{$key->id}}">
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->id}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->tensp}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->mausac}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->ram}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->dungluong}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{number_format($key->gia, 0, '', '.')}}<sup>đ</sup></div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{($key->khuyenmai*100).'%'}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div data-id="{{$key->id}}" class="trangthai pt-10 pb-10">{{$key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh'}}</div>
-                </td>
-                {{-- nút --}}
-                <td class="vertical-center w-10">
-                    <div class="d-flex justify-content-start">
-                        <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
-                        <div data-id="{{$key->id}}" class="edit-btn"><i class="fas fa-pen"></i></div>
-                        @if ($key->trangthai == 1)
-                            <div data-id="{{$key->id}}" data-name="{{$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac}}" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                        @else
-                            <div data-id="{{$key->id}}" data-name="{{$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac}}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>
-                        @endif
-                    </div>
-                </td>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sản phẩm</th>
+                <th>Màu sắc</th>
+                <th>Ram</th>
+                <th>Dung lượng</th>
+                <th>Giá</th>
+                <th>Khuyến mãi</th>
+                <th>Trạng thái</th>
+                <th></th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
-<div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+        </thead>
+        <tbody id="lst_data">
+            @foreach ($lst_product as $key)
+                <tr data-id="{{$key->id}}">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->id}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->tensp}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->mausac}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->ram}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->dungluong}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{number_format($key->gia, 0, '', '.')}}<sup>đ</sup></div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{($key->khuyenmai*100).'%'}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div data-id="{{$key->id}}" class="trangthai pt-10 pb-10">{{$key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh'}}</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="{{$key->id}}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                            @if ($key->trangthai == 1)
+                                <div data-id="{{$key->id}}" data-name="{{$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac}}" class="delete-btn"><i class="fas fa-trash"></i></div>    
+                            @else
+                                <div data-id="{{$key->id}}" data-name="{{$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac}}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+</div>
 
 {{-- modal thêm|sửa mẫu sp --}}
 <div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

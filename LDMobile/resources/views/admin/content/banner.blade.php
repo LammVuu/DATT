@@ -3,48 +3,50 @@
 @section("content-title") Banner @stop
 @section("content")
 
-{{-- function button --}}
-<div class="d-flex justify-content-between align-items-center mb-20">
-    {{-- create button --}}
-    <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
-</div>
+<div class="white-bg p-20">
+    {{-- function button --}}
+    <div class="d-flex justify-content-between align-items-center mb-20">
+        {{-- create button --}}
+        <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
+    </div>
 
-{{-- table --}}
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Link</th>
-            <th>Hình ảnh</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="lst_data">
-        @foreach ($banner as $key)
-            <tr data-id="{{$key->id}}">
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->id}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->link}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">
-                        <img src="{{$url_banner.$key->hinhanh}}" alt="" width="300px">
-                    </div>
-                </td>
-                {{-- nút --}}
-                <td class="vertical-center w-10">
-                    <div class="d-flex justify-content-start">
-                        <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
-                        <div data-id="{{$key->id}}" class="edit-btn"><i class="fas fa-pen"></i></div>
-                        <div data-id="{{$key->id}}" class="delete-btn"><i class="fas fa-trash"></i></div>
-                    </div>
-                </td>
+    {{-- table --}}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Link</th>
+                <th>Hình ảnh</th>
+                <th></th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+        </thead>
+        <tbody id="lst_data">
+            @foreach ($banner as $key)
+                <tr data-id="{{$key->id}}">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->id}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->link}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">
+                            <img src="{{$url_banner.$key->hinhanh}}" alt="" width="300px">
+                        </div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="{{$key->id}}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                            <div data-id="{{$key->id}}" class="delete-btn"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
 {{-- modal thêm|sửa --}}
 <div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

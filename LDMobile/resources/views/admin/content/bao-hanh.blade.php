@@ -3,54 +3,56 @@
 @section("content-title") Bảo hành @stop
 @section("content")
 
-{{-- function button --}}
-<div class="d-flex justify-content-end align-items-center mb-20">
-    {{-- search --}}
-    <div class='relative'>
-        <div class="head-input-grp">
-            <input type="text" id="search" placeholder="Tìm kiếm">
-            <span class='input-icon-right'><i class="fal fa-search"></i></span>
+<div class="white-bg p-20">
+    {{-- function button --}}
+    <div class="d-flex justify-content-end align-items-center mb-20">
+        {{-- search --}}
+        <div class='relative'>
+            <div class="head-input-grp">
+                <input type="text" id="search" placeholder="Tìm kiếm">
+                <span class='input-icon-right'><i class="fal fa-search"></i></span>
+            </div>
         </div>
     </div>
-</div>
 
-{{-- table --}}
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>IMEI</th>
-            <th>Ngày mua</th>
-            <th>Ngày kết thúc</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="lst_data">
-        @foreach ($lst_warranty as $key)
-            <tr data-id="{{$key->id}}">
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->id}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->imei}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->ngaymua}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key->ngayketthuc}}</div>
-                </td>
-                {{-- nút --}}
-                <td class="vertical-center w-5">
-                    <div class="d-flex justify-content-start">
-                        <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
-                    </div>
-                </td>
+    {{-- table --}}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>IMEI</th>
+                <th>Ngày mua</th>
+                <th>Ngày kết thúc</th>
+                <th></th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
-<div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+        </thead>
+        <tbody id="lst_data">
+            @foreach ($lst_warranty as $key)
+                <tr data-id="{{$key->id}}">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->id}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->imei}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->ngaymua}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key->ngayketthuc}}</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-5">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+</div>
 
 {{-- modal thêm|sửa --}}
 <div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

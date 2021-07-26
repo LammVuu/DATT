@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="m-20 white-bg p-20">
+        <div class="m-20">
             @yield("content")
         </div>
     </div>

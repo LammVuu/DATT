@@ -21,7 +21,7 @@
                             {{-- tìm kiếm --}}
                             <div class='relative'>
                                 <div class="head-input-grp">
-                                    <input type="text" class='head-search-input' placeholder="Tìm kiếm">
+                                    <input id="head-search-input" type="text" class='head-search-input' placeholder="Tìm kiếm">
                                     <span class='input-icon-right'><i class="fal fa-search"></i></span>
                                 </div>
 
@@ -136,8 +136,8 @@
                 <hr>
                 
                 {{-- tìm kiếm --}}
-                <div class='d-flex justify-content-center relative'>
-                    <div class="head-input-grp pb-20 w-70">
+                <div class='d-flex justify-content-center mb-20 relative'>
+                    <div class="head-input-grp w-70">
                         <input type="text" class='head-search-input border' placeholder="Tìm kiếm">
                         <span class='input-icon-right'><i class="fal fa-search"></i></span>
                     </div>

@@ -3,86 +3,88 @@
 @section("content-title") Kho @stop
 @section("content")
 
-{{-- function button --}}
-<div class="d-flex justify-content-between align-items-center mb-20">
-    {{-- create button --}}
-    <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
+<div class="white-bg p-20">
+    {{-- function button --}}
+    <div class="d-flex justify-content-between align-items-center mb-20">
+        {{-- create button --}}
+        <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
 
-    
-    <div class="d-flex">
-        {{-- search --}}
-        <div class='relative mr-10'>
-            <div class="head-input-grp">
-                <input type="text" id="search" placeholder="Tìm kiếm">
-                <span class='input-icon-right'><i class="fal fa-search"></i></span>
+        
+        <div class="d-flex">
+            {{-- search --}}
+            <div class='relative mr-10'>
+                <div class="head-input-grp">
+                    <input type="text" id="search" placeholder="Tìm kiếm">
+                    <span class='input-icon-right'><i class="fal fa-search"></i></span>
+                </div>
             </div>
-        </div>
-    
-        {{-- filter --}}
-        <div class="relative">
-            <div id="filter-kho" class="filter-sort-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
-            <div class="filter-badge"></div>
-            <div class="filter-div">
-                <div class="mb-10 fw-600">Chi nhánh</div>
-                @foreach($lst_branch as $key)
-                    <div class="mb-5">
-                        <input type="checkbox" name="filter" id="{{'branch-'.$key->id}}" value="{{$key->id}}">
-                        <label for="{{'branch-'.$key->id}}">{{$key->diachi}}</label>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-    
-</div>
-
-{{-- table --}}
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Chi nhánh</th>
-            <th>Sản phẩm</th>
-            <th>Số lượng tồn</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody data-id="{{$lst_branch[0]->id}}" id="lst_data">
-        @foreach ($lst_warehouse as $key)
-            <tr data-id="{{$key['id']}}">
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key['id']}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key['chinhanh']}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="d-flex pt-10 pb-10">
-                        <img src="{{$url_phone.$key['sanpham']->hinhanh}}" alt="" width="80px">
-                        <div class="ml-5 fz-14">
-                            <div class="d-flex align-items-center fw-600">
-                                {{$key['sanpham']->tensp}} <i class="fas fa-circle ml-5 mr-5 fz-5"></i>{{$key['sanpham']->mausac}}
-                            </div>
-                            <div>Ram: {{$key['sanpham']->ram}}</div>
-                            <div>Dung lượng: {{$key['sanpham']->dungluong}}</div>
+        
+            {{-- filter --}}
+            <div class="relative">
+                <div id="filter-kho" class="filter-sort-btn"><i class="far fa-filter mr-5"></i>Bộ lọc</div>
+                <div class="filter-badge"></div>
+                <div class="filter-div">
+                    <div class="mb-10 fw-600">Chi nhánh</div>
+                    @foreach($lst_branch as $key)
+                        <div class="mb-5">
+                            <input type="checkbox" name="filter" id="{{'branch-'.$key->id}}" value="{{$key->id}}">
+                            <label for="{{'branch-'.$key->id}}">{{$key->diachi}}</label>
                         </div>
-                    </div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key['slton']}} Chiếc</div>
-                </td>
-                {{-- nút --}}
-                <td class="vertical-center w-10">
-                    <div class="d-flex justify-content-start">
-                        <div data-id="{{$key['id']}}" class="edit-btn"><i class="fas fa-pen"></i></div>
-                        <div data-id="{{$key['id']}}" data-branch="{{$key['chinhanh']}}" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                    </div>
-                </td>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    {{-- table --}}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Chi nhánh</th>
+                <th>Sản phẩm</th>
+                <th>Số lượng tồn</th>
+                <th></th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
-<div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+        </thead>
+        <tbody data-id="{{$lst_branch[0]->id}}" id="lst_data">
+            @foreach ($lst_warehouse as $key)
+                <tr data-id="{{$key['id']}}">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key['id']}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key['chinhanh']}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="d-flex pt-10 pb-10">
+                            <img src="{{$url_phone.$key['sanpham']->hinhanh}}" alt="" width="80px">
+                            <div class="ml-5 fz-14">
+                                <div class="d-flex align-items-center fw-600">
+                                    {{$key['sanpham']->tensp}} <i class="fas fa-circle ml-5 mr-5 fz-5"></i>{{$key['sanpham']->mausac}}
+                                </div>
+                                <div>Ram: {{$key['sanpham']->ram}}</div>
+                                <div>Dung lượng: {{$key['sanpham']->dungluong}}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key['slton']}} Chiếc</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="{{$key['id']}}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                            <div data-id="{{$key['id']}}" data-branch="{{$key['chinhanh']}}" class="delete-btn"><i class="fas fa-trash"></i></div>    
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+</div>
 
 {{-- modal thêm|sửa --}}
 <div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

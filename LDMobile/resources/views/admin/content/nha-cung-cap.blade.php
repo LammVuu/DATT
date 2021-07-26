@@ -3,76 +3,78 @@
 @section("content-title") Nhà cung cấp @stop
 @section("content")
 
-{{-- function button --}}
-<div class="d-flex justify-content-between align-items-center mb-20">
-    {{-- create button --}}
-    <div type="button" class="create-ncc-modal-show create-btn"><i class="fas fa-plus"></i></div>
+<div class="white-bg p-20">
+    {{-- function button --}}
+    <div class="d-flex justify-content-between align-items-center mb-20">
+        {{-- create button --}}
+        <div type="button" class="create-ncc-modal-show create-btn"><i class="fas fa-plus"></i></div>
 
-    {{-- search --}}
-    <div class='relative'>
-        <div class="head-input-grp">
-            <input type="text" id="search" placeholder="Tìm kiếm">
-            <span class='input-icon-right'><i class="fal fa-search"></i></span>
+        {{-- search --}}
+        <div class='relative'>
+            <div class="head-input-grp">
+                <input type="text" id="search" placeholder="Tìm kiếm">
+                <span class='input-icon-right'><i class="fal fa-search"></i></span>
+            </div>
         </div>
     </div>
-</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nhà cung cấp</th>
-            <th>Ảnh đại diện</th>
-            <th>Địa chỉ</th>
-            <th>SĐT</th>
-            <th>Email</th>
-            <th>Trạng thái</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="lst_data">
-        @foreach ($lst_supplier as $key)
-            <tr data-id="{{$key['id']}}">
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key['id']}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key['tenncc']}}</div>
-                </td>
-                <td class="vertical-center w-10">
-                    <div class="pt-10 pb-10">
-                        <img src="{{$url_logo.$key['anhdaidien']}}" alt="">
-                    </div>
-                </td>
-                <td class="vertical-center w-25">
-                    <div class="pt-10 pb-10">{{$key['diachi']}}</div>
-                </td>
-                <td class="vertical-center">
-                    <div class="pt-10 pb-10">{{$key['sdt']}}</div>
-                </td>
-                <td class="vertical-center w-10">
-                    <div class="pt-10 pb-10">{{$key['email']}}</div>
-                </td>
-                <td class="vertical-center w-10">
-                    <div data-id="{{$key['id']}}" class="trangthai pt-10 pb-10">{{$key['trangthai'] == 1 ? 'Hoạt động' : 'Ngừng kinh doanh'}}</div>
-                </td>
-                {{-- nút --}}
-                <td class="vertical-center w-10">
-                    <div class="d-flex justify-content-start">
-                        <div data-id="{{$key['id']}}" class="info-btn"><i class="fas fa-info"></i></div>
-                        <div data-id="{{$key['id']}}" class="edit-ncc-modal-show edit-btn"><i class="fas fa-pen"></i></div>
-                        @if ($key['trangthai'] != 0)
-                            <div data-id="{{$key['id']}}" data-name="{{$key['tenncc']}}" class="delete-ncc-btn delete-btn"><i class="fas fa-trash"></i></div>
-                        @else
-                            <div data-id="{{$key['id']}}" data-name="{{$key['tenncc']}}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>
-                        @endif
-                    </div>
-                </td>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nhà cung cấp</th>
+                <th>Ảnh đại diện</th>
+                <th>Địa chỉ</th>
+                <th>SĐT</th>
+                <th>Email</th>
+                <th>Trạng thái</th>
+                <th></th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
-<div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+        </thead>
+        <tbody id="lst_data">
+            @foreach ($lst_supplier as $key)
+                <tr data-id="{{$key['id']}}">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key['id']}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key['tenncc']}}</div>
+                    </td>
+                    <td class="vertical-center w-10">
+                        <div class="pt-10 pb-10">
+                            <img src="{{$url_logo.$key['anhdaidien']}}" alt="">
+                        </div>
+                    </td>
+                    <td class="vertical-center w-25">
+                        <div class="pt-10 pb-10">{{$key['diachi']}}</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">{{$key['sdt']}}</div>
+                    </td>
+                    <td class="vertical-center w-10">
+                        <div class="pt-10 pb-10">{{$key['email']}}</div>
+                    </td>
+                    <td class="vertical-center w-10">
+                        <div data-id="{{$key['id']}}" class="trangthai pt-10 pb-10">{{$key['trangthai'] == 1 ? 'Hoạt động' : 'Ngừng kinh doanh'}}</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="{{$key['id']}}" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="{{$key['id']}}" class="edit-ncc-modal-show edit-btn"><i class="fas fa-pen"></i></div>
+                            @if ($key['trangthai'] != 0)
+                                <div data-id="{{$key['id']}}" data-name="{{$key['tenncc']}}" class="delete-ncc-btn delete-btn"><i class="fas fa-trash"></i></div>
+                            @else
+                                <div data-id="{{$key['id']}}" data-name="{{$key['tenncc']}}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
+</div>
 
 {{-- modal thêm|sửa --}}
 <div class="modal fade" id="ncc-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

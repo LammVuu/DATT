@@ -2626,7 +2626,7 @@ a.head-item:hover{
   position: absolute;
   left: 0; right: 0; top: 100%;
   z-index: 1;
-  margin-top: 10px;
+  margin-top: 5px;
   width: 100%;
   max-height: 390px;
   background-color: white;
@@ -2921,6 +2921,18 @@ a.head-item:hover{
 .index-featured-phone:hover{
   box-shadow: 0 0 4px 3px #dcdcdc;
   z-index: 1;
+}
+
+@media screen and (max-width: 991px) and (min-width: 768px){
+  .index-featured-phone{
+    width: 25%;
+  }
+}
+
+@media screen and (max-width: 767px){
+  .index-featured-phone{
+    width: 50%;
+  }
 }
 
 .fire-animation{
@@ -5096,9 +5108,10 @@ a.head-item:hover{
                                                     Dashboard
 ==================================================================================================================*/
 
-.box-shadow-border-radius{
+.card-element{
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.10);
   border-radius: 5px;
+  background-color: #fff;
 }
 
 .b-radius-5{
@@ -5135,6 +5148,7 @@ a.head-item:hover{
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid #dcdcdc;
 }
 
 .icon-right-stats{

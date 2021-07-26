@@ -1,26 +1,30 @@
 <section class="index-bg pt-50 pb-70">
     <div class="container white-bg border p-0">
-        <div class="d-flex align-items-center justify-content-between p-20">
-            <div class="d-flex align-items-center">
-                <div class="fz-22 fw-600">ĐIỆN THOẠI NỔI BẬT NHẤT</div>
-                <div class="relative ml-10">
-                    <div class="fire-animation"><i class="fas fa-fire"></i></div>
+        <div class="row">
+            <div class="col-lg-4 col-sm-12">
+                <div class="d-flex align-items-center p-20">
+                    <div class="fz-22 fw-600">ĐIỆN THOẠI NỔI BẬT NHẤT</div>
+                    <div class="relative ml-10">
+                        <div class="fire-animation"><i class="fas fa-fire"></i></div>
+                    </div>
                 </div>
             </div>
-            <div>
-                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Apple'])}}" class="index-brand-tag">Apple</a>
-                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Samsung'])}}" class="index-brand-tag">Samsung</a>
-                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Xiaomi'])}}" class="index-brand-tag">Xiaomi</a>
-                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Oppo'])}}" class="index-brand-tag">Oppo</a>
-                <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Vivo'])}}" class="index-brand-tag">Vivo</a>
-                <a href="{{route('user/dien-thoai')}}" class="index-brand-tag">Xem tất cả</a>
+            <div class="col-lg-8 col-sm-12">
+                <div class="d-flex justify-content-end p-20">
+                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Apple'])}}" class="index-brand-tag">Apple</a>
+                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Samsung'])}}" class="index-brand-tag">Samsung</a>
+                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Xiaomi'])}}" class="index-brand-tag">Xiaomi</a>
+                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Oppo'])}}" class="index-brand-tag">Oppo</a>
+                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Vivo'])}}" class="index-brand-tag">Vivo</a>
+                    <a href="{{route('user/dien-thoai')}}" class="index-brand-tag">Xem tất cả</a>
+                </div>
             </div>
         </div>
         <hr class="m-0">
         
         <div class="d-flex flex-wrap">
             @foreach($lst_featured as $key)
-            <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class="index-featured-phone w-20 relative">
+            <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class="index-featured-phone">
                 {{-- khuyến mãi tag --}}
                 @if($key['khuyenmai'] != 0)
                     <div class='shop-promotion-tag'>

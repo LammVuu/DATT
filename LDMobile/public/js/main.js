@@ -81,13 +81,13 @@ $(function() {
     });
 
     // thanh tìm kiếm
-    $('.head-search-input').focus(function(){
+    $('#head-search-input').focus(function(){
         $('.backdrop').fadeIn();
         if($('.head-search-input').val() != ''){
             $('.head-search-result').css('display', 'block');
         }
     });
-    $('.head-search-input').focusout(function(){
+    $('#head-search-input').focusout(function(){
         setTimeout(() => {
             $('.backdrop').fadeOut();
             $('.head-search-result').css('display', 'none');

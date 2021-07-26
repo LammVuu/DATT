@@ -3,13 +3,14 @@
 @section("content-title") Bảng điều khiển @stop
 @section("content")
 
-<div class="pt-10 pb-10 mb-10 box-shadow-border-radius">
+{{-- tiêu đề thống kê tháng --}}
+<div class="card-element pt-10 pb-10 mb-20">
     <div class="statistics-title fz-20">Thống kê tháng {{$currentMonth}}</div>
 </div>
 
 {{-- thống kê nhanh --}}
-<div class="row mb-50">
-    <div class="col-lg-4">
+<div class="row mb-30">
+    <div class="col-lg-4 mb-20">
         <div class="quick-stats-card red-bg">
             <div>
                 <div class="fz-26 fw-600">{{$totalBillInMonth}}</div>
@@ -18,7 +19,7 @@
             <i class="fas fa-shopping-cart fz-40"></i>
         </div>
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4 mb-20">
         <div class="quick-stats-card success-bg">
             <div>
                 <div class="fz-26 fw-600">{{ number_format($totalMoneyInMonth, 0, '', '.') }}<sup>đ</sup></div>
@@ -27,7 +28,7 @@
             <i class="fas fa-hand-holding-usd fz-40"></i>
         </div>
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4 mb-20">
         <div class="quick-stats-card info-bg">
             <div>
                 <div class="fz-26 fw-600">{{$totalAccountInMonth}}</div>
@@ -39,60 +40,52 @@
 </div>
 
 {{-- best sellers & số lượt đánh giá & truy cập --}}
-<div class="row mb-50">
+<div class="row mb-30">
     {{-- BXH 5 sp bán chạy --}}
-    <div class="col-lg-8 col-sm-12">
-        <div class="box-shadow-border-radius">
+    <div class="col-lg-8 col-sm-12 mb-20">
+        <div class="card-element">
             {{-- title --}}
             <div class="pt-20 pb-20">
                 <div class="statistics-title fz-18">Best sellers</div>
             </div>
             <hr class="m-0">
             {{-- list best sellers --}}
-            <table class="table">
-                <tbody>
-                    <?php $i = 1; ?>
-                    @foreach ($bestSellers as $product)
-                    <tr>
-                        <td class="p-0">
-                            <div class="best-sellers">
-                                <div class="d-flex align-items-center">
-                                    @if ($i == 1)
-                                        <div class="rank-number red">{{$i}}</div>
-                                    @elseif($i == 2)
-                                        <div class="rank-number yellow">{{$i}}</div>
-                                    @elseif($i == 3)
-                                        <div class="rank-number success-color">{{$i}}</div>
-                                    @else
-                                        <div class="rank-number gray-1">
-                                            {{$i}}
-                                        </div>
-                                    @endif
-                                    <div class="d-flex ml-40">
-                                        <img src="{{$url_phone.$product->hinhanh}}" alt="best seller product" width="70px">
-                                        <div class="ml-10">
-                                            <div class="d-flex align-items-center fw-600">
-                                               {{$product->tensp.' '.$product->mausac}}
-                                            </div>
-                                            <div class="fz-14">Ram: {{$product->ram}}</div>
-                                            <div class="fz-14">Dung lượng: {{$product->dungluong}}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="color: green">Đã bán: {{$product->total}} chiếc<i class="fas fa-trophy-alt ml-10 yellow"></i></div>
+            <?php $i = 1; ?>
+            @foreach ($bestSellers as $product)
+                <div class="best-sellers">
+                    <div class="d-flex align-items-center">
+                        @if ($i == 1)
+                            <div class="rank-number red">{{$i}}</div>
+                        @elseif($i == 2)
+                            <div class="rank-number yellow">{{$i}}</div>
+                        @elseif($i == 3)
+                            <div class="rank-number success-color">{{$i}}</div>
+                        @else
+                            <div class="rank-number gray-1">
+                                {{$i}}
                             </div>
-                        </td>
-                    </tr>
-                    <?php $i++; ?>
-                    @endforeach
-                </tbody>
-            </table>
+                        @endif
+                        <div class="d-flex ml-40">
+                            <img src="{{$url_phone.$product->hinhanh}}" alt="best seller product" width="70px">
+                            <div class="ml-10">
+                                <div class="d-flex align-items-center fw-600">
+                                    {{$product->tensp.' '.$product->mausac}}
+                                </div>
+                                <div class="fz-14">Ram: {{$product->ram}}</div>
+                                <div class="fz-14">Dung lượng: {{$product->dungluong}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="color: green">Đã bán: {{$product->total}} chiếc<i class="fas fa-trophy-alt ml-10 yellow"></i></div>
+                </div>
+            <?php $i++; ?>
+            @endforeach
         </div>
     </div>
     {{-- số lượt đánh giá & số lượt truy cập web & app --}}
-    <div class="col-lg-4 col-sm-12">
+    <div class="col-lg-4 col-sm-12 mb-20">
         {{-- số lượt đánh giá --}}
-        <div class="box-shadow-border-radius d-flex justify-content-between mb-30">
+        <div class="card-element d-flex justify-content-between mb-30">
             <div class="p-20">
                 <div class="fz-22 fw-600 black">{{$totalReviewInMonth}}</div>
                 <div class="text-color">Lượt đánh giá trong tháng</div>
@@ -102,7 +95,7 @@
             </div>
         </div>
         {{-- số lượt truy cập web --}}
-        <div class="box-shadow-border-radius d-flex justify-content-between mb-30">
+        <div class="card-element d-flex justify-content-between mb-30">
             <div class="p-20">
                 <div class="fz-22 fw-600 black">{{$accessTimesOnWeb}}</div>
                 <div class="text-color">Lượt truy cập trên Web trong tháng</div>
@@ -112,7 +105,7 @@
             </div>
         </div>
         {{-- số lượt truy cập app --}}
-        <div class="box-shadow-border-radius d-flex justify-content-between mb-30">
+        <div class="card-element d-flex justify-content-between mb-30">
             <div class="p-20">
                 <div class="fz-22 fw-600 black">{{$accessTimesOnApp}}</div>
                 <div class="text-color">Lượt truy cập trên App trong tháng</div>
@@ -128,7 +121,7 @@
 {{-- trạng thái đơn hàng --}}
 <div class="row mb-50">
     <div class="col-lg-12">
-        <div class="box-shadow-border-radius">
+        <div class="card-element">
             <div class="row">
                 <input type="hidden" id="total-order" value="{{$lst_orderStatus['total']}}">
                 <div class="col-lg-3">
@@ -167,6 +160,55 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- biểu đồ doanh thu & hãng --}}
+<?php $currentYear = date('Y') ?>
+<div class="row mb-50">
+    <div class="col-lg-6 mb-20">
+        <div class="card-element">
+            <div class="pt-20 pb-20">
+                <div class="statistics-title d-flex align-items-center">
+                    Biểu đồ thống kê doanh thu năm
+                    <select id="sales-year" class="form-select ml-10" style="width: auto">
+                        @for ($i = 2018; $i < 2022; $i++)
+                            @if ($i == $currentYear)
+                                <option value="{{$i}}" selected>{{$i}}</option>
+                            @else
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endif
+                        @endfor
+                    </select>
+                </div>
+            </div>
+            <hr class="m-0">
+            <div class="p-20" style="height: 383px">
+                <canvas id="sales-chart"></canvas>
+            </div>            
+        </div>
+    </div>
+    <div class="col-lg-6 mb-20">
+        <div class="card-element">
+            <div class="pt-20 pb-20">
+                <div class="statistics-title d-flex align-items-center">
+                    Biểu đồ thống kê hãng bán chạy năm
+                    <select id="branch-year" class="form-select ml-10" style="width: auto">
+                        @for ($i = 2018; $i < 2022; $i++)
+                            @if ($i == $currentYear)
+                                <option value="{{$i}}" selected>{{$i}}</option>
+                            @else
+                                <option value="{{$i}}">{{$i}}</option>
+                            @endif
+                        @endfor
+                    </select>
+                </div>
+            </div>
+            <hr class="m-0">
+            <div class="d-flex justify-content-center align-items-center p-20">
+                <div id="branch-chart"></div>
             </div>
         </div>
     </div>
