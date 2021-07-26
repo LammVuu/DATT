@@ -29,10 +29,10 @@ class ThongBaoController extends Controller
             foreach($listNotification as $notification){
                 $color = "green";
                 $status ="Chưa đọc";
-                if($notification->trangthaithongbao==0){
+                if($notification->trangthaithongbao==1){
                     $status ="Đã đọc";
                 }
-                if($notification->trangthaithongbao==0){
+                if($notification->trangthaithongbao==1){
                     $color = "red";
                 }
                 $html .= 
@@ -84,7 +84,7 @@ class ThongBaoController extends Controller
         $notification->noidung = $request->content;
         $notification->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
         $notification->id_tk = $request->account;
-        $notification->trangthaithongbao = 1;
+        $notification->trangthaithongbao = 0;
         if($notification->save()){
             $html = '<tr data-id="'.$notification->id.'">
             <td class="vertical-center w-10">'.$notification->id.'</td>
@@ -149,10 +149,10 @@ class ThongBaoController extends Controller
         if($notification->update()){
             $color = "green";
             $status ="Chưa đọc";
-            if($notification->trangthaithongbao==0){
+            if($notification->trangthaithongbao==1){
                 $status ="Đã đọc";
             }
-            if($notification->trangthaithongbao==0){
+            if($notification->trangthaithongbao==1){
                 $color = "red";
             }
             $html = '<tr data-id="'.$notification->id.'">
@@ -196,10 +196,10 @@ class ThongBaoController extends Controller
         foreach($listNotification as $notification){
             $color = "green";
             $status ="Chưa đọc";
-            if($notification->trangthaithongbao==0){
+            if($notification->trangthaithongbao==1){
                 $status ="Đã đọc";
             }
-            if($notification->trangthaithongbao==0){
+            if($notification->trangthaithongbao==1){
                 $color = "red";
             }
             $html .= 
@@ -236,7 +236,7 @@ class ThongBaoController extends Controller
         foreach($listNotification as $notification){
             $color = "green";
             $status ="Chưa đọc";
-            if($request->status==0){
+            if($request->status==1){
                 $status ="Đã đọc";
                 $color = "red";
             }
