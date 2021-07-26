@@ -46,7 +46,7 @@
         <div class="card-element">
             {{-- title --}}
             <div class="pt-20 pb-20">
-                <div class="statistics-title fz-18">Best sellers</div>
+                <div class="statistics-title fz-20">Best sellers</div>
             </div>
             <hr class="m-0">
             {{-- list best sellers --}}
@@ -171,7 +171,7 @@
     <div class="col-lg-6 mb-20">
         <div class="card-element">
             <div class="pt-20 pb-20">
-                <div class="statistics-title d-flex align-items-center">
+                <div class="statistics-title d-flex align-items-center fz-20">
                     Biểu đồ thống kê doanh thu năm
                     <select id="sales-year" class="form-select ml-10" style="width: auto">
                         @for ($i = 2018; $i < 2022; $i++)
@@ -186,6 +186,7 @@
             </div>
             <hr class="m-0">
             <div class="p-20" style="height: 383px">
+                <input type="hidden" id="sales-data" value="{{$salesOfYear}}">
                 <canvas id="sales-chart"></canvas>
             </div>            
         </div>
@@ -193,7 +194,7 @@
     <div class="col-lg-6 mb-20">
         <div class="card-element">
             <div class="pt-20 pb-20">
-                <div class="statistics-title d-flex align-items-center">
+                <div class="statistics-title d-flex align-items-center fz-20">
                     Biểu đồ thống kê hãng bán chạy năm
                     <select id="branch-year" class="form-select ml-10" style="width: auto">
                         @for ($i = 2018; $i < 2022; $i++)

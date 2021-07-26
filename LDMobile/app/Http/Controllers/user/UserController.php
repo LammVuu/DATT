@@ -25,6 +25,10 @@ use App\Models\DONHANG;
 use App\Models\TAIKHOAN_VOUCHER;
 use App\Models\CTDG;
 use App\Models\PHANHOI;
+use App\Models\CTDH;
+use App\Models\KHO;
+use App\Models\CHINHANH;
+use App\Models\TINHTHANH;
 
 
 class UserController extends Controller
@@ -459,10 +463,39 @@ class UserController extends Controller
             // cập nhật trạng thái đơn hàng: Đã hủy
             DONHANG::where('id', $request->id)->update(['trangthaidonhang' => 'Đã hủy']);
 
-            // trả sp về kho: cập nhật số lượng kho
+            // hoàn lại số lượng kho
+            $order = DONHANG::find($request->id);
+            foreach(CTDH::where('id_dh', $request->id)->get() as $detail){
+                // kho tại chi nhánh
+                if($order->id_cn){
+                    // số lượng sp trong kho hiện tại
+                    $qtyInStock = KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
+                    // số lượng sản phẩm mua
+                    $qtyBuy = $detail->sl;
+                    // trả lại số lượng kho
+                    $qtyInStock += $qtyBuy;
+                    // cập nhật kho
+                    KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+                }
+                // kho theo khu vực người đặt
+                else {
+                    // tỉnh thành của người dùng
+                    $province = TAIKHOAN_DIACHI::find($order->id_tk_dc)->tinhthanh;
+                    // id_cn theo tỉnh thành
+                    $id_cn = CHINHANH::where('id_tt', TINHTHANH::where('tentt', $province)->first()->id)->first()->id;
+                    // số lượng sp trong kho tại chi nhánh
+                    $qtyInStock = KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
+                    // số lượng sản phẩm mua
+                    $qtyBuy = $detail->sl;
+                    // trả lại số lượng kho
+                    $qtyInStock += $qtyBuy;
+                    // cập nhật kho
+                    KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+                }
+            }
 
             // khôi phục voucher đã áp dụng
-            if(DONHANG::find($request->id)->id_vc){
+            if($order->id_vc){
                 TAIKHOAN_VOUCHER::create([
                     'id_tk' => session('user')->id,
                     'id_vc' => DONHANG::find($request->id)->id_vc,

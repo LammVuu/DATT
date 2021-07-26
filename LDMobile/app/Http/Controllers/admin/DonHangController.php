@@ -325,7 +325,7 @@ class DonHangController extends Controller
             // gửi thông báo
             $data = [
                 'id_tk' => $order->id_tk,
-                'tieude' => 'Xác nhận đơn hàng',
+                'tieude' => 'Đơn đã xác nhận',
                 'noidung' => 'Đã xác nhận đơn hàng #'.$order->id. ' của bạn.',
                 'thoigian' => date('d/m/Y h:i'),
                 'trangthaithongbao' => 0,
@@ -375,16 +375,34 @@ class DonHangController extends Controller
                 }
             }
 
-            // gửi thông báo
-            $data = [
+            // gửi thông báo thành công & tặng voucher
+            $voucher = VOUCHER::where('code', 'GIAM10')->first();
+
+            THONGBAO::create([
                 'id_tk' => $order->id_tk,
                 'tieude' => 'Giao hàng thành công',
                 'noidung' => 'Kiện hàng của đơn hàng #'.$order->id. ' đã giao thành công đến bạn.',
                 'thoigian' => date('d/m/Y h:i'),
                 'trangthaithongbao' => 0,
-            ];
+            ]);
+            THONGBAO::create([
+                'id_tk' => $order->id_tk,
+                'tieude' => 'Mã giảm giá',
+                'noidung' => 'Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá giảm '.$voucher->chietkhau*100 .'% cho đơn hàng từ '.number_format($voucher->dieukien, 0, '', '.').'<sup>đ</sup>. Áp dụng đến hết ngày '.$voucher->ngayketthuc.'.',
+                'thoigian' => date('d/m/Y h:i'),
+                'trangthaithongbao' => 0,
+            ]);
 
-            THONGBAO::create($data);
+            // tặng voucher
+            TAIKHOAN_VOUCHER::create([
+                'id_vc' => $voucher->id,
+                'id_tk' => $order->id_tk,
+            ]);
+
+            // giảm số lượng voucher
+            $qty = $voucher->sl;
+            $voucher->sl = --$qty;
+            $voucher->save();
         }
     }
 

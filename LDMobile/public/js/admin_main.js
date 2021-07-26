@@ -492,7 +492,10 @@ $(function() {
         }
 
         // area chart
-        var myChart = new Chart($('#sales-chart')[0], {
+        var arrSalesData = $('#sales-data').val().split('-');
+        console.log(arrSalesData);
+        
+        var salesChart = new Chart($('#sales-chart')[0], {
             type: 'line',
             data: {
                 labels: [
@@ -518,15 +521,47 @@ $(function() {
                         above: '#9EF1F4',
                         below: '#9EF1F4'
                       },
-                    data: [0, 10, 5, 2, 20, 30, 0, 10, 5, 2, 20, 30],
+                    data: arrSalesData
                 }]
             }, options: {
-                elements: {
-                    point: {
-                        radius: 0
-                    },
-                }
             }
+        });
+
+        // thay đổi năm thống kê
+        $('#sales-year').change(function(){
+            var year = $(this).val();
+            
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: 'admin/ajax-get-sales-of-year',
+                type: 'POST',
+                data: {'year': year},
+                success: function(data){
+                    console.log(data);
+                    // không có dữ liệu
+                    if(data == ''){
+                        setTimeout(() => {
+                            if(!$('#sales-chart').next().length){
+                                var elmnt = $('<div class="pt-50 fz-20 text-center">Không có dữ liệu</div>');
+                                elmnt.show('fade');
+                                $('#sales-chart').after(elmnt);
+                            }
+                        }, 300);
+                        $('#sales-chart').hide();
+                    } else {
+                        $('#sales-chart').next().remove();
+                        $('#sales-chart').show();
+
+                        data = data.split('-');
+                        salesChart.data.datasets[0].data = data;
+                        salesChart.reset();
+                        salesChart.update();
+                    }
+                    
+                }
+            })
         });
 
         /*Donut chart*/

@@ -19,6 +19,7 @@ use App\Models\CTDH;
 use App\Models\TAIKHOAN_VOUCHER;
 use App\Models\VOUCHER;
 use App\Models\TAIKHOAN_DIACHI;
+use App\Models\THONGBAO;
 
 
 class CartController extends Controller
@@ -157,6 +158,15 @@ class CartController extends Controller
                     $warehouse->save();
                 }
             }
+
+            // gửi thông báo
+            THONGBAO::create([
+                'id_tk' => session('user')->id,
+                'tieude' => 'Đơn đã tiếp nhận',
+                'noidung' => 'Đã tiếp nhận đơn hàng #'.$create->id.' của bạn.',
+                'thoigian' => date('d/m/Y H:i'),
+                'trangthaithongbao' => 0,
+            ]);
 
             // xóa giỏ hàng
             GIOHANG::where('id_tk', session('user')->id)->delete();
