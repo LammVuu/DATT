@@ -752,15 +752,18 @@ class DashboardController extends Controller
                         ->whereIn('id_dh', $listIDBills)
                         ->take(5)
                         ->get();
+        $detailBill = CTDH::whereIn('id_dh', $listIDBills)->get();
+
         foreach($listIDs as $id){
             array_push($listTop5IDs, $id->id_sp);
         }
         $bestSellers = SANPHAM::whereIn('id', $listTop5IDs)->get();
         foreach($bestSellers as $product){
-            $list = CTDH::where('id_sp', $product->id)->get();
             $product->total = 0;
-            foreach($list as $detail){
-                $product->total += $detail->sl;
+            foreach($detailBill as $detail){
+                if($product->id == $detail->id_sp){
+                    $product->total += $detail->sl;
+                }  
             }
         }
         $result = $bestSellers->sortByDesc(function($pro) {
