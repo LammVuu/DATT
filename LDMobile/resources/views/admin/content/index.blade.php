@@ -209,6 +209,7 @@
             </div>
             <hr class="m-0">
             <div class="d-flex justify-content-center align-items-center p-20">
+                <input type="hidden" id="donut-data" value="{{json_encode($suppplierOfYear)}}">
                 <div id="branch-chart"></div>
             </div>
         </div>

@@ -23,7 +23,6 @@ use App\Models\IMEI;
 use App\Models\CTDH;
 use App\Models\LUOTTRUYCAP;
 use App\Models\DANHGIASP;
-
 use Carbon\Carbon;
 use DB;
 
@@ -41,12 +40,13 @@ class DashboardController extends Controller
         $currentMonth =  Carbon::now('Asia/Ho_Chi_Minh')->format('m/Y');
         $currentDate =  Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d');
         $dateFirstOfMonth = Carbon::now()->year;
+        $dateFirstOfYear = Carbon::now()->year."-01-01";
         if(Carbon::now()->month<10){
             $dateFirstOfMonth .="-0".Carbon::now()->month.'-01';
         }else $dateFirstOfMonth .="-".Carbon::now()->month.'-01';
 
         //thong ke don hang va doanh thu
-        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang', 'Thành công')->get();
         $totalBillInMonth = count($bills);
         $totalMoneyInMonth = 0;
         foreach($bills as $bill){
@@ -91,7 +91,7 @@ class DashboardController extends Controller
 
         $salesOfYear = $this->getSalesOfYear($currentYear);
         // $this->IndexController->print($salesOfYear); return false;
-
+        $suppplierOfYear = $this->getSupplierOfYear($currentDate, $dateFirstOfYear);
         $data = [
             'totalBillInMonth' => $totalBillInMonth,
             'totalMoneyInMonth' => $totalMoneyInMonth,
@@ -103,6 +103,7 @@ class DashboardController extends Controller
             'accessTimesOnApp' => $accessTimesOnApp,
             'totalReviewInMonth' => $totalReviewInMonth,
             'salesOfYear' => $salesOfYear,
+            'suppplierOfYear' => $suppplierOfYear,
         ];
 
         return view($this->admin.'index')->with($data);
@@ -753,7 +754,7 @@ class DashboardController extends Controller
     public function getTopProductBestSellers($currentDate, $dateFirstOfMonth){
         $listTop5IDs = array();
         $listIDBills = array();
-        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang', 'Thành công')->get();
         foreach($bills as $bill){
             array_push($listIDBills, $bill->id);
         }
@@ -985,5 +986,40 @@ class DashboardController extends Controller
         if($request->ajax()){
             return $this->getSalesOfYear($request->year);
         }
+    }
+    public function getSupplierOfYear($currentDate, $dateFirstOfYear){
+        $total = 0;
+        $listResult = array();
+        $listIDBillYears = array();
+        $listSupplier= array();
+        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfYear)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        foreach($bills as $bill){
+            array_push($listIDBillYears, $bill->id);
+        }
+        $detailBills = CTDH::whereIn('id_dh', $listIDBillYears)->get();
+        foreach($detailBills as $bill){
+            $idCate = SANPHAM::select('id_msp')
+                            ->where('id', $bill->id_sp)
+                            ->get();
+            $cateProduct = MAUSP::find($idCate);
+            if($bill->sl==2){
+                array_push($listSupplier, $cateProduct[0]->id_ncc);
+                array_push($listSupplier, $cateProduct[0]->id_ncc);
+            }else array_push($listSupplier, $cateProduct[0]->id_ncc);
+        }
+        $results = array_count_values($listSupplier);
+        foreach($results as $key => $id){
+            $name = NHACUNGCAP::select('tenncc')
+                            ->where('id', $key)
+                            ->get();
+            $total += $id;               
+            $listResult[$name[0]->tenncc] = $id;
+        }
+     
+        foreach($listResult as $key => $value){
+            $num = ($value/$total)*100;
+            $listResult[$key] = $num;
+        }
+        return $listResult;
     }
 }
