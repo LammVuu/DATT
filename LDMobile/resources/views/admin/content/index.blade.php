@@ -50,7 +50,10 @@
             </div>
             <hr class="m-0">
             {{-- list best sellers --}}
-            <?php $i = 1; ?>
+            <?php $i = 1; $size = count($bestSellers) ?>
+            @if( $size == 0)
+            <div class="pt-50 fz-20 text-center" style="padding-bottom: 20%">Không có dữ liệu</div>
+            @else
             @foreach ($bestSellers as $product)
                 <div class="best-sellers">
                     <div class="d-flex align-items-center">
@@ -80,6 +83,7 @@
                 </div>
             <?php $i++; ?>
             @endforeach
+            @endif
         </div>
     </div>
     {{-- số lượt đánh giá & số lượt truy cập web & app --}}
@@ -210,6 +214,7 @@
             <hr class="m-0">
             <div class="d-flex justify-content-center align-items-center p-20">
                 <input type="hidden" id="donut-data" value="{{json_encode($suppplierOfYear)}}">
+                @if(count($suppplierOfYear)==0) <div class="pt-50 fz-20 text-center" style="padding-bottom: 35%">Không có dữ liệu</div>@endif
                 <div id="branch-chart"></div>
             </div>
         </div>

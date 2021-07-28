@@ -212,7 +212,7 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Admi
     Route::post("ajax-load-more", [DashboardController::class, "AjaxLoadMore"]);
 
     Route::post("ajax-get-sales-of-year", [DashboardController::class, "AjaxGetSalesOfYear"]);
-
+    Route::post("ajax-get-supplier-of-year", [DashboardController::class, "AjaxGetSupplierOfYear"]);
     /*=======================================================================================================
                                                         Mẫu sp
     =========================================================================================================*/

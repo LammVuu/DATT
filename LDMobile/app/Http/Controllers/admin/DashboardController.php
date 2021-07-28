@@ -25,6 +25,7 @@ use App\Models\LUOTTRUYCAP;
 use App\Models\DANHGIASP;
 use Carbon\Carbon;
 use DB;
+use Math;
 
 class DashboardController extends Controller
 {
@@ -46,7 +47,7 @@ class DashboardController extends Controller
         }else $dateFirstOfMonth .="-".Carbon::now()->month.'-01';
 
         //thong ke don hang va doanh thu
-        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang', 'Thành công')->get();
+        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang','LIKE', '%'.'Thành công'.'%')->get();
         $totalBillInMonth = count($bills);
         $totalMoneyInMonth = 0;
         foreach($bills as $bill){
@@ -754,7 +755,7 @@ class DashboardController extends Controller
     public function getTopProductBestSellers($currentDate, $dateFirstOfMonth){
         $listTop5IDs = array();
         $listIDBills = array();
-        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang', 'Thành công')->get();
+        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang','LIKE', '%'.'Thành công'.'%')->get();
         foreach($bills as $bill){
             array_push($listIDBills, $bill->id);
         }
@@ -992,7 +993,7 @@ class DashboardController extends Controller
         $listResult = array();
         $listIDBillYears = array();
         $listSupplier= array();
-        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfYear)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
+        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfYear)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang','LIKE', '%'.'Tiếp'.'%')->get();
         foreach($bills as $bill){
             array_push($listIDBillYears, $bill->id);
         }
@@ -1018,8 +1019,14 @@ class DashboardController extends Controller
      
         foreach($listResult as $key => $value){
             $num = ($value/$total)*100;
-            $listResult[$key] = $num;
+
+            $listResult[$key] = number_format($num, 1);
         }
         return $listResult;
+    }
+    public function AjaxGetSupplierOfYear(Request $request){
+        if($request->ajax()){
+            return $this->getSupplierOfYear($request->currentDate, $request->dateFirstOfYear);
+        }
     }
 }
