@@ -27,14 +27,13 @@ class ThongBaoController extends Controller
         if($request->ajax()){
             $html =  '';
             foreach($listNotification as $notification){
-                $color = "green";
+                $color = "red";
                 $status ="Chưa đọc";
                 if($notification->trangthaithongbao==1){
                     $status ="Đã đọc";
+                    $color = "green";
                 }
-                if($notification->trangthaithongbao==1){
-                    $color = "red";
-                }
+             
                 $html .= 
                 '<tr data-id="'.$notification->id.'">
                 <td class="vertical-center w-10">'.$notification->id.'</td>
@@ -147,14 +146,13 @@ class ThongBaoController extends Controller
         $notification->id_tk = $request->account;
         $notification->trangthaithongbao = $request->status;
         if($notification->update()){
-            $color = "green";
-            $status ="Chưa đọc";
-            if($notification->trangthaithongbao==1){
-                $status ="Đã đọc";
-            }
-            if($notification->trangthaithongbao==1){
-                $color = "red";
-            }
+            $color = "red";
+                $status ="Chưa đọc";
+                if($notification->trangthaithongbao==1){
+                    $status ="Đã đọc";
+                    $color = "green";
+                }
+            
             $html = '<tr data-id="'.$notification->id.'">
             <td class="vertical-center w-10">'.$notification->id.'</td>
             <td class="vertical-center w-20">'.$notification->id_tk.'</td>
@@ -194,14 +192,13 @@ class ThongBaoController extends Controller
         $listNotification = THONGBAO::where('id', $request->search)->orWhere('id_tk',$request->search)->get();
         $html =  '<tbody id="lst_notification">';
         foreach($listNotification as $notification){
-            $color = "green";
-            $status ="Chưa đọc";
-            if($notification->trangthaithongbao==1){
-                $status ="Đã đọc";
-            }
-            if($notification->trangthaithongbao==1){
-                $color = "red";
-            }
+            $color = "red";
+                $status ="Chưa đọc";
+                if($notification->trangthaithongbao==1){
+                    $status ="Đã đọc";
+                    $color = "green";
+                }
+           
             $html .= 
             '<tr data-id="'.$notification->id.'">
             <td class="vertical-center w-10">'.$notification->id.'</td>
@@ -234,12 +231,13 @@ class ThongBaoController extends Controller
         }else  $listNotification = THONGBAO::where('trangthaithongbao', $request->status)->get();
         $html =  '<tbody id="lst_notification">';
         foreach($listNotification as $notification){
-            $color = "green";
+            $color = "red";
             $status ="Chưa đọc";
             if($request->status==1){
                 $status ="Đã đọc";
-                $color = "red";
+                    $color = "green";
             }
+            
             $html .= 
             '<tr data-id="'.$notification->id.'">
             <td class="vertical-center w-10">'.$notification->id.'</td>

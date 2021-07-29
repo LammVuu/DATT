@@ -493,8 +493,13 @@ $(function() {
 
         // area chart
         var arrSalesData = $('#sales-data').val().split('-');
-        console.log(arrSalesData);
-        
+        var donutData = $('#donut-data').val();
+    
+        var arr = [];
+            $.each(JSON.parse(donutData), function (i, key){ 
+                arr.push( { label: i.replace('Việt Nam', ''), value: key })
+            })
+
         var salesChart = new Chart($('#sales-chart')[0], {
             type: 'line',
             data: {
@@ -563,19 +568,55 @@ $(function() {
                 }
             })
         });
-
+        $('#branch-year').change(function(){
+            var year = $(this).val();
+            var today = new Date();
+            var currentYear = today.getFullYear();
+            var dateFirstOfYear = year +"-01-01";
+            var date = "";
+            if(currentYear != year){
+                date = year + "12-31";
+            }else {
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                date = yyyy + '-' + mm + '-' + dd;
+            }
+            
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: 'admin/ajax-get-supplier-of-year',
+                type: 'POST',
+                data: {'dateFirstOfYear': dateFirstOfYear,'currentDate': date},
+                success: function(data){
+                    console.log(data);
+                    // không có dữ liệu
+                    if(data.length==0){
+                        setTimeout(() => {
+                            if(!$('#branch-chart').next().length){
+                                var elmnt = $('<div class="pt-50 fz-20 text-center">Không có dữ liệu</div>');
+                                elmnt.show('fade');
+                                $('#branch-chart').after(elmnt);
+                            }
+                        }, 300);
+                        $('#branch-chart').hide();
+                    } else {
+                        $('#branch-chart').next().remove();
+                        $('#branch-chart').show();
+                        window.areaChart.data = data;
+                    }
+                    
+                }
+            })
+        });
         /*Donut chart*/
         window.areaChart = Morris.Donut({
             element: 'branch-chart',
             redraw: true,
-            data: [
-                { label: "Samsung", value: 50 },
-                { label: "Apple", value: 15 },
-                { label: "Oppo", value: 20 },
-                { label: "Xiaomi", value: 10 },
-                { label: "Vivo", value: 5 },
-            ],
-            colors: ['#5FBEAA', '#34495E', '#FF9F55']
+            data: arr,
+            colors: ['#34495E', '#eb4a00', '#004ddb', '#db0000', '#dba800', '#db005b', '#06972a']
         });
     }
     /*=======================================================================================================================
