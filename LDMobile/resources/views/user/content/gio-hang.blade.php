@@ -53,7 +53,7 @@
                             </div>
                             {{-- thành tiền --}}
                             <div class="w-15">
-                                <div id="provisional_{{$key['id']}}" class="price-color fw-600">{{ number_format($key['thanhtien'], 0, '', '.') }}<sup>đ</sup></div>
+                                <div id="provisional_{{$key['id']}}" class="red fw-600">{{ number_format($key['thanhtien'], 0, '', '.') }}<sup>đ</sup></div>
                             </div>
                             {{-- xóa --}}
                             <div class="w-5">
@@ -149,7 +149,7 @@
                         <div class="p-20 border">
                             <div class="d-flex justify-content-between">
                                 <div class="gray-1">Tổng tiền</div>
-                                <span data-voucher="{{session('voucher') ? "1" : "0"}}" id="total" class="price-color fz-20 fw-600"></span>
+                                <span data-voucher="{{session('voucher') ? "1" : "0"}}" id="total" class="red fz-20 fw-600"></span>
                             </div>
                         </div>
                     </div>

@@ -28,7 +28,7 @@ class VOUCHER extends Model
     // taikhoan_voucher
     public function taikhoan_voucher()
     {
-        return $this->belongsToMany(TAIKHOAN::class, 'taikhoan_voucher', 'id_vc', 'id_tk')->withPivot('id');
+        return $this->belongsToMany(TAIKHOAN::class, 'taikhoan_voucher', 'id_vc', 'id_tk')->withPivot('id', 'sl');
     }
 
     // donhang

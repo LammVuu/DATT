@@ -27,7 +27,7 @@
                             <img src="{{ $url_phone.$currentProduct['sanpham']['hinhanh'] }}" alt="" class='w-80 center-img pt-20 pb-10'>
                             {{-- giá & đánh giá --}}
                             <div class='pt-10 pb-10'>
-                                <b class="price-color">{{ number_format($currentProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
+                                <b class="red">{{ number_format($currentProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
                                 <span class='text-strike ml-10'>{{ number_format($currentProduct['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></span>
                             </div>
                             <div>
@@ -73,7 +73,7 @@
                             <img src="{{ $url_phone.$compareProduct['sanpham']['hinhanh'] }}" alt="" class='w-80 center-img pt-20 pb-10'>
                             {{-- giá & đánh giá --}}
                             <div class='pt-10 pb-10'>
-                                <b class="price-color">{{ number_format($compareProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
+                                <b class="red">{{ number_format($compareProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
                                 <span class='text-strike ml-10'>{{ number_format($compareProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                             </div>
                             {{-- đánh giá --}}
@@ -125,7 +125,7 @@
                                 <img src="{{ $url_phone.$thirdProduct['sanpham']['hinhanh'] }}" alt="" class='w-80 center-img pt-20 pb-10'>
                                 {{-- giá & đánh giá --}}
                                 <div class='pt-10 pb-10'>
-                                    <b class="price-color">{{ number_format($thirdProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
+                                    <b class="red">{{ number_format($thirdProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
                                     <span class='text-strike ml-10'>{{ number_format($thirdProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                                 </div>
                                 {{-- đánh giá --}}

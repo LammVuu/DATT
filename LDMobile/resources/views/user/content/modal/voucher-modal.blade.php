@@ -17,6 +17,9 @@
                                     <div class='account-voucher'>
                                         {{-- số phần trăm giảm --}}
                                         <div class='dis-voucher-left w-20 p-70'>
+                                            @if ($key->sl_voucher != 1)
+                                                <div class="voucher-qty">{{$key->sl_voucher}}x</div>    
+                                            @endif
                                             <div class='dis-voucher-left-content fz-40'>-{{$key->chietkhau*100}}%</div>
                                         </div>
                                         {{-- nội dung --}}
@@ -43,7 +46,7 @@
                                                                                 <span>Điều kiện</span>
                                                                                 @if ($key->dieukien != 0)
                                                                                     <ul class='mt-10'>
-                                                                                        <li>Áp dụng cho đơn hàng từ 5.000.000 VND</li>
+                                                                                        <li>Áp dụng cho đơn hàng từ {{number_format($key->dieukien, 0, '', '.')}}<sup>đ</sup></li>
                                                                                     </ul>
                                                                                 @endif
                                                                             </div>
@@ -60,7 +63,7 @@
                                                 </div>
                                                 {{-- nội dung --}}
                                                 <div class="flex-fill">
-                                                    <span>Áp dụng cho đơn hàng từ {{number_format($key->dieukien, 0, '', '.')}}<sup>đ</sup></span>
+                                                    {{$key->noidung}}
                                                 </div>
                                                 {{-- hạn sử dụng --}}
                                                 <div class="d-flex justify-content-between">
@@ -77,6 +80,9 @@
                                     <div class='account-voucher'>
                                         {{-- số phần trăm giảm --}}
                                         <div class='voucher-left w-20 p-70'>
+                                            @if ($key->sl_voucher != 1)
+                                                <div class="voucher-qty">{{$key->sl_voucher}}x</div>    
+                                            @endif
                                             <div class='voucher-left-content fz-40'>-{{$key->chietkhau*100}}%</div>
                                         </div>
                                         {{-- nội dung --}}
@@ -119,9 +125,7 @@
                                                     </div>
                                                 </div>
                                                 {{-- nội dung --}}
-                                                <div class="flex-fill">
-                                                    <span>{{$key->noidung}}</span>
-                                                </div>
+                                                <div class="flex-fill">{{$key->noidung}}</div>
                                                 {{-- hạn sử dụng --}}
                                                 <div class="d-flex justify-content-between">
                                                     <span class="d-flex align-items-end">HSD: {{$key->ngayketthuc}}</span>

@@ -18,20 +18,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $table = 'taikhoan';
-    protected $fillable = [
-        'hoten',
-        'sdt',
-        'email',
-        'password',
-        'anhdaidien',
-        'loaitk',
-        'htdn',
-        'remember_token',
-        'user_social_token',
-        'login_status',
-        'thoigian',
-        'trangthai',
-    ];
     public $timestamps = false;
     /**
      * The attributes that should be hidden for arrays.

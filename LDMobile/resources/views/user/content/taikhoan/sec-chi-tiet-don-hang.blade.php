@@ -204,7 +204,7 @@
                                 
                                 <div class='d-flex justify-content-between'>
                                     <div class="gray-1">Tổng tiền:</div>
-                                    <div class="price-color fz-20 fw-600">{{number_format($order['order']->tongtien, 0, '', '.')}}<sup>đ</sup></div>
+                                    <div class="red fz-20 fw-600">{{number_format($order['order']->tongtien, 0, '', '.')}}<sup>đ</sup></div>
                                 </div>
                             </div>
                         </td>

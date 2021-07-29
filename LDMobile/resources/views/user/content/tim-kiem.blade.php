@@ -35,7 +35,7 @@
                                     <div class='pb-20 text-center d-flex flex-column'>
                                         <b class='mb-10'>{{ $key['tensp'] }}</b>
                                         <div>
-                                            <span class='fw-600 price-color'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                            <span class='fw-600 red'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
                                             <span class='ml-5 text-strike'>{{ number_format($key['gia']) }}<sup>đ</sup></span>
                                         </div>
                                         <div>

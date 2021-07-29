@@ -13,6 +13,9 @@
                         <div class='account-voucher'>
                             {{-- số phần trăm giảm --}}
                             <div class='voucher-left w-20 p-70'>
+                                @if ($key->sl_voucher != 1)
+                                <div class="voucher-qty">{{$key->sl_voucher}}x</div>
+                                @endif
                                 <div class='voucher-left-content fz-40'>-{{$key->chietkhau*100}}%</div>
                             </div>
                             {{-- nội dung --}}

@@ -173,7 +173,20 @@ class CartController extends Controller
 
             // xóa voucher đã áp dụng
             if($request->id_vc){
-                TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->where('id_vc', $request->id_vc)->delete();
+                $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->where('id_vc', $request->id_vc)->first();
+                $qty = $userVoucher->sl;
+                if($qty == 1){
+                    $userVoucher->delete();
+                } else {
+                    $userVoucher->sl = --$qty;
+                    $userVoucher->save();
+                }
+
+                // giảm số lượng voucher
+                $voucher = VOUCHER::find($userVoucher->id_vc);
+                $qty = $voucher->sl;
+                $voucher->sl = --$qty;
+                $voucher->save();
             }
 
             // xóa voucher trong session

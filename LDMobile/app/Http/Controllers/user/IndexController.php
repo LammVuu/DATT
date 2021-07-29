@@ -49,7 +49,6 @@ class IndexController extends Controller
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
     public function Index(){
-        // $this->print(Session::all()); return false;
         /*=================================
                     hotsale
         ===================================*/
@@ -105,8 +104,15 @@ class IndexController extends Controller
     }
 
     public function DienThoai(){
+        $model = MAUSP::limit(10)->get();
+        $lst_product = [];
+        foreach($model as $model){
+            foreach($this->getProductByCapacity(SANPHAM::where('id_msp', $model->id)->get()) as $key){
+                array_push($lst_product, $key);
+            }
+        }
 
-        $lst_product = $this->getAllProductByCapacity();
+        //$this->print($lst_product); return false;
 
         // các loại ram hiện có
         $lst_ram = $this->getRamAllProduct();
@@ -115,7 +121,7 @@ class IndexController extends Controller
         $lst_capacity = $this->getCapacityAllProduct();
 
         // số lượng sản phẩm
-        $qty = count($lst_product);
+        $qty = count($this->getAllProductByCapacity());
         
         $data = [
             'lst_product' => $lst_product,
@@ -392,44 +398,47 @@ class IndexController extends Controller
         if(session('user')){
             // đơn hàng của người dùng
             foreach(DONHANG::where('id_tk', session('user')->id)->get() as $order){
-                // chi tiết đơn hàng
-                foreach(DONHANG::find($order['id'])->ctdh as $detail){
-                    $product = SANPHAM::find($detail->pivot->id_sp);
-                    // sản phẩm cùng id_msp và dung lượng
-                    if($product->id_msp == $id_msp && $product->dungluong == $capacity){
-                        //thời gian đơn hàng
-                        $timeOrder = strtotime(str_replace('/', '-', $order['thoigian']));
-                        // đánh giá
-                        $evaluate = DANHGIASP::where('id_tk', session('user')->id)->where('id_sp', $product->id)->get();
-                        // không có id_sp trong bảng đánh giá
-                        if(count($evaluate) == 0){
-                            // nếu đã thêm vào mảng chưa đánh giá rồi thì tiếp tục
-                            $flag = 0;
-                            if(!empty($haveNotEvaluated)){
-                                foreach($haveNotEvaluated as $arr){
-                                    if($arr['id'] == $product->id){
-                                        $flag = 1;
+                // đơn hàng thành công
+                if($order->trangthaidonhang == 'Thành công'){
+                    // chi tiết đơn hàng
+                    foreach(DONHANG::find($order['id'])->ctdh as $detail){
+                        $product = SANPHAM::find($detail->pivot->id_sp);
+                        // sản phẩm cùng id_msp và dung lượng
+                        if($product->id_msp == $id_msp && $product->dungluong == $capacity){
+                            //thời gian đơn hàng
+                            $timeOrder = strtotime(str_replace('/', '-', $order['thoigian']));
+                            // đánh giá
+                            $evaluate = DANHGIASP::where('id_tk', session('user')->id)->where('id_sp', $product->id)->get();
+                            // không có id_sp trong bảng đánh giá
+                            if(count($evaluate) == 0){
+                                // nếu đã thêm vào mảng chưa đánh giá rồi thì tiếp tục
+                                $flag = 0;
+                                if(!empty($haveNotEvaluated)){
+                                    foreach($haveNotEvaluated as $arr){
+                                        if($arr['id'] == $product->id){
+                                            $flag = 1;
+                                        }
                                     }
+                                    if($flag == 0){
+                                        array_push($haveNotEvaluated, $this->getProductById($product->id));    
+                                    }
+                                } else {
+                                    array_push($haveNotEvaluated, $this->getProductById($product->id));
                                 }
-                                if($flag == 0){
-                                    array_push($haveNotEvaluated, $this->getProductById($product->id));    
+                            }
+                            // đã có id_sp trong bảng đánh giá. kiểm tra ngày mua với ngày đánh giá
+                            else {
+                                // thời gian đánh giá của id_sp mới nhất
+                                $timeEvaluate = strtotime(str_replace('/', '-', $evaluate[count($evaluate) - 1]['thoigian']));
+                                // nếu thời gian mua mới > thời gian đánh giá => chưa đánh giá
+                                if($timeOrder > $timeEvaluate){
+                                    array_push($haveNotEvaluated, $this->getProductById($product->id));
                                 }
-                            } else {
-                                array_push($haveNotEvaluated, $this->getProductById($product->id));
                             }
+
+                            // đã mua hàng
+                            $bought = true;
                         }
-                        // đã có id_sp trong bảng đánh giá. kiểm tra ngày mua với ngày đánh giá
-                        else {
-                            // thời gian đánh giá của id_sp mới nhất
-                            $timeEvaluate = strtotime(str_replace('/', '-', $evaluate[count($evaluate) - 1]['thoigian']));
-                            // nếu thời gian mua mới > thời gian đánh giá => chưa đánh giá
-                            if($timeOrder > $timeEvaluate){
-                                array_push($haveNotEvaluated, $this->getProductById($product->id));
-                            }
-                        }
-    
-                        // đã mua hàng
-                        $bought = true;
                     }
                 }
             }   
@@ -601,15 +610,15 @@ class IndexController extends Controller
     public function AjaxFilterProduct(Request $request)
     {
         if($request->ajax()){
-            $data = $request->dataFilterSort;
+            $data = $request->arrFilterSort;
 
             $filter = null;
             
             if(array_key_exists('filter', $data)){
-                $filter = $request->dataFilterSort['filter'];
+                $filter = $request->arrFilterSort['filter'];
             }
             
-            $sort = $request->dataFilterSort['sort'];
+            $sort = $request->arrFilterSort['sort'];
 
             // nếu gỡ bỏ hết bộ lọc thì trả về tất cả sản phẩm
             if(!$filter){
@@ -1053,6 +1062,74 @@ class IndexController extends Controller
                     'status' => 'success',
                     'product' => $product,
                 ];
+            }
+        }
+    }
+
+    public function AjaxLoadMore(Request $request)
+    {
+        if($request->ajax()){
+            $url = $request->url;
+            $row = $request->row;
+            $limit = $request->limit;
+            $html = '';
+
+            if($url == 'dienthoai'){
+                $data = MAUSP::offset($row)->limit($limit)->get();
+
+                if(count($data) == 0){
+                    return 'done';
+                }
+
+                $lst_product = [];
+                foreach($data as $data){
+                    foreach($this->getProductByCapacity(SANPHAM::where('id_msp', $data->id)->get()) as $key){
+                        array_push($lst_product, $key);
+                    }
+                }
+
+                foreach($lst_product as $key){
+                    $html .= '<div class="col-lg-3 col-md-4 col-sm-6">
+                                <div id="product_'.$key['id'].'" class="shop-product-card box-shadow">'.
+                                    ($key['khuyenmai'] != 0 ? 
+                                        '<div class="shop-promotion-tag">
+                                            <span class="shop-promotion-text">-'.$key['khuyenmai']*100 .'%</span>
+                                        </div>' : '').'
+                                    <div class="shop-overlay-product"></div>
+                                    <div type="button" data-id="'.$key['id'].'" class="shop-cart-link"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
+                                    <a href="dienthoai/'.$key['tensp_url'].'" class="shop-detail-link">Xem chi tiết</a>
+                                    <div>
+                                        <div class="pt-20 pb-20">
+                                            <img src="images/phone/'.$key['hinhanh'].'" class="shop-product-img-card">
+                                        </div>
+                                        <div class="pb-20 text-center d-flex flex-column">
+                                            <b class="mb-10">'.$key['tensp'].'</b>
+                                            <div>
+                                                <span class="fw-600 red">'.number_format($key['giakhuyenmai'], 0, '', '.').'<sup>đ</sup></span>'.
+                                                ($key['khuyenmai'] != 0 ?
+                                                    '<span class="ml-5 text-strike">'.number_format($key['gia'], 0, '', '.').'<sup>đ</sup></span>' : '').'
+                                            </div>
+                                            <div class="flex-row pt-5">';
+                                                if($key['danhgia']['qty'] != 0){
+                                                    for ($i = 1; $i <= 5; $i++){
+                                                        if($key['danhgia']['star'] >= $i){
+                                                            $html .= '<i class="fas fa-star checked"></i>';
+                                                        } else {
+                                                            $html .= '<i class="fas fa-star uncheck"></i>';
+                                                        }
+                                                    }
+                                                    $html .=
+                                                    '<span class="fz-14 ml-10">'.$key['danhgia']['qty'] . ' đánh giá</span>';
+                                                }
+                                                $html .= '
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>';
+                }
+
+                return $html;
             }
         }
     }
@@ -1840,7 +1917,7 @@ class IndexController extends Controller
                 ],
                 'noidung' => $key['noidung'],
                 'hinhanh' => $imageEvaluate,
-                'thoigian' => $key['thoigian'],
+                'thoigian' => substr_replace($key['thoigian'], '', strlen($key['thoigian']) - 3), // d/m/Y H:i
                 'soluotthich' => $key['soluotthich'],
                 'danhgia' => $key['danhgia'],
                 'trangthai' => $key['trangthai'],
@@ -2028,13 +2105,13 @@ class IndexController extends Controller
     public function getReply($id_dg)
     {
         $lst_reply = [];
-        foreach(DANHGIASP::find($id_dg)->phanhoi as $key){
+        foreach(PHANHOI::where('id_dg', $id_dg)->orderBy('id', 'desc')->get() as $key){
             $data = [
                 'id' => $key['id'],
                 'taikhoan' => $this->getAccountById($key['id_tk']),
                 'id_dg' => $id_dg,
                 'noidung' => $key['noidung'],
-                'thoigian' => $key['thoigian'],
+                'thoigian' => substr_replace($key['thoigian'], '', strlen($key['thoigian']) - 3),
                 'trangthai' => $key['trangthai'],
             ];
 

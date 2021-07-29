@@ -866,89 +866,120 @@ class DashboardController extends Controller
                         if(!key_exists('1', $sales)){
                             $sales['1'] = 0;
                         }
-                        $sales['1'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['1'] += $order->tongtien;
+                        }
                         break;
                     case '02':
                         if(!key_exists('2', $sales)){
                             $sales['2'] = 0;
                         }
-                        $sales['2'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['2'] += $order->tongtien;
+                        }
                         break;
                     case '03':
                         if(!key_exists('3', $sales)){
                             $sales['3'] = 0;
                         }
-                        $sales['3'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['3'] += $order->tongtien;
+                        }
                         break;
                     case '04':
                         if(!key_exists('4', $sales)){
                             $sales['4'] = 0;
                         }
-                        $sales['4'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['4'] += $order->tongtien;
+                        }
                         break;
                     case '05':
                         if(!key_exists('5', $sales)){
                             $sales['5'] = 0;
                         }
-                        $sales['5'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['5'] += $order->tongtien;
+                        }
                         break;
                     case '06':
                         if(!key_exists('6', $sales)){
                             $sales['6'] = 0;
                         }
-                        $sales['6'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['6'] += $order->tongtien;
+                        }
                         break;
                     case '07':
                         if(!key_exists('7', $sales)){
                             $sales['7'] = 0;
                         }
-                        $sales['7'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['7'] += $order->tongtien;
+                        }
                         break;
                     case '08':
                         if(!key_exists('8', $sales)){
                             $sales['8'] = 0;
                         }
-                        $sales['8'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['8'] += $order->tongtien;
+                        }
                         break;
                     case '09':
                         if(!key_exists('9', $sales)){
                             $sales['9'] = 0;
                         }
-                        $sales['9'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['9'] += $order->tongtien;
+                        }
                         break;
                     case '10':
                         if(!key_exists('10', $sales)){
                             $sales['10'] = 0;
                         }
-                        $sales['10'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['10'] += $order->tongtien;
+                        }
                         break;
                     case '11':
                         if(!key_exists('11', $sales)){
                             $sales['11'] = 0;
                         }
-                        $sales['11'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['11'] += $order->tongtien;
+                        }
                         break;
                     case '12':
                         if(!key_exists('12', $sales)){
                             $sales['12'] = 0;
                         }
-                        $sales['12'] += $order->tongtien;
+                        if($order->trangthaidonhang == 'Thành công'){
+                            $sales['12'] += $order->tongtien;
+                        }
                         break;
                 }
             }
         }
 
         // không có dữ liệu
-        if(count($sales) == 0){
+        if(count($sales) == 0 && $year != date('Y')){
             return '';
         }
 
         // năm hiện tại: những tháng cũ, doanh thu = 0
         $largestMonth = array_key_last($sales);
         if($year == date('Y')){
-            for($i = 1; $i < $largestMonth; $i++){
-                if(!key_exists($i, $sales)){
+            // từ tháng 1 -> hiện tại chưa có doanh thu
+            if(!$largestMonth){
+                for($i = 1; $i <= intval(date('m')); $i++){
                     $sales[$i] = 0;
+                }
+            } else {
+                for($i = 1; $i < $largestMonth; $i++){
+                    if(!key_exists($i, $sales)){
+                        $sales[$i] = 0;
+                    }
                 }
             }
         }

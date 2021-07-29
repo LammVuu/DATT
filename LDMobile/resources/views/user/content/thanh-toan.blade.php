@@ -199,7 +199,7 @@
                                                                 <b>Số lượng: {{$key['sl']}}</b>
                                                             </div>
                                                         </div>
-                                                        <b class='d-flex align-items-center justify-content-end price-color'>{{number_format($key['thanhtien'], 0, '', '.')}}<sup>đ</sup></b>
+                                                        <b class='d-flex align-items-center justify-content-end red'>{{number_format($key['thanhtien'], 0, '', '.')}}<sup>đ</sup></b>
                                                     </div>
                                                 </td>
                                             </tr>    
@@ -295,7 +295,7 @@
                                             <td>
                                                 <div class='d-flex align-items-center justify-content-between p-10'>
                                                     <b>Tổng tiền:</b>
-                                                    <b data-voucher="{{session('voucher') ? "1" : "0"}}" id="total" class='price-color fz-22'></b>
+                                                    <b data-voucher="{{session('voucher') ? "1" : "0"}}" id="total" class='red fz-22'></b>
                                                 </div>
                                             </td>
                                         </tr>

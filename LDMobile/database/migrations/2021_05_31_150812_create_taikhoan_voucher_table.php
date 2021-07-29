@@ -17,6 +17,7 @@ class CreateTaikhoanVoucherTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_vc');
             $table->unsignedInteger('id_tk');
+            $table->integer('sl');
         });
     }
 

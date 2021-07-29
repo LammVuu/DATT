@@ -29,6 +29,7 @@ use App\Models\CTDH;
 use App\Models\KHO;
 use App\Models\CHINHANH;
 use App\Models\TINHTHANH;
+use App\Models\SANPHAM;
 
 
 class UserController extends Controller
@@ -49,10 +50,11 @@ class UserController extends Controller
         }
         
         // url trước đó
-        if(!Session::get('prev_url')){
+        $prev_url = Session::get('prev_url');
+        if(!$prev_url){
             Session::put('prev_url', Session::get('_previous')['url']);
         }
-        
+
         return view($this->user."dang-nhap");
     }
 
@@ -100,6 +102,10 @@ class UserController extends Controller
             // quay về url trước đó
             $prev_url = session('prev_url');
             if($prev_url){
+                if($prev_url == 'http://127.0.0.1:8000/dangky'){
+                    Session::forget('prev_url');
+                    return redirect('/')->with('toast_message', 'Đăng nhập thành công');
+                }
                 Session::forget('prev_url');
                 return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
             }
@@ -496,11 +502,26 @@ class UserController extends Controller
 
             // khôi phục voucher đã áp dụng
             if($order->id_vc){
-                TAIKHOAN_VOUCHER::create([
-                    'id_tk' => session('user')->id,
-                    'id_vc' => DONHANG::find($request->id)->id_vc,
-                ]);
+                $id_vc = DONHANG::find($request->id)->id_vc;
+                $userVoucher = TAIKHOAN_VOUCHER::where('id_vc', $id_vc)->where('id_tk', session('user')->id)->first();
+                if(!$userVoucher){
+                    TAIKHOAN_VOUCHER::create([
+                        'id_tk' => session('user')->id,
+                        'id_vc' => $id_vc,
+                    ]);
+                } else {
+                    $qty = $userVoucher->sl;
+                    $userVoucher->sl = ++$qty;
+                    $userVoucher->save();
+                }
+                
+                // cập nhật số lượng voucher
+                $voucher = VOUCHER::find($userVoucher->id_vc);
+                $qty = $voucher->sl;
+                $voucher->sl = ++$qty;
+                $voucher->save();
             }
+
 
             return back()->with('toast_message', 'Đã hủy đơn hàng');
         }
@@ -729,7 +750,9 @@ class UserController extends Controller
                     $html .= '
                                 <div class="pb-30">
                                     <div class="account-voucher">
-                                        <div class="voucher-left w-20 p-70">
+                                        <div class="voucher-left w-20 p-70">'.
+                                            ($key->pivot->sl != 1 ? '
+                                            <div class="voucher-qty">'.$key->pivot->sl.'x</div>' : '').'
                                             <div class="voucher-left-content fz-40">-'.$voucher->chietkhau*100 .'%</div>
                                         </div>
                                         <div class="voucher-right w-80">
@@ -785,7 +808,9 @@ class UserController extends Controller
                     $html .= '
                                 <div class="pb-30">
                                     <div class="account-voucher">
-                                        <div class="dis-voucher-left w-20 p-70">
+                                        <div class="dis-voucher-left w-20 p-70">'.
+                                            ($key->pivot->sl != 1 ? '
+                                                <div class="voucher-qty">'.$key->pivot->sl.'x</div>' : '').'
                                             <div class="dis-voucher-left-content fz-40">-'.$voucher->chietkhau*100 .'%</div>
                                         </div>
                                         <div class="dis-voucher-right w-80">
@@ -1002,12 +1027,94 @@ class UserController extends Controller
     public function AjaxReply(Request $request)
     {
         if($request->ajax()){
-            PHANHOI::create([
+            $create = PHANHOI::create([
                 'id_tk' => session('user')->id,
                 'id_dg' => $request->id_dg,
                 'noidung' => $request->replyContent,
                 'thoigian' => date('d/m/Y H:i:s'),
             ]);
+
+            $evaluate = DANHGIASP::find($request->id_dg);
+            $user = TAIKHOAN::find($evaluate->id_tk);
+            $userReply = TAIKHOAN::find($create->id_tk);
+            $product = SANPHAM::find($evaluate->id_sp);
+
+            // gửi thông báo
+            THONGBAO::create([
+                'id_tk' => $user->id,
+                'tieude' => 'Phản hồi',
+                'noidung' => "Bạn có một phản hồi từ <b>$userReply->hoten</b> ở sản phẩm <b>$product->tensp $product->dungluong - $product->mausac</b>."
+            ]);
+        }
+    }
+
+    public function AjaxGetTypeNotification(Request $request)
+    {
+        if($request->ajax()){
+            $type = $request->type;
+            $data = [];
+            switch($type){
+                case 'all':
+                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->get();
+                    break;
+                case 'not-seen':
+                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('trangthaithongbao', 0)->get();
+                    break;
+                case 'seen':
+                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('trangthaithongbao', 1)->get();
+                    break;
+                case 'order':
+                    $data = THONGBAO::where('id_tk', session('user')->id)
+                                    ->orderBy('id', 'desc')
+                                    ->Where('tieude', 'Đơn đã tiếp nhận')
+                                    ->orWhere('tieude', 'Đơn đã xác nhận')
+                                    ->orWhere('tieude', 'Giao hàng thành công')
+                                    ->get();
+                    break;
+                case 'voucher':
+                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('tieude', 'Mã giảm giá')->get();
+                    break;
+                case 'reply':
+                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('tieude', 'Phản hồi')->get();
+                    break;
+            }
+
+            $html = '';
+            foreach($data as $key){
+                $html .= '<div id="noti-'.$key->id.'" class="single-noti '.($key->trangthaithongbao == 0 ? 'account-noti-wait' : 'account-noti-checked').' box-shadow mb-20">
+                            <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <div>';
+                                        if ($key->tieude == 'Đơn đã tiếp nhận'){
+                                            $html .= '<i class="fas fa-file-alt fz-28 info-color"></i>';
+                                        } elseif ($key->tieude == 'Đơn đã xác nhận'){
+                                            $html .= '<i class="fas fa-file-check fz-28 success-color"></i>';
+                                        } elseif ($key->tieude == 'Giao hàng thành công'){
+                                            $html .='<i class="fas fa-box-check fz-28 success-color"></i>';
+                                        } elseif ($key->tieude == 'Mã giảm giá'){
+                                            $html .= '<i class="fas fa-badge-percent fz-28 yellow"></i>';
+                                        } elseif ($key->tieude == 'Phản hồi'){
+                                            $html .= '<i class="fas fa-reply fz-28 purple"></i>';
+                                        } $html .='
+                                    </div>
+                                    <div class="fw-600 fz-18 ml-10">'.$key->tieude.'</div>
+                                </div>
+                                <div class="d-flex align-items-end">'.
+                                    ($key->trangthaithongbao == 0 ? '
+                                    <div type="button" class="noti-btn-read main-color-text mr-10" data-id="'.$key->id.'">Đánh dấu đã đọc</div>' : '').'
+                                    <div type="button" class="noti-btn-delete red" data-id="'.$key->id.'">xóa</div>
+                                </div>
+                            </div>
+                            <div class="d-flex pt-20 pb-20 pl-10 pr-10">
+                                <div id="noti-content-' . $key['id'] .'">
+                                    <div>'.$key['noidung'].'</div>
+                                    <div class="mt-10 fz-14">'.$key->thoigian.'</div>
+                                </div>
+                            </div>
+                        </div>';
+            }
+
+            return $html;
         }
     }
 }

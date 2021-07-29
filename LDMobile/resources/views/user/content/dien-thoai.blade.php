@@ -14,7 +14,7 @@
                 @include("user.content.dienthoai.bo-loc-sap-xep")
 
                 {{-- danh sách sản phẩm --}}
-                <div id="lst_product" class="row">
+                <div id="lst_product" class="row" data-row="10">
                     @foreach ($lst_product as $key)
                         <div class='col-lg-3 col-md-4 col-sm-6'>
                             <div id="product_{{$key['id']}}" class='shop-product-card box-shadow'>
@@ -39,7 +39,7 @@
                                         <b class='mb-10'>{{ $key['tensp'] }}</b>
                                         {{-- giá --}}
                                         <div>
-                                            <span class='fw-600 price-color'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                                            <span class='fw-600 red'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                                             @if ($key['khuyenmai'] != 0)
                                                 <span class='ml-5 text-strike'>{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>    
                                             @endif
@@ -80,7 +80,7 @@
 
                     {{-- giá --}}
                     <div class="d-flex align-items-center">
-                        <div id="choose-color-promotion-price" class="price-color"></div>
+                        <div id="choose-color-promotion-price" class="red"></div>
                         <div id="choose-color-price" class="ml-20 gray-1 text-strike"></div>
                     </div><hr>
 

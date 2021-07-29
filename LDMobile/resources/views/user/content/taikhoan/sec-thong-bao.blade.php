@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-between mb-20">
+        <div class="d-flex align-items-center justify-content-between mb-40">
             <div data-type="all" class="noti-type noti-type-selected">
                 <i class="fas fa-list mr-10"></i>Tất cả
             </div>
@@ -39,9 +39,6 @@
             </div>
             <div data-type="reply" class="noti-type">
                 <i class="fas fa-reply mr-10"></i>Phản hồi
-            </div>
-            <div data-type="other" class="noti-type">
-                <i class="fal fa-ellipsis-h-alt mr-10"></i>Khác
             </div>
         </div>
 
@@ -62,15 +59,17 @@
                                         <i class="fas fa-box-check fz-28 success-color"></i>
                                     @elseif ($key['tieude'] == 'Mã giảm giá')
                                         <i class="fas fa-badge-percent fz-28 yellow"></i>
+                                    @elseif ($key['tieude'] == 'Phản hồi')
+                                        <i class="fas fa-reply fz-28 purple"></i>
                                     @endif
                                 </div>
-                                <div class="fw-600 ml-10">{{$key['tieude']}}</div>
+                                <div class="fw-600 fz-18 ml-10">{{$key['tieude']}}</div>
                             </div>
                             <div class="d-flex align-items-end">
                                 @if ($key['trangthaithongbao'] == 0)
                                 <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$key['id']}}'>Đánh dấu đã đọc</div>
                                 @endif
-                                <div type="button" class='noti-btn-delete price-color' data-id='{{$key['id']}}'>xóa</div>
+                                <div type="button" class='noti-btn-delete red' data-id='{{$key['id']}}'>xóa</div>
                             </div>
                         </div>
                         {{-- nội dung --}}

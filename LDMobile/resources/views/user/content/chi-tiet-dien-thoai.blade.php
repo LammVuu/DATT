@@ -26,7 +26,7 @@
                         <span class='ml-10'>{{ $phone['danhgia']['qty'].' đánh giá' }}</span>
                     @endif
                 </div>
-                <div id="qty-in-stock-status" class="ml-20 price-color text-uppercase fw-600 fz-20"></div>
+                <div id="qty-in-stock-status" class="ml-20 red text-uppercase fw-600 fz-20"></div>
             </div>
             {{-- nút yêu thích --}}
             <div data-name="{{$phone['tensp']}}" class="favorite-tag">
@@ -50,10 +50,12 @@
                                 <img class="another-img" src="{{ $url_phone.$key['hinhanh'] }}">
                             @endforeach
                         </div>
-                        <div style='display: flex'>
-                            <div id="prev-another-img" class='prev-owl-carousel'><i class="far fa-chevron-left fz-26"></i></div>
-                            <div id="next-another-img" class='next-owl-carousel'><i class="far fa-chevron-right fz-26"></i></div>
-                        </div>
+                        @if (count($lst_variation['image']) > 4)
+                            <div style='display: flex'>
+                                <div id="prev-another-img" class='prev-owl-carousel btn-owl-left-style-2'><i class="far fa-chevron-left fz-20"></i></div>
+                                <div id="next-another-img" class='next-owl-carousel btn-owl-right-style-2'><i class="far fa-chevron-right fz-20"></i></div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -62,7 +64,7 @@
                 <div class='d-flex flex-column'>
                     {{-- giá --}}
                     <div class='d-flex flex-row align-items-end'>
-                        <div class='fw-600 price-color fz-26'>{{ number_format($phone['giakhuyenmai']) }}<sup>đ</sup></div>
+                        <div class='fw-600 red fz-26'>{{ number_format($phone['giakhuyenmai']) }}<sup>đ</sup></div>
                         {{-- khuyến mãi còn hạn --}}
                         @if (!empty($phone['khuyenmai']) && $phone['khuyenmai']['trangthaikhuyenmai'])
                             <div class="d-flex align-items-end ml-20">
@@ -79,12 +81,12 @@
                             @if ($key['dungluong'] == $phone['dungluong'] && $key['ram'] == $phone['ram'])
                                 <div type='button' class='detail-option box-shadow selected'>
                                     <div class="fw-600">{{ $key['dungluong'] }}</div>
-                                    <div class="price-color fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
                                 </div>
                             @else
                                 <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='detail-option box-shadow'>
                                     <div>{{ $key['dungluong'] }}</div>
-                                    <div class="price-color fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
                                 </a>
                             @endif
                             </div>
@@ -96,19 +98,11 @@
                     <div class='row'>
                         @foreach ($lst_variation['color'] as $key)
                             <div class="col-md-4 col-sm-3 p-10">
-                            @if ($key['mausac'] == $phone['mausac'])
-                                <div type='button' class='color-option detail-option box-shadow selected' data-image="{{ $url_phone.$key['hinhanh'] }}"
+                                <div type='button' class='color-option detail-option box-shadow {{$key['mausac'] == $phone['mausac'] ? 'selected' : ''}}' data-image="{{ $url_phone.$key['hinhanh'] }}"
                                     data-id="{{$key['id']}}" data-color="{{$key['mausac']}}" favorite="{{$key['yeuthich']}}">
                                     <div class="color-name fw-600">{{ $key['mausac'] }}</div>
-                                    <div class="price-color fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
-                                </div>
-                            @else
-                                <div type="button" class='color-option detail-option box-shadow' data-image="{{ $url_phone.$key['hinhanh'] }}"
-                                    data-id="{{$key['id']}}" data-color="{{$key['mausac']}}" favorite="{{$key['yeuthich']}}">
-                                    <div class="color-name">{{ $key['mausac'] }}</div>
-                                    <div class="price-color fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
-                                </div>
-                            @endif  
+                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                </div> 
                             </div>  
                         @endforeach
                     </div>
@@ -125,7 +119,7 @@
                         </div>
                     @endif
                     {{-- mua ngay --}}
-                    <div type="button" data-id="{{$phone['id']}}" class='buy-now main-btn p-5 fz-20 fw-600 mt-20'>MUA NGAY</div>
+                    <div type="button" data-id="{{$phone['id']}}" class='buy-now main-btn p-10 fz-20 fw-600 mt-20'>MUA NGAY</div>
                 </div>
             </div>
 
@@ -146,8 +140,11 @@
                         <span>Bảo hành chính hãng {{ $phone['baohanh'] }}</span>
                     </div>
                 </div>
-                
-                <div id="check-qty-in-stock-btn" type="button" class="main-color-text ml-10" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
+
+                {{-- kiểm tra còn hàng --}}
+                @if (session('user'))
+                    <div id="check-qty-in-stock-btn" type="button" class="main-color-text ml-10" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
+                @endif
             </div>
         </div> <hr>
 
@@ -293,13 +290,13 @@
                             <div class="d-flex justify-content-center">
                                 <div>
                                     <div class='d-flex flex-column fz-14'>
-                                        <span class="price-color fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                        <span class="red fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
                                         {{-- khuyến mãi hết hạn --}}
                                         @if($key['khuyenmai'] != 0)
                                             <div>
                                                 <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
                                                 <span class='pl-5 pr-5'>|</span>
-                                                <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
+                                                <span class='red'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -358,13 +355,13 @@
                             <div class="d-flex justify-content-center">
                                 <div>
                                     <div class='d-flex flex-column fz-14'>
-                                        <span class="price-color fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                        <span class="red fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
                                         {{-- khuyến mãi hết hạn --}}
                                         @if($key['khuyenmai'] != 0)
                                             <div>
                                                 <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
                                                 <span class='pl-5 pr-5'>|</span>
-                                                <span class='price-color'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
+                                                <span class='red'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -516,9 +513,9 @@
             @if ($lst_evaluate['total-rating'] != 0)
                 <div id='list-comment' class="row">
                     {{-- đánh giá của người dùng --}}
-                    <div class="fw-600 fz-20 mb-10">Đánh giá của tôi</div>
                     @foreach($lst_evaluate['evaluate'] as $key)
                         @if ($key['taikhoan']['id'] == session('user')->id)
+                            <div class="fw-600 fz-20 mb-10">Đánh giá của tôi</div>
                             <div class="col-lg-8 col-sm-10">
                                 <div class='d-flex flex-column pt-20 pb-20'>
                                     {{-- ảnh đại diện & tên & sao & ngày đăng --}}
@@ -589,11 +586,10 @@
                                                 cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
                                                 maxlength="250"></textarea>
                                             </div>
-                                            
                                         </div>
                                         <div class="d-flex justify-content-end mt-5">
-                                            <div data-id="{{$key['id']}}" type="button" class="cancel-reply price-color mr-10">Hủy</div>
-                                            <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text">Trả lời</div>
+                                            <div data-id="{{$key['id']}}" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
+                                            <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
                                         </div>
                                     </div>
                                     {{-- danh sách trả lời --}}
@@ -657,9 +653,9 @@
                     @endforeach
 
                     {{-- đánh giá khác --}}
-                    <div class="fw-600 fz-20 mb-10">Đánh giá khác</div>
                     @foreach($lst_evaluate['evaluate'] as $key)
                         @if ($key['taikhoan']['id'] != session('user')->id)
+                            <div class="fw-600 fz-20 mb-10">Đánh giá khác</div>
                             <div class="col-lg-8 col-sm-10">
                                 <div class='d-flex flex-column pt-20 pb-20'>
                                     {{-- ảnh đại diện & tên & sao & ngày đăng --}}
@@ -724,8 +720,8 @@
                                             
                                         </div>
                                         <div class="d-flex justify-content-end mt-5">
-                                            <div data-id="{{$key['id']}}" type="button" class="cancel-reply price-color mr-10">Hủy</div>
-                                            <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text">Trả lời</div>
+                                            <div data-id="{{$key['id']}}" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
+                                            <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
                                         </div>
                                     </div>
                                     {{-- danh sách trả lời --}}

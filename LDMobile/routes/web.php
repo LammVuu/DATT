@@ -98,6 +98,10 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
     Route::get("test5", "IndexController@test5");
 
+    Route::post("ajax-get-type-notification", [UserController::class, "AjaxGetTypeNotification"]);
+
+    Route::post("ajax-load-more", [IndexController::class, "AjaxLoadMore"]);
+
     Route::middleware("CheckLogin")->group(function(){
         /*=======================================================================================================
                                                         Page

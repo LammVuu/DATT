@@ -54,7 +54,7 @@
                                 <div type="button" data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
                                 data-phuongxa="{{$key['phuongxa']}}" data-quanhuyen="{{$key['quanhuyen']}}"
                                 data-tinhthanh="{{$key['tinhthanh']}}" class="btn-edit-address main-color-text mr-10">Chỉnh sửa</div>
-                                <div type="button" data-id="{{$key['id']}}" class="btn-delete-address price-color">Xóa</div>
+                                <div type="button" data-id="{{$key['id']}}" class="btn-delete-address red">Xóa</div>
                             </div>
                         </div>
             

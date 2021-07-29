@@ -24,7 +24,7 @@
         <i class="fas fa-ticket-alt mr-20"></i>Mã giảm giá
     </a>
     <hr>
-    <a href="{{route('user/logout')}}" class='account-sidebar-tag price-color'>
+    <a href="{{route('user/logout')}}" class='account-sidebar-tag red'>
         <i class="far fa-power-off mr-20"></i>Đăng xuất
     </a>
 </div>

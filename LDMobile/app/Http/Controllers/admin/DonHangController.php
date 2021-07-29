@@ -256,7 +256,7 @@ class DonHangController extends Controller
                                                     </div>
                                                     <div class="d-flex justify-content-between">
                                                         <div>Tổng tiền:</div>
-                                                        <div class="fz-20 fw-600 price-color">'.number_format($order->tongtien, 0, '', '.').'<sup>đ</sup></div>
+                                                        <div class="fz-20 fw-600 red">'.number_format($order->tongtien, 0, '', '.').'<sup>đ</sup></div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -394,10 +394,22 @@ class DonHangController extends Controller
             ]);
 
             // tặng voucher
-            TAIKHOAN_VOUCHER::create([
-                'id_vc' => $voucher->id,
-                'id_tk' => $order->id_tk,
-            ]);
+            $userVoucher = TAIKHOAN_VOUCHER::where('id_vc', $voucher->id)->where('id_tk', $order->id_tk)->first();
+            // nếu chưa có voucher
+            if(!$userVoucher){
+                TAIKHOAN_VOUCHER::create([
+                    'id_vc' => $voucher->id,
+                    'id_tk' => $order->id_tk,
+                    'sl' => 1,
+                ]);
+            }
+            // cập nhật số lượng voucher
+            else {
+                $qty = $userVoucher->sl;
+                $userVoucher->sl = ++$qty;
+                $userVoucher->save();
+            }
+            
 
             // giảm số lượng voucher
             $qty = $voucher->sl;

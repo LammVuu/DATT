@@ -16,6 +16,7 @@ class TAIKHOAN_VOUCHER extends Model
     protected $fillable = [
         'id_vc',
         'id_tk',
+        'sl'
     ];
 
     public $timestamps = false;

@@ -21,7 +21,7 @@
                         <div class='index-sale-tag'>{{ 'SALE '.($key['khuyenmai'] * 100).'%' }}</div>
 
                         <div class="pt-20">
-                            <span class="price-color fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                            <span class="red fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                             <span class="text-strike gray-1 ml-10">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                         </div>
                         

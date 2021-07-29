@@ -38,7 +38,7 @@
         <div class="modal-content">
             <div class="modal-body p-20">
                 {{-- nút đóng --}}
-                <button class="btn-close" data-bs-dismiss="modal"></button>
+                <div type="button" class="btn-close" data-bs-dismiss="modal"></div>
                 {{-- hãng --}}
                 <div class="filter-title">Hãng</div>
                 <div class="d-flex align-items-center flex-wrap">

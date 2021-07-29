@@ -47,7 +47,7 @@ class TAIKHOAN extends Authenticatable
     // taikhoan_voucher
     public function taikhoan_voucher()
     {
-        return $this->belongsToMany(VOUCHER::class, 'taikhoan_voucher', 'id_tk', 'id_vc')->withPivot('id');
+        return $this->belongsToMany(VOUCHER::class, 'taikhoan_voucher', 'id_tk', 'id_vc')->withPivot('id', 'sl');
     }
 
     // phanhoi

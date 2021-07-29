@@ -119,7 +119,7 @@
                                         <a href="{{route('user/tai-khoan-don-hang')}}" class='d-flex align-items-center options black'><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</a>
                                         <a href="#" class="d-flex align-items-center options black"><i class="fas fa-bell mr-10"></i>Thông báo</a>
                                         <hr class='m-0'>
-                                        <a href="#" class='options price-color'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
+                                        <a href="#" class='options red'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
                                     </div>
                                 </div>
                             </div>
@@ -152,9 +152,9 @@
                                 <div class="d-flex flex-column w-75 p-10">
                                     <b>iPhone 12 PRO MAX 128GB</b>
                                     <div class="d-flex align-items-center mt-5">
-                                        <span class="price-color fw-600">25.000.000<sup>đ</sup></span>
+                                        <span class="red fw-600">25.000.000<sup>đ</sup></span>
                                         <span class="text-strike ml-10">29.000.000<sup>đ</sup></span>
-                                        <span class="price-color ml-10">-10%</span>
+                                        <span class="red ml-10">-10%</span>
                                     </div>
                                 </div>
                             </div>

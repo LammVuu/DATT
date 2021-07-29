@@ -30,7 +30,7 @@
                         <div type="button" id='btn-change-info' class="ml-10"><i class="fas fa-user-edit"></i></div>
                     </div>
                     <div id="change-info-div" class="none-dp">
-                        <span id="cancel-change-info" type="button" class="price-color mb-5">Hủy</span>
+                        <span id="cancel-change-info" type="button" class="red mb-5">Hủy</span>
                         <div class="d-flex">
                             <div class="w-70 pr-5">
                                 <input type="text" name="new_fullname_inp" placeholder="Họ và tên">

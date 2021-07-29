@@ -39,7 +39,7 @@
 
                 <div class="text-center">
                     <div class="pt-10">
-                        <span class="price-color fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>    
+                        <span class="red fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>    
                         @if ($key['khuyenmai'] != 0)
                         <span class="text-strike gray-1 ml-10">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                         @endif
