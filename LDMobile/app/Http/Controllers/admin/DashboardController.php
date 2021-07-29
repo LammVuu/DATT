@@ -1024,7 +1024,7 @@ class DashboardController extends Controller
         $listResult = array();
         $listIDBillYears = array();
         $listSupplier= array();
-        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfYear)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang','LIKE', '%'.'Tiếp'.'%')->get();
+        $bills = DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfYear)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang','LIKE', '%'.'Thành công'.'%')->get();
         foreach($bills as $bill){
             array_push($listIDBillYears, $bill->id);
         }
