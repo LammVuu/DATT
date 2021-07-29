@@ -594,13 +594,15 @@ $(function() {
                     console.log(data);
                     // không có dữ liệu
                     if(data.length==0){
+                        $('#no-data').attr('hidden', true);
                         setTimeout(() => {
                             if(!$('#branch-chart').next().length){
-                                var elmnt = $('<div class="pt-50 fz-20 text-center">Không có dữ liệu</div>');
+                                var elmnt = $('<div class="pt-50 fz-20 text-center" style="padding-bottom: 35%">Không có dữ liệu</div>');
                                 elmnt.show('fade');
                                 $('#branch-chart').after(elmnt);
                             }
                         }, 300);
+                        
                         $('#branch-chart').hide();
                     } else {
                         $('#branch-chart').next().remove();

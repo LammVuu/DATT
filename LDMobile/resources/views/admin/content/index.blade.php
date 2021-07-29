@@ -214,7 +214,7 @@
             <hr class="m-0">
             <div class="d-flex justify-content-center align-items-center p-20">
                 <input type="hidden" id="donut-data" value="{{json_encode($suppplierOfYear)}}">
-                @if(count($suppplierOfYear)==0) <div class="pt-50 fz-20 text-center" style="padding-bottom: 35%">Không có dữ liệu</div>@endif
+                @if(count($suppplierOfYear)==0) <div class="pt-50 fz-20 text-center" id="no-data" style="padding-bottom: 35%">Không có dữ liệu</div>@endif
                 <div id="branch-chart"></div>
             </div>
         </div>
