@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
+use App\Events\sendNotification;
 
 use App\Models\DONHANG;
 use App\Models\CTDH;
@@ -326,12 +327,34 @@ class DonHangController extends Controller
             $data = [
                 'id_tk' => $order->id_tk,
                 'tieude' => 'Đơn đã xác nhận',
-                'noidung' => 'Đã xác nhận đơn hàng #'.$order->id. ' của bạn.',
+                'noidung' => "Đã xác nhận đơn hàng <b>#$order->id</b> của bạn.",
                 'thoigian' => date('d/m/Y h:i'),
                 'trangthaithongbao' => 0,
             ];
 
             THONGBAO::create($data);
+
+            $notification = [
+                'user' => TAIKHOAN::find($order->id_tk),
+                'type' => 'order',
+                'notification' => '',
+            ];
+
+            $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
+                                                <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
+                                                    <div class="alert-toast-2-content">
+                                                        <div class="mb-10">Đã xác nhận đơn hàng <b>#'.$order->id.'</b> của bạn.</div>
+                                                        <div class="d-flex justify-content-end align-items-center mr-5">
+                                                            <div class="dot-green mr-5"></div>
+                                                            <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <div>';
+
+            event(new sendNotification($notification));
         }
     }
 
@@ -381,7 +404,7 @@ class DonHangController extends Controller
             THONGBAO::create([
                 'id_tk' => $order->id_tk,
                 'tieude' => 'Giao hàng thành công',
-                'noidung' => 'Kiện hàng của đơn hàng #'.$order->id. ' đã giao thành công đến bạn.',
+                'noidung' => "Kiện hàng của đơn hàng <b>#$order->id</b> đã giao thành công đến bạn.",
                 'thoigian' => date('d/m/Y h:i'),
                 'trangthaithongbao' => 0,
             ]);
@@ -410,11 +433,34 @@ class DonHangController extends Controller
                 $userVoucher->save();
             }
             
-
             // giảm số lượng voucher
             $qty = $voucher->sl;
             $voucher->sl = --$qty;
             $voucher->save();
+
+            $notification = [
+                'user' => TAIKHOAN::find($order->id_tk),
+                'type' => 'order',
+                'notification' => '',
+            ];
+
+            $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
+                                                <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
+                                                    <div class="alert-toast-2-content">
+                                                        <div class="mb-10" style="max-width: 350px">
+                                                            Đơn hàng <b>#'.$order->id.'</b> đã được giao thành công. Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá... <a href="taikhoan/thongbao">Chi tiết</a>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end align-items-center mr-5">
+                                                            <div class="dot-green mr-5"></div>
+                                                            <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <div>';
+
+            event(new sendNotification($notification));
         }
     }
 

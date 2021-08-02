@@ -117,12 +117,31 @@ class CartController extends Controller
 
                 // trừ số lượng kho
                 if($order['hinhthuc'] == 'Giao hàng tận nơi'){
-                    // lấy sản phẩm ở chi nhánh có tỉnh thành giống với tỉnh thành của người đặt hàng
+                    // tỉnh thành của người dùng
                     $userCity = TAIKHOAN_DIACHI::find($order['id_tk_dc'])->tinhthanh;
 
-                    // Kho
-                    $warehouse = KHO::where('id_cn', CHINHANH::where('id_tt', TINHTHANH::where('tentt', $userCity)->first()->id)->first()->id)
-                        ->where('id_sp', $detail['id_sp'])->first();
+                    // tỉnh thành thuộc bắc || nam
+                    $file = file_get_contents('TinhThanh.json');
+                    $lst_province = json_decode($file, true);
+                    $province = [];
+                    foreach($lst_province as $key){
+                        if($key['Name'] == $userCity){
+                            $province = $key;
+                            break;
+                        }
+                    }
+
+                    // chi nhánh tại Hà Nội
+                    if($province['ID'] < 48){
+                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
+                    }
+                    // chi nhánh tại Hồ Chí Minh
+                    else {
+                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hồ Chí Minh')->first()->id)->first();
+                    }
+
+                    // Kho tại chi nhánh
+                    $warehouse = KHO::where('id_cn', $branch->id)->where('id_sp', $detail['id_sp'])->first();
 
                     // slton
                     $slton = intval($warehouse->slton);
@@ -163,7 +182,7 @@ class CartController extends Controller
             THONGBAO::create([
                 'id_tk' => session('user')->id,
                 'tieude' => 'Đơn đã tiếp nhận',
-                'noidung' => 'Đã tiếp nhận đơn hàng #'.$create->id.' của bạn.',
+                'noidung' => "Đã tiếp nhận đơn hàng <b>#$create->id</b> của bạn.",
                 'thoigian' => date('d/m/Y H:i'),
                 'trangthaithongbao' => 0,
             ]);
@@ -358,6 +377,14 @@ class CartController extends Controller
                     // cập nhật số lượng sản phẩm trong giỏ hàng
                     if($cart->pivot->id_sp == $request->id_sp){
                         $sl = Intval(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()->sl);
+
+                        // số lượng mua tối đa là 2
+                        if($sl == 2){
+                            return [
+                                'status' => 'usuccess',
+                            ];
+                        }
+
                         $sl += $request->sl;
 
                         // số lượng tồn kho hiện tại
@@ -376,7 +403,7 @@ class CartController extends Controller
                         GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->update(['sl' => $sl]);
 
                         return [
-                            'status' => 'update success',
+                            'status' => 'usuccess',
                         ];
                     }
                 }

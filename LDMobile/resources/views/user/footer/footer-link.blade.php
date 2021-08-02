@@ -16,5 +16,8 @@
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-analytics.js"></script>
 
+{{-- thông báo realtime --}}
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+
 {{-- main js --}}
 <script src="{{asset('js/main.js')}}"></script>

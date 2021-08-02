@@ -154,6 +154,7 @@
             {{-- modal header --}}
             <div class="modal-header">
                 <div id="modal-title" class="fw-600 fz-22"></div>
+                <div type="button" class="btn-close" data-bs-dismiss="modal"></div>
             </div>
             <div class="modal-body p-40">
                 <form id="sanpham-form">

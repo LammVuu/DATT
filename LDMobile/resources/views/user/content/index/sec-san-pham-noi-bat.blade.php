@@ -1,4 +1,4 @@
-<section class="index-bg pt-50 pb-70">
+<section class="user-bg-color pt-50 pb-70">
     <div class="container white-bg border p-0">
         <div class="row">
             <div class="col-lg-4 col-sm-12">
@@ -11,11 +11,9 @@
             </div>
             <div class="col-lg-8 col-sm-12">
                 <div class="d-flex justify-content-end p-20">
-                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Apple'])}}" class="index-brand-tag">Apple</a>
-                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Samsung'])}}" class="index-brand-tag">Samsung</a>
-                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Xiaomi'])}}" class="index-brand-tag">Xiaomi</a>
-                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Oppo'])}}" class="index-brand-tag">Oppo</a>
-                    <a href="{{route('user/dien-thoai-theo-hang', ['brand' => 'Vivo'])}}" class="index-brand-tag">Vivo</a>
+                    @foreach ($lst_brand as $key)
+                        <a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="index-brand-tag">{{$key['brand']}}</a>    
+                    @endforeach
                     <a href="{{route('user/dien-thoai')}}" class="index-brand-tag">Xem tất cả</a>
                 </div>
             </div>

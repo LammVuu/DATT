@@ -5,17 +5,15 @@
     </div>
     <div class='col-md-9'>
         {{-- favorite header --}}
-        <div class="p-10 box-shadow mb-20">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="fw-600 fz-24">Danh sách yêu thích</div>
-                {{-- nút 3 chấm --}}
-                <div class='d-flex justify-content-end fz-24'>
-                    <div class='account-btn-option' aria-expanded="false">
-                        <i class="far fa-ellipsis-v"></i>
-                        <div class='account-option-div border font-weight-300 fz-16'>
-                            <div class='d-flex flex-column text-center'>
-                                <div id='fav-btn-delete-all' class='pointer-cs black p-10'>Bỏ thích tất cả</div>
-                            </div>
+        <div class="account-head-title">
+            <div class="fw-600 fz-22">Danh sách yêu thích</div>
+            {{-- nút 3 chấm --}}
+            <div class='d-flex justify-content-end fz-24'>
+                <div class='account-btn-option' aria-expanded="false">
+                    <i class="far fa-ellipsis-v"></i>
+                    <div class='account-option-div border font-weight-300 fz-16'>
+                        <div class='d-flex flex-column text-center'>
+                            <div id='fav-btn-delete-all' class='pointer-cs black p-10'>Bỏ thích tất cả</div>
                         </div>
                     </div>
                 </div>

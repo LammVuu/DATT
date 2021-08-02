@@ -50,7 +50,7 @@ class UserComposer
             return $lst_noti;
         }
 
-        $lst_noti['noti'] = THONGBAO::where('id_tk', $id_tk)->orderBy('id', 'desc')->get();
+        $lst_noti['noti'] = THONGBAO::where('id_tk', $id_tk)->orderBy('id', 'desc')->limit(10)->get();
 
         foreach(TAIKHOAN::find($id_tk)->thongbao as $key){
             if($key['trangthaithongbao'] == 0){
@@ -120,7 +120,6 @@ class UserComposer
         foreach(TAIKHOAN::find($id_tk)->sp_yeuthich as $key){
             $lst_product[$i]['id'] = $key->pivot->id;
             $lst_product[$i]['sanpham'] = $this->IndexController->getProductById($key->pivot->id_sp);
-            $lst_product[$i]['sanpham']['mausac_url'] = strtolower($this->IndexController->unaccent(str_replace(' ', '-', $lst_product[$i]['sanpham']['mausac'])));
             $i++;
         }
 

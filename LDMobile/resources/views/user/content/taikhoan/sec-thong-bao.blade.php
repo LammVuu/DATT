@@ -5,7 +5,7 @@
     </div>
     <div class='col-md-9'>
         {{-- header --}} 
-        <div class="d-flex align-items-center justify-content-between p-10 box-shadow mb-20">
+        <div class="account-head-title">
             <div class='fz-22 fw-600'>Thông báo</div>
             
             {{-- nút 3 chấm --}}
@@ -46,7 +46,7 @@
         @if (count($data['lst_noti']['noti']) != 0)
             <div id="lst_noti">
                 @foreach ($data['lst_noti']['noti'] as $key)
-                    <div id={{ 'noti-' . $key['id'] }} class='single-noti {{$key['trangthaithongbao'] == 0 ? 'account-noti-wait' : 'account-noti-checked'}} box-shadow mb-20'>
+                    <div id={{ 'noti-' . $key['id'] }} class='single-noti {{$key['trangthaithongbao'] == 0 ? 'account-noti-wait' : 'account-noti-checked'}} mb-20'>
                         {{-- tiêu đề --}}
                         <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
                             <div class="d-flex align-items-center">

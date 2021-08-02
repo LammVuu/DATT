@@ -11,7 +11,7 @@
     <a href="{{route('user/tai-khoan-don-hang')}}" class='account-sidebar-tag @yield('acc-order-active')'>
         <i class="fas fa-box mr-20"></i>Quản lý đơn hàng
         @if ($data['lst_order']['processing'] != 0)
-        <div id="not-seen-qty" class='number-badge ml-10'>{{$data['lst_order']['processing']}}</div>
+            <div id="processing-qty" class='number-badge ml-10'>{{$data['lst_order']['processing']}}</div>
         @endif
     </a>
     <a href="{{route('user/tai-khoan-dia-chi')}}" class='account-sidebar-tag @yield('acc-address-active')'>

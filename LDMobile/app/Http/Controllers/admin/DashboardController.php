@@ -47,11 +47,13 @@ class DashboardController extends Controller
         }else $dateFirstOfMonth .="-".Carbon::now()->month.'-01';
 
         //thong ke don hang va doanh thu
-        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->where('trangthaidonhang','LIKE', '%'.'Thành công'.'%')->get();
+        $bills= DONHANG::where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),">=", $dateFirstOfMonth)->where(DB::raw("date_format(STR_TO_DATE(thoigian, '%d/%m/%Y'),'%Y-%m-%d')"),"<=", $currentDate)->get();
         $totalBillInMonth = count($bills);
         $totalMoneyInMonth = 0;
         foreach($bills as $bill){
-            $totalMoneyInMonth += $bill->tongtien;
+            if($bill->trangthaidonhang == 'Thành công'){
+                $totalMoneyInMonth += $bill->tongtien;
+            }
         }
 
         //thong ke thanh vien
@@ -969,29 +971,22 @@ class DashboardController extends Controller
             return '';
         }
 
-        // năm hiện tại: những tháng cũ, doanh thu = 0
-        $largestMonth = array_key_last($sales);
+        // năm hiện tại
         if($year == date('Y')){
-            // từ tháng 1 -> hiện tại chưa có doanh thu
-            if(!$largestMonth){
-                for($i = 1; $i <= intval(date('m')); $i++){
+            // từ tháng 1 -> hiện tại, thêm doanh thu = 0 vào tháng k có doanh thu
+            for($i = 1; $i <= intval(date('m')); $i++){
+                if(!key_exists($i, $sales)){
                     $sales[$i] = 0;
                 }
-            } else {
-                for($i = 1; $i < $largestMonth; $i++){
-                    if(!key_exists($i, $sales)){
-                        $sales[$i] = 0;
-                    }
-                }
+                
             }
         }
         // năm cũ: thêm vào trước và sau tháng tìm thấy, doanh thu = 0
         else {
             for($i = 1; $i < 13; $i++){
-                if(key_exists($i, $sales)){
-                    continue;
+                if(!key_exists($i, $sales)){
+                    $sales[$i] = 0;
                 }
-                $sales[$i] = 0;
             }
         }
 

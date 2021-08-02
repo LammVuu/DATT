@@ -32,7 +32,7 @@
                                 <input type="checkbox" id='remember' name="remember" value="0">
                                 <label for="remember" class='form-check-label'>Lưu đăng nhập</label>
                             </div>
-                            <a class="forget" href="#">Quên mật khẩu?</a>
+                            <a href="{{route('user/khoi-phuc-tai-khoan')}}">Quên mật khẩu?</a>
                         </div>
     
                         <!-- button đăng nhặp -->
