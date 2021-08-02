@@ -16,7 +16,6 @@ class CreateMauspTable extends Migration
         Schema::create('mausp', function (Blueprint $table) {
             $table->increments('id');
             $table->string('tenmau', 100);
-            $table->text('mota')->nullable();
             $table->string('id_youtube', 50)->nullable();
             $table->unsignedInteger('id_ncc');
             $table->string('baohanh', 50)->nullable();

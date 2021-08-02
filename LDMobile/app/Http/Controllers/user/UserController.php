@@ -53,7 +53,11 @@ class UserController extends Controller
         // url trước đó
         $prev_url = Session::get('prev_url');
         if(!$prev_url){
-            Session::put('prev_url', Session::get('_previous')['url']);
+            $prevUrlSession = Session::get('_previous')['url'];
+            if(!$prevUrlSession){
+                $prevUrlSession = '/';
+            }
+            Session::put('prev_url', $prevUrlSession);
         }
 
         return view($this->user."dang-nhap");
@@ -451,7 +455,7 @@ class UserController extends Controller
         return back()->with('toast_message', 'Đã thay đổi địa chỉ');
     }
 
-    public function UserVoucher($id)
+    public function UseVoucher($id)
     {
         if(session('user')){
             if(count(TAIKHOAN::find(session('user')->id)->giohang) == 0){
@@ -482,6 +486,10 @@ class UserController extends Controller
         } 
         elseif($request->object == 'all-cart'){
             GIOHANG::where('id_tk', session('user')->id)->delete();
+            // xóa session voucher
+            if(session('voucher')){
+                $request->session()->forget('voucher');
+            }
             return back()->with('toast_message', 'Đã xóa giỏ hàng');
         }
         // Hủy đơn hàng

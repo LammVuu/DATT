@@ -189,7 +189,7 @@
                 </div>
             </div>
             <hr class="m-0">
-            <div class="p-20" style="height: 383px">
+            <div class="d-flex align-items-center justify-content-center p-10" style="height: 385px">
                 <input type="hidden" id="sales-data" value="{{$salesOfYear}}">
                 <canvas id="sales-chart"></canvas>
             </div>            
@@ -212,7 +212,7 @@
                 </div>
             </div>
             <hr class="m-0">
-            <div class="d-flex justify-content-center align-items-center p-20">
+            <div class="d-flex justify-content-center align-items-center p-20" style="height: 385px">
                 <input type="hidden" id="donut-data" value="{{json_encode($suppplierOfYear)}}">
                 @if(count($suppplierOfYear)==0) <div class="pt-50 fz-20 text-center" id="no-data" style="padding-bottom: 35%">Không có dữ liệu</div>@endif
                 <div id="branch-chart"></div>

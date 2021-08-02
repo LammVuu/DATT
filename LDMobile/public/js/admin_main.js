@@ -566,7 +566,7 @@ $(function() {
                     if(data == ''){
                         setTimeout(() => {
                             if(!$('#sales-chart').next().length){
-                                var elmnt = $('<div class="pt-50 fz-20 text-center">Không có dữ liệu</div>');
+                                var elmnt = $('<div class="fz-20 text-center">Không có dữ liệu</div>');
                                 elmnt.show('fade');
                                 $('#sales-chart').after(elmnt);
                             }
@@ -645,20 +645,6 @@ $(function() {
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
-
-        // mô tả mẫu sp
-        let editor;
-        ClassicEditor
-            .create(document.querySelector('#mausp_des'))
-            .then(newEditor => {
-                editor = newEditor;
-                $('#modal').on('hidden.bs.modal', function(){
-                    newEditor.setData('');
-                });
-            })
-            .catch( error => {
-                console.error( error );
-            });
 
         // hiển thị modal tạo mới mẫu sp
         $('.create-btn').off('click').click(function(){
@@ -766,7 +752,6 @@ $(function() {
 
                 var data = {
                     'tenmau': tenmau,
-                    'mota': editor.getData(),
                     'id_ncc': id_ncc,
                     'id_youtube': id_youtube,
                     'baohanh': baohanh,
@@ -902,8 +887,6 @@ $(function() {
 
             $($('#mausp_supplier').children()[0]).prop('selected', true);
             $('#mausp_supplier').attr('disabled', false);
-
-            $('#mausp_des').val('');
 
             $('#mausp_youtube').val('');
             $('#mausp_youtube').attr('readonly', false);

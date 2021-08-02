@@ -456,24 +456,6 @@ class CartController extends Controller
         }
     }
 
-    public function AjaxRemoveAllCart(Request $request)
-    {
-        if($request->ajax()){
-            GIOHANG::where('id_tk', session('user')->id)->delete();
-        }
-
-        return back();
-    }
-
-    public function AjaxRemoveCartItem(Request $request)
-    {
-        if($request->ajax()){
-            GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->delete();
-        }
-
-        return false;
-    }
-
     public function AjaxUpdateCart(Request $request)
     {
         if($request->ajax()){

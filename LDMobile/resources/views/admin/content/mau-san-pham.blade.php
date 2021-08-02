@@ -126,11 +126,6 @@
                         </select>
                     </div>
                 </div>
-                {{-- mô tả --}}
-                <div class="mb-3">
-                    <label for="mausp_des" class="mb-5 fw-600">Mô tả</label>
-                    <div id="mausp_des"></div>
-                </div>
 
                 {{-- youtube & bảo hành & địa chỉ bảo hành & trạng thái --}}
                 <div class="row mb-3">

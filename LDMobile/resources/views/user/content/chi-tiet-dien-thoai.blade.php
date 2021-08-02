@@ -64,12 +64,12 @@
                 <div class='d-flex flex-column'>
                     {{-- giá --}}
                     <div class='d-flex flex-row align-items-end'>
-                        <div class='fw-600 red fz-26'>{{ number_format($phone['giakhuyenmai']) }}<sup>đ</sup></div>
+                        <div class='fw-600 red fz-26'>{{ number_format($phone['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
                         {{-- khuyến mãi còn hạn --}}
                         @if (!empty($phone['khuyenmai']) && $phone['khuyenmai']['trangthaikhuyenmai'])
                             <div class="d-flex align-items-end ml-20">
                                 <div class="fz-14">Giá niêm yết :</div>
-                                <b class='ml-5 text-strike fz-16'>{{ number_format($phone['gia']) }}<sup>đ</sup></b>
+                                <b class='ml-5 text-strike fz-16'>{{ number_format($phone['gia'], 0, '', '.') }}<sup>đ</sup></b>
                             </div>    
                         @endif
                     </div>
@@ -81,12 +81,12 @@
                             @if ($key['dungluong'] == $phone['dungluong'] && $key['ram'] == $phone['ram'])
                                 <div type='button' class='detail-option selected'>
                                     <div class="fw-600">{{ $key['dungluong'] }}</div>
-                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
                                 </div>
                             @else
                                 <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class='detail-option'>
                                     <div>{{ $key['dungluong'] }}</div>
-                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
                                 </a>
                             @endif
                             </div>
@@ -101,7 +101,7 @@
                                 <div type='button' class='color-option detail-option box-shadow {{$key['mausac'] == $phone['mausac'] ? 'selected' : ''}}' data-image="{{ $url_phone.$key['hinhanh'] }}"
                                     data-id="{{$key['id']}}" data-color="{{$key['mausac']}}" favorite="{{$key['yeuthich']}}">
                                     <div class="color-name {{$key['mausac'] == $phone['mausac'] ? 'fw-600' : ''}}">{{ $key['mausac'] }}</div>
-                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></div>
+                                    <div class="red fw-600 mt-5">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
                                 </div> 
                             </div>  
                         @endforeach
@@ -290,11 +290,11 @@
                             <div class="d-flex justify-content-center">
                                 <div>
                                     <div class='d-flex flex-column fz-14'>
-                                        <span class="red fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                        <span class="red fw-600">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                                         {{-- khuyến mãi hết hạn --}}
                                         @if($key['khuyenmai'] != 0)
                                             <div>
-                                                <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                                <span class='text-strike'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                                                 <span class='pl-5 pr-5'>|</span>
                                                 <span class='red'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                             </div>
@@ -356,11 +356,11 @@
                                 <div class="d-flex justify-content-center">
                                     <div>
                                         <div class='d-flex flex-column fz-14'>
-                                            <span class="red fw-600">{{ number_format($key['gia']) }}<sup>đ</sup></span>
+                                            <span class="red fw-600">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                                             {{-- khuyến mãi hết hạn --}}
                                             @if($key['khuyenmai'] != 0)
                                                 <div>
-                                                    <span class='text-strike'>{{ number_format($key['giakhuyenmai']) }}<sup>đ</sup></span>
+                                                    <span class='text-strike'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                                                     <span class='pl-5 pr-5'>|</span>
                                                     <span class='red'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                                 </div>

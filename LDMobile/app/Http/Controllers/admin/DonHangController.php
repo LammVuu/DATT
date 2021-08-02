@@ -337,6 +337,7 @@ class DonHangController extends Controller
             $notification = [
                 'user' => TAIKHOAN::find($order->id_tk),
                 'type' => 'order',
+                'orderStatus' => 'confirmed',
                 'notification' => '',
             ];
 
@@ -441,6 +442,7 @@ class DonHangController extends Controller
             $notification = [
                 'user' => TAIKHOAN::find($order->id_tk),
                 'type' => 'order',
+                'orderStatus' => 'success',
                 'notification' => '',
             ];
 
