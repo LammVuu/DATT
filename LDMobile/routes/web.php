@@ -82,10 +82,6 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
     Route::post("ajax-buy-now", [CartController::class, "AjaxBuyNow"]);
 
-    Route::get("ajax-remove-all-cart", [CartController::class, "AjaxRemoveAllCart"]);
-
-    Route::post("ajax-remove-cart-item", [CartController::class, "AjaxRemoveCartItem"]);
-
     Route::post("ajax-update-cart", [CartController::class, "AjaxUpdateCart"]);
 
     Route::post("ajax-like-comment", [UserController::class, "AjaxLikeComment"]);
@@ -169,7 +165,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
         Route::post("ajax-check-qty-in-stock-branch", [IndexController::class, "AjaxCheckQtyInStockBranch"]);
 
-        Route::get("use-voucher/{id}", [UserController::Class, "UserVoucher"]);
+        Route::get("use-voucher/{id}", [UserController::Class, "UseVoucher"]);
 
         Route::post("ajax-check-voucher-conditions", [UserController::class, "CheckVoucherConditions"]);
 

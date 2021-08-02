@@ -43,7 +43,6 @@ class MauSanPhamController extends Controller
             
             $data = [
                 'tenmau' => $request->tenmau,
-                'mota' => $request->mota,
                 'id_youtube' => $request->id_youtube,
                 'id_ncc' => $request->id_ncc,
                 'baohanh' => $request->baohanh,
@@ -95,7 +94,6 @@ class MauSanPhamController extends Controller
         if($request->ajax()){
             $data = [
                 'tenmau' => $request->tenmau,
-                'mota' => $request->mota,
                 'id_youtube' => $request->id_youtube,
                 'id_ncc' => $request->id_ncc,
                 'baohanh' => $request->baohanh,

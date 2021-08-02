@@ -1817,7 +1817,7 @@ class IndexController extends Controller
     public function getSpecifications($id_sp)
     {
         $fileName = SANPHAM::where('id', $id_sp)->first()->cauhinh;
-        return json_decode(File::get(public_path('\json\\' . $fileName)), true);
+        return json_decode(File::get(public_path('/json//' . $fileName)), true);
     }
 
     // lấy tài khoản theo id_tk

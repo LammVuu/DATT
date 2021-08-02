@@ -4589,15 +4589,18 @@ $(function() {
             $('#not-seen-qty').text(notiQty);
 
             if(data.notification.type == 'order'){
-                var processingQty = parseInt($('#processing-qty').text());
-                if(processingQty == 1){
-                    $('#processing-qty').hide();
-                    $('#processing-qty-header').hide();
-                } else {
-                    processingQty--;
-                    $('#processing-qty').text(processingQty);
-                    $('#processing-qty-header').text(processingQty);
+                if(data.notification.orderStatus == 'success'){
+                    var processingQty = parseInt($('#processing-qty').text());
+                    if(processingQty == 1){
+                        $('#processing-qty').hide();
+                        $('#processing-qty-header').hide();
+                    } else {
+                        processingQty--;
+                        $('#processing-qty').text(processingQty);
+                        $('#processing-qty-header').text(processingQty);
+                    }
                 }
+                
             }
 
             // render thông báo
