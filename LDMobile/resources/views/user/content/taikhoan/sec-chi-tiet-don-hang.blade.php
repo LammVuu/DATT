@@ -36,7 +36,7 @@
                 @if ($order['order']->hinhthuc == 'Giao hàng tận nơi')
                     <div class='col-lg-6'>
                         <div class='fw-600 pb-10'>Địa chỉ người nhận</div>
-                        <div id="DCGH-div">
+                        <div id="HTNH-div">
                             <div class='box-shadow p-20'>
                                 <div class="d-flex flex-column fz-14">
                                     <b class='text-uppercase pb-5'>{{$order['order']->diachigiaohang->hoten}}</b>
@@ -54,35 +54,36 @@
                             </div>
                         </div>
                     </div>
-                    {{-- hình thức thanh toán --}}
-                    <div class='col-lg-6'>
-                        <div class='fw-600 pb-10'>Phương thức thanh toán</div>
-                        <div id="HTGH-div">
-                            <div class='box-shadow p-20 h-100'>
-                                <div class="black">{{$order['order']->pttt}}</div>
-                            </div>
-                        </div>
-                    </div>
                 @else
                     <div class='col-lg-6'>
                         <div class='fw-600 pb-10'>Nhận tại cửa hàng</div>
-                        <div class='box-shadow p-20'>
-                            <div class="d-flex flex-column fz-14">
-                                <div class="d-flex mb-5">
-                                    <div class="gray-1 mr-5">Địa chỉ:</div>
-                                    <div class="black">
-                                        {{$order['order']->chinhanh->diachi}}
+                        <div id="HTNH-div">
+                            <div class='box-shadow p-20'>
+                                <div class="d-flex flex-column fz-14">
+                                    <div class="d-flex mb-5">
+                                        <div class="gray-1 mr-5">Địa chỉ:</div>
+                                        <div class="black">
+                                            {{$order['order']->chinhanh->diachi}}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="gray-1 mr-5">SĐT:</div>
-                                    <div class="black">{{$order['order']->chinhanh->sdt}}</div>
+                                    <div class="d-flex">
+                                        <div class="gray-1 mr-5">SĐT:</div>
+                                        <div class="black">{{$order['order']->chinhanh->sdt}}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endif
-                
+                {{-- hình thức thanh toán --}}
+                <div class='col-lg-6'>
+                    <div class='fw-600 pb-10'>Phương thức thanh toán</div>
+                    <div id="PTTT-div">
+                        <div class='box-shadow p-20 h-100'>
+                            <div class="black">{{$order['order']->pttt}}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -107,7 +108,7 @@
                                 <div class='d-flex flex-row pt-10 pb-10'>
                                     <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" width="90px">
                                     <div class='d-flex flex-column fz-14'>
-                                        <a href='{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}' class="black fw-600">{{$key['sanpham']['tensp']}}</a>
+                                        <a href='{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}?mausac={{$key['sanpham']['mausac_url']}}' class="black fw-600">{{$key['sanpham']['tensp']}}</a>
                                         <span>Dung Lượng: {{$key['sanpham']['dungluong']}}</span>
                                         <span>Màu: {{$key['sanpham']['mausac']}}</span>
                                     </div>

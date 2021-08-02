@@ -1,4 +1,4 @@
-<section class="index-bg pt-40">
+<section class="user-bg-color pt-40">
     <div class="container white-bg border p-0">
         <div class="d-flex align-items-center fz-22 fw-600 p-20">
             <div>KHUYẾN MÃI HOT NHẤT</div>

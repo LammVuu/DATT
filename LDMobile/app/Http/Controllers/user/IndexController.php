@@ -112,8 +112,6 @@ class IndexController extends Controller
             }
         }
 
-        //$this->print($lst_product); return false;
-
         // các loại ram hiện có
         $lst_ram = $this->getRamAllProduct();
 
@@ -157,41 +155,6 @@ class IndexController extends Controller
         ];
 
         return view($this->user.'tim-kiem')->with($data);
-    }
-
-    public function DienThoaiTheoHang($brand)
-    {
-        $model = MAUSP::where('id_ncc', NHACUNGCAP::where('tenncc', 'like', $brand.'%')->first()->id)->get();
-
-        $lst_product = [];
-        $i = 0;
-
-        foreach($model as $key){
-            $lst_temp = $this->getProductByCapacity(SANPHAM::where('id_msp', $key['id'])->get());
-
-            foreach($lst_temp as $phone){
-                $lst_product[$i] = $phone;
-                $i++;
-            }
-        }
-
-        // các loại ram hiện có
-        $lst_ram = $this->getRamAllProduct($lst_product);
-
-        // các loại dung lượng hiện có
-        $lst_capacity = $this->getCapacityAllProduct($lst_product);
-        
-        $data = [
-            'lst_product' => $lst_product,
-            'qty' => count($lst_product),
-            'fs_title' => count($lst_product) . ' điện thoại ' . $brand,
-            'brand' => $brand,
-            'lst_ram' => $lst_ram,
-            'lst_capacity' => $lst_capacity,
-        ];
-
-
-        return view($this->user.'dien-thoai')->with($data);
     }
 
     public function ChiTiet($name){
@@ -417,6 +380,7 @@ class IndexController extends Controller
                                     foreach($haveNotEvaluated as $arr){
                                         if($arr['id'] == $product->id){
                                             $flag = 1;
+                                            break;
                                         }
                                     }
                                     if($flag == 0){
@@ -432,7 +396,21 @@ class IndexController extends Controller
                                 $timeEvaluate = strtotime(str_replace('/', '-', $evaluate[count($evaluate) - 1]['thoigian']));
                                 // nếu thời gian mua mới > thời gian đánh giá => chưa đánh giá
                                 if($timeOrder > $timeEvaluate){
-                                    array_push($haveNotEvaluated, $this->getProductById($product->id));
+                                    // nếu đã thêm vào mảng chưa đánh giá rồi thì tiếp tục
+                                    $flag = 0;
+                                    if(!empty($haveNotEvaluated)){
+                                        foreach($haveNotEvaluated as $arr){
+                                            if($arr['id'] == $product->id){
+                                                $flag = 1;
+                                                break;
+                                            }
+                                        }
+                                        if($flag == 0){
+                                            array_push($haveNotEvaluated, $this->getProductById($product->id));    
+                                        }
+                                    } else {
+                                        array_push($haveNotEvaluated, $this->getProductById($product->id));
+                                    }
                                 }
                             }
 
@@ -466,7 +444,11 @@ class IndexController extends Controller
 
     public function LienHe()
     {
-        return view($this->user.'lien-he');
+        $data = [
+            'lst_branch' => CHINHANH::all(),
+        ];
+
+        return view($this->user.'lien-he')->with($data);
     }
 
     public function SoSanh($str){
@@ -1046,17 +1028,17 @@ class IndexController extends Controller
             // imei hợp lệ
             else {
                 // sản phẩm
-                $product = $this->getProductById(IMEI::find($warranty->id_imei)->id_sp);
+                $product = SANPHAM::where('id', IMEI::find($warranty->id_imei)->id_sp)->first();
 
                 // bảo hành
-                $product['baohanh'] = MAUSP::find($product['id_msp'])->baohanh;
+                $product->baohanh = MAUSP::find($product['id_msp'])->baohanh;
 
-                $product['ngaymua'] = $warranty->ngaymua;
+                $product->ngaymua = $warranty->ngaymua;
 
-                $product['ngayketthuc'] = $warranty->ngayketthuc;
+                $product->ngayketthuc = $warranty->ngayketthuc;
 
                 // trạng thái bảo hành
-                $product['trangthaibaohanh'] = strtotime(str_replace('/', '-', $product['ngayketthuc'])) >= time() ? 'true' : 'false';
+                $product->trangthaibaohanh = strtotime(str_replace('/', '-', $product['ngayketthuc'])) >= time() ? 'true' : 'false';
 
                 return [
                     'status' => 'success',
@@ -1130,7 +1112,113 @@ class IndexController extends Controller
                 }
 
                 return $html;
+            } elseif($url == 'thongbao'){
+                $data = THONGBAO::orderBy('id', 'desc')->where('id_tk', session('user')->id)->offset($row)->limit($limit)->get();
+
+                if(count($data) == 0){
+                    return 'done';
+                }
+
+                foreach($data as $key){
+                    $html .= '<div id="noti-'.$key->id.'" class="single-noti '.($key->trangthaithongbao == 0 ? 'account-noti-wait' : 'account-noti-checked').' box-shadow mb-20">
+                                <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
+                                    <div class="d-flex align-items-center">
+                                        <div>';
+                                            if ($key->tieude == 'Đơn đã tiếp nhận'){
+                                                $html .= '<i class="fas fa-file-alt fz-28 info-color"></i>';
+                                            } elseif ($key->tieude == 'Đơn đã xác nhận'){
+                                                $html .= '<i class="fas fa-file-check fz-28 success-color"></i>';
+                                            } elseif ($key->tieude == 'Giao hàng thành công'){
+                                                $html .='<i class="fas fa-box-check fz-28 success-color"></i>';
+                                            } elseif ($key->tieude == 'Mã giảm giá'){
+                                                $html .= '<i class="fas fa-badge-percent fz-28 yellow"></i>';
+                                            } elseif ($key->tieude == 'Phản hồi'){
+                                                $html .= '<i class="fas fa-reply fz-28 purple"></i>';
+                                            } $html .='
+                                        </div>
+                                        <div class="fw-600 fz-18 ml-10">'.$key->tieude.'</div>
+                                    </div>
+                                    <div class="d-flex align-items-end">'.
+                                        ($key->trangthaithongbao == 0 ? '
+                                        <div type="button" class="noti-btn-read main-color-text mr-10" data-id="'.$key->id.'">Đánh dấu đã đọc</div>' : '').'
+                                        <div type="button" class="noti-btn-delete red" data-id="'.$key->id.'">xóa</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex pt-20 pb-20 pl-10 pr-10">
+                                    <div id="noti-content-' . $key['id'] .'">
+                                        <div>'.$key['noidung'].'</div>
+                                        <div class="mt-10 fz-14">'.$key->thoigian.'</div>
+                                    </div>
+                                </div>
+                            </div>';
+                }
+
+                return $html;
             }
+        }
+    }
+
+    public function AjaxGetProductByBrand(Request $request)
+    {
+        if($request->ajax()){
+            $html = '';
+            $qty = 0;
+
+            $brand = NHACUNGCAP::where('tenncc', 'like', '%'.$request->brand.'%')->first();
+            $models = MAUSP::where('id_ncc', $brand->id)->get();
+            foreach($models as $model){
+                $lst_temp = $this->getProductByCapacity(SANPHAM::where('id_msp', $model->id)->get());
+                foreach($lst_temp as $key){
+                    $html .= '<div class="col-lg-3 col-md-4 col-sm-6">
+                                <div id="product_'.$key['id'].'" class="shop-product-card box-shadow">'.
+                                    ($key['khuyenmai'] != 0 ? 
+                                        '<div class="shop-promotion-tag">
+                                            <span class="shop-promotion-text">-'.$key['khuyenmai']*100 .'%</span>
+                                        </div>' : '').'
+                                    <div class="shop-overlay-product"></div>
+                                    <div type="button" data-id="'.$key['id'].'" class="shop-cart-link"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
+                                    <a href="dienthoai/'.$key['tensp_url'].'" class="shop-detail-link">Xem chi tiết</a>
+                                    <div>
+                                        <div class="pt-20 pb-20">
+                                            <img src="images/phone/'.$key['hinhanh'].'" class="shop-product-img-card">
+                                        </div>
+                                        <div class="pb-20 text-center d-flex flex-column">
+                                            <b class="mb-10">'.$key['tensp'].'</b>
+                                            <div>
+                                                <span class="fw-600 red">'.number_format($key['giakhuyenmai'], 0, '', '.').'<sup>đ</sup></span>'.
+                                                ($key['khuyenmai'] != 0 ?
+                                                    '<span class="ml-5 text-strike">'.number_format($key['gia'], 0, '', '.').'<sup>đ</sup></span>' : '').'
+                                            </div>
+                                            <div class="flex-row pt-5">';
+                                                if($key['danhgia']['qty'] != 0){
+                                                    for ($i = 1; $i <= 5; $i++){
+                                                        if($key['danhgia']['star'] >= $i){
+                                                            $html .= '<i class="fas fa-star checked"></i>';
+                                                        } else {
+                                                            $html .= '<i class="fas fa-star uncheck"></i>';
+                                                        }
+                                                    }
+                                                    $html .=
+                                                    '<span class="fz-14 ml-10">'.$key['danhgia']['qty'] . ' đánh giá</span>';
+                                                }
+                                                $html .= '
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>';
+
+                    $qty++;
+                }
+            }
+
+            $data = [
+                'html' => $html,
+                'qty' => $qty,
+                'fs_title' => $qty . ' điện thoại ' . explode(' ', $brand->tenncc)[0], // fs: filter - sort
+            ];
+
+            return $data;
         }
     }
 
@@ -1301,6 +1389,7 @@ class IndexController extends Controller
                     'tensp_url' => str_replace(' ', '-', $key['tensp']),
                     'hinhanh' => $key['hinhanh'],
                     'mausac' => $key['mausac'],
+                    'mausac_url' => str_replace(' ', '-', strtolower($this->unaccent($key['mausac']))),
                     'ram' => $key['ram'],
                     'dungluong' => $key['dungluong'],
                     'gia' => $key['gia'],
@@ -1328,6 +1417,7 @@ class IndexController extends Controller
                     'tensp_url' => str_replace(' ', '-', $key['tensp']),
                     'hinhanh' => $key['hinhanh'],
                     'mausac' => $key['mausac'],
+                    'mausac_url' => str_replace(' ', '-', strtolower($this->unaccent($key['mausac']))),
                     'ram' => $key['ram'],
                     'dungluong' => $key['dungluong'],
                     'gia' => $key['gia'],
@@ -1365,6 +1455,7 @@ class IndexController extends Controller
                         'tensp_url' => str_replace(' ', '-', $tensp_url),
                         'hinhanh' => $key[$rand]['hinhanh'],
                         'mausac' => $key[$rand]['mausac'],
+                        'mausac_url' => $key[$rand]['mausac_url'],
                         'ram' => $key[$rand]['ram'],
                         'dungluong' => $key[$rand]['dungluong'],
                         'gia' => $key[$rand]['gia'],
@@ -1394,6 +1485,7 @@ class IndexController extends Controller
                         'tensp_url' => str_replace(' ', '-', $tensp_url),
                         'hinhanh' => $key[$rand]['hinhanh'],
                         'mausac' => $key[$rand]['mausac'],
+                        'mausac_url' => $key[$rand]['mausac_url'],
                         'ram' => $key[$rand]['ram'],
                         'dungluong' => $key[$rand]['dungluong'],
                         'gia' => $key[$rand]['gia'],
@@ -1424,6 +1516,7 @@ class IndexController extends Controller
                     'tensp_url' => str_replace(' ', '-', $tensp_url),
                     'hinhanh' => $key[$rand]['hinhanh'],
                     'mausac' => $key[$rand]['mausac'],
+                    'mausac_url' => $key[$rand]['mausac_url'],
                     'ram' => $key[$rand]['ram'],
                     'dungluong' => $key[$rand]['dungluong'],
                     'gia' => $key[$rand]['gia'],
@@ -2252,5 +2345,4 @@ class IndexController extends Controller
 
         return $lst_detail;
     }
-
 }

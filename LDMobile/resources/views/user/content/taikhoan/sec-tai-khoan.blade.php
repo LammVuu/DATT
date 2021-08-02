@@ -163,11 +163,11 @@
                         </div>
                         <hr>
                         <div class="d-flex flex-fill align-items-end justify-content-end">
-                            <div class="cancel-btn p-5 mr-10" data-bs-dismiss="modal">Hủy</div>
+                            <div class="cancel-btn p-10 mr-10" data-bs-dismiss="modal">Hủy</div>
                             <form id="change-avatar-form" action="{{route('user/ajax-change-avatar')}}" method="POST">
                                 @csrf
                                 <input type="hidden" name="base64data">
-                                <div class="crop-img main-btn p-5">Cập nhật</div>               
+                                <div class="crop-img main-btn p-10">Cập nhật</div>               
                             </form>
                         </div>
                     </div>

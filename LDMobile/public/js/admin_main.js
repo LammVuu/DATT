@@ -4,9 +4,9 @@ $(function() {
         url = '';
     }
     console.log(url);
+    var navigation = performance.getEntriesByType("navigation")[0].type;
 
     $(window).on('load', function(){
-        $('.loader').fadeOut(250);
         // cuộn sidebar tới link đang chọn
         setTimeout(() => {
             var position = $('.sidebar-link.sidebar-link-selected').position().top;
@@ -14,8 +14,19 @@ $(function() {
                 $('.sidebar.custom-scrollbar').animate({scrollTop: position});
             }
         }, 300);
-    });
 
+        // auto cuộn lên đầu trang
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            setTimeout(() => {
+                setTimeout(() => {
+                    loadMoreFlag = false;
+                }, 200);
+                $(window).scrollTop(0);
+            }, 200);
+        }
+
+        $('.loader').fadeOut();
+    });
 
     const SUCCESS = '#D2F4EA';
     const DANGER = '#F8D7DA';
@@ -438,6 +449,12 @@ $(function() {
         }
         // mở
         else {
+            setTimeout(() => {
+                var position = $('.sidebar-link.sidebar-link-selected').position().top;
+                if(position > 700){
+                    $('.sidebar.custom-scrollbar').animate({scrollTop: position});
+                }
+            }, 500);
             $('.content').css('margin-left', '250px');
             $('.sidebar').css('width', '250px');
             setTimeout(() => {
@@ -625,6 +642,10 @@ $(function() {
                                                            Mẫu sp
     =======================================================================================================================*/
     else if(url == 'mausanpham'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // mô tả mẫu sp
         let editor;
         ClassicEditor
@@ -1141,6 +1162,10 @@ $(function() {
                                                            Khuyến mãi
     =======================================================================================================================*/
     else if(url == 'khuyenmai'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // hiển thị modal tạo mới khuyến mãi
         $('.create-btn').off('click').click(function(){
             // gán dữ liệu cho modal
@@ -1520,6 +1545,10 @@ $(function() {
                                                            Sản phẩm
     =======================================================================================================================*/
     else if(url == 'sanpham'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             $.ajax({
@@ -2672,6 +2701,10 @@ $(function() {
                                                            Nhà cung cấp
     =======================================================================================================================*/
     else if(url == 'nhacungcap'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             // gán dữ liệu cho modal
@@ -3119,6 +3152,10 @@ $(function() {
                                                            Slideshow msp
     =======================================================================================================================*/
     else if(url == 'slideshow-msp'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             $.ajax({
@@ -3567,6 +3604,10 @@ $(function() {
                                                            Hình ảnh
     =======================================================================================================================*/
     else if(url == 'hinhanh'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             $.ajax({
@@ -4017,6 +4058,10 @@ $(function() {
                                                            Kho
     =======================================================================================================================*/
     else if(url == 'kho'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // thay đổi chi nhánh thêm|sửa kho
         $('#branch').change(function(){
             var id_cn = $(this).val();
@@ -4517,6 +4562,10 @@ $(function() {
                                                            Chi nhánh
     =======================================================================================================================*/
     else if(url == 'chinhanh'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             // gán dữ liệu cho modal
@@ -4870,6 +4919,10 @@ $(function() {
                                                            Tỉnh thành
     =======================================================================================================================*/
     else if(url == 'tinhthanh'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             // gán dữ liệu cho modal
@@ -5131,18 +5184,9 @@ $(function() {
                                                            Voucher
     =======================================================================================================================*/
     else if(url == 'voucher'){
-        let content;
-        ClassicEditor
-            .create($('#content')[0])
-            .then(editor => {
-                content = editor;
-                $('#modal').on('hidden.bs.modal', function(){
-                    editor.setData('');
-                });
-            })
-            .catch( error => {
-                console.error( error );
-            });
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
 
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
@@ -5253,7 +5297,7 @@ $(function() {
                     $('#discount').val(data.chietkhau * 100);
                     $('#condition').val(data.dieukien);
                     $('#qty').val(data.sl);
-                    content.setData(data.noidung);
+                    $('#content').val(data.noidung);
                     $('#start').val(data.ngaybatdau);
                     $('#end').val(data.ngayketthuc);
                 
@@ -5277,7 +5321,7 @@ $(function() {
             var valiCode = validateCode($('#code'));
             var valiDiscount = validateDiscount($('#discount'));
             var valiQty = validateQty($('#qty'));
-            var valiContent = validateVoucherContent(content);
+            var valiContent = validateVoucherContent($('#content'));
             var valiStart = validateDateStart($('#start'));
             var valiEnd = validateDateEnd($('#end'), $('#start'));
 
@@ -5287,7 +5331,7 @@ $(function() {
 
                 var data = {
                     'code': $('#code').val(),
-                    'noidung': content.getData(),
+                    'noidung': $('#content').val(),
                     'chietkhau': ($('#discount').val()/100),
                     'dieukien': $('#condition').val(),
                     'ngaybatdau': $('#start').val(),
@@ -5429,14 +5473,14 @@ $(function() {
 
         // bẫy lỗi nội dung voucher
         function validateVoucherContent(content) {
-            if($('#content').hasClass('required')){
+            if(content.hasClass('required')){
                 return false;
             }
 
             // chưa nhập
-            if(content.getData() == ''){
-                $('#content').addClass('required');
-                $('#content').after('<span class="required-text">Vui lòng nhập nội dung</span>');
+            if(content.val() == ''){
+                content.addClass('required');
+                content.after('<span class="required-text">Vui lòng nhập nội dung</span>');
                 return false;
             }
 
@@ -5461,6 +5505,10 @@ $(function() {
             removeRequried($(this));
         });
 
+        $('#content').keyup(function(){
+            removeRequried($(this));
+        });
+
         $('#start').change(function(){
             removeRequried($(this));
         });
@@ -5478,6 +5526,7 @@ $(function() {
             removeRequried($('#discount'));
             removeRequried($('#condition'));
             removeRequried($('#qty'));
+            removeRequried($('#content'));
             removeRequried($('#start'));
             removeRequried($('#end'));
             $('#status').show();
@@ -5513,6 +5562,10 @@ $(function() {
                                                            Đơn hàng
     =======================================================================================================================*/
     else if(url == 'donhang'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // xác nhận đơn hàng
         $('.confirm-btn').off('click').click(function(){
             var id = $(this).attr('data-id');
@@ -5520,6 +5573,7 @@ $(function() {
         });
 
         function orderConfirmatino(id) {
+            $('.loader').show();
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -5528,6 +5582,8 @@ $(function() {
                 type: 'POST',
                 data: {'id': id},
                 success: function(){
+                    $('.loader').fadeOut();
+
                     // cập nhật trạng thái
                     $('.trangthaidonhang[data-id="'+id+'"]').text('Đã xác nhận');
 
@@ -5567,6 +5623,7 @@ $(function() {
         });
 
         function successfulOrder(id) {
+            $('.loader').show();
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -5575,6 +5632,7 @@ $(function() {
                 type: 'POST',
                 data: {'id': id}, 
                 success:function(){
+                    $('.loader').fadeOut();
                     // cập nhật trạng thái
                     $('.trangthaidonhang[data-id="'+id+'"]').text('Thành công');
 
@@ -5877,6 +5935,10 @@ $(function() {
                                                            Bảo hành
     =======================================================================================================================*/
     else if(url == 'baohanh'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // modal chi tiết
         $('.info-btn').off('click').click(function(){
             var id = $(this).data('id');
@@ -6571,6 +6633,10 @@ $(function() {
                                                            IMEI
     =======================================================================================================================*/
     else if(url == 'imei'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
         // tìm kiếm
         $('#search').keyup(function(){
             clearTimeout(timer);

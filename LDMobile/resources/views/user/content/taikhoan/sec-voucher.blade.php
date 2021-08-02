@@ -5,11 +5,13 @@
     </div>
     <div class='col-md-9'>
         @if (count($data['lst_voucher']) != 0)
-            <div class="fw-600 fz-22 p-10 box-shadow">Mã giảm giá của tôi</div>
-            @foreach ($data['lst_voucher'] as $key)
-                <div class='row mt-30'>
+            <div class="account-head-title">
+                <div class="fw-600 fz-22">Mã giảm giá của tôi</div>
+            </div>
+            <div class="row">
+                @foreach ($data['lst_voucher'] as $key)
                     {{-- mã giảm giá --}}
-                    <div class='col-md-7 col-sm-12'>
+                    <div class='col-md-6 col-sm-12 mb-20'>
                         <div class='account-voucher'>
                             {{-- số phần trăm giảm --}}
                             <div class='voucher-left w-20 p-70'>
@@ -69,8 +71,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         @else
             <div class="p-70 text-center box-shadow">Bạn chưa có voucher nào. <a href="{{route('user/dien-thoai')}}" class="ml-5">Mua hàng</a></div>
         @endif

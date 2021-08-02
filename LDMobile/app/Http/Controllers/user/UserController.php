@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\user\IndexController;
+use App\Events\sendNotification;
 
 use App\Models\TAIKHOAN;
 use App\Models\TAIKHOAN_DIACHI;
@@ -65,6 +66,16 @@ class UserController extends Controller
         return view($this->user."dang-ky");
     }
 
+    public function KhoiPhucTaiKhoan()
+    {
+        // đang đăng nhập
+        if(session('user')){
+            return back();
+        }
+
+        return view($this->user."khoi-phuc-tai-khoan");
+    }
+
     public function SignUp(Request $request)
     {
         $data = [
@@ -77,7 +88,6 @@ class UserController extends Controller
             'thoigian' => date('d/m/Y'),
             'trangthai' => 1,
         ];
-
 
         $newUser = TAIKHOAN::create($data);
 
@@ -114,6 +124,16 @@ class UserController extends Controller
         }
 
         return back()->with('error_message', 'số điện thoại hoặc mật khẩu không chính xác');
+    }
+
+    public function RecoverAccount(Request $request)
+    {
+        $user = TAIKHOAN::where('sdt', $request->forget_tel)->first();
+        $hashPW = Hash::make($request->forget_pw);
+        $user->password = $hashPW;
+        $user->save();
+
+        return redirect('dangnhap')->with('success_message', 'Khôi phục tài khoản thành công!');
     }
 
     public function FacebookRedirect()
@@ -486,17 +506,36 @@ class UserController extends Controller
                 // kho theo khu vực người đặt
                 else {
                     // tỉnh thành của người dùng
-                    $province = TAIKHOAN_DIACHI::find($order->id_tk_dc)->tinhthanh;
-                    // id_cn theo tỉnh thành
-                    $id_cn = CHINHANH::where('id_tt', TINHTHANH::where('tentt', $province)->first()->id)->first()->id;
+                    $userProvince = TAIKHOAN_DIACHI::find($order->id_tk_dc)->tinhthanh;
+
+                    // tỉnh thành thuộc bắc || nam
+                    $file = file_get_contents('TinhThanh.json');
+                    $lst_province = json_decode($file, true);
+                    $province = [];
+                    foreach($lst_province as $key){
+                        if($key['Name'] == $userProvince){
+                            $province = $key;
+                            break;
+                        }
+                    }
+
+                    // chi nhánh tại Hà Nội
+                    if($province['ID'] < 48){
+                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
+                    }
+                    // chi nhánh tại Hồ Chí Minh
+                    else {
+                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hồ Chí Minh')->first()->id)->first();
+                    }
+
                     // số lượng sp trong kho tại chi nhánh
-                    $qtyInStock = KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
+                    $qtyInStock = KHO::where('id_cn', $branch->id)->where('id_sp', $detail->id_sp)->first()->slton;
                     // số lượng sản phẩm mua
                     $qtyBuy = $detail->sl;
                     // trả lại số lượng kho
                     $qtyInStock += $qtyBuy;
                     // cập nhật kho
-                    KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+                    KHO::where('id_cn', $branch->id)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
                 }
             }
 
@@ -521,7 +560,6 @@ class UserController extends Controller
                 $voucher->sl = ++$qty;
                 $voucher->save();
             }
-
 
             return back()->with('toast_message', 'Đã hủy đơn hàng');
         }
@@ -1037,14 +1075,40 @@ class UserController extends Controller
             $evaluate = DANHGIASP::find($request->id_dg);
             $user = TAIKHOAN::find($evaluate->id_tk);
             $userReply = TAIKHOAN::find($create->id_tk);
-            $product = SANPHAM::find($evaluate->id_sp);
+            $product = $this->IndexController->getProductById($evaluate->id_sp);
 
             // gửi thông báo
-            THONGBAO::create([
-                'id_tk' => $user->id,
-                'tieude' => 'Phản hồi',
-                'noidung' => "Bạn có một phản hồi từ <b>$userReply->hoten</b> ở sản phẩm <b>$product->tensp $product->dungluong - $product->mausac</b>."
-            ]);
+            if($userReply->id != $user->id){
+                THONGBAO::create([
+                    'id_tk' => $user->id,
+                    'tieude' => 'Phản hồi',
+                    'noidung' => "Bạn có một phản hồi từ <b>$userReply->hoten</b> ở sản phẩm <b>".$product['tensp'] .' - '. $product['mausac']."</b>."
+                ]);
+
+                $notification = [
+                    'user' => $user,
+                    'type' => 'reply',
+                    'notification' => '',
+                ];
+
+                $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
+                                                    <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="alert-toast-icon">
+                                                            <img src="'.(session('user')->htdn == 'nomal' ? 'images/user/'.$userReply->anhdaidien : $userReply->anhdaidien).'" class="circle-img">
+                                                        </div>
+                                                        <div class="alert-toast-2-content">
+                                                            <div class="mb-10"><b>'.$userReply->hoten.'</b> đã trả lời đánh giá của bạn. <a href="'.route('user/chi-tiet', ['name' => $product['tensp_url'], 'danhgia' => $request->id_dg]).'">Chi tiết</a></div>
+                                                            <div class="d-flex justify-content-end align-items-center mr-5">
+                                                                <div class="dot-green mr-5"></div>
+                                                                <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <div>';
+
+                event(new sendNotification($notification));
+            }
         }
     }
 
@@ -1055,7 +1119,7 @@ class UserController extends Controller
             $data = [];
             switch($type){
                 case 'all':
-                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->get();
+                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->limit(10)->get();
                     break;
                 case 'not-seen':
                     $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('trangthaithongbao', 0)->get();

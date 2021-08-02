@@ -94,8 +94,8 @@
                 <div class="fz-22 fw-600 black">{{$totalReviewInMonth}}</div>
                 <div class="text-color">Lượt đánh giá trong tháng</div>
             </div>
-            <div class="icon-right-stats purple-bg">
-                <i class="fas fa-comments fz-40 white"></i>
+            <div class="icon-right-stats yellow-bg">
+                <i class="fas fa-star fz-40 white"></i>
             </div>
         </div>
         {{-- số lượt truy cập web --}}

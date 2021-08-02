@@ -162,8 +162,6 @@
                 </tr>
                 <tr>
 
-                </tr>
-
                 {{-- so sánh thông số kỹ thuật --}}
                 <?php 
                     $current = $currentProduct['cauhinh'];
@@ -171,7 +169,7 @@
                     $third = empty($thirdProduct) ? [] : $thirdProduct['cauhinh'];
                 ?>
                 <tr>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>cấu hính sản phẩm</div>
                     </td>
                 </tr>
@@ -349,7 +347,7 @@
                     @endif
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>thiết kế & trọng lượng</div>
                     </td>
                 </tr>
@@ -426,7 +424,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>màn hình</div>
                     </td>
                 </tr>
@@ -503,7 +501,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>Camrera sau</div>
                     </td>
                 </tr>
@@ -584,7 +582,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>Camrera trước</div>
                     </td>
                 </tr>
@@ -627,7 +625,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>hệ điều hành & cpu</div>
                     </td>
                 </tr>
@@ -704,7 +702,7 @@
                     </td>
                 </tr>   
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class=' border p-0'>
                         <div class='detail-specifications-title-2'>bộ nhớ & lưu trữ</div>
                     </td>
                 </tr>
@@ -781,7 +779,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>kết nối</div>
                     </td>
                 </tr>
@@ -938,7 +936,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>pin & sạc</div>
                     </td>
                 </tr>
@@ -999,7 +997,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>tiện ích</div>
                     </td>
                 </tr>
@@ -1102,7 +1100,7 @@
                     </td>
                 </tr>
                 <tr class='compare-detail'>
-                    <td colspan="4" class='p-0'>
+                    <td colspan="4" class='border p-0'>
                         <div class='detail-specifications-title-2'>thông tin khác</div>
                     </td>
                 </tr>

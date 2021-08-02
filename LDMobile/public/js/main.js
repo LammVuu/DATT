@@ -1,5 +1,7 @@
 $(function() {
     var url = window.location.pathname.split('/')[1];
+    var page = window.location.pathname.split('/')[2];
+    console.log(url);
     var navigation = performance.getEntriesByType("navigation")[0].type;
     var loadMoreFlag = false;
     var storageFlag = false;
@@ -7,42 +9,73 @@ $(function() {
 
     $(window).on('load', function(){
         if(sessionStorage.getItem('reload_chitiet')){
-            var scroll_chitiet = sessionStorage.getItem('reload_chitiet');
+            var toastMessage = sessionStorage.getItem('reload_chitiet');
             sessionStorage.removeItem('reload_chitiet');
-            $('#toast').append('<span id="edit-evaluate-toast" class="alert-toast">'+scroll_chitiet+'</span');
+            $('#toast').append('<span id="edit-evaluate-toast" class="alert-toast">'+toastMessage+'</span');
             showToast('#edit-evaluate-toast');
         }
 
-        if(url == 'dienthoai' && window.location.pathname.split('/')[2] == undefined){
-            //sessionStorage.removeItem('loadMoreRow');
+        if(url == 'dienthoai' && page == undefined){
+            var queryString = window.location.search;
+            var params = new URLSearchParams(queryString);
+            if(!params.has('hang')){
+                //sessionStorage.removeItem('loadMoreRow');
 
-            if(navigation == "back_forward" || navigation == 'reload'){
-                var position = sessionStorage.getItem('scrollPosition') ? sessionStorage.getItem('scrollPosition') : 0;
-                var docHeight = $(document).height();
-                var winHeight = $(window).height();
-                var scrollPercent = (position) / (docHeight - winHeight);
-                var scrollPercentRounded = Math.round(scrollPercent*100);
-                loadMoreRow = sessionStorage.getItem('loadMoreRow') ? parseInt(sessionStorage.getItem('loadMoreRow')) : 0;
+                if(navigation == "back_forward" || navigation == 'reload'){
+                    var position = sessionStorage.getItem('scrollPosition') ? sessionStorage.getItem('scrollPosition') : 0;
+                    var docHeight = $(document).height();
+                    var winHeight = $(window).height();
+                    var scrollPercent = (position) / (docHeight - winHeight);
+                    var scrollPercentRounded = Math.round(scrollPercent*100);
+                    loadMoreRow = sessionStorage.getItem('loadMoreRow') ? parseInt(sessionStorage.getItem('loadMoreRow')) : 0;
 
-                console.log(navigation, position, loadMoreRow);
+                    console.log(navigation, position, loadMoreRow);
 
-                if(loadMoreRow == 0){
-                    setTimeout(() => {
-                        loadMoreFlag = false;
-                    }, 1000);
-
-                    $(window).scrollTop(position);
-                    storageFlag = true
-                    $('.loader').fadeOut();
-
-                    console.log(1);
-                } else {
-                    if(scrollPercentRounded < 60){
+                    if(loadMoreRow == 0){
                         setTimeout(() => {
+                            loadMoreFlag = false;
+                        }, 1000);
+
+                        $(window).scrollTop(position);
+                        storageFlag = true
+                        $('.loader').fadeOut();
+
+                        console.log(1);
+                    } else {
+                        if(scrollPercentRounded < 60){
                             setTimeout(() => {
-                                loadMoreFlag = false;
+                                setTimeout(() => {
+                                    loadMoreFlag = false;
+                                }, 1000);
+                                
+                                $.ajax({
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    url: 'ajax-load-more',
+                                    type: 'POST',
+                                    data: {'url': url, 'row': 10, 'limit': loadMoreRow},
+                                    success: function(data){
+                                        var row = loadMoreRow + 10;
+                                        $('#lst_product').append(data);
+                                        $('#lst_product').attr('data-row', row);
+                                    }
+                                });
+                            }, 200);
+                            $(window).scrollTop(position);
+                            storageFlag = true
+                            $('.loader').fadeOut();
+                            console.log(2);
+                            return;
+                        } else {
+                            setTimeout(() => {
+                                setTimeout(() => {
+                                    loadMoreFlag = false;
+                                }, 1000);
+                                $(window).scrollTop(position);
+                                storageFlag = true
+                                $('.loader').fadeOut();
                             }, 1000);
-                            
                             $.ajax({
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -56,43 +89,20 @@ $(function() {
                                     $('#lst_product').attr('data-row', row);
                                 }
                             });
-                        }, 200);
-                        $(window).scrollTop(position);
-                        storageFlag = true
-                        $('.loader').fadeOut();
-                        console.log(2);
+                        }
+                        console.log(3);
                         return;
-                    } else {
-                        setTimeout(() => {
-                            setTimeout(() => {
-                                loadMoreFlag = false;
-                            }, 1000);
-                            $(window).scrollTop(position);
-                            storageFlag = true
-                            $('.loader').fadeOut();
-                        }, 1000);
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: 'ajax-load-more',
-                            type: 'POST',
-                            data: {'url': url, 'row': 10, 'limit': loadMoreRow},
-                            success: function(data){
-                                var row = loadMoreRow + 10;
-                                $('#lst_product').append(data);
-                                $('#lst_product').attr('data-row', row);
-                            }
-                        });
                     }
-                    console.log(3);
-                    return;
+                } else {
+                    storageFlag = true;
+                    sessionStorage.removeItem('loadMoreRow');
+                    sessionStorage.removeItem('scrollPosition');
+                    $('.loader').fadeOut();
                 }
             } else {
-                storageFlag = true;
-                sessionStorage.removeItem('loadMoreRow');
-                sessionStorage.removeItem('scrollPosition');
-                $('.loader').fadeOut();
+                setTimeout(() => {
+                    $(window).scrollTop(position);    
+                }, 500);
             }
         } else {
             $('.loader').fadeOut(250);
@@ -127,7 +137,7 @@ $(function() {
         }
 
         // loadmore data
-        if(url == 'dienthoai' && window.location.pathname.split('/')[2] == undefined){
+        if(url == 'dienthoai' && page == undefined){
             if(loadMoreFlag == false){
                 if(scrollPercentRounded >= 60){
                     loadMoreFlag = true;
@@ -163,6 +173,33 @@ $(function() {
             if(storageFlag == true){
                 sessionStorage.removeItem('scrollPosition');
                 sessionStorage.setItem('scrollPosition', scrollTop);
+            }
+        } else if(url == 'taikhoan' && page == 'thongbao'){
+            if(loadMoreFlag == false){
+                if(scrollPercentRounded >= 50){
+                    loadMoreFlag = true;
+
+                    if($('#lst_noti').attr('data-done') != 'done'){
+                        var row = parseInt($('#lst_noti').children().length);
+
+                        $.ajax({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            url: 'ajax-load-more',
+                            type: 'POST',
+                            data: {'url': page, 'row': row, 'limit': 10},
+                            success: function(data){
+                                loadMoreFlag = false;
+                                if(data == 'done'){
+                                    $('#lst_noti').attr('data-done', 'done');
+                                } else {
+                                    $('#lst_noti').append(data);
+                                }
+                            }
+                        });
+                    }
+                }
             }
         }
     });
@@ -290,7 +327,7 @@ $(function() {
     });
     /*============================================================================================================
                                                             Header
-        ==============================================================================================================*/
+    ==============================================================================================================*/
         // hiển thị offcanvas
         $('#show-offcanvas').on('click', function(){
             if($(this).attr('aria-expanded') == 'false'){
@@ -335,10 +372,14 @@ $(function() {
                 $('.head-offcanvas-account-option').css('display' ,'none');
         });
 
+        $('.head-account').click(function(){
+            $('.head-account-dropdown').toggle('blind', 300);
+        });
+
     /*============================================================================================================
-                                                        Đăng ký
+                                            Đăng ký & Quên mật khẩu
     ==============================================================================================================*/
-    if(url == 'dangky'){
+    if(url == 'dangky' || url == 'khoiphuctaikhoan'){
         var firebaseConfig = {
             apiKey: "AIzaSyBmuQyKi5Xer3D4hFYHMkYTMx0Jb3Bcgrs",
             authDomain: "ldmobileauth-eb072.firebaseapp.com",
@@ -370,27 +411,14 @@ $(function() {
             'callback': (response) => {
                 verifier = response;
                 console.log(verifier)
-                //sendVerifyCode();
             },
             'expired-callback': () => {
                 location.reload();
             }
-          });
+        });
 
         recaptchaVerifier.render().then(function(widgetId) {
             window.recaptchaWidgetId = widgetId;
-        });
-
-        /*=====================================================
-                        Nhập thông tin                  
-        =======================================================*/
-        // đăng ký tài khoản
-        $('#signup-step-1').click(function(){
-            sendVerifyCode();
-        });
-
-        $('#recaptcha-container').click(function(){
-            $(this).next().remove();
         });
 
         // gửi mã xác nhận
@@ -423,6 +451,7 @@ $(function() {
 
                         var tel = '+1' + telInp.val();
                         var appVerifier = window.recaptchaVerifier;
+                        verifier = '';
 
                         // gửi mã thành công
                         firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
@@ -487,84 +516,213 @@ $(function() {
             $('.loader').fadeOut();
         }
 
-        $('#su_fullname').keyup(function(){
-            if($(this).hasClass('required')){
-                $(this).removeClass('required');
-                $(this).next().remove();
-            }
-        });
+        if(url == 'dangky'){
+            /*=====================================================
+                            Nhập thông tin                  
+            =======================================================*/
+            // đăng ký tài khoản
+            $('#signup-step-1').click(function(){
+                sendVerifyCode();
+            });
 
-        // kiểm tra nhập số diện thoại
-        $('#su_tel').keyup(function(){
-            valiPhonenumberTyping($(this));
-        });
+            $('#su_fullname').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
 
-        /*=====================================================
-                        Xác minh mã xác nhận                  
-        =======================================================*/
+            // kiểm tra nhập số diện thoại
+            $('#su_tel').keyup(function(){
+                valiPhonenumberTyping($(this));
+            });
 
-        // quay lại bước nhập sdt
-        $('#back-to-enter-tel').click(function(){
-            // reset sdt
-            $('#su-tel').val('');
-            // reset reCAPTCHA
-            grecaptcha.reset(window.recaptchaWidgetId);
+            /*=====================================================
+                            Xác minh mã xác nhận                  
+            =======================================================*/
 
-            window.confirmationResult = null;
+            // quay lại bước nhập sdt
+            $('#back-to-enter-tel').click(function(){
+                // reset sdt
+                $('#su_tel').val('');
+                // reset reCAPTCHA
+                grecaptcha.reset(window.recaptchaWidgetId);
 
-            // quay lại phần nhập sdt
-            $('#enter-information').removeClass('none-dp');
-            $('#enter-verify-code').addClass('none-dp');
-        });
+                window.confirmationResult = null;
 
-        // Xác nhận code
-        $('#signup-step-2').click(function(){
-            var codeInput = $('#verify-code-inp');
-            var valiVerfifyCode = validateVerifyCode(codeInput);
+                // quay lại phần nhập sdt
+                $('#enter-information').removeClass('none-dp');
+                $('#enter-verify-code').addClass('none-dp');
+            });
 
-            // code không hợp lệ
-            if(!valiVerfifyCode){
-                return;
-            } else {    // code hợp lệ
-                codeVerify(codeInput);
-            }
-        });
+            // Xác nhận code
+            $('#signup-step-2').click(function(){
+                var codeInput = $('#verify-code-inp');
+                var valiVerfifyCode = validateVerifyCode(codeInput);
 
-        $('#verify-code-inp').keyup(function(){
-            if($(this).hasClass('required')){
-                $(this).removeClass('required');
-                $(this).next().remove();
-            }
-        });
+                // code không hợp lệ
+                if(!valiVerfifyCode){
+                    return;
+                } else {    // code hợp lệ
+                    codeVerify(codeInput);
+                }
+            });
 
-        /*=====================================================
-                        Nhập mật khẩu
-        =======================================================*/
+            $('#verify-code-inp').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
 
-        $('#signup-step-3').click(function(){
-            var passwordInp = $('#su_pw');
-            var rePasswordInp = $('#su_re_pw');
-            var valiPw = validatePassword(passwordInp, rePasswordInp);
+            /*=====================================================
+                            Nhập mật khẩu
+            =======================================================*/
 
-            if(valiPw){
-                $('#signup-form').submit();
-            }
-        });
+            $('#signup-step-3').click(function(){
+                var passwordInp = $('#su_pw');
+                var rePasswordInp = $('#su_re_pw');
+                var valiPw = validatePassword(passwordInp, rePasswordInp);
 
-        $('#su_pw').keyup(function(){
-            if($(this).hasClass('required')){
-                $(this).removeClass('required');
-                $(this).next().remove();
-            }
-        });
-    
-        $('#su_re_pw').keyup(function(){
-            if($(this).hasClass('required')){
-                $(this).removeClass('required');
-                $(this).next().remove();
-            }
-        });
+                if(valiPw){
+                    $('#signup-form').submit();
+                }
+            });
 
+            $('#su_pw').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
+        
+            $('#su_re_pw').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
+        } else {
+            /*=====================================================
+                            Nhập thông tin                  
+            =======================================================*/
+            // đăng ký tài khoản
+            $('#forget-step-1').click(function(){
+                var valiTel = validatePhoneNumber($('#forget_tel'));
+
+                if(valiTel){
+                    if(!verifier){
+                        var elmnt = $('<span id="required-recaptcha" class="required-text">Vui lòng xác nhận</span>');
+                        setTimeout(() => {
+                            setTimeout(() => {
+                                elmnt.remove();
+                            }, 500);
+                            elmnt.fadeOut();
+                        }, 3000);
+                        $('#recaptcha-container').after(elmnt);
+                        return;
+                    }
+                    $('.loader').fadeIn();
+
+                    var tel = '+1' + $('#forget_tel').val();
+                    var appVerifier = window.recaptchaVerifier;
+                    verifier = '';
+
+                    // gửi mã thành công
+                    firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
+                        window.confirmationResult = confirmationResult;
+                        coderesult = confirmationResult;
+
+                        // tiếp tục bước tiếp theo
+                        $('#enter-information').addClass('none-dp');
+
+                        // hiển thị gửi code vào số điện thoại
+                        var displayTel = tel.replace('+1','');
+                        $('#tel-confirm').text(displayTel);
+                        $('#enter-verify-code').removeClass('none-dp');
+
+                    }).catch(function (error) { // gửi mã thất bại
+                        console.log(error);
+                        alert('Đã có lỗi xảy ra vui lòng thử lại')
+                        grecaptcha.reset(window.recaptchaWidgetId);
+                        location.reload();
+                    });
+
+                    $('.loader').fadeOut();
+                }
+            });
+
+            // kiểm tra nhập số diện thoại
+            $('#forget_tel').keyup(function(){
+                valiPhonenumberTyping($(this));
+            });
+
+            /*=====================================================
+                            Xác minh mã xác nhận                  
+            =======================================================*/
+
+            // quay lại bước nhập sdt
+            $('#back-to-enter-tel').click(function(){
+                // reset sdt
+                $('#forget_tel').val('');
+                // reset reCAPTCHA
+                grecaptcha.reset(window.recaptchaWidgetId);
+
+                window.confirmationResult = null;
+
+                // quay lại phần nhập sdt
+                $('#enter-information').removeClass('none-dp');
+                $('#enter-verify-code').addClass('none-dp');
+            });
+
+            // Xác nhận code
+            $('#forget-step-2').click(function(){
+                var codeInput = $('#verify-code-inp');
+                var valiVerfifyCode = validateVerifyCode(codeInput);
+
+                // code không hợp lệ
+                if(!valiVerfifyCode){
+                    return;
+                } else {    // code hợp lệ
+                    codeVerify(codeInput);
+                }
+            });
+
+            $('#verify-code-inp').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
+
+            /*=====================================================
+                            Nhập mật khẩu
+            =======================================================*/
+
+            $('#forget-step-3').click(function(){
+                var passwordInp = $('#forget_pw');
+                var rePasswordInp = $('#forget_re_pw');
+                var valiPw = validatePassword(passwordInp, rePasswordInp);
+
+                if(valiPw){
+                    $('#forget-form').submit();
+                }
+            });
+
+            $('#forget_pw').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
+        
+            $('#forget_re_pw').keyup(function(){
+                if($(this).hasClass('required')){
+                    $(this).removeClass('required');
+                    $(this).next().remove();
+                }
+            });
+        }
     } 
     /*============================================================================================================
                                                         Đăng nhập
@@ -672,6 +830,16 @@ $(function() {
                                                         Tài khoản
     ==============================================================================================================*/
     else if(url == 'taikhoan'){
+        if(page == 'thongbao' && (navigation == 'reload' || navigation == 'back_forward')){
+            loadMoreFlag = true;
+            setTimeout(() => {
+                setTimeout(() => {
+                    loadMoreFlag = false;
+                }, 200);
+                $(window).scrollTop(0);
+            }, 200);
+        }
+
         /*==================================================================================
                                         thông tin tài khoản
         //==================================================================================*/
@@ -944,6 +1112,13 @@ $(function() {
                     $('.noti-type[data-type="'+type+'"]').addClass('noti-type-selected');
                     $('#lst_noti').children().remove();
                     $('#lst_noti').append(data);
+                    if(type == 'all'){
+                        $('#lst_noti').attr('data-done', 'load');
+                        loadMoreFlag = false;
+                    } else {
+                        $('#lst_noti').attr('data-done', 'done');
+                        loadMoreFlag = true;
+                    }
                 }
             })
         });
@@ -1230,10 +1405,9 @@ $(function() {
         //================================================================================
 
         // tùy chỉnh độ cao
-        if($('#DCGH-div').length){
-            var height = $('#DCGH-div').height();
-            $('#HTGH-div').css('height', height);
-            $('#HTTT-div').css('height', height);
+        if($('#HTNH-div').length){
+            var height = $('#HTNH-div').height();
+            $('#PTTT-div').height(height);
         }
 
         // hủy đơn hàng
@@ -1272,435 +1446,537 @@ $(function() {
     else if(url == 'dienthoai'){
         var navigation = performance.getEntriesByType("navigation")[0].type;
 
-        if(window.location.pathname.split('/')[2] == undefined){
-            if(navigation == 'back_forward' || navigation == 'reload'){
+        if(page == undefined){
+            var queryString = window.location.search;
+            var params = new URLSearchParams(queryString);
+            if(params.has('hang')){
+                // không load thêm dữ liệu
                 loadMoreFlag = true;
-                console.log(0);
-            }
+                // không lưu sessionStorage
+                storageFlag = false;
 
-            var arrFilterSort = {
-                'filter': {},
-                'sort' : '',
-            };
-            var filterSortData = null;
+                var brand = params.get('hang');
 
-            // nút hiển thị sắp xếp
-            $('#btn-show-sort').click(function(){
-                $('.shop-sort-box').toggle('blind', 250);
-            });
+                if(navigation == 'back_forward' || navigation == 'reload'){
+                    setTimeout(() => {
+                        $(window).scrollTop(0);
+                    }, 500);
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: 'ajax-get-product-by-brand',
+                        type: 'POST',
+                        data: {'brand': brand},
+                        success: function(data){
+                            // gán dữ liệu vào view
+                            $('#lst_product').append(data.html);
+                            // tiêu đề lọc & sắp xếp
+                            $('#qty-product').text(data.fs_title);
+                            // ẩn nút lọc & sắp xếp
+                            $('#filter-sort-btn').hide();
+    
+                            $('.loader').fadeOut();
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: 'ajax-get-product-by-brand',
+                        type: 'POST',
+                        data: {'brand': brand},
+                        success: function(data){
+                            // gán dữ liệu vào view
+                            $('#lst_product').append(data.html);
+                            // tiêu đề lọc & sắp xếp
+                            $('#qty-product').text(data.fs_title);
+                            // ẩn nút lọc & sắp xếp
+                            $('#filter-sort-btn').hide();
+    
+                            $('.loader').fadeOut();
+                        }
+                    });
+                }
+            } else {
+                if(navigation == 'back_forward' || navigation == 'reload'){
+                    loadMoreFlag = true;
+                    console.log(0);
+                }
 
-            // gỡ bỏ chọn tất cả bộ lọc
-            $('.shop-btn-remove-filter').click(function(){
-                // icon loading
-                var loading = $('<div class="spinner-border text-light" role="status" style="width: 24px; height: 24px"></div>');
-                $('#btn-see-filter').text('');
-                loading.appendTo($('#btn-see-filter'));
-
-                arrFilterSort = {
+                var arrFilterSort = {
                     'filter': {},
                     'sort' : '',
                 };
-                $('div[name="filter-item"]').removeClass('filter-selected');
-                filterSortProduct(arrFilterSort);
-            });
+                var arrSelected = [];
+                var arrTemp = [];
+                var filterSortData = null;
 
-            $('#filter-modal').on('shown.bs.modal', function(){
-                $('.shop-sort-box').hide('blind', 250);
-            })
+                // nút hiển thị sắp xếp
+                $('#btn-show-sort').click(function(){
+                    $('.shop-sort-box').toggle('blind', 250);
+                });
 
-            // thêm | xóa bộ lọc
-            $('.filter-item').off('click').click(function(e){
-                e.preventDefault();
-                
-                // icon loading
-                var loading = $('<div class="spinner-border text-light" role="status" style="width: 24px; height: 24px"></div>');
-                $('#btn-see-filter').text('');
-                loading.appendTo($('#btn-see-filter'));
-                                
-                var type = $(this).data('data').split('_')[0];
-                var keyword = $(this).data('data').split('_')[1];
-                var elmnt = $('#' + $(this).data('data'));
+                // gỡ bỏ chọn tất cả bộ lọc
+                $('.shop-btn-remove-filter').click(function(){
+                    // icon loading
+                    var loading = $('<div class="spinner-border text-light" role="status" style="width: 24px; height: 24px"></div>');
+                    $('#btn-see-filter').text('');
+                    loading.appendTo($('#btn-see-filter'));
 
-                // hủy 1 bộ lọc
-                if($(elmnt).hasClass('filter-selected')){
-                    if(type == 'brand'){
-                        const index = arrFilterSort.filter['brand'].indexOf(keyword);
-                        if (index > -1) {
-                            arrFilterSort.filter['brand'].splice(index, 1);
-                        }
-                        if(arrFilterSort.filter['brand'].length == 0){
-                            delete arrFilterSort.filter['brand'];
-                        }
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).removeClass('filter-selected');
-                    } else if(type == 'price'){
-                        const index = arrFilterSort.filter['price'].indexOf(keyword);
-                        if (index > -1) {
-                            arrFilterSort.filter['price'].splice(index, 1);
-                        }
-                        if(arrFilterSort.filter['price'].length == 0){
-                            delete arrFilterSort.filter['price'];
-                        }
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).removeClass('filter-selected');
-                    } else if(type == 'os'){
-                        const index = arrFilterSort.filter['os'].indexOf(keyword);
-                        if (index > -1) {
-                            arrFilterSort.filter['os'].splice(index, 1);
-                        }
-                        if(arrFilterSort.filter['os'].length == 0){
-                            delete arrFilterSort.filter['os'];
-                        }
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).removeClass('filter-selected');
-                    } else if(type == 'ram'){
-                        const index = arrFilterSort.filter['ram'].indexOf(keyword);
-                        if (index > -1) {
-                            arrFilterSort.filter['ram'].splice(index, 1);
-                        }
-                        if(arrFilterSort.filter['ram'].length == 0){
-                            delete arrFilterSort.filter['ram'];
-                        }
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).removeClass('filter-selected');
-                    } else if(type == 'capacity') {
-                        const index = arrFilterSort.filter['capacity'].indexOf(keyword);
-                        if (index > -1) {
-                            arrFilterSort.filter['capacity'].splice(index, 1);
-                        }
-                        if(arrFilterSort.filter['capacity'].length == 0){
-                            delete arrFilterSort.filter['capacity'];
-                        }
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).removeClass('filter-selected');
-                    }
-                } else { // thêm bộ lọc
-                    if(type == 'brand'){
-                        addFilter(arrFilterSort.filter, 'brand', keyword);
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).addClass('filter-selected');
-                    } else if(type == 'price'){
-                        addFilter(arrFilterSort.filter, 'price', keyword);
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).addClass('filter-selected');
-                    } else if(type == 'os'){
-                        addFilter(arrFilterSort.filter, 'os', keyword);
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).addClass('filter-selected');
-                    } else if(type == 'ram'){
-                        addFilter(arrFilterSort.filter, 'ram', keyword);
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).addClass('filter-selected');
-                    } else if(type == 'capacity') {
-                        addFilter(arrFilterSort.filter, 'capacity', keyword);
-                        filterSortProduct(arrFilterSort);
-                        $(elmnt).addClass('filter-selected');
-                    }
-                }
-            });
-            
-            // sắp xếp
-            $('input[name="sort"]').change(function(){
-                $('.loader').show();
+                    arrFilterSort = {
+                        'filter': {},
+                        'sort' : '',
+                    };
 
-                var sortType = $('input[name="sort"]:checked').attr('id');
-                arrFilterSort['sort'] = sortType;
-                filterSortProduct(arrFilterSort);
-                
-                setTimeout(() => {
-                    $('#btn-see-filter').trigger('click');
-                    $('.loader').fadeOut();
-                }, 1000);
-            });
+                    arrTemp = [];
+                    $('div[name="filter-item"]').removeClass('filter-selected');
+                    filterSortProduct(arrFilterSort);
+                });
 
-            function addFilter(arrFilterSort, filter, keyword){
-                if(arrFilterSort[filter] == null){
-                    arrFilterSort[filter] = [];
-                }
-                arrFilterSort[filter].push(keyword);
-            }
+                $('#filter-modal').on('shown.bs.modal', function(){
+                    $('.shop-sort-box').hide('blind', 250);
+                })
 
-            function filterSortProduct(arrFilterSort){
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: '/ajax-filter-product',
-                    type: 'POST',
-                    data: {arrFilterSort:arrFilterSort},
-                    success: function(data){
-                        filterSortData = data;
-                        console.log('success');
+                // thêm | xóa bộ lọc
+                $('.filter-item').off('click').click(function(e){
+                    e.preventDefault();
+                    
+                    // icon loading
+                    var loading = $('<div class="spinner-border text-light" role="status" style="width: 24px; height: 24px"></div>');
+                    $('#btn-see-filter').text('');
+                    loading.appendTo($('#btn-see-filter'));
+                                    
+                    var data = $(this).data('data');
+                    var type = $(this).data('data').split('_')[0];
+                    var keyword = $(this).data('data').split('_')[1];
+                    var elmnt = $('#' + $(this).data('data'));
 
-                        // số tiêu chí lọc
-                        if(Object.keys(arrFilterSort.filter).length == 0){
-                            $('.filter-badge').text('');
-                            $('.filter-badge').css('display', 'none');    
-                        } else {
-                            $('.filter-badge').text(Object.keys(arrFilterSort.filter).length);
-                            $('.filter-badge').css('display', 'block');
+                    // hủy 1 bộ lọc
+                    if($(elmnt).hasClass('filter-selected')){
+                        if(type == 'brand'){
+                            const index = arrFilterSort.filter['brand'].indexOf(keyword);
+                            if (index > -1) {
+                                arrFilterSort.filter['brand'].splice(index, 1);
+                            }
+                            if(arrFilterSort.filter['brand'].length == 0){
+                                delete arrFilterSort.filter['brand'];
+                            }
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).removeClass('filter-selected');
+                        } else if(type == 'price'){
+                            const index = arrFilterSort.filter['price'].indexOf(keyword);
+                            if (index > -1) {
+                                arrFilterSort.filter['price'].splice(index, 1);
+                            }
+                            if(arrFilterSort.filter['price'].length == 0){
+                                delete arrFilterSort.filter['price'];
+                            }
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).removeClass('filter-selected');
+                        } else if(type == 'os'){
+                            const index = arrFilterSort.filter['os'].indexOf(keyword);
+                            if (index > -1) {
+                                arrFilterSort.filter['os'].splice(index, 1);
+                            }
+                            if(arrFilterSort.filter['os'].length == 0){
+                                delete arrFilterSort.filter['os'];
+                            }
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).removeClass('filter-selected');
+                        } else if(type == 'ram'){
+                            const index = arrFilterSort.filter['ram'].indexOf(keyword);
+                            if (index > -1) {
+                                arrFilterSort.filter['ram'].splice(index, 1);
+                            }
+                            if(arrFilterSort.filter['ram'].length == 0){
+                                delete arrFilterSort.filter['ram'];
+                            }
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).removeClass('filter-selected');
+                        } else if(type == 'capacity') {
+                            const index = arrFilterSort.filter['capacity'].indexOf(keyword);
+                            if (index > -1) {
+                                arrFilterSort.filter['capacity'].splice(index, 1);
+                            }
+                            if(arrFilterSort.filter['capacity'].length == 0){
+                                delete arrFilterSort.filter['capacity'];
+                            }
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).removeClass('filter-selected');
+                        }
+                    } else { // thêm bộ lọc
+                        if(type == 'brand'){
+                            addFilter(arrFilterSort.filter, 'brand', keyword);
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).addClass('filter-selected');
+                        } else if(type == 'price'){
+                            addFilter(arrFilterSort.filter, 'price', keyword);
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).addClass('filter-selected');
+                        } else if(type == 'os'){
+                            addFilter(arrFilterSort.filter, 'os', keyword);
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).addClass('filter-selected');
+                        } else if(type == 'ram'){
+                            addFilter(arrFilterSort.filter, 'ram', keyword);
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).addClass('filter-selected');
+                        } else if(type == 'capacity') {
+                            addFilter(arrFilterSort.filter, 'capacity', keyword);
+                            filterSortProduct(arrFilterSort);
+                            $(elmnt).addClass('filter-selected');
                         }
                         
-                        $('.see-result-filter').css('display', 'block');
-                        $('#btn-see-filter').text('Xem ' + data.length + ' kết quả');
-
-                        if(data.length == 0){
-                            $('#btn-see-filter').attr('enable', 'false');
-                        } else {
-                            $('#btn-see-filter').attr('enable', 'true')
-                        }
+                        arrTemp.push($(this));
                     }
                 });
-            }
+                
+                // sắp xếp
+                $('input[name="sort"]').change(function(){
+                    $('.loader').show();
 
-            // xem danh sách kết quả lọc
-            $('#btn-see-filter').click(function(){
-                if($(this).attr('enable') == 'false'){
-                    return;
+                    setTimeout(() => {
+                        $('#btn-see-filter').trigger('click');
+                        $('.loader').fadeOut();
+                    }, 1500);
+
+                    var sortType = $('input[name="sort"]:checked').attr('id');
+                    arrFilterSort['sort'] = sortType;
+                    filterSortProduct(arrFilterSort);
+                });
+
+                function addFilter(arrFilterSort, filter, keyword){
+                    if(arrFilterSort[filter] == null){
+                        arrFilterSort[filter] = [];
+                    }
+                    arrFilterSort[filter].push(keyword);
                 }
 
-                $('#filter-modal').modal('hide');
-                $('.loader').show();
-                loadFilterSortData(filterSortData);
-                $('.loader').fadeOut(250);
-                $('.shop-sort-box').hide('blind', 250);
-            });
+                function filterSortProduct(arrFilterSort){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: '/ajax-filter-product',
+                        type: 'POST',
+                        data: {arrFilterSort:arrFilterSort},
+                        success: function(data){
+                            filterSortData = data;
+                            
+                            $('.see-result-filter').show();
+                            $('#btn-see-filter').text('Xem ' + data.length + ' kết quả');
 
-            // hiển thị danh sách kết quả bộ lọc
-            function loadFilterSortData(data){
-                $('#lst_product').children().remove();
-                $('#qty-product').text(data.length + ' điện thoại');
-                for(var i = 0; i < data.length; i++){
-                    var product = $('<div class="col-lg-3 col-md-4 col-sm-6">' +
-                                        '<div id="product_'+ data[i]['id'] +'" class="shop-product-card box-shadow">' +
-                                            '<div class="shop-overlay-product"></div>' +
-                                            '<div type="button" data-id="'+ data[i]['id'] +'" class="shop-cart-link"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>' +
-                                            '<a href="/dienthoai/'+ data[i]['tensp_url'] +'" class="shop-detail-link">Xem chi tiết</a>' +
-                                            '<div>' +
-                                                '<div class="pt-20 pb-20">' +
-                                                    '<img src="/images/phone/'+ data[i]['hinhanh'] +'" class="shop-product-img-card">' +
-                                                '</div>' +
-                                                '<div class="pb-20 text-center d-flex flex-column">' +
-                                                    '<b class="mb-10">'+ data[i]['tensp'] +'</b>' +
-                                                    '<div>' +
-                                                        '<span class="fw-600 red">'+ numberWithDot(data[i]['giakhuyenmai']) +'<sup>đ</sup></span>' +
-                                                        '<span data-id="'+data[i]['id']+'" class="discount-price ml-5 text-strike">'+ numberWithDot(data[i]['gia']) +'<sup>đ</sup></span>' +
+                            if(data.length == 0){
+                                $('#btn-see-filter').attr('enable', 'false');
+                            } else {
+                                $('#btn-see-filter').attr('enable', 'true');
+                            }
+                        }
+                    });
+                }
+
+                // xem danh sách kết quả lọc
+                $('#btn-see-filter').click(function(){
+                    try{
+                        if($(this).attr('enable') == 'false'){
+                            return;
+                        }
+
+                        arrSelected = [];
+                        $('[name="filter-item"]').each(function(){
+                            if($(this).hasClass('filter-selected')){
+                                arrSelected.push($(this));
+                            }
+                        });
+                        $('#filter-modal').modal('hide');
+
+                        $('.loader').show();
+                        loadFilterSortData(filterSortData);
+                        $('.shop-sort-box').hide('blind', 250);
+
+                        // không load thêm
+                        loadMoreFlag = true;
+                        // không lưu sessionStorage
+                        storageFlag = false;
+
+                        arrTemp = [];
+                        $('.loader').fadeOut(250);
+                    } catch(error){
+                        alert('Đã cố lỗi xảy ra. Vui lòng thử lại');
+                        location.reload();
+                    }
+                });
+
+                // hiển thị danh sách kết quả bộ lọc
+                function loadFilterSortData(data){
+                    $('#lst_product').children().remove();
+                    $('#qty-product').text(data.length + ' điện thoại');
+                    for(var i = 0; i < data.length; i++){
+                        var product = $('<div class="col-lg-3 col-md-4 col-sm-6">' +
+                                            '<div id="product_'+ data[i]['id'] +'" class="shop-product-card box-shadow">' +
+                                                '<div class="shop-overlay-product"></div>' +
+                                                '<div type="button" data-id="'+ data[i]['id'] +'" class="shop-cart-link"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>' +
+                                                '<a href="/dienthoai/'+ data[i]['tensp_url'] +'" class="shop-detail-link">Xem chi tiết</a>' +
+                                                '<div>' +
+                                                    '<div class="pt-20 pb-20">' +
+                                                        '<img src="/images/phone/'+ data[i]['hinhanh'] +'" class="shop-product-img-card">' +
                                                     '</div>' +
-                                                    '<div>' +
-                                                        '<div id="evaluate_'+ i +'" class="flex-row pt-5">' +
+                                                    '<div class="pb-20 text-center d-flex flex-column">' +
+                                                        '<b class="mb-10">'+ data[i]['tensp'] +'</b>' +
+                                                        '<div>' +
+                                                            '<span class="fw-600 red">'+ numberWithDot(data[i]['giakhuyenmai']) +'<sup>đ</sup></span>' +
+                                                            '<span data-id="'+data[i]['id']+'" class="discount-price ml-5 text-strike">'+ numberWithDot(data[i]['gia']) +'<sup>đ</sup></span>' +
+                                                        '</div>' +
+                                                        '<div>' +
+                                                            '<div id="evaluate_'+ i +'" class="flex-row pt-5">' +
+                                                            '</div>' +
                                                         '</div>' +
                                                     '</div>' +
                                                 '</div>' +
                                             '</div>' +
-                                        '</div>' +
-                                    '</div>');
+                                        '</div>');
 
-                    product.appendTo('#lst_product');
-                                    
-                    // khuyến mãi
-                    if(data[i]['khuyenmai'] != 0){
-                        var promotionTag = $('<div class="shop-promotion-tag">' +
-                                                '<span class="shop-promotion-text">'+ (data[i]['khuyenmai']*100) + '%' +'</span>' +
-                                            '</div>');
-                        $('#product_' + data[i]['id']).prepend(promotionTag);
-                    } else {
-                        $('.discount-price[data-id="'+data[i]['id']+'"]').remove();
+                        product.appendTo('#lst_product');
+                                        
+                        // khuyến mãi
+                        if(data[i]['khuyenmai'] != 0){
+                            var promotionTag = $('<div class="shop-promotion-tag">' +
+                                                    '<span class="shop-promotion-text">'+ (data[i]['khuyenmai']*100) + '%' +'</span>' +
+                                                '</div>');
+                            $('#product_' + data[i]['id']).prepend(promotionTag);
+                        } else {
+                            $('.discount-price[data-id="'+data[i]['id']+'"]').remove();
+                        }
+
+                        // đánh giá
+                        if(data[i]['danhgia']['qty'] != 0){
+                            for(var j = 1; j <= 5; j++){
+                                if(data[i]['danhgia']['star'] > j){
+                                    var star = $('<i class="fas fa-star checked"></i>');
+                                    star.appendTo($('#evaluate_' + i));
+                                } else {
+                                    var star = $('<i class="fas fa-star uncheck"></i>');
+                                    star.appendTo($('#evaluate_' + i));
+                                }
+                            }
+                            var qtyEvaluate = $('<span class="fz-14 ml-10">' + data[i]['danhgia']['qty'] + ' đánh giá </span>');
+                            qtyEvaluate.appendTo($('#evaluate_' + i));
+                        }
                     }
 
-                    // đánh giá
-                    if(data[i]['danhgia']['qty'] != 0){
-                        for(var j = 1; j <= 5; j++){
-                            if(data[i]['danhgia']['star'] > j){
-                                var star = $('<i class="fas fa-star checked"></i>');
-                                star.appendTo($('#evaluate_' + i));
-                            } else {
-                                var star = $('<i class="fas fa-star uncheck"></i>');
-                                star.appendTo($('#evaluate_' + i));
-                            }
-                        }
-                        var qtyEvaluate = $('<span class="fz-14 ml-10">' + data[i]['danhgia']['qty'] + ' đánh giá </span>');
-                        qtyEvaluate.appendTo($('#evaluate_' + i));
+                    // số tiêu chí lọc
+                    if(Object.keys(arrFilterSort.filter).length == 0){
+                        $('.filter-badge').text('');
+                        $('.filter-badge').css('display', 'none');    
+                    } else {
+                        $('.filter-badge').text(Object.keys(arrFilterSort.filter).length);
+                        $('.filter-badge').css('display', 'block');
+                    }
+
+                    // có sắp xếp
+                    if(Object.keys(arrFilterSort.sort) != ''){
+                        $('.sort-badge').show();
+                    } else {
+                        $('.sort-badge').hide();
                     }
                 }
-            }
 
-            $('#lst_product').on('DOMSubtreeModified', function(){
-                $('.shop-cart-link').off('click').click(function(){
-                    var id_sp = $(this).data('id');
-            
-                    chooseColor(id_sp);
-                });
-            });
-            
-            // modal chọn màu sắc để thêm vào giỏ hàng
-            $('.shop-cart-link').off('click').click(function(){
-                var id_sp = $(this).data('id');
-                
-                chooseColor(id_sp)
-            });
-
-            function chooseColor(id_sp){
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: '/ajax-choose-color',
-                    type: 'POST',
-                    data: {id_sp:id_sp},
-                    success:function(data){
-                        // yêu cầu đăng nhập
-                        if(data == false){
-                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
-                            $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
-                            $('#info-modal').modal('show');
-                            return;
+                $('#filter-modal').on('hidden.bs.modal', function(){
+                    if(arrTemp.length){
+                        for(var i = 0; i < arrTemp.length; i++){
+                            $(arrTemp[i]).click();
                         }
-                        $('#choose-color-phone-name').text(data['tensp']);
-                        $('#choose-color-promotion-price').html(numberWithDot(data['giakhuyenmai']) + 'đ'.sup());
-                        $('#choose-color-price').html(numberWithDot(data['gia']) + 'đ'.sup());
-
-                        for(var i = 0; i < data['mausac'].length; i++){
-                            var colorElmnt = $('<div type="button" data-id="'+ data['mausac'][i]['id'] +'" class="choose-color-item">' +
-                                                    '<img src="'+ data['url_phone'] + data['mausac'][i]['hinhanh'] +'" alt="">' +
-                                                    '<div id="color-name" class="pt-5">'+ data['mausac'][i]['mausac'] +'</div>' +
-                                                '</div>');
-                            colorElmnt.appendTo($('#phone-color'));
+                        arrTemp = [];
+                    }
+                    if(arrSelected.length){
+                        for(var i = 0; i < arrSelected.length; i++){
+                            if(!$(arrSelected[i]).hasClass('filter-selected')){
+                                $(arrSelected[i]).click();
+                            }
                         }
-                        
-                        $('#choose-color-modal').modal('show');
                     }
                 });
-            }
 
-            // chọn màu
-            $('#phone-color').on('DOMSubtreeModified', function(){
-                $('.choose-color-item').off('click').click(function(){
-                    $('#phone-color').removeClass('required');
-                    $('#phone-color').next().remove();
-                    $('.choose-color-item').removeClass('choose-color-selected');
-                    $(this).addClass('choose-color-selected');
+                $('#lst_product').on('DOMSubtreeModified', function(){
+                    $('.shop-cart-link').off('click').click(function(){
+                        var id_sp = $(this).data('id');
+                
+                        chooseColor(id_sp);
+                    });
+                });
+                
+                // modal chọn màu sắc để thêm vào giỏ hàng
+                $('.shop-cart-link').off('click').click(function(){
+                    var id_sp = $(this).data('id');
+                    
+                    chooseColor(id_sp)
+                });
 
-                    // số lượng tồn kho
+                function chooseColor(id_sp){
                     $.ajax({
-                        headers:{
+                        headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        url: '/ajax-get-qty-in-stock',
+                        url: '/ajax-choose-color',
                         type: 'POST',
-                        data: {'id_sp': $(this).data('id')},
+                        data: {id_sp:id_sp},
                         success:function(data){
-                            // ngưng kinh doanh
-                            if(data == 'false'){
-                                $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này đã ngừng kinh doanh.</div>')
-                                $('#btn-add-cart').hide();
-                                $('#qty-div').hide();
+                            // yêu cầu đăng nhập
+                            if(data == false){
+                                $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                                $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
+                                $('#info-modal').modal('show');
+                                return;
                             }
-                            // hết hàng
-                            else if(data == 0){
-                                $('#max-qty').val(data);
-                                $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này tạm hết hàng.</div>')
-                                $('#btn-add-cart').hide();
-                                $('#qty-div').hide();
+                            $('#choose-color-phone-name').text(data['tensp']);
+                            $('#choose-color-promotion-price').html(numberWithDot(data['giakhuyenmai']) + 'đ'.sup());
+                            $('#choose-color-price').html(numberWithDot(data['gia']) + 'đ'.sup());
+
+                            for(var i = 0; i < data['mausac'].length; i++){
+                                var colorElmnt = $('<div type="button" data-id="'+ data['mausac'][i]['id'] +'" class="choose-color-item">' +
+                                                        '<img src="'+ data['url_phone'] + data['mausac'][i]['hinhanh'] +'" alt="">' +
+                                                        '<div id="color-name" class="pt-5">'+ data['mausac'][i]['mausac'] +'</div>' +
+                                                    '</div>');
+                                colorElmnt.appendTo($('#phone-color'));
                             }
-                            // còn hàng
-                            else{
-                                $('#max-qty').val(data);
-                                $('#phone-color').next().remove();
-                                $('#btn-add-cart').show();
-                                $('#qty-div').show();
+                            
+                            $('#choose-color-modal').modal('show');
+                        }
+                    });
+                }
+
+                // chọn màu
+                $('#phone-color').on('DOMSubtreeModified', function(){
+                    $('.choose-color-item').off('click').click(function(){
+                        $('#phone-color').removeClass('required');
+                        $('#phone-color').next().remove();
+                        $('.choose-color-item').removeClass('choose-color-selected');
+                        $(this).addClass('choose-color-selected');
+
+                        // số lượng tồn kho
+                        $.ajax({
+                            headers:{
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            url: '/ajax-get-qty-in-stock',
+                            type: 'POST',
+                            data: {'id_sp': $(this).data('id')},
+                            success:function(data){
+                                // ngưng kinh doanh
+                                if(data == 'false'){
+                                    $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này đã ngừng kinh doanh.</div>')
+                                    $('#btn-add-cart').hide();
+                                    $('#qty-div').hide();
+                                }
+                                // hết hàng
+                                else if(data == 0){
+                                    $('#max-qty').val(data);
+                                    $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này tạm hết hàng.</div>')
+                                    $('#btn-add-cart').hide();
+                                    $('#qty-div').hide();
+                                }
+                                // còn hàng
+                                else{
+                                    $('#max-qty').val(data);
+                                    $('#phone-color').next().remove();
+                                    $('#btn-add-cart').show();
+                                    $('#qty-div').show();
+                                }
                             }
+                        });
+                    });
+                });
+
+                // thêm giỏ hàng
+                $('#btn-add-cart').click(function(){
+                    var id_sp = $('.choose-color-selected').data('id');
+                    var sl = parseInt($('#qty').text());
+
+                    // chưa chọn màu
+                    if(!id_sp){
+                        $('#phone-color').addClass('required');
+                        var required = $('<span class="required-text">Vui lòng chọn 1 màu sắc</span>');
+                        $('#phone-color').after(required);
+                        return;
+                    }
+
+                    // mua quá số lượng
+                    if(parseInt($('#qty').text()) > $('#max-qty').val()){
+                        clearTimeout(timer);
+                        $('.tooltip-qty').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
+                        $('.tooltip-qty').show();
+                        timer = setTimeout(() => {
+                            $('.tooltip-qty').hide('fade');
+                        }, 3000);
+
+                        return;
+                    }
+
+                    $('#choose-color-modal').modal('hide');
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: '/ajax-add-cart',
+                        type: 'POST',
+                        data: {id_sp:id_sp, sl:sl},
+                        success:function(data){
+                            // chưa đăng nhập
+                            if(data['status'] == false){
+                                $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                                $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
+                                $('#info-modal').modal('show');
+                                return;
+                            } 
+                            // mua quá số lượng tồn kho
+                            else if(data['status'] == 'invalid qty'){
+                                $('#info-modal-content').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
+                                $('#info-modal-main-btn').attr('dismiss', 'true');
+                                $('#info-modal-main-btn').text('Đã hiểu');
+                                $('#info-modal').modal('show');
+                                return;
+                            }
+                            // cập nhật số lượng badge giỏ hàng
+                            else if(data['status'] == 'success'){
+                                if($('.head-qty-cart').hasClass('none-dp')){
+                                    $('.head-qty-cart').removeClass('none-dp');
+                                }
+                                var qtyHeadCart = parseInt($('.head-qty-cart').text());
+                                $('.head-qty-cart').text(++qtyHeadCart);
+                            }
+
+                            var addCartSuccess = $('<div class="add-cart-success">' +
+                                                        '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
+                                                        '<a href="giohang" class="checkout-btn p-10 w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
+                                                    '</div>');
+                            addCartSuccess.appendTo($('#add-cart-success'));
+
+                            setTimeout(() => {
+                                setTimeout(() => {
+                                    $('.add-cart-success').remove();
+                                }, 1000);
+                                $('.add-cart-success').hide('fade', 300);
+                            }, 5000);
                         }
                     });
                 });
-            });
 
-            // thêm giỏ hàng
-            $('#btn-add-cart').click(function(){
-                var id_sp = $('.choose-color-selected').data('id');
-                var sl = parseInt($('#qty').text());
-
-                // chưa chọn màu
-                if(!id_sp){
-                    $('#phone-color').addClass('required');
-                    var required = $('<span class="required-text">Vui lòng chọn 1 màu sắc</span>');
-                    $('#phone-color').after(required);
-                    return;
-                }
-
-                // mua quá số lượng
-                if(parseInt($('#qty').text()) > $('#max-qty').val()){
-                    clearTimeout(timer);
-                    $('.tooltip-qty').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                    $('.tooltip-qty').show();
-                    timer = setTimeout(() => {
-                        $('.tooltip-qty').hide('fade');
-                    }, 3000);
-
-                    return;
-                }
-
-                $('#choose-color-modal').modal('hide');
-
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: '/ajax-add-cart',
-                    type: 'POST',
-                    data: {id_sp:id_sp, sl:sl},
-                    success:function(data){
-                        // chưa đăng nhập
-                        if(data['status'] == false){
-                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
-                            $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
-                            $('#info-modal').modal('show');
-                            return;
-                        } 
-                        // mua quá số lượng tồn kho
-                        else if(data['status'] == 'invalid qty'){
-                            $('#info-modal-content').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                            $('#info-modal-main-btn').attr('dismiss', 'true');
-                            $('#info-modal-main-btn').text('Đã hiểu');
-                            $('#info-modal').modal('show');
-                            return;
-                        }
-                        // cập nhật số lượng badge giỏ hàng
-                        else if(data['status'] == 'success'){
-                            if($('.head-qty-cart').hasClass('none-dp')){
-                                $('.head-qty-cart').removeClass('none-dp');
-                            }
-                            var qtyHeadCart = parseInt($('.head-qty-cart').text());
-                            $('.head-qty-cart').text(++qtyHeadCart);
-                        }
-
-                        var addCartSuccess = $('<div class="add-cart-success">' +
-                                                    '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
-                                                    '<a href="giohang" class="checkout-btn p-10 w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
-                                                '</div>');
-                        addCartSuccess.appendTo($('#add-cart-success'));
-
-                        setTimeout(() => {
-                            setTimeout(() => {
-                                $('.add-cart-success').remove();
-                            }, 1000);
-                            $('.add-cart-success').hide('fade', 300);
-                        }, 5000);
-                    }
+                // reset choose color modal
+                $('#choose-color-modal').on('hidden.bs.modal', function(){
+                    $('#choose-color-phone-name').text('');
+                    $('#choose-color-promotion-price').text('');
+                    $('#choose-color-price').text('');
+                    $('#phone-color').text('');
+                    $('#phone-color').next().remove();
+                    $('#qty').text('1');
+                    $('#max-qty').val('');
+                    $('#btn-add-cart').show();
+                    $('#qty-div').show();
                 });
-            });
-
-            // reset choose color modal
-            $('#choose-color-modal').on('hidden.bs.modal', function(){
-                $('#choose-color-phone-name').text('');
-                $('#choose-color-promotion-price').text('');
-                $('#choose-color-price').text('');
-                $('#phone-color').text('');
-                $('#phone-color').next().remove();
-                $('#qty').text('1');
-                $('#max-qty').val('');
-                $('#btn-add-cart').show();
-                $('#qty-div').show();
-            });
+            }
         }
         /*===========================================================================
                                         Chi tiết
@@ -1709,6 +1985,7 @@ $(function() {
             // chuyển sang màu sắc cần xem
             var queryString = window.location.search;
             var params = new URLSearchParams(queryString);
+
             if(params.has('mausac')){
                 var needColor = params.get('mausac');
                 
@@ -1723,6 +2000,29 @@ $(function() {
                         return;
                     }
                 });
+            }
+
+            if(params.has('danhgia')){
+                var id_dg = params.get('danhgia');
+                var position = parseFloat($('.evaluate[data-id="'+id_dg+'"]').position().top) + 650;
+
+                setTimeout(() => {
+                    setTimeout(() => {
+                        setTimeout(() => {
+                            $('.evaluate[data-id="'+id_dg+'"]').removeAttr('style');
+                        }, 1000);
+                        $('.evaluate[data-id="'+id_dg+'"]').css({
+                            'background-color': '#fff'
+                        });    
+                    }, 3000);
+
+                    $(window).scrollTop(position);
+
+                    $('.evaluate[data-id="'+id_dg+'"]').css({
+                        'background-color': '#D2F4EA',
+                        'transition': '.5s',
+                    });
+                }, 300);
             }
             
             // slide hình ảnh khác của sản phẩm
@@ -2270,7 +2570,7 @@ $(function() {
                 });
 
                 // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
-                if(count > 3){
+                if(count > 3 || qty_img == 3){
                     $('#info-modal-content').text('Bạn chỉ được phép chọn 3 ảnh đính kèm');
                     $('#info-modal-main-btn').attr('dismiss', 'true');
                     $('#info-modal-main-btn').text('Đã hiểu');
@@ -2279,6 +2579,15 @@ $(function() {
 
                 // tạo thẻ div, nút xóa, hình đánh giá
                 for(var i = 0; i < count; i++){
+                    // kiểm tra file hình
+                    var fileName = this.files[i].name.split('.');
+                    var extend = fileName[fileName.length - 1];
+
+                    // xem trước hình ảnh
+                    if(extend != 'jpg' && extend != 'jpeg' && extend != 'png'){
+                        alert('Bạn chỉ được phép upload hình ảnh');
+                        return;
+                    }
                     // nếu số lượng hình > 3 thì hiển thị modal thông báo
                     if(qty_img >= 3){
                         $('#info-modal-content').text('Bạn chỉ được phép chọn 3 ảnh đính kèm');
@@ -2594,13 +2903,20 @@ $(function() {
                     return;
                 }
 
+                $('.loader').show();
+                if(params.has('danhgia')){
+                    params.delete('danhgia');
+                    window.location.hash = ''; // for older browsers, leaves a # behind
+                    history.pushState('', document.title, window.location.pathname); // nice and clean
+                }
+
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     url: '/ajax-reply',
                     type: 'POST',
-                    data: {'id_dg': id_dg, 'replyContent': replyContent.val()},
+                    data: {'id_dg': id_dg, 'replyContent': replyContent.val(), 'id_dg': id_dg},
                     success:function(){
                         sessionStorage.setItem('reload_chitiet', 'Đã trả lời đánh giá');
                         location.reload();
@@ -2750,7 +3066,7 @@ $(function() {
                 });
 
                 // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
-                if(count > 3){
+                if(count > 3 || qty_img == 3){
                     $('#info-modal-content').text('Bạn chỉ được phép chọn 3 ảnh đính kèm');
                     $('#info-modal-main-btn').attr('dismiss', 'true');
                     $('#info-modal-main-btn').text('Đã hiểu');
@@ -2759,6 +3075,16 @@ $(function() {
 
                 // tạo thẻ div, nút xóa, hình đánh giá
                 for(var i = 0; i < count; i++){
+                    // kiểm tra file hình
+                    var fileName = this.files[i].name.split('.');
+                    var extend = fileName[fileName.length - 1];
+
+                    // xem trước hình ảnh
+                    if(extend != 'jpg' && extend != 'jpeg' && extend != 'png'){
+                        alert('Bạn chỉ được phép upload hình ảnh');
+                        return;
+                    }
+
                     // nếu số lượng hình > 3 thì hiển thị modal thông báo
                     if(qty_img >= 3){
                         $('#info-modal-content').text('Bạn chỉ được phép chọn 3 ảnh đính kèm');
@@ -3213,13 +3539,13 @@ $(function() {
             $('.head-single-result').off('click').click(function(){
                 var order = $('.compare-btn-add-phone').attr('data-order');
                 if(order == 2){
-                    var url = window.location.pathname.split('/')[2];
+                    var url = page;
                     var currentName = url.split('vs')[0];
                     var compareName = $(this).data('name');
     
                     location.href = 'sosanh/' + currentName +'vs' + compareName;
                 } else {
-                    var url = window.location.pathname.split('/')[2];
+                    var url = page;
                     var currentName = url.split('vs')[0];
                     var compareName = url.split('vs')[1];
                     var thirdName = $(this).data('name');
@@ -3247,7 +3573,7 @@ $(function() {
             }
             // xóa đt theo order ở url
             else {
-                var url = window.location.pathname.split('/')[2];
+                var url = page;
                 var lst_urlName = url.split('vs');
                 lst_urlName.splice(order - 1, 1);
                 location.href = 'sosanh/' + lst_urlName[0] +'vs' + lst_urlName[1];
@@ -3300,19 +3626,22 @@ $(function() {
                         $('#check-imei').hide();
 
                         // trạng thái bảo hành
-                        $warrantyStatus = data['product']['trangthaibaohanh'] == 'true' ? true : false;
+                        $warrantyStatus = data.product.trangthaibaohanh == 'true' ? true : false;
                         
                         var elmnt = '<div class="col-md-8 mx-auto">'+
                                         '<div class="d-flex">'+
                                             '<div class="w-50">'+
-                                                '<img src="images/phone/'+data['product']['hinhanh']+'" alt="" class="w-80 center-img">'+
+                                                '<img src="images/phone/'+data.product.hinhanh+'" alt="" class="w-80 center-img">'+
                                                 '<div class="d-flex flex-column justify-content-center align-items-center">'+
-                                                    '<div class="fz-26 fw-600 pt-20 pb-20">'+data['product']['tensp']+'</div>'+
+                                                    '<div class="fz-26 fw-600 pt-20 pb-20">'+data.product.tensp+'</div>'+
                                                     '<div class="d-flex pb-10">'+
-                                                        '<div>Màu sắc: <b>'+data['product']['mausac']+'</b></div>'+
-                                                        '<div class="ml-20">Dung lượng: <b> '+data['product']['dungluong']+'</b></div>'+
+                                                        '<div>Màu sắc: <b>'+data.product.mausac+'</b></div>'+
+                                                        '<div class="ml-20">Ram: <b>'+data.product.ram+'</b></div>'+
                                                     '</div>'+
-                                                    '<div class="pb-10">IMEI: <b>'+IMEI+'</b></div>'+
+                                                    '<div class="d-flex mb-20">'+
+                                                        '<div>Dung lượng: <b> '+data.product.dungluong+'</b></div>'+
+                                                        '<div class="ml-20">IMEI: <b>'+IMEI+'</b></div>'+
+                                                    '</div>'+
                                                     '<div id="btn-check-another-imei" class="main-color-text pointer-cs">Kiểm tra số IMEI khác<i class="far fa-chevron-right ml-10"></i></div>'+ 
                                                 '</div>'+
                                             '</div>'+
@@ -3324,10 +3653,10 @@ $(function() {
                                                     '<div>Trạng thái bảo hành:</div>';
                                                     elmnt += $warrantyStatus == true ? '<b class="success-color ml-10">Trong bảo hành</b>' : '<b class="warning-color ml-10">Hết hạn bảo hành</b>';
                                                     elmnt += '</div>'+
-                                                '<div class="mt-10">Bảo hành: <b>'+data['product']['baohanh']+'</b></div>'+
+                                                '<div class="mt-10">Bảo hành: <b>'+data.product.baohanh+'</b></div>'+
                                                 '<div class="d-flex mt-10">'+
-                                                    '<div>Bắt đầu: <b>'+data['product']['ngaymua']+'</b></div>'+
-                                                    '<div class="ml-10">Kết thúc: <b>'+data['product']['ngayketthuc']+'</b></div>'+
+                                                    '<div>Bắt đầu: <b>'+data.product.ngaymua+'</b></div>'+
+                                                    '<div class="ml-20">Kết thúc: <b>'+data.product.ngayketthuc+'</b></div>'+
                                                 '</div>'+
                                             '</div>'+
                                         '</div>'+
@@ -3843,24 +4172,40 @@ $(function() {
     }
 
     // hiển thị toast
-    function showToast(id){
+    function showToast(id, timeout = true){
         setTimeout(() => {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                // xóa toast
-                setTimeout(() => {
-                    $(id).remove();
-                },100);
-    
-                $(id).css({
-                    'transform': 'translateY(100px)'
-                });
-            }, 3000);
+            if(timeout){
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    // xóa toast
+                    setTimeout(() => {
+                        $(id).remove();
+                    },100);
+        
+                    $(id).css({
+                        'transform': 'translateY(100px)'
+                    });
+                }, 3000);
+            }
     
             $(id).css({
                 'transform': 'translateY(0)'
             });
-        }, 200);
+        }, 500);
+    }
+
+    // đóng toast
+    $('body').bind('DOMSubtreeModified', function(){
+        $('.close-toast-btn').click(function(){
+            closeToast('#alert-toast');
+        });
+    });
+    
+    function closeToast(id){
+        setTimeout(() => {
+            $(id).remove();
+        }, 100);
+        $(id).css('transform', 'translateY(100px)');
     }
 
     function numberWithDot(x) {
@@ -4221,4 +4566,43 @@ $(function() {
         }
         return str;
     }
+
+    var pusher = new Pusher('ff06b4fc89c397c1495e', {
+        cluster: 'ap1'
+    });
+
+    var channel = pusher.subscribe('my-channel');
+    channel.bind('my-event', function (data) {
+        var user = $('#session-user');
+        var id_tk = user.data('id');
+
+        if(data.notification.user.id == id_tk){
+            // xóa thông báo cũ
+            if($('#alert-toast').length){
+                $('#alert-toast').remove();
+            }
+
+            // cập nhật số lượng thông báo
+            var notiQty = parseInt($('#not-seen-qty-header').text());
+            notiQty++;
+            $('#not-seen-qty-header').text(notiQty);
+            $('#not-seen-qty').text(notiQty);
+
+            if(data.notification.type == 'order'){
+                var processingQty = parseInt($('#processing-qty').text());
+                if(processingQty == 1){
+                    $('#processing-qty').hide();
+                    $('#processing-qty-header').hide();
+                } else {
+                    processingQty--;
+                    $('#processing-qty').text(processingQty);
+                    $('#processing-qty-header').text(processingQty);
+                }
+            }
+
+            // render thông báo
+            $('body').prepend(data.notification.notification);
+            showToast('#alert-toast', false);
+        }
+    });
 });

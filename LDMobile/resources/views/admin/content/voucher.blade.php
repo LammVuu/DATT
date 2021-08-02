@@ -104,7 +104,7 @@
                     <div class="row mb-3">
                         <div class="col-lg-12">
                             <label for="content" class="mb-5 fw-600">Nội dung</label>
-                            <div id="content"></div>
+                            <textarea id="content" rows="3" placeholder="Nhập nội dung voucher"></textarea>
                         </div>
                     </div>
 

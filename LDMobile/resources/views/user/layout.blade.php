@@ -8,6 +8,11 @@
     @if (session('toast_message'))
         <div id="toast-message" data-message="{{session('toast_message')}}"></div>
     @endif
+    @if (session('user'))
+        <?php $user = session('user') ?>
+        <input type="hidden" id="session-user" data-id="{{$user->id}}">
+    @endif
+    
 
     {{-- hết hạn phiên đăng nhập fb, gg --}}
     @if (session('login_status'))

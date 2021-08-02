@@ -56,7 +56,7 @@
                                         <div class='white head-account'>
                                             <div>{{ session('user')->hoten }}</div>
                                             <i class="fas fa-caret-down ml-5"></i>
-                                            <div class='head-account-dropdown box-shadow'>
+                                            <div class='head-account-dropdown'>
                                                 <a href="{{route('user/tai-khoan')}}" class='head-account-option'><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
                                                 <a href="{{route('user/tai-khoan-thong-bao')}}" class='head-account-option'>
                                                     <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
@@ -67,7 +67,7 @@
                                                 <a href="{{route('user/tai-khoan-don-hang')}}" class='head-account-option'>
                                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
                                                     @if ($data['lst_order']['processing'] != 0)
-                                                        <span class='number-badge ml-10'>{{$data['lst_order']['processing']}}</span>
+                                                        <span id="processing-qty-header" class='number-badge ml-10'>{{$data['lst_order']['processing']}}</span>
                                                     @endif
                                                 </a>
                                                 <a href="{{route('user/logout')}}" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>

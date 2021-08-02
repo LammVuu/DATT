@@ -1,29 +1,32 @@
-<div class="d-flex align-items-center justify-content-between box-shadow p-15 mb-20">
-    <b id="qty-product">{{ $fs_title }}</b>
-    <div class="d-flex">
-        {{-- bộ lọc --}}
-        <div class='relative mr-20'>
-            <span id='btn-show-filter' data-bs-toggle="modal" data-bs-target="#filter-modal"><i class="fal fa-filter mr-5"></i>Bộ lọc</span>
-            <div class="filter-badge"></div>
-        </div>
+<div class="shop-bar box-shadow">
+    <b id="qty-product" class="fz-18">{{ $fs_title }}</b>
+    <div id="filter-sort-btn">
+        <div class="d-flex">
+            {{-- bộ lọc --}}
+            <div class='relative mr-20'>
+                <span id='btn-show-filter' data-bs-toggle="modal" data-bs-target="#filter-modal"><i class="fal fa-filter mr-5"></i>Bộ lọc</span>
+                <div class="filter-badge"></div>
+            </div>
 
-        {{-- sắp xếp --}}
-        <div class="relative">
-            <span id='btn-show-sort'><i class="fal fa-sort mr-5"></i>Sắp xếp</span>
-            <div class="shop-sort-box border">
-                <div class="d-flex justify-content-center">
-                    <div class='d-flex flex-column'>
-                        <div class="mb-3">
-                            <input type="radio" name='sort' id='high-to-low'>
-                            <label for="high-to-low">Giá cao đến thấp</label>
-                        </div>
-                        <div class="mb-3">
-                            <input type="radio" name='sort' id='low-to-high'>
-                            <label for="low-to-high">Giá thấp đến cao</label>
-                        </div>
-                        <div>
-                            <input type="radio" name='sort' id='sale-off-percent'>
-                            <label for="sale-off-percent">% giảm</label>
+            {{-- sắp xếp --}}
+            <div class="relative">
+                <span id='btn-show-sort'><i class="fal fa-sort mr-5"></i>Sắp xếp</span>
+                <div class="sort-badge"></div>
+                <div class="shop-sort-box border">
+                    <div class="d-flex justify-content-center">
+                        <div class='d-flex flex-column'>
+                            <div class="mb-3">
+                                <input type="radio" name='sort' id='high-to-low'>
+                                <label for="high-to-low">Giá cao đến thấp</label>
+                            </div>
+                            <div class="mb-3">
+                                <input type="radio" name='sort' id='low-to-high'>
+                                <label for="low-to-high">Giá thấp đến cao</label>
+                            </div>
+                            <div>
+                                <input type="radio" name='sort' id='sale-off-percent'>
+                                <label for="sale-off-percent">% giảm</label>
+                            </div>
                         </div>
                     </div>
                 </div>

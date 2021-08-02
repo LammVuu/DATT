@@ -1,4 +1,4 @@
-<section class='index-bg pt-20 pb-20'>
+<section class='user-bg-color pt-20 pb-20'>
     <div class='container'>
         <div class='row'>
             <div class='col-lg-8 col-md-12 col-sm-12'>
@@ -31,16 +31,14 @@
 
             {{-- banner --}}
             <div class='col-lg-4 col-md-12 col-sm-12'>
-                <div class='banner'>
-                    <div class='d-flex flex-column'>
-                        @foreach ($lst_banner as $key)
-                        <a href="{{ $key['link'] }}">
-                            <div class='mb-20 box-shadow'>
-                                <img src="{{ $url_banner.$key['hinhanh'] }}" class='single-banner' alt="banner-1">
-                            </div>
-                        </a>    
-                        @endforeach
-                    </div>
+                <div class='d-flex flex-column'>
+                    @foreach ($lst_banner as $key)
+                    <a href="{{ $key->link }}">
+                        <div class='mb-20 box-shadow'>
+                            <img src="{{$url_banner.$key->hinhanh}}" class='single-banner' alt="banner-1">
+                        </div>
+                    </a>    
+                    @endforeach
                 </div>
             </div>
         </div>

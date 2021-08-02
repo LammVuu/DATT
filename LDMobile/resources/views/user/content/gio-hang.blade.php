@@ -23,7 +23,7 @@
                     {{-- danh sách sản phẩm --}}
                     <div id="lst-cart-item" class="box-shadow mb-50">
                         @foreach ($data['cart']['cart'] as $key)
-                        <div data-id="{{$key['sanpham']['id']}}" class="d-flex align-items-center p-10 border">
+                        <div data-id="{{$key['sanpham']['id']}}" class="d-flex align-items-center p-10 border-bottom">
                             {{-- sản phẩm --}}
                             <div class="w-40 d-flex">
                                 <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="w-30">
@@ -129,7 +129,7 @@
 
                     {{-- tính tiền --}}
                     <div class="box-shadow mb-20">
-                        <div class="p-20 border">
+                        <div class="p-20 border-bottom">
                             {{-- tạm tính --}}
                             <div class="d-flex justify-content-between">
                                 <div class="gray-1">Tạm tính</div>
@@ -146,7 +146,7 @@
                         </div>
                         
                         {{-- tổng tiền --}}
-                        <div class="p-20 border">
+                        <div class="p-20">
                             <div class="d-flex justify-content-between">
                                 <div class="gray-1">Tổng tiền</div>
                                 <span data-voucher="{{session('voucher') ? "1" : "0"}}" id="total" class="red fz-20 fw-600"></span>

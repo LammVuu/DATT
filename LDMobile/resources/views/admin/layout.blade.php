@@ -4,7 +4,7 @@
 @include('admin/header/head')
 <?php $user = session('user') ?> 
 
-<body style="background-color: #eff5f7;">
+<body class="admin-bg-color">
     @include("admin/header/header")
     @include("admin.content.section.sec-sidebar")
 

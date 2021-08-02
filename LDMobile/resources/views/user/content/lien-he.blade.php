@@ -8,40 +8,42 @@
             <div class="row">
                 <div class="col-md-8 col-sm-10 mx-auto box-shadow p-40">
                     <div class="row">
+                        <div class="col-lg-12 mb-40">
+                            <div class="col-lg-4 offset-2">
+                                {{-- title --}}
+                                <div class="fz-50 fw-600 main-color-text text-end">Liên hệ</div>
+                            </div>
+                        </div>
                         <div class="col-md-6 d-flex flex-column justify-content-between pr-20 pb-20">
-                            {{-- title --}}
-                            <div class="fz-50 fw-600 main-color-text text-end">Liên hệ</div>
-
                             {{-- hình minh họa --}}
-                            <img src="images/customer-service-cartoon.png" alt="" class="center-img pt-40 pb-40">
+                            <img src="images/customer-service-cartoon.png" alt="" class="center-img pb-40">
                                 
                             {{-- icon --}}
                             <div class="d-flex fz-20">
-                                <a href="#" class="main-color-text"><i class="fab fa-facebook-f ml-10 mr-10"></i></a>
-                                <a href="#" class="main-color-text"><i class="fab fa-instagram ml-10 mr-10"></i></a>
-                                <a href="#" class="main-color-text"><i class="fab fa-twitter ml-10 mr-10"></i></a>
-                                <a href="#" class="main-color-text"><i class="fab fa-pinterest-p ml-10 mr-10"></i></a>
-                                <a href="#" class="main-color-text"><i class="fab fa-whatsapp ml-10 mr-10"></i></a>
+                                <div class="main-color-text"><i class="fab fa-facebook-f ml-10 mr-10"></i></div>
+                                <div class="main-color-text"><i class="fab fa-instagram ml-10 mr-10"></i></div>
+                                <div class="main-color-text"><i class="fab fa-twitter ml-10 mr-10"></i></div>
+                                <div class="main-color-text"><i class="fab fa-pinterest-p ml-10 mr-10"></i></div>
+                                <div class="main-color-text"><i class="fab fa-whatsapp ml-10 mr-10"></i></div>
                             </div>
                         </div>
                         {{-- form --}}
                         <div class="col-md-6">
-                            <form action="#">
-                                @csrf
-                                <div class="p-20">
-                                    <div class="mb-20">
-                                        <input type="text" id="HoTen" placeholder="Nhập họ và tên">
-                                    </div>
-                                    <div class="mb-20">
-                                        <input type="email" id="Email" placeholder="Nhập Email của bạn">
-                                    </div>
-                                    <div class="mb-20">
-                                        <textarea id="message" rows="4" placeholder="Nhập nội dung"></textarea>
-                                    </div>
-                                    <div type='button' class="main-btn p-10">Gửi</div>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="mb-20">
+                                <div class="fw-600 fz-20 mb-10">Tổng đài hỗ trợ</div>
+                                <ul>
+                                    <li>Gọi mua: 077 979 2000</li>
+                                    <li>Kỹ thuật: 038 415 1501</li>
+                                </ul>
+                            </div>
+                            <div class="mb-20">
+                                <div class="fw-600 fz-20 mb-10">Chi nhánh</div>
+                                <ul>
+                                    @foreach ($lst_branch as $branch)
+                                        <li>{{$branch->diachi}}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
