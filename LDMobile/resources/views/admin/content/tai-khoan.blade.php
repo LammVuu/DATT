@@ -154,7 +154,7 @@
                         </div>
                     </div>  
                     <div class="d-flex justify-content-end mt-50">
-                        <div class="checkout-btn p-10" data-bs-dismiss="modal">Đóng</div>
+                        <div class="checkout-btn p-10" id="close-account" data-bs-dismiss="modal">Đóng</div>
                         <div id="action-taikhoan-btn" data-user="" class="main-btn p-10 ml-10"></div>
                     </div>
             </div>

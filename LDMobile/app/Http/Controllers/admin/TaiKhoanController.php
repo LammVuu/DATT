@@ -53,7 +53,7 @@ class TaiKhoanController extends Controller
                 {{-- nút --}}
                 <td class="vertical-center w-15">
                     <div class="d-flex justify-content-evenly">
-                        <div data-id="'.$user->id.'" class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
+                        <div data-id="'.$user->id.'" class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
                         <div data-id="'.$user->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
                         <div data-id="'.$user->id.'" data-object="taikhoan" data-status="'.$user->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
                             <i class="fas fa-trash"></i>
@@ -137,7 +137,7 @@ class TaiKhoanController extends Controller
             {{-- nút --}}
             <td class="vertical-center w-15">
                 <div class="d-flex justify-content-evenly">
-                    <div data-id="'.$user->id.'" class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
+                    <div data-id="'.$user->id.'" class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
                     <div data-id="'.$user->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
                     <div data-id="'.$user->id.'" data-object="taikhoan" data-status="'.$user->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
                         <i class="fas fa-trash"></i>
@@ -223,7 +223,7 @@ class TaiKhoanController extends Controller
             {{-- nút --}}
             <td class="vertical-center w-15">
                 <div class="d-flex justify-content-evenly">
-                    <div class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
+                    <div data-id="'.$user->id.'"class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
                     <div data-id="'.$user->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
                     <div data-id="'.$user->id.'" data-object="taikhoan" data-status="'.$user->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
                         <i class="fas fa-trash"></i>
@@ -274,7 +274,7 @@ class TaiKhoanController extends Controller
             {{-- nút --}}
             <td class="vertical-center w-15">
                 <div class="d-flex justify-content-evenly">
-                    <div data-id="'.$user->id.'" class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
+                    <div data-id="'.$user->id.'" class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
                     <div data-id="'.$user->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>
                     <div data-id="'.$user->id.'" data-object="taikhoan" data-status="'.$user->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">
                         <i class="fas fa-trash"></i>
@@ -322,7 +322,7 @@ class TaiKhoanController extends Controller
             {{-- nút --}}
             <td class="vertical-center w-15">
                 <div class="d-flex justify-content-evenly">
-                    <div data-id="'.$account->id.'" class="info-hinhanh-btn info-btn"><i class="fas fa-info"></i></div>
+                    <div data-id="'.$account->id.'" class="info-taikhoan-modal-show info-btn"><i class="fas fa-info"></i></div>
                     <div data-id="'.$account->id.'" class="edit-taikhoan-modal-show edit-btn"><i class="fas fa-pen"></i></div>';
                     if($request->idUser!=$account->id){
                         $html .=   '<div data-id="'.$account->id.'" data-object="taikhoan" data-status="'.$account->trangthai.'" class="delete-taikhoan-btn delete-btn" style="background-color:'.$colorDelete.'">

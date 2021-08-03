@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
     //
 });
-Route::group(['namespace' => 'API','middleware'=> 'auth:api','middleware' => ['throttle:500,1']],function (){
+Route::group(['namespace' => 'API','middleware' => ['throttle:500,1', 'auth:api']],function (){
     Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
     Route::get('supplier','SanPhamController@getSupplier');
     Route::get('slideshow','SanPhamController@getSlideshow');
