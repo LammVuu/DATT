@@ -12,7 +12,7 @@
     </div>
 
     <!-- right head -->
-    <div class="w-70 mr-40">
+    <div class="w-70 mr-10">
         <div class="relative d-flex justify-content-end align-items-center">
             <!-- account -->
             <div class="d-flex align-items-center">

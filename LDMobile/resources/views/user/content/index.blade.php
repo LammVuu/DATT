@@ -1,4 +1,5 @@
 @extends("user.layout")
+@section("title")LDMobile @stop
 @section("content")
 
 @include("user.content.index.slideshow")

@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en">
-
+    @section("title")Thành công | LDMobile @stop
 @include("user.header.head")
 <body>
     <section class="success-sec">
         <div class="container">
             <div class="row">
-                <div class="col-md-7 col-sm-10 mx-auto box-shadow white-bg" style="border-radius: 20px">
+                <div class="col-md-7 col-sm-10 col-10 mx-auto box-shadow white-bg" style="border-radius: 20px">
                     <div class="d-flex flex-column">
                         <img id='success-img' src="images/icon/check.gif" alt="" class="center-img">
                     </div>

@@ -12,6 +12,7 @@ $(function() {
             var position = $('.sidebar-link.sidebar-link-selected').position().top;
             if(position > 700){
                 $('.sidebar.custom-scrollbar').animate({scrollTop: position});
+                $('.loader').fadeOut();
             }
         }, 300);
 
@@ -22,6 +23,7 @@ $(function() {
                     loadMoreFlag = false;
                 }, 200);
                 $(window).scrollTop(0);
+                $('.loader').fadeOut();
             }, 200);
         }
 

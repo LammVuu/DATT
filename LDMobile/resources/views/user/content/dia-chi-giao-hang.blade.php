@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    @section("title")Địa chỉ giao hàng | LDMobile @stop
     @include("user.header.head")
 <body class="address-delivery-bg">
     <div class="address-delivery-header">

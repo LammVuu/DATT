@@ -1,4 +1,4 @@
-<div class='d-flex flex-column'>
+<div class='d-flex flex-column mb-20'>
     <a href="{{route('user/tai-khoan')}}" class='account-sidebar-tag @yield('acc-info-active')'>
         <i class="fas fa-user mr-20"></i>Thông tin tài khoản
     </a>

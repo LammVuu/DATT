@@ -4,6 +4,7 @@ namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Session;
@@ -12,6 +13,7 @@ use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\user\IndexController;
+use Illuminate\Support\Facades\Cookie;
 use App\Events\sendNotification;
 
 use App\Models\TAIKHOAN;
@@ -49,15 +51,19 @@ class UserController extends Controller
         if(Auth::check()){
             return back()->with('toast_message', 'Bạn đã đăng nhập');
         }
-        
+        // $this->IndexController->print(Session::all()); return false;
         // url trước đó
-        $prev_url = Session::get('prev_url');
-        if(!$prev_url){
-            $prevUrlSession = Session::get('_previous')['url'];
-            if(!$prevUrlSession){
-                $prevUrlSession = '/';
+        if(!Session::get('prev_url')){
+            $prev_url = '/';
+            if(Session::get('_previous')){
+                $url = Session::get('_previous')['url'];
+                $arrUrl = explode('/', $url);
+                $page = $arrUrl[count($arrUrl) - 1];
+                if($page != 'dangky' && $page != 'khoiphuctaikhoan'){
+                    $prev_url = $url;
+                }
             }
-            Session::put('prev_url', $prevUrlSession);
+            Session::put('prev_url', $prev_url);
         }
 
         return view($this->user."dang-nhap");
@@ -116,10 +122,6 @@ class UserController extends Controller
             // quay về url trước đó
             $prev_url = session('prev_url');
             if($prev_url){
-                if($prev_url == 'http://127.0.0.1:8000/dangky'){
-                    Session::forget('prev_url');
-                    return redirect('/')->with('toast_message', 'Đăng nhập thành công');
-                }
                 Session::forget('prev_url');
                 return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
             }
@@ -143,7 +145,7 @@ class UserController extends Controller
     public function FacebookRedirect()
     {
         return Socialite::driver('facebook')
-            ->scopes(['email', 'public_profile'])    
+            ->scopes(['email', 'public_profile'])
             ->redirect();
     }
 
@@ -156,20 +158,21 @@ class UserController extends Controller
                 return redirect('dangnhap')->with('error_message', 'Cần quyền truy cập email của bạn để tiếp tục');
             }
 
-            $exist = TAIKHOAN::where('email', $user->email)->first();
+            $exists = TAIKHOAN::where('email', $user->email)->first();
 
             // đã tồn tại
-            if($exist){
+            if($exists){
                 // đã đăng nhập bằng facebook
-                if($exist->htdn == 'facebook'){
-                    $exist->update([
+                if($exists->htdn == 'facebook'){
+                    $exists->update([
                         'anhdaidien' => $user->avatar_original . "&access_token={$user->token}",
                         'user_social_token' => $user->token,
                         'login_status' => 1
                     ]);
                     
-                    Auth::login($exist);
-                    session(['user' => $exist]);
+                    Auth::login($exists, true);
+                    session(['user' => $exists]);
+                    Cookie::queue('acccount_social_id', $exists->id, 60*24*30*12);
                     return redirect('/')->with('toast_message', 'Đăng nhập thành công');
                 }
 
@@ -188,8 +191,9 @@ class UserController extends Controller
                     'trangthai' => 1,
                 ]);
                 
-                Auth::login($newUser);
+                Auth::login($newUser, true);
                 session(['user' => $newUser]);
+                Cookie::queue('acccount_social_id', 'facebook_'.$newUser->id, 60*24*30*12);
                 return redirect('/')->with('toast_message', 'Đăng nhập thành công');
             }
         } catch(Exception $e){
@@ -208,14 +212,15 @@ class UserController extends Controller
         try {      
             $user = Socialite::driver('google')->user();
        
-            $exist = TAIKHOAN::where('email', $user->email)->first();
+            $exists = TAIKHOAN::where('email', $user->email)->first();
        
-            if($exist){
-                if($exist->htdn == 'google'){
-                    $exist->update(['login_status' => 1]);
+            if($exists){
+                if($exists->htdn == 'google'){
+                    $exists->update(['login_status' => 1]);
 
-                    Auth::login($exist, true);
-                    session(['user' => $exist]);
+                    Auth::login($exists, true);
+                    session(['user' => $exists]);
+                    Cookie::queue('acccount_social_id', $exists->id, 60*24*30*12);
                     return redirect('/')->with('toast_message', 'Đăng nhập thành công');
                 }
 
@@ -237,6 +242,7 @@ class UserController extends Controller
             Auth::login($newUser, true);
             Session::regenerate();
             session(['user' => $newUser]);
+            Cookie::queue('acccount_social_id', $newUser->id, 60*24*30*12);
     
             return redirect('/')->with('toast_message', 'Đăng nhập thành công');
         } catch (Exception $e) {
@@ -244,7 +250,7 @@ class UserController extends Controller
         }
     }
 
-    public function LogOut()
+    public function LogOut(Response $response)
     {
         if(!session('user')){
             return back();
@@ -252,9 +258,13 @@ class UserController extends Controller
 
         Auth::logout();
         TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
+        if(session('user')->htdn != 'nomal'){
+            Cookie::queue(Cookie::forget('acccount_social_id'));
+        }
         Session::flush();
         Session::put('visitor', '1');
-        return redirect('/')->with('toast_message', 'Đã đăng xuất');
+        Session::flash('toast_message', 'Đã đăng xuất');
+        return redirect('/');
     }
 
     public function AjaxPhoneNumberIsExists(Request $request)

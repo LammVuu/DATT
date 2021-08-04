@@ -119,7 +119,7 @@
                                         <a href="{{route('user/tai-khoan-don-hang')}}" class='d-flex align-items-center options black'><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</a>
                                         <a href="#" class="d-flex align-items-center options black"><i class="fas fa-bell mr-10"></i>Thông báo</a>
                                         <hr class='m-0'>
-                                        <a href="#" class='options red'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
+                                        <a href="{{route('user/logout')}}" class='options red'><i class="fal fa-power-off mr-10"></i>Đăng xuất</a>
                                     </div>
                                 </div>
                             </div>

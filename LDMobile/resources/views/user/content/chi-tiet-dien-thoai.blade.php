@@ -1,4 +1,5 @@
 @extends("user.layout")
+@section("title") {{$phone['tensp']}} | LDMobile @stop
 @section("content")
 
 @section("breadcrumb")

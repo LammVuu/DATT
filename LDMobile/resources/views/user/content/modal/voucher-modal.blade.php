@@ -13,7 +13,7 @@
                         @foreach ($data['lst_voucher'] as $key)
                             {{-- chưa đủ điều kiện sử dụng voucher --}}
                             @if ($data['cart']['total'] < $key->dieukien)
-                                <div class="pb-30">
+                                <div class="col-lg-8 col-md-10 col-12 mx-auto pb-30">
                                     <div class='account-voucher'>
                                         {{-- số phần trăm giảm --}}
                                         <div class='dis-voucher-left w-20 p-70'>
@@ -76,7 +76,7 @@
                                 </div>
                             {{-- Đủ điều kiện --}}
                             @else
-                                <div class="pb-30">
+                                <div class="col-lg-8 col-md-10 col-12 mx-auto pb-30">
                                     <div class='account-voucher'>
                                         {{-- số phần trăm giảm --}}
                                         <div class='voucher-left w-20 p-70'>
@@ -140,7 +140,7 @@
                             @endif
                         @endforeach
                     @else
-                        <div class="text-center">
+                        <div class="text-center pt-50 pb-50 fw-600">
                             Bạn chưa có mã khuyến mãi nào.
                         </div>
                     @endif

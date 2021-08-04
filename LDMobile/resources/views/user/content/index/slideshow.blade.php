@@ -4,13 +4,13 @@
             <div class='col-lg-8 col-md-12 col-sm-12'>
                 <div id="carouselExampleIndicators" class="relative carousel carousel-dark slide" data-bs-ride="carousel">
                     <div class="carousel-inner box-shadow">
-                        <a href="#" class="carousel-item active">
+                        <div class="carousel-item active">
                             <img src="<?php echo $url_slide.$lst_slide[0]['hinhanh'] ?>" class='carousel-img' alt="...">
-                        </a>    
+                        </div>    
                         @for($i = 1; $i < count($lst_slide); $i++)
-                            <a href="#" class="carousel-item">
+                            <div class="carousel-item">
                                 <img src="<?php echo $url_slide.$lst_slide[$i]['hinhanh'] ?>" class='carousel-img' alt="...">
-                            </a>    
+                            </div>    
                         @endfor
                     </div>
                     <div class="slideshow-btn-prev" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -33,11 +33,9 @@
             <div class='col-lg-4 col-md-12 col-sm-12'>
                 <div class='d-flex flex-column'>
                     @foreach ($lst_banner as $key)
-                    <a href="{{ $key->link }}">
                         <div class='mb-20 box-shadow'>
                             <img src="{{$url_banner.$key->hinhanh}}" class='single-banner' alt="banner-1">
                         </div>
-                    </a>    
                     @endforeach
                 </div>
             </div>

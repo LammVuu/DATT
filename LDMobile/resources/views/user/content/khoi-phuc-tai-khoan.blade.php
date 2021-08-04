@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+    @section("title")Khôi phục | LDMobile @stop
     @include("user.header.head")
 <body>
     <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
     <section class='login-signup-sec'>
         <div class='container'>
             <div class='row'>
-                <div class="col-md-5 col-sm-10 mx-auto box-shadow login-signup-box">
+                <div class="col-md-5 col-sm-10 col-10 mx-auto box-shadow login-signup-box">
                     {{-- session message --}}
                     @if(session('error_message'))
                         <div class="error-message mb-20">{{ session('error_message') }}</div>

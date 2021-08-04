@@ -1,5 +1,5 @@
 @extends("user.layout")
-
+@section("title")Tra cứu | LDMobile @stop
 @section("content")
 
 @section("breadcrumb")

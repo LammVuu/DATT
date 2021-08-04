@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+    @section("title")Đăng ký | LDMobile @stop
     @include("user.header.head")
 <body>
     <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
     <section class='login-signup-sec'>
         <div class='container'>
             <div class='row'>
-                <div class="col-md-5 col-sm-10 mx-auto box-shadow login-signup-box">
+                <div class="col-lg-5 col-md-8 col-sm-10 col-10 mx-auto box-shadow login-signup-box">
                     {{-- session message --}}
                     @if(session('error_message'))
                         <div class="error-message mb-20">{{ session('error_message') }}</div>
@@ -42,27 +43,30 @@
                             <div class='mt-50'>
                                 <div class='d-flex flex-column align-items-center'>
                                     <div class="login-with w-100"></div>
-        
-                                    <a href="{{route('user/facebook-redirect')}}" class='btn-login-signup-with box-shadow'>
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <img src="images/icon/facebook-icon.png" alt='fb-icon' class="mr-20">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-10 mx-auto">
+                                            <a href="{{route('user/facebook-redirect')}}" type="button" class='btn-login-signup-with box-shadow'>
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-4">
+                                                        <img src="images/icon/facebook-icon.png" alt='fb-icon' class="mr-20 w-90">
+                                                    </div>
+                                                    <div class="col-lg-8 col-8 d-flex align-items-center">Facebook</div>
                                                 </div>
-                                                <div class="col-sm-8 d-flex align-items-center">Facebook</div>
-                                            </div>
+                                            </a>
                                         </div>
-                                    </a>
-                                    <a href="{{route('user/google-redirect')}}" class='btn-login-signup-with box-shadow'>
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <img src="images/icon/google-icon.png" alt='fb-icon' class="mr-20">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-10 mx-auto">
+                                            <a href="{{route('user/google-redirect')}}" type="button" class='btn-login-signup-with box-shadow'>
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-4">
+                                                        <img src="images/icon/google-icon.png" alt='gg-icon' class="mr-20 w-90">
+                                                    </div>
+                                                    <div class="col-lg-8 col-8 d-flex align-items-center">Google</div>
                                                 </div>
-                                                <div class="col-sm-8 d-flex align-items-center">Google</div>
-                                            </div>
+                                            </a>
                                         </div>
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
     

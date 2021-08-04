@@ -3,13 +3,13 @@
     <meta charset="utf-8">
 
     <!--====== Title ======-->
-    <title>LDMobile</title>
+    <title>@yield('title')</title>
 
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-    <link rel="shortcut icon" href="images/logo/LDMobile-logo.png" type="image/png">
+    <link rel="icon" href="images/logo/LDMobile-logo.png" type="image/png" sizes="16x16">
 
     {{-- bootstrap --}}
     <link rel="stylesheet" href="css/bootstrap.css">

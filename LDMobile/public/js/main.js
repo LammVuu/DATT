@@ -1,114 +1,15 @@
 $(function() {
     var url = window.location.pathname.split('/')[1];
     var page = window.location.pathname.split('/')[2];
-    console.log(url);
     var navigation = performance.getEntriesByType("navigation")[0].type;
+
+    $(window).on('load', function(){
+        $('.loader').fadeOut();
+    });
+
     var loadMoreFlag = false;
     var storageFlag = false;
     var loadMoreRow = 0;
-
-    $(window).on('load', function(){
-        if(sessionStorage.getItem('reload_chitiet')){
-            var toastMessage = sessionStorage.getItem('reload_chitiet');
-            sessionStorage.removeItem('reload_chitiet');
-            $('#toast').append('<span id="edit-evaluate-toast" class="alert-toast">'+toastMessage+'</span');
-            showToast('#edit-evaluate-toast');
-        }
-
-        if(url == 'dienthoai' && page == undefined){
-            var queryString = window.location.search;
-            var params = new URLSearchParams(queryString);
-            if(!params.has('hang')){
-                //sessionStorage.removeItem('loadMoreRow');
-
-                if(navigation == "back_forward" || navigation == 'reload'){
-                    var position = sessionStorage.getItem('scrollPosition') ? sessionStorage.getItem('scrollPosition') : 0;
-                    var docHeight = $(document).height();
-                    var winHeight = $(window).height();
-                    var scrollPercent = (position) / (docHeight - winHeight);
-                    var scrollPercentRounded = Math.round(scrollPercent*100);
-                    loadMoreRow = sessionStorage.getItem('loadMoreRow') ? parseInt(sessionStorage.getItem('loadMoreRow')) : 0;
-
-                    console.log(navigation, position, loadMoreRow);
-
-                    if(loadMoreRow == 0){
-                        setTimeout(() => {
-                            loadMoreFlag = false;
-                        }, 1000);
-
-                        $(window).scrollTop(position);
-                        storageFlag = true
-                        $('.loader').fadeOut();
-
-                        console.log(1);
-                    } else {
-                        if(scrollPercentRounded < 60){
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    loadMoreFlag = false;
-                                }, 1000);
-                                
-                                $.ajax({
-                                    headers: {
-                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                    },
-                                    url: 'ajax-load-more',
-                                    type: 'POST',
-                                    data: {'url': url, 'row': 10, 'limit': loadMoreRow},
-                                    success: function(data){
-                                        var row = loadMoreRow + 10;
-                                        $('#lst_product').append(data);
-                                        $('#lst_product').attr('data-row', row);
-                                    }
-                                });
-                            }, 200);
-                            $(window).scrollTop(position);
-                            storageFlag = true
-                            $('.loader').fadeOut();
-                            console.log(2);
-                            return;
-                        } else {
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    loadMoreFlag = false;
-                                }, 1000);
-                                $(window).scrollTop(position);
-                                storageFlag = true
-                                $('.loader').fadeOut();
-                            }, 1000);
-                            $.ajax({
-                                headers: {
-                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                },
-                                url: 'ajax-load-more',
-                                type: 'POST',
-                                data: {'url': url, 'row': 10, 'limit': loadMoreRow},
-                                success: function(data){
-                                    var row = loadMoreRow + 10;
-                                    $('#lst_product').append(data);
-                                    $('#lst_product').attr('data-row', row);
-                                }
-                            });
-                        }
-                        console.log(3);
-                        return;
-                    }
-                } else {
-                    storageFlag = true;
-                    sessionStorage.removeItem('loadMoreRow');
-                    sessionStorage.removeItem('scrollPosition');
-                    $('.loader').fadeOut();
-                }
-            } else {
-                setTimeout(() => {
-                    $(window).scrollTop(position);    
-                }, 500);
-            }
-        } else {
-            $('.loader').fadeOut(250);
-        }
-    });
-
     var timer = null;
 
     if (window.location.hash == '#_=_') {
@@ -220,6 +121,20 @@ $(function() {
         autoplayTimeout:1500,
         autoplayHoverPause:true,
         smartSpeed: 1000,
+        responsive: {
+            0: {
+                items: 3
+            },
+            600: {
+                items: 3
+            },
+            1000: {
+                items: 4
+            },
+            1200: {
+                items: 5
+            }
+        }
     });
 
     // toast thông báo
@@ -332,7 +247,7 @@ $(function() {
         $('#show-offcanvas').on('click', function(){
             if($(this).attr('aria-expanded') == 'false'){
                 $('.head-offcanvas-box').css({
-                    'width' : '40%',
+                    'width' : '50%',
                 });
                 $('.backdrop').fadeIn();
                 $(this).attr('aria-expanded', 'true');
@@ -449,12 +364,13 @@ $(function() {
                             $('.error-message').remove();
                         }
 
-                        var tel = '+1' + telInp.val();
+                        var tel = telInp.val().toString();
+                        var telFormat = tel.replace(tel[0], '+84');
                         var appVerifier = window.recaptchaVerifier;
                         verifier = '';
 
                         // gửi mã thành công
-                        firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
+                        firebase.auth().signInWithPhoneNumber(telFormat, appVerifier).then(function (confirmationResult) {
                             window.confirmationResult = confirmationResult;
                             coderesult = confirmationResult;
 
@@ -468,9 +384,9 @@ $(function() {
 
                         }).catch(function (error) { // gửi mã thất bại
                             console.log(error);
-                            alert('Đã có lỗi xảy ra vui lòng thử lại')
+                            alert('Đã có lỗi xảy ra, vui lòng làm mới lại trang');
                             grecaptcha.reset(window.recaptchaWidgetId);
-                            location.reload();
+                            //location.reload();
                         });
                     } else {
                         // reset sdt
@@ -624,12 +540,13 @@ $(function() {
                     }
                     $('.loader').fadeIn();
 
-                    var tel = '+1' + $('#forget_tel').val();
+                    var tel = $('#forget_tel').val().toString();
+                    var telFormat = tel.replace(tel[0], '+84');
                     var appVerifier = window.recaptchaVerifier;
                     verifier = '';
 
                     // gửi mã thành công
-                    firebase.auth().signInWithPhoneNumber(tel, appVerifier).then(function (confirmationResult) {
+                    firebase.auth().signInWithPhoneNumber(telFormat, appVerifier).then(function (confirmationResult) {
                         window.confirmationResult = confirmationResult;
                         coderesult = confirmationResult;
 
@@ -804,7 +721,7 @@ $(function() {
             responsiveClass:true,
             responsive: {
                 0: {
-                    items: 5
+                    items: 2
                 },
                 600: {
                     items: 2
@@ -1444,8 +1361,6 @@ $(function() {
                                                         Điện thoại
     ==============================================================================================================*/
     else if(url == 'dienthoai'){
-        var navigation = performance.getEntriesByType("navigation")[0].type;
-
         if(page == undefined){
             var queryString = window.location.search;
             var params = new URLSearchParams(queryString);
@@ -1502,7 +1417,77 @@ $(function() {
             } else {
                 if(navigation == 'back_forward' || navigation == 'reload'){
                     loadMoreFlag = true;
-                    console.log(0);
+                    var position = sessionStorage.getItem('scrollPosition') ? sessionStorage.getItem('scrollPosition') : 0;
+                    var docHeight = $(document).height();
+                    var winHeight = $(window).height();
+                    var scrollPercent = (position) / (docHeight - winHeight);
+                    var scrollPercentRounded = Math.round(scrollPercent*100);
+                    loadMoreRow = sessionStorage.getItem('loadMoreRow') ? parseInt(sessionStorage.getItem('loadMoreRow')) : 0;
+
+                    console.log(navigation, position, loadMoreRow);
+
+                    if(loadMoreRow == 0){
+                        setTimeout(() => {
+                            loadMoreFlag = false;
+                        }, 1000);
+
+                        $(window).scrollTop(position);
+                        storageFlag = true
+                        $('.loader').fadeOut();
+                    } else {
+                        if(scrollPercentRounded < 60){
+                            setTimeout(() => {
+                                setTimeout(() => {
+                                    loadMoreFlag = false;
+                                }, 1000);
+                                
+                                $.ajax({
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    url: 'ajax-load-more',
+                                    type: 'POST',
+                                    data: {'url': url, 'row': 10, 'limit': loadMoreRow},
+                                    success: function(data){
+                                        var row = loadMoreRow + 10;
+                                        $('#lst_product').append(data);
+                                        $('#lst_product').attr('data-row', row);
+                                    }
+                                });
+                            }, 200);
+                            $(window).scrollTop(position);
+                            storageFlag = true;
+                            $('.loader').fadeOut();
+                        } else {
+                            setTimeout(() => {
+                                setTimeout(() => {
+                                    loadMoreFlag = false;
+                                }, 1000);
+                                $(window).scrollTop(position);
+                                storageFlag = true;
+                                $('.loader').fadeOut();
+                            }, 1000);
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                url: 'ajax-load-more',
+                                type: 'POST',
+                                data: {'url': url, 'row': 10, 'limit': loadMoreRow},
+                                success: function(data){
+                                    var row = loadMoreRow + 10;
+                                    $('#lst_product').append(data);
+                                    $('#lst_product').attr('data-row', row);
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    storageFlag = true;
+                    loadMoreFlag = false;
+                    sessionStorage.removeItem('loadMoreRow');
+                    sessionStorage.removeItem('scrollPosition');
+                    $('.loader').fadeOut();
                 }
 
                 var arrFilterSort = {
@@ -1982,6 +1967,13 @@ $(function() {
                                         Chi tiết
         =============================================================================*/
         else {
+            if(sessionStorage.getItem('reload_chitiet')){
+                var toastMessage = sessionStorage.getItem('reload_chitiet');
+                sessionStorage.removeItem('reload_chitiet');
+                $('#toast').append('<span id="edit-evaluate-toast" class="alert-toast">'+toastMessage+'</span');
+                showToast('#edit-evaluate-toast');
+            }
+
             // chuyển sang màu sắc cần xem
             var queryString = window.location.search;
             var params = new URLSearchParams(queryString);
@@ -2311,10 +2303,10 @@ $(function() {
                 responsiveClass:true,
                 responsive: {
                     0: {
-                        items: 5
+                        items: 3
                     },
                     600: {
-                        items: 2
+                        items: 3
                     },
                     1000: {
                         items: 4
@@ -2342,10 +2334,10 @@ $(function() {
                 responsiveClass:true,
                 responsive: {
                     0: {
-                        items: 5
+                        items: 3
                     },
                     600: {
-                        items: 2
+                        items: 3
                     },
                     1000: {
                         items: 4

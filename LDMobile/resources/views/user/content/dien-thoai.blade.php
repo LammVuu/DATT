@@ -1,4 +1,5 @@
 @extends("user.layout")
+@section("title")Điện thoại | LDMobile @stop
 @section("content")
 
 @section("breadcrumb")
@@ -18,7 +19,7 @@
                     {{-- ko có queryString --}}
                     @if (!parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY))
                         @foreach ($lst_product as $key)
-                            <div class='col-lg-3 col-md-4 col-sm-6'>
+                            <div class='col-lg-3 col-md-4 col-sm-6 col-6'>
                                 <div id="product_{{$key['id']}}" class='shop-product-card'>
                                     {{-- khuyến mãi tag --}}
                                     @if($key['khuyenmai'] != 0)

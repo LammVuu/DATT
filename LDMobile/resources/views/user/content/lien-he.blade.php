@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+@section("title")Liên hệ | LDMobile @stop
 @include('user.header.head')
 @include('user.header.header')
 <body>

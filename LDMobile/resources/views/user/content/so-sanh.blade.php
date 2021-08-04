@@ -1,4 +1,5 @@
 @extends("user.layout")
+@section("title")So sánh | LDMobile @stop
 @section("content")
 
 <div class='container'>

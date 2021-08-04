@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use File;
 use Session;
-use Illuminate\Support\Facades\Cookie;
+use Cookie;
 
 use App\Models\BANNER;
 use App\Models\BAOHANH;
@@ -1071,7 +1071,7 @@ class IndexController extends Controller
                 }
 
                 foreach($lst_product as $key){
-                    $html .= '<div class="col-lg-3 col-md-4 col-sm-6">
+                    $html .= '<div class="col-lg-3 col-md-4 col-sm-6 col-6">
                                 <div id="product_'.$key['id'].'" class="shop-product-card box-shadow">'.
                                     ($key['khuyenmai'] != 0 ? 
                                         '<div class="shop-promotion-tag">
@@ -1169,7 +1169,7 @@ class IndexController extends Controller
             foreach($models as $model){
                 $lst_temp = $this->getProductByCapacity(SANPHAM::where('id_msp', $model->id)->get());
                 foreach($lst_temp as $key){
-                    $html .= '<div class="col-lg-3 col-md-4 col-sm-6">
+                    $html .= '<div class="col-lg-3 col-md-4 col-sm-6 col-6">
                                 <div id="product_'.$key['id'].'" class="shop-product-card box-shadow">'.
                                     ($key['khuyenmai'] != 0 ? 
                                         '<div class="shop-promotion-tag">

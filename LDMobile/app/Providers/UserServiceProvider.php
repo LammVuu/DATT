@@ -8,6 +8,7 @@ use App\Http\View\Composers\UserComposer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Session;
+use Cookie;
 
 use App\Models\TAIKHOAN;
 
@@ -32,33 +33,41 @@ class UserServiceProvider extends ServiceProvider
     {
         View::composer('*', function($view){
             if(Auth::check()){
-                $user = Auth::user();
                 if(!session('user')){
+                    $user = Auth::user();
                     session(['user' => $user]);
                 }
             } else {
-                $socialAccount = TAIKHOAN::where('login_status', 1)->first();
-
-                if($socialAccount && $socialAccount->htdn == 'facebook'){
-                    if(!session('login_status')){
-                        $token = $socialAccount->user_social_token;
-                        $app_id = '186623080040346';
-                        $secrect_id = '778d952e526d81b40ec3fef4da5cf0c0';
+                if(!session('user')){
+                    $account_social_id = Cookie::get('account_social_id');
+                    if($account_social_id){
+                        $platform = explode('_', $account_social_id)[0];
+                        $id_tk = explode('_', $account_social_id)[1];
+    
+                        $socialAccount = TAIKHOAN::find($id_tk);
         
-                        // kiểm tra token còn hợp lệ không
-                        $validToken = Http::get("https://graph.facebook.com/debug_token?input_token={$token}&access_token={$app_id}|{$secrect_id}")->json();
-        
-                        // không hợp lệ
-                        if(array_key_first($validToken) == 'error'){
-                            Session::flush();
-                            Session::flash('login_status', false);
-                            $socialAccount->login_status = 0;
-                            $socialAccount->save();
-                        } 
-                        // hợp lệ
-                        else {
-                            Auth::login($socialAccount);
-                            session(['user' => $socialAccount]);
+                        if($socialAccount && $socialAccount->htdn == 'facebook'){
+                            if(!session('login_status')){
+                                $token = $socialAccount->user_social_token;
+                                $app_id = '3264702020428100';
+                                $secrect_id = 'be57a75f0b07f0966f0d224bd2e102b4';
+                
+                                // kiểm tra token còn hợp lệ không
+                                $validToken = Http::get("https://graph.facebook.com/debug_token?input_token={$token}&access_token={$app_id}|{$secrect_id}")->json();
+                                // không hợp lệ
+                                if(array_key_first($validToken) == 'error'){
+                                    Session::flush();
+                                    Cookie::forget('account_social_id');
+                                    Session::flash('login_status', false);
+                                    $socialAccount->login_status = 0;
+                                    $socialAccount->save();
+                                } 
+                                // hợp lệ
+                                else {
+                                    Auth::login($socialAccount, true);
+                                    session(['user' => $socialAccount]);
+                                }
+                            }
                         }
                     }
                 }

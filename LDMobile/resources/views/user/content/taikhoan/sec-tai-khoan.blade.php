@@ -1,9 +1,3 @@
-<?php $user = session('user') ?>
-
-@section("breadcrumb")
-    <a href="{{route('user/dien-thoai')}}" class="bc-item">điện thoại</a>
-@stop
-
 <div class='row'>
     <div class='col-md-3'>
         @section("acc-info-active") account-sidebar-active @stop
