@@ -365,9 +365,9 @@ $(function() {
         $("#title_confirmpassword").show();
         $('#action-taikhoan-btn').show();
         $("#imgPre").prop('src', 'images/user/avatar-default.png');
-        enabledModal();
+        enabledModalEditTaiKhoan();
     }
-    function enabledModal(){
+    function enabledModalEditTaiKhoan(){
         $("#phone").prop('disabled', false);
         $("#fullname").prop('disabled', false);
         $("#phone").prop('disabled', false);
@@ -380,7 +380,7 @@ $(function() {
         $("#file-name").show();
         $('#action-taikhoan-btn').show();
     }
-    function disabledModal(){
+    function disabledModalEditTaiKhoan(){
         $("#fullname").prop('disabled', true);
         $("#phone").prop('disabled', true);
         $("#email").prop('disabled', true);
@@ -452,7 +452,7 @@ $(function() {
         form_data.append('sdt',  $("#phone").val());
         form_data.append('loaitk',  $("#loai_tk").val());
         form_data.append('trangthai',  $("#trangthai").val());
-        enabledModal();
+        enabledModalEditTaiKhoan();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -491,7 +491,7 @@ $(function() {
         $('#action-taikhoan-btn').attr('data-type', 'edit');
         $('#action-taikhoan-btn').text('Cập Nhật');
         // lấy dòng theo id gán vào modal
-        enabledModal();
+        enabledModalEditTaiKhoan();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -512,8 +512,12 @@ $(function() {
                 $("#confirmpassword").hide();
                 $("#title_password").hide();
                 $("#title_confirmpassword").hide();
-                $("#imgPre").prop('src', 'images/user/'+ data.anhdaidien);
+                
                 $("#phone").prop('readonly', true);
+                if(data.htdn == "facebook" || data.htdn == "google" ){
+                    disabledModalEditTaiKhoan()
+                    $("#imgPre").prop('src', data.anhdaidien);
+                }else $("#imgPre").prop('src', 'images/user/'+ data.anhdaidien);
             }
         });
         // hiển thị modal
@@ -527,7 +531,7 @@ $(function() {
         $('#action-taikhoan-btn').text('Cập Nhật');
         $('#action-taikhoan-btn').hide();
         $("#idAccount").val("");
-        disabledModal();
+        disabledModalEditTaiKhoan();
         // lấy dòng theo id gán vào modal
         $.ajax({
             headers: {
@@ -549,7 +553,9 @@ $(function() {
                 $("#confirmpassword").hide();
                 $("#title_password").hide();
                 $("#title_confirmpassword").hide();
-                $("#imgPre").prop('src', 'images/user/'+ data.anhdaidien);
+                if(data.htdn == "facebook" || data.htdn == "google" ){
+                    $("#imgPre").prop('src', data.anhdaidien);
+                }else $("#imgPre").prop('src', 'images/user/'+ data.anhdaidien);
                 $("#phone").prop('readonly', true);
             }
         });

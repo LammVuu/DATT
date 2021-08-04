@@ -24,6 +24,24 @@ class User extends Authenticatable
      *
      * @var array
      */
+    
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'sdt',
+        'password',
+        'email',
+        'hoten',
+        'anhdaidien',
+        'loaitk',
+        'htdn',
+        'remember_token',
+        'user_social_token',
+        'login_status',
+        'thoigian',
+        'trangthai',
+    ];
+
     protected $hidden = [
         'password',
         'remember_token',
