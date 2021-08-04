@@ -110,7 +110,7 @@
                 {{-- chọn hình ảnh --}}
                 
                 <div class="d-flex justify-content-end mt-50">
-                    <div class="checkout-btn p-10" data-bs-dismiss="modal">Đóng</div>
+                    <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
                     <div id="action-notification-btn" class="main-btn p-10 ml-10"></div>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                     <div id="delete-content" class="fz-20"></div>
                     <div class="mt-30 d-flex justify-content-between">
                         <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
-                        <div id="delete-notification-btn" data-id="" class="checkout-btn p-10 w-48">Xóa</div>
+                        <div id="delete-notification-btn" data-id="" class="checkout-btn w-48">Xóa</div>
                     </div>
                 </div>
                 <input type="hidden" id="id" name="id">
@@ -169,7 +169,7 @@
 
                     <div class="mt-30 d-flex justify-content-between">
                         <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
-                        <div id="filter-notification-btn" data-id="" class="checkout-btn p-10 w-48">Lọc</div>
+                        <div id="filter-notification-btn" data-id="" class="checkout-btn w-48">Lọc</div>
                     </div>
                 </div>
                 <input type="hidden" id="id" name="id">

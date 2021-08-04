@@ -32,7 +32,7 @@
                             </div>
 
                             {{-- nút tiếp tục --}}
-                            <button type='button' id='forget-step-1' class='main-btn p-10 w-100'>Tiếp tục</button>
+                            <div type='button' id='forget-step-1' class='main-btn w-100'>Tiếp tục</div>
                             <div class="d-flex justify-content-center mt-10">Đã có tài khoản? <a href="{{route('user/dang-nhap')}}" class="ml-10">Đăng nhập</a></div>
     
                             {{-- về trang chủ --}}
@@ -57,7 +57,7 @@
                                 <input type="text" id="verify-code-inp" maxlength="6" placeholder="Ví dụ: 123456" class="text-center">
                             </div>
 
-                            <div type="button" id="forget-step-2" class="main-btn p-10">Tiếp tục</div>
+                            <div type="button" id="forget-step-2" class="main-btn">Tiếp tục</div>
                         </div>
 
                         {{-- enter password --}}

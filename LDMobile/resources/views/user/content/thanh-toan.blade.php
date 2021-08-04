@@ -157,7 +157,7 @@
                             <input type="hidden" name="cartTotal" id="cartTotal">
                             <input type="hidden" name="id_vc" id="id_vc" value="{{session('voucher') ? session('voucher')->id : null}}">
 
-                            <div id='btn-confirm-checkout' type="button" class="checkout-btn w-100 p-10">ĐẶT HÀNG</div>
+                            <div id='btn-confirm-checkout' type="button" class="checkout-btn w-100">ĐẶT HÀNG</div>
                             <div class="text-center pt-5">(Vui lòng kiểm tra lại đơn hàng trước khi đặt mua)</div>
                         </form>
                     </div>

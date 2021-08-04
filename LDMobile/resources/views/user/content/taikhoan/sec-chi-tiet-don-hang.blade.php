@@ -27,7 +27,7 @@
         {{-- hủy đơn hàng --}}
         @if ($order['order']->trangthaidonhang == 'Đã tiếp nhận')
             <div class="d-flex justify-content-center mt-30 mb-30">
-                <div id="cancel-order-btn" data-id="{{$order['order']->id}}" class="checkout-btn p-10 w-50">hủy đơn hàng</div>
+                <div id="cancel-order-btn" data-id="{{$order['order']->id}}" class="checkout-btn w-50">hủy đơn hàng</div>
             </div>
         @endif
 

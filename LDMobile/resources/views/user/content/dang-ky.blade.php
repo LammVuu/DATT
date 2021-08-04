@@ -36,7 +36,7 @@
                             </div>
 
                             {{-- nút tiếp tục --}}
-                            <button type='button' id='signup-step-1' class='main-btn p-10 w-100'>Tiếp tục</button>
+                            <div type='button' id='signup-step-1' class='main-btn w-100'>Tiếp tục</div>
                             <div class="d-flex justify-content-center mt-10">Đã có tài khoản? <a href="{{route('user/dang-nhap')}}" class="ml-10">Đăng nhập</a></div>
         
                             {{-- đăng nhập khác --}}

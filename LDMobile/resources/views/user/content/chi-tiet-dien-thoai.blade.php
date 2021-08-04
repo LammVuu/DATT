@@ -1326,7 +1326,7 @@
                             </div>
                             {{-- hình xem trước --}}
                             <div class="edit-evaluate-img-div"></div>
-                            <div id="edit-send-evaluate-btn" class='main-btn w-100 p-10 mt-20'>Cập nhật</div>
+                            <div id="edit-send-evaluate-btn" class='main-btn w-100 mt-20'>Cập nhật</div>
                         </div>
                     </div>
                 </div>

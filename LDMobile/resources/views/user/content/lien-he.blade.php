@@ -4,18 +4,15 @@
 @include('user.header.head')
 @include('user.header.header')
 <body>
-    <section class="pt-100 pb-100">
+    <section class="contact">
         <div class="container">
             <div class="row">
                 <div class="col-md-8 col-sm-10 mx-auto box-shadow p-40">
+                    {{-- title --}}
+                    <div class="fz-50 fw-600 main-color-text text-center mb-40">Liên hệ</div>
+                    
                     <div class="row">
-                        <div class="col-lg-12 mb-40">
-                            <div class="col-lg-4 offset-2">
-                                {{-- title --}}
-                                <div class="fz-50 fw-600 main-color-text text-end">Liên hệ</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 d-flex flex-column justify-content-between pr-20 pb-20">
+                        <div class="col-md-6 d-flex flex-column justify-content-between">
                             {{-- hình minh họa --}}
                             <img src="images/customer-service-cartoon.png" alt="" class="center-img pb-40">
                                 

@@ -1,12 +1,9 @@
-$(function() {
+$(function(){
+    $('.loader').fadeOut();
+    
     var url = window.location.pathname.split('/')[1];
     var page = window.location.pathname.split('/')[2];
     var navigation = performance.getEntriesByType("navigation")[0].type;
-
-    $(window).on('load', function(){
-        $('.loader').fadeOut();
-    });
-
     var loadMoreFlag = false;
     var storageFlag = false;
     var loadMoreRow = 0;
@@ -240,56 +237,83 @@ $(function() {
             }, 300);
         }
     });
+
+    // đóng alert top
+    $('.close-alert-top').click(function(){
+        setTimeout(() => {
+            $('.alert-top-content').text('');
+            $('.backdrop').removeAttr('style');
+            $('.alert-top').removeAttr('style');
+        }, 500);
+        $('.alert-top').css({
+            '-ms-transform': 'translateY(-300px)',
+            'transform': 'translateY(-300px)',
+        });
+        $('.backdrop').fadeOut();
+    });
+
+    function showAlertTop(content){
+        setTimeout(() => {
+            $('.alert-top').css({
+                '-ms-transform': 'translateY(0)',
+                'transform': 'translateY(0)',
+            });
+            $('.backdrop').css('z-index', '102');
+            $('.backdrop').fadeIn();
+        }, 200);
+        $('.alert-top-content').text(content);
+    }
+
     /*============================================================================================================
                                                             Header
     ==============================================================================================================*/
-        // hiển thị offcanvas
-        $('#show-offcanvas').on('click', function(){
-            if($(this).attr('aria-expanded') == 'false'){
-                $('.head-offcanvas-box').css({
-                    'width' : '50%',
-                });
-                $('.backdrop').fadeIn();
-                $(this).attr('aria-expanded', 'true');
-            } else {
-                $('.head-offcanvas-box').css({
-                    'width' : '0',
-                });
-                $('.backdrop').fadeOut();
-                $(this).attr('aria-expanded', 'false');
-            }
-        });
-
-        // nút đóng offcanvas
-        $('#btn-close-offcanvas').on('click', function(){
+    // hiển thị offcanvas
+    $('#show-offcanvas').on('click', function(){
+        if($(this).attr('aria-expanded') == 'false'){
+            $('.head-offcanvas-box').css({
+                'width' : '50%',
+            });
+            $('.backdrop').fadeIn();
+            $(this).attr('aria-expanded', 'true');
+        } else {
             $('.head-offcanvas-box').css({
                 'width' : '0',
             });
-            $('.backdrop').css('display', 'none');
+            $('.backdrop').fadeOut();
+            $(this).attr('aria-expanded', 'false');
+        }
+    });
+
+    // nút đóng offcanvas
+    $('#btn-close-offcanvas').on('click', function(){
+        $('.head-offcanvas-box').css({
+            'width' : '0',
+        });
+        $('.backdrop').css('display', 'none');
+        $('#show-offcanvas').attr('aria-expanded', 'false');
+    });
+
+    // đóng offcanvas theo kích thước màn hình
+    $(window).resize(function(){
+        if($(window).width() >= 1091) {
+            $('.backdrop').fadeOut();
+            $('.head-offcanvas-box').css({
+                'width' : '0',
+            });
             $('#show-offcanvas').attr('aria-expanded', 'false');
-        });
+        }
+    });
 
-        // đóng offcanvas theo kích thước màn hình
-        $(window).resize(function(){
-            if($(window).width() >= 1091) {
-                $('.backdrop').fadeOut();
-                $('.head-offcanvas-box').css({
-                    'width' : '0',
-                });
-                $('#show-offcanvas').attr('aria-expanded', 'false');
-            }
-        });
+    // dropdown tài khoản trong offcanvas
+    $('.head-offcanvas-account').hover(function(){
+            $('.head-offcanvas-account-option').css('display', 'block');
+    },function(){
+            $('.head-offcanvas-account-option').css('display' ,'none');
+    });
 
-        // dropdown tài khoản trong offcanvas
-        $('.head-offcanvas-account').hover(function(){
-                $('.head-offcanvas-account-option').css('display', 'block');
-        },function(){
-                $('.head-offcanvas-account-option').css('display' ,'none');
-        });
-
-        $('.head-account').click(function(){
-            $('.head-account-dropdown').toggle('blind', 300);
-        });
+    $('.head-account').click(function(){
+        $('.head-account-dropdown').toggle('blind', 300);
+    });
 
     /*============================================================================================================
                                             Đăng ký & Quên mật khẩu
@@ -384,7 +408,7 @@ $(function() {
 
                         }).catch(function (error) { // gửi mã thất bại
                             console.log(error);
-                            alert('Đã có lỗi xảy ra, vui lòng làm mới lại trang');
+                            showAlertTop('Đã có lỗi xảy ra, vui lòng làm mới lại trang');
                             grecaptcha.reset(window.recaptchaWidgetId);
                             //location.reload();
                         });
@@ -560,7 +584,7 @@ $(function() {
 
                     }).catch(function (error) { // gửi mã thất bại
                         console.log(error);
-                        alert('Đã có lỗi xảy ra vui lòng thử lại')
+                        showAlertTop('Đã có lỗi xảy ra vui lòng thử lại');
                         grecaptcha.reset(window.recaptchaWidgetId);
                         location.reload();
                     });
@@ -1689,7 +1713,7 @@ $(function() {
                         arrTemp = [];
                         $('.loader').fadeOut(250);
                     } catch(error){
-                        alert('Đã cố lỗi xảy ra. Vui lòng thử lại');
+                        showAlertTop('Đã cố lỗi xảy ra. Vui lòng thử lại');
                         location.reload();
                     }
                 });
@@ -1783,185 +1807,185 @@ $(function() {
                         }
                     }
                 });
+            }
 
-                $('#lst_product').on('DOMSubtreeModified', function(){
-                    $('.shop-cart-link').off('click').click(function(){
-                        var id_sp = $(this).data('id');
-                
-                        chooseColor(id_sp);
-                    });
-                });
-                
-                // modal chọn màu sắc để thêm vào giỏ hàng
+            $('#lst_product').bind('DOMSubtreeModified', function(){
                 $('.shop-cart-link').off('click').click(function(){
                     var id_sp = $(this).data('id');
-                    
-                    chooseColor(id_sp)
+            
+                    chooseColor(id_sp);
                 });
+            });
+            
+            // modal chọn màu sắc để thêm vào giỏ hàng
+            $('.shop-cart-link').off('click').click(function(){
+                var id_sp = $(this).data('id');
+                
+                chooseColor(id_sp)
+            });
 
-                function chooseColor(id_sp){
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: '/ajax-choose-color',
-                        type: 'POST',
-                        data: {id_sp:id_sp},
-                        success:function(data){
-                            // yêu cầu đăng nhập
-                            if(data == false){
-                                $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
-                                $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
-                                $('#info-modal').modal('show');
-                                return;
-                            }
-                            $('#choose-color-phone-name').text(data['tensp']);
-                            $('#choose-color-promotion-price').html(numberWithDot(data['giakhuyenmai']) + 'đ'.sup());
-                            $('#choose-color-price').html(numberWithDot(data['gia']) + 'đ'.sup());
-
-                            for(var i = 0; i < data['mausac'].length; i++){
-                                var colorElmnt = $('<div type="button" data-id="'+ data['mausac'][i]['id'] +'" class="choose-color-item">' +
-                                                        '<img src="'+ data['url_phone'] + data['mausac'][i]['hinhanh'] +'" alt="">' +
-                                                        '<div id="color-name" class="pt-5">'+ data['mausac'][i]['mausac'] +'</div>' +
-                                                    '</div>');
-                                colorElmnt.appendTo($('#phone-color'));
-                            }
-                            
-                            $('#choose-color-modal').modal('show');
+            function chooseColor(id_sp){
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/ajax-choose-color',
+                    type: 'POST',
+                    data: {id_sp:id_sp},
+                    success:function(data){
+                        // yêu cầu đăng nhập
+                        if(data == false){
+                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                            $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
+                            $('#info-modal').modal('show');
+                            return;
                         }
-                    });
-                }
+                        $('#choose-color-phone-name').text(data['tensp']);
+                        $('#choose-color-promotion-price').html(numberWithDot(data['giakhuyenmai']) + 'đ'.sup());
+                        $('#choose-color-price').html(numberWithDot(data['gia']) + 'đ'.sup());
 
-                // chọn màu
-                $('#phone-color').on('DOMSubtreeModified', function(){
-                    $('.choose-color-item').off('click').click(function(){
-                        $('#phone-color').removeClass('required');
-                        $('#phone-color').next().remove();
-                        $('.choose-color-item').removeClass('choose-color-selected');
-                        $(this).addClass('choose-color-selected');
-
-                        // số lượng tồn kho
-                        $.ajax({
-                            headers:{
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: '/ajax-get-qty-in-stock',
-                            type: 'POST',
-                            data: {'id_sp': $(this).data('id')},
-                            success:function(data){
-                                // ngưng kinh doanh
-                                if(data == 'false'){
-                                    $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này đã ngừng kinh doanh.</div>')
-                                    $('#btn-add-cart').hide();
-                                    $('#qty-div').hide();
-                                }
-                                // hết hàng
-                                else if(data == 0){
-                                    $('#max-qty').val(data);
-                                    $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này tạm hết hàng.</div>')
-                                    $('#btn-add-cart').hide();
-                                    $('#qty-div').hide();
-                                }
-                                // còn hàng
-                                else{
-                                    $('#max-qty').val(data);
-                                    $('#phone-color').next().remove();
-                                    $('#btn-add-cart').show();
-                                    $('#qty-div').show();
-                                }
-                            }
-                        });
-                    });
-                });
-
-                // thêm giỏ hàng
-                $('#btn-add-cart').click(function(){
-                    var id_sp = $('.choose-color-selected').data('id');
-                    var sl = parseInt($('#qty').text());
-
-                    // chưa chọn màu
-                    if(!id_sp){
-                        $('#phone-color').addClass('required');
-                        var required = $('<span class="required-text">Vui lòng chọn 1 màu sắc</span>');
-                        $('#phone-color').after(required);
-                        return;
-                    }
-
-                    // mua quá số lượng
-                    if(parseInt($('#qty').text()) > $('#max-qty').val()){
-                        clearTimeout(timer);
-                        $('.tooltip-qty').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                        $('.tooltip-qty').show();
-                        timer = setTimeout(() => {
-                            $('.tooltip-qty').hide('fade');
-                        }, 3000);
-
-                        return;
-                    }
-
-                    $('#choose-color-modal').modal('hide');
-
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: '/ajax-add-cart',
-                        type: 'POST',
-                        data: {id_sp:id_sp, sl:sl},
-                        success:function(data){
-                            // chưa đăng nhập
-                            if(data['status'] == false){
-                                $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
-                                $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
-                                $('#info-modal').modal('show');
-                                return;
-                            } 
-                            // mua quá số lượng tồn kho
-                            else if(data['status'] == 'invalid qty'){
-                                $('#info-modal-content').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                                $('#info-modal-main-btn').attr('dismiss', 'true');
-                                $('#info-modal-main-btn').text('Đã hiểu');
-                                $('#info-modal').modal('show');
-                                return;
-                            }
-                            // cập nhật số lượng badge giỏ hàng
-                            else if(data['status'] == 'success'){
-                                if($('.head-qty-cart').hasClass('none-dp')){
-                                    $('.head-qty-cart').removeClass('none-dp');
-                                }
-                                var qtyHeadCart = parseInt($('.head-qty-cart').text());
-                                $('.head-qty-cart').text(++qtyHeadCart);
-                            }
-
-                            var addCartSuccess = $('<div class="add-cart-success">' +
-                                                        '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
-                                                        '<a href="giohang" class="checkout-btn p-10 w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
-                                                    '</div>');
-                            addCartSuccess.appendTo($('#add-cart-success'));
-
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    $('.add-cart-success').remove();
-                                }, 1000);
-                                $('.add-cart-success').hide('fade', 300);
-                            }, 5000);
+                        for(var i = 0; i < data['mausac'].length; i++){
+                            var colorElmnt = $('<div type="button" data-id="'+ data['mausac'][i]['id'] +'" class="choose-color-item">' +
+                                                    '<img src="'+ data['url_phone'] + data['mausac'][i]['hinhanh'] +'" alt="">' +
+                                                    '<div id="color-name" class="pt-5">'+ data['mausac'][i]['mausac'] +'</div>' +
+                                                '</div>');
+                            colorElmnt.appendTo($('#phone-color'));
                         }
-                    });
-                });
-
-                // reset choose color modal
-                $('#choose-color-modal').on('hidden.bs.modal', function(){
-                    $('#choose-color-phone-name').text('');
-                    $('#choose-color-promotion-price').text('');
-                    $('#choose-color-price').text('');
-                    $('#phone-color').text('');
-                    $('#phone-color').next().remove();
-                    $('#qty').text('1');
-                    $('#max-qty').val('');
-                    $('#btn-add-cart').show();
-                    $('#qty-div').show();
+                        
+                        $('#choose-color-modal').modal('show');
+                    }
                 });
             }
+
+            // chọn màu
+            $('#phone-color').on('DOMSubtreeModified', function(){
+                $('.choose-color-item').off('click').click(function(){
+                    $('#phone-color').removeClass('required');
+                    $('#phone-color').next().remove();
+                    $('.choose-color-item').removeClass('choose-color-selected');
+                    $(this).addClass('choose-color-selected');
+
+                    // số lượng tồn kho
+                    $.ajax({
+                        headers:{
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: '/ajax-get-qty-in-stock',
+                        type: 'POST',
+                        data: {'id_sp': $(this).data('id')},
+                        success:function(data){
+                            // ngưng kinh doanh
+                            if(data == 'false'){
+                                $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này đã ngừng kinh doanh.</div>')
+                                $('#btn-add-cart').hide();
+                                $('#qty-div').hide();
+                            }
+                            // hết hàng
+                            else if(data == 0){
+                                $('#max-qty').val(data);
+                                $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này tạm hết hàng.</div>')
+                                $('#btn-add-cart').hide();
+                                $('#qty-div').hide();
+                            }
+                            // còn hàng
+                            else{
+                                $('#max-qty').val(data);
+                                $('#phone-color').next().remove();
+                                $('#btn-add-cart').show();
+                                $('#qty-div').show();
+                            }
+                        }
+                    });
+                });
+            });
+
+            // thêm giỏ hàng
+            $('#btn-add-cart').click(function(){
+                var id_sp = $('.choose-color-selected').data('id');
+                var sl = parseInt($('#qty').text());
+
+                // chưa chọn màu
+                if(!id_sp){
+                    $('#phone-color').addClass('required');
+                    var required = $('<span class="required-text">Vui lòng chọn 1 màu sắc</span>');
+                    $('#phone-color').after(required);
+                    return;
+                }
+
+                // mua quá số lượng
+                if(parseInt($('#qty').text()) > $('#max-qty').val()){
+                    clearTimeout(timer);
+                    $('.tooltip-qty').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
+                    $('.tooltip-qty').show();
+                    timer = setTimeout(() => {
+                        $('.tooltip-qty').hide('fade');
+                    }, 3000);
+
+                    return;
+                }
+
+                $('#choose-color-modal').modal('hide');
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/ajax-add-cart',
+                    type: 'POST',
+                    data: {id_sp:id_sp, sl:sl},
+                    success:function(data){
+                        // chưa đăng nhập
+                        if(data['status'] == false){
+                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                            $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
+                            $('#info-modal').modal('show');
+                            return;
+                        } 
+                        // mua quá số lượng tồn kho
+                        else if(data['status'] == 'invalid qty'){
+                            $('#info-modal-content').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
+                            $('#info-modal-main-btn').attr('dismiss', 'true');
+                            $('#info-modal-main-btn').text('Đã hiểu');
+                            $('#info-modal').modal('show');
+                            return;
+                        }
+                        // cập nhật số lượng badge giỏ hàng
+                        else if(data['status'] == 'success'){
+                            if($('.head-qty-cart').hasClass('none-dp')){
+                                $('.head-qty-cart').removeClass('none-dp');
+                            }
+                            var qtyHeadCart = parseInt($('.head-qty-cart').text());
+                            $('.head-qty-cart').text(++qtyHeadCart);
+                        }
+
+                        var addCartSuccess = $('<div class="add-cart-success">' +
+                                                    '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
+                                                    '<a href="giohang" class="checkout-btn w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
+                                                '</div>');
+                        addCartSuccess.appendTo($('#add-cart-success'));
+
+                        setTimeout(() => {
+                            setTimeout(() => {
+                                $('.add-cart-success').remove();
+                            }, 1000);
+                            $('.add-cart-success').hide('fade', 300);
+                        }, 5000);
+                    }
+                });
+            });
+
+            // reset choose color modal
+            $('#choose-color-modal').on('hidden.bs.modal', function(){
+                $('#choose-color-phone-name').text('');
+                $('#choose-color-promotion-price').text('');
+                $('#choose-color-price').text('');
+                $('#phone-color').text('');
+                $('#phone-color').next().remove();
+                $('#qty').text('1');
+                $('#max-qty').val('');
+                $('#btn-add-cart').show();
+                $('#qty-div').show();
+            });
         }
         /*===========================================================================
                                         Chi tiết
@@ -2577,7 +2601,7 @@ $(function() {
 
                     // xem trước hình ảnh
                     if(extend != 'jpg' && extend != 'jpeg' && extend != 'png'){
-                        alert('Bạn chỉ được phép upload hình ảnh');
+                        showAlertTop('Bạn chỉ có thể upload hình ảnh');
                         return;
                     }
                     // nếu số lượng hình > 3 thì hiển thị modal thông báo
@@ -3073,7 +3097,7 @@ $(function() {
 
                     // xem trước hình ảnh
                     if(extend != 'jpg' && extend != 'jpeg' && extend != 'png'){
-                        alert('Bạn chỉ được phép upload hình ảnh');
+                        showAlertTop('Bạn chỉ có thể upload hình ảnh');
                         return;
                     }
 

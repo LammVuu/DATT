@@ -1,19 +1,14 @@
 $(function() {
+    $('.loader').fadeOut();
+    
     var page = 1;
     var top = null;
-    $(window).on('load', function(){
-        var scroll_chitiet = sessionStorage.getItem('reload_chitiet');
-        if(scroll_chitiet){
-            sessionStorage.removeItem('reload_chitiet');
-            $('#toast').append('<span id="edit-evaluate-toast" class="alert-toast">'+scroll_chitiet+'</span');
-            showToast('#edit-evaluate-toast');
-        }
-        $('.loader').fadeOut(250);
-        function close_auto_load(){
-            $('.auto-load').html("Không còn kết quả nào");
-         };
-         window.setTimeout(close_auto_load, 3000); 
-    });
+    
+    function close_auto_load(){
+        $('.auto-load').html("Không còn kết quả nào");
+    };
+    window.setTimeout(close_auto_load, 3000); 
+
     $(window).scroll(function(e){
         var scrollTop = $(window).scrollTop();
         var docHeight = $(document).height();

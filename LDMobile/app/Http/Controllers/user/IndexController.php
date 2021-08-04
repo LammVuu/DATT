@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use File;
 use Session;
 use Cookie;
@@ -53,12 +54,7 @@ class IndexController extends Controller
                     hotsale
         ===================================*/
         // sắp xếp khuyến mãi giảm dần
-        $lst_product = $this->sortProductByPromotion($this->getAllProductByCapacity(), 'desc');
-
-        // lấy 10 sản phẩm có khuyến mãi cao nhất
-        for($i = 0; $i < 10; $i++){
-            $lst_promotion[$i] = $lst_product[$i];
-        }
+        $lst_promotion = $this->getHotSales(2);
 
         /*=================================
                     featured
@@ -1233,6 +1229,25 @@ class IndexController extends Controller
         echo '</pre>';
     }
 
+    // lấy sản phẩm có khuyến mãi cao nhất
+    public function getHotSales($rank = 1)
+    {
+        $lst_allProductSorted = $this->sortProductByPromotion($this->getAllProductByCapacity(), 'desc');
+        $arrPromotionId = [];
+        foreach(KHUYENMAI::orderBy('chietkhau', 'desc')->limit($rank)->select('id')->get() as $promotion){
+            array_push($arrPromotionId, $promotion->id);
+        }
+        
+        $lst_product = [];
+        foreach($lst_allProductSorted as $product){
+            if(in_array($product['id_km'], $arrPromotionId)){
+                array_push($lst_product, $product);
+            }
+        }
+
+        return $lst_product;
+    }
+
     public function checkStatus($id_sp)
     {
         return SANPHAM::find($id_sp)->trangthai == 0 ? false : true;
@@ -1393,6 +1408,7 @@ class IndexController extends Controller
                     'ram' => $key['ram'],
                     'dungluong' => $key['dungluong'],
                     'gia' => $key['gia'],
+                    'id_km' => $key['id_km'],
                     'khuyenmai' => $promotion,
                     'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
                     'cauhinh' => $key['cauhinh'],
@@ -1421,6 +1437,7 @@ class IndexController extends Controller
                     'ram' => $key['ram'],
                     'dungluong' => $key['dungluong'],
                     'gia' => $key['gia'],
+                    'id_km' => $key['id_km'],
                     'khuyenmai' => $promotion,
                     'giakhuyenmai' => $key['gia'] - ($key['gia'] * $promotion),
                     'cauhinh' => $key['cauhinh'],
@@ -1459,6 +1476,7 @@ class IndexController extends Controller
                         'ram' => $key[$rand]['ram'],
                         'dungluong' => $key[$rand]['dungluong'],
                         'gia' => $key[$rand]['gia'],
+                        'id_km' => $key[$rand]['id_km'],
                         'khuyenmai' => $key[$rand]['khuyenmai'],
                         'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
                         'danhgia' => [
@@ -1489,6 +1507,7 @@ class IndexController extends Controller
                         'ram' => $key[$rand]['ram'],
                         'dungluong' => $key[$rand]['dungluong'],
                         'gia' => $key[$rand]['gia'],
+                        'id_km' => $key[$rand]['id_km'],
                         'khuyenmai' => $key[$rand]['khuyenmai'],
                         'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
                         'danhgia' => [
@@ -1520,6 +1539,7 @@ class IndexController extends Controller
                     'ram' => $key[$rand]['ram'],
                     'dungluong' => $key[$rand]['dungluong'],
                     'gia' => $key[$rand]['gia'],
+                    'id_km' => $key[$rand]['id_km'],
                     'khuyenmai' => $key[$rand]['khuyenmai'],
                     'giakhuyenmai' => $key[$rand]['giakhuyenmai'],
                     'danhgia' => [

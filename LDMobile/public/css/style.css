@@ -1868,6 +1868,36 @@ hr{
 }
 
 /*========================================================================================================================
+                                                      Alert Top
+==========================================================================================================================*/
+
+.alert-top{
+  position: fixed;
+  left: 32%; top: 0; right: 32%;
+  z-index: 103;
+  width: auto; height: auto;
+  padding: 30px;
+  border-radius: 0 0 15px 15px;
+  background-color: #fff;
+  box-shadow: 0 3px 20px 2px rgba(0, 0, 0, 0.16);
+  -ms-transform: translateY(-300px);
+  transform: translateY(-300px);
+  transition: .5s;
+}
+
+.alert-top-content{
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.close-alert-top{
+  position: absolute;
+  right: 15px; bottom: 15px;
+}
+
+/*========================================================================================================================
                                                       Alert Toast
 ==========================================================================================================================*/
 
@@ -2062,6 +2092,7 @@ hr{
 .checkout-btn{
   cursor: pointer;
   border-radius: 5px;
+  padding: 10px 20px;
   background-color: #f83a5c;
   color: white;
   display: flex;
@@ -2076,10 +2107,11 @@ hr{
   background-color: #e52e4f;
 }
 
-.main-btn, button.main-btn {
+.main-btn {
   cursor: pointer;
   border-radius: 5px;
-  background-color: #38b1f1;
+  padding: 10px 20px;
+  background-color: #179de6;
   color: white;
   display: flex;
   align-items: center;
@@ -2087,13 +2119,9 @@ hr{
   transition: .2s;
 }
 
-button.main-btn{
-  border: none;
-}
-
-.main-btn:hover, button.main-btn{
+.main-btn:hover{
   background-color: var(--main);
-  color: white;
+  transform: translateY();
 }
 
 .main-btn-2{
@@ -2103,7 +2131,6 @@ button.main-btn{
   background-color: white;
   color: var(--main);
   text-align: center;
-  transition: .2s;
 }
 
 .main-btn-2:hover{
@@ -2541,6 +2568,7 @@ textarea:focus{
 
 .head-offcanvas{
   display: none;
+  float: right;
 }
 
 .head-offcanvas-item a{
@@ -2601,7 +2629,6 @@ textarea:focus{
 @media screen and (max-width: 1100px){
   .head-offcanvas {
     display: block;
-    float: right;
   }
   .head-items{
     display: none;
@@ -4620,6 +4647,18 @@ a.head-item:hover{
 #success-checkout{
   opacity: 0;
   transition: .5s;
+}
+
+/*========================================================================================================================
+                                                      Contact
+/*========================================================================================================================*/
+
+.contact{
+  position: absolute;
+  left: 0; top: 80px; right: 0; bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /*========================================================================================================================

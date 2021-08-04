@@ -1,7 +1,7 @@
 <section class="user-bg-color pt-40">
     <div class="container white-bg border p-0">
         <div class="d-flex align-items-center fz-22 fw-600 p-20">
-            <div>KHUYẾN MÃI HOT NHẤT</div>
+            <div>KHUYẾN MÃI HOT</div>
             <div class="relative ml-10">
                 <div class="fire-animation"><i class="fas fa-fire"></i></div>
             </div>

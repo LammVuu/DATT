@@ -1,35 +1,27 @@
 $(function() {
+    $('.loader').fadeOut();
+
+    // auto cuộn
+    setTimeout(() => {
+        // cuộn lên đầu trang
+        setTimeout(() => {
+            loadMoreFlag = false;
+        }, 200);
+        $(window).scrollTop(0);
+        
+        // cuộn tới link đang chọn
+        var position = $('.sidebar-link.sidebar-link-selected').position().top;
+        if(position > 700){
+            $('.sidebar.custom-scrollbar').animate({scrollTop: position});
+        }
+    }, 100);
+
     var url = window.location.pathname.split('/')[2];
     if(url == undefined){
         url = '';
     }
-    console.log(url);
     var navigation = performance.getEntriesByType("navigation")[0].type;
-
-    $(window).on('load', function(){
-        // cuộn sidebar tới link đang chọn
-        setTimeout(() => {
-            var position = $('.sidebar-link.sidebar-link-selected').position().top;
-            if(position > 700){
-                $('.sidebar.custom-scrollbar').animate({scrollTop: position});
-                $('.loader').fadeOut();
-            }
-        }, 300);
-
-        // auto cuộn lên đầu trang
-        if(navigation == 'reload' || navigation == 'back_forward'){
-            setTimeout(() => {
-                setTimeout(() => {
-                    loadMoreFlag = false;
-                }, 200);
-                $(window).scrollTop(0);
-                $('.loader').fadeOut();
-            }, 200);
-        }
-
-        $('.loader').fadeOut();
-    });
-
+    
     const SUCCESS = '#D2F4EA';
     const DANGER = '#F8D7DA';
     const CREATE_MESSAGE = 'Thêm thành công';

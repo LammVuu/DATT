@@ -118,7 +118,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mt-50">
-                    <div class="checkout-btn p-10" data-bs-dismiss="modal">Đóng</div>
+                    <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
                 </div>
             </div>
         </div>

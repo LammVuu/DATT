@@ -4,6 +4,9 @@
 @include("user.header.head")
 
 <body>
+    {{-- alert top --}}
+    <div class="alert-top"><div class="alert-top-content"></div><div type="button" class="close-alert-top main-btn"><i class="far fa-times mr-5"></i>Đóng</div></div>
+    
     {{-- session --}}
     @if (session('toast_message'))
         <div id="toast-message" data-message="{{session('toast_message')}}"></div>

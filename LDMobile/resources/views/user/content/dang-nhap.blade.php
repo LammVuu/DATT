@@ -37,7 +37,7 @@
                         </div>
     
                         <!-- button đăng nhặp -->
-                        <div id="btn-login" class='main-btn p-10 w-100 mt-20'>Đăng nhập</div>
+                        <div id="btn-login" class='main-btn w-100 mt-20'>Đăng nhập</div>
     
                         <!-- đăng nhập khác -->
                         <div class='mt-20'>

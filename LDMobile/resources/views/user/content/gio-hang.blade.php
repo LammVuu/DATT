@@ -158,7 +158,7 @@
                     </div>
 
                     {{-- thanh toán --}}
-                    <a href="{{route('user/thanh-toan')}}" class="checkout-btn p-10">Tiến hành thanh toán</a>
+                    <a href="{{route('user/thanh-toan')}}" class="checkout-btn">Tiến hành thanh toán</a>
                 </div>
             @else
             <div class="col-lg-12 box-shadow">
