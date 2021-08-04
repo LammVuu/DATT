@@ -38,9 +38,7 @@
 
     @include('user.header.header')
     
-    <div style="margin-top: 80px">
-        @yield("content")
-    </div>
+    @yield("content")
 
     <div id='btn-scroll-top'><i class="fas fa-chevron-up"></i></div>
   

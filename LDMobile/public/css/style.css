@@ -2512,13 +2512,10 @@ textarea:focus{
 .head-bg{
   background: rgb(2,0,36);
   background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
-  /* position: sticky;
-  left: 0; top: 0; right: 0; */
-  position: fixed;
+  position: sticky;
   left: 0; top: 0; right: 0;
   width: 100%;
   height: 80px;
-  margin-bottom: 80px;
   display: flex;
   align-items: center;
   z-index: 100;

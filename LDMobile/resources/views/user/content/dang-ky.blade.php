@@ -40,7 +40,7 @@
                             <div class="d-flex justify-content-center mt-10">Đã có tài khoản? <a href="{{route('user/dang-nhap')}}" class="ml-10">Đăng nhập</a></div>
         
                             {{-- đăng nhập khác --}}
-                            <div class='mt-50'>
+                            <div class='mt-20'>
                                 <div class='d-flex flex-column align-items-center'>
                                     <div class="login-with w-100"></div>
                                     <div class="row">
