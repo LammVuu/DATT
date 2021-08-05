@@ -631,9 +631,7 @@ class SanPhamController extends Controller
     	$itemsPerPage = !empty($request->per_page) ? $request->per_page : 5;
         $priceMax = $request->priceMax;
         $priceMin = $request->priceMin;
-
-        $suppliers = array();
-        $suppliers =$request->suppliers;
+        $suppliers = json_decode($request->suppliers, true);
         if(!empty($priceMax)&&!empty($request->ram)&&!empty($request->dungluong)&&!empty($priceMin)&&!empty($suppliers)){
             $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where(function($query) use ($priceMax, $priceMin, $suppliers){
                 $query->where('gia','<=',$priceMax);
@@ -695,7 +693,7 @@ class SanPhamController extends Controller
                 $query->where('gia','>=',$priceMin);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }else if(!empty($suppliers)){
-            $listProduct = SANPHAM::whereIn(function($query) use ($suppliers){
+            $listProduct = SANPHAM::whereIn('id_msp',function($query) use ($suppliers){
                 $query->select('id')
                         ->from('mausp')
                     ->whereIn('id_ncc', $suppliers);
