@@ -466,18 +466,23 @@ class SanPhamController extends Controller
         $listStorage = array();
         $ram = SANPHAM::orderBy('ram','desc')->select('ram')->distinct()->get();
         $storage =  SANPHAM::orderBy('dungluong','desc')->select('dungluong')->distinct()->get();
+        $suppliers = NHACUNGCAP::all();
         foreach($ram as $s){
             array_push($listRam, $s->ram);
         }
         foreach($storage as $r){
             array_push($listStorage, $r->dungluong);
         }
+        foreach($suppliers as $supplier){
+            $supplier->anhdaidien = Helper::$URL."logo/".$supplier->anhdaidien;
+        }
         return response()->json([
             'status' => 'true',
             'message' => '',
             'data' => ([
                 "ram"=>$listRam,
-                "dungluong"=>$listStorage
+                "dungluong"=>$listStorage,
+                "nhacungcap"=>$suppliers
                 ])
         ]);
     }
@@ -626,31 +631,74 @@ class SanPhamController extends Controller
     	$itemsPerPage = !empty($request->per_page) ? $request->per_page : 5;
         $priceMax = $request->priceMax;
         $priceMin = $request->priceMin;
-        if(!empty($priceMax)&&!empty($request->ram)&&!empty($request->dungluong)){
+
+        $suppliers = array();
+        $suppliers =$request->suppliers;
+        if(!empty($priceMax)&&!empty($request->ram)&&!empty($request->dungluong)&&!empty($priceMin)&&!empty($suppliers)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where(function($query) use ($priceMax, $priceMin, $suppliers){
+                $query->where('gia','<=',$priceMax);
+                $query->where('gia','>=',$priceMin);
+                $query->whereIn('id_msp',  function($query1) use ($suppliers){
+                    $query1->select('id')
+                        ->from('mausp')
+                        ->whereIn('id_ncc', $suppliers);
+                });
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMax)&&!empty($request->ram)&&!empty($request->dungluong)&&!empty($priceMin)){
             $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where(function($query) use ($priceMax, $priceMin){
                 $query->where('gia','<=',$priceMax);
                 $query->where('gia','>=',$priceMin);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
-        }else if(!empty($priceMax)&&!empty($request->ram)){
-            $listProduct = SANPHAM::where('ram', $request->ram)->where(function($query) use ($priceMax, $priceMin){
+        }else if(!empty($request->ram)&&!empty($request->dungluong)&&!empty($suppliers)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->whereIn('id_msp', function($query) use ($suppliers){
+                $query->select('id')
+                        ->from('mausp')
+                        ->whereIn('id_ncc', $suppliers);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }
+        else if(!empty($priceMax)&&!empty($request->ram)&&!empty($request->dungluong)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where(function($query) use ($priceMax){
                 $query->where('gia','<=',$priceMax);
-                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMax)&&!empty($request->ram)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where(function($query) use ($priceMax){
+                $query->where('gia','<=',$priceMax);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }else if(!empty($priceMax)&&!empty($request->dungluong)){
-            $listProduct = SANPHAM::where('dungluong', $request->dungluong)->where(function($query) use ($priceMax, $priceMin){
+            $listProduct = SANPHAM::where('dungluong', $request->dungluong)->where(function($query) use ($priceMax){
                 $query->where('gia','<=',$priceMax);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMin)&&!empty($request->ram)&&!empty($request->dungluong)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where(function($query) use ($priceMin){
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMin)&&!empty($request->ram)){
+            $listProduct = SANPHAM::where('ram', $request->ram)->where(function($query) use ($priceMin){
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMin)&&!empty($request->dungluong)){
+            $listProduct = SANPHAM::where('dungluong', $request->dungluong)->where(function($query) use ($priceMin){
                 $query->where('gia','>=',$priceMin);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }else if(!empty($request->ram)&&!empty($request->dungluong)){
             $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }else if(!empty($request->ram)){
-            $listProduct = SANPHAM::where('ram', $request->ram)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+            $listProduct = SANPHAM::where('ram', $request->ram)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();;
         }else if(!empty($request->dungluong)){
             $listProduct = SANPHAM::where('dungluong', $request->dungluong)->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }else if(!empty($priceMax)){
-            $listProduct = SANPHAM::where(function($query) use ($priceMax, $priceMin){
+            $listProduct = SANPHAM::where(function($query) use ($priceMax){
                 $query->where('gia','<=',$priceMax);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($priceMin)){
+            $listProduct = SANPHAM::where(function($query) use ($priceMin){
                 $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }else if(!empty($suppliers)){
+            $listProduct = SANPHAM::whereIn(function($query) use ($suppliers){
+                $query->select('id')
+                        ->from('mausp')
+                    ->whereIn('id_ncc', $suppliers);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
         }
         foreach($listProduct as $product){
