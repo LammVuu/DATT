@@ -21,6 +21,7 @@ use App\Models\VOUCHER;
 use App\Models\TINHTHANH;
 use App\Models\TAIKHOAN_DIACHI;
 use App\Classes\Helper;
+use App\Models\DONHANG_DIACHI;
 use session;
 use Carbon\Carbon;
 class CartController extends Controller
@@ -180,7 +181,15 @@ class CartController extends Controller
         $order->id_tk = $id;
         $order->pttt = request('pttt');
         if(!empty(request('id_tk_dc'))){
-            $order->id_tk_dc = request('id_tk_dc');
+            $address = TAIKHOAN_DIACHI::find(request('id_tk_dc'));
+            $orderAddress = new DONHANG_DIACHI();
+            $orderAddress->diachi = $address->diachi;
+            $orderAddress->phuongxa = $address->phuongxa;
+            $orderAddress->quanhuyen = $address->quanhuyen;
+            $orderAddress->tinhthanh = $address->tinhthanh;
+            $orderAddress->sdt = $address->sdt;
+            $orderAddress->save();
+            $order->id_tk_dc = $orderAddress->id;
         }else $order->id_cn = request('id_cn');
         if(!empty(request('id_vc'))){
             $voucher = TAIKHOAN_VOUCHER::where('id_vc',(request('id_vc')))->get();
@@ -632,8 +641,8 @@ class CartController extends Controller
             
         }
         foreach($detailOrder as $detail){
-            if(!empty($order->id_tk_dc)){
-                $city = TAIKHOAN_DIACHI::find($order->id_tk_dc);
+            if(!empty($order->id_dh_dc)){
+                $city = DONHANG_DIACHI::find($order->id_dh_dc);
                 $url ="TinhThanh.json" ;
                 $datos = file_get_contents($url);
                 $data = json_decode($datos, true);
@@ -698,7 +707,7 @@ class CartController extends Controller
             $order->sdt =$user->sdt;
             $order->diachigiaohang = CHINHANH::find($order->id_cn)->diachi;
         }else{
-            $infoAddress =  TAIKHOAN_DIACHI::find($order->id_tk_dc);
+            $infoAddress =  DONHANG_DIACHI::find($order->id_dh_dc);
             $order->diachigiaohang = $infoAddress->diachi.", ".$infoAddress->phuongxa.", ".$infoAddress->quanhuyen.", ".$infoAddress->tinhthanh;
             $order->hoten = $infoAddress->hoten;
             $order->sdt =$infoAddress->sdt;
