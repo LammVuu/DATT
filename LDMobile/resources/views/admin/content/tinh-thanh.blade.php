@@ -66,7 +66,7 @@
                     </div>
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-btn" class="main-btn p-10 ml-10"></div>
+                        <div id="action-btn" class="main-btn ml-10"></div>
                     </div>
                 </form>
             </div>

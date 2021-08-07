@@ -120,7 +120,7 @@
                             {{-- trạng thái --}}
                             <div class="mb-5">
                                 <label for="ncc_status" class="mb-5 fw-600">Trạng thái</label>
-                                <select id="ncc_status" class="form-select">
+                                <select id="ncc_status">
                                     <option value="1" selected>Hoạt động</option>
                                     <option value="0">Ngừng kinh doanh</option>
                                 </select>
@@ -129,7 +129,7 @@
                     </div>
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-ncc-btn" class="main-btn p-10 ml-10"></div>
+                        <div id="action-ncc-btn" class="main-btn ml-10"></div>
                     </div>
                 </form>
             </div>

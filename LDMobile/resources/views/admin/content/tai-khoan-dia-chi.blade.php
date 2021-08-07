@@ -143,7 +143,7 @@
                 <div class="modal-body p-60">
                     <div id="delete-content" class="fz-20"></div>
                     <div class="mt-30 d-flex justify-content-between">
-                        <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
+                        <div class="cancel-btn w-48" data-bs-dismiss="modal">Hủy</div>
                         <div id="delete-account-address-btn" data-id="" class="checkout-btn w-48">Xóa</div>
                     </div>
                 </div>

@@ -246,8 +246,8 @@ $(function(){
             $('.alert-top').removeAttr('style');
         }, 500);
         $('.alert-top').css({
-            '-ms-transform': 'translateY(-300px)',
-            'transform': 'translateY(-300px)',
+            '-ms-transform': 'translateY(-500px)',
+            'transform': 'translateY(-500px)',
         });
         $('.backdrop').fadeOut();
     });
@@ -258,7 +258,7 @@ $(function(){
                 '-ms-transform': 'translateY(0)',
                 'transform': 'translateY(0)',
             });
-            $('.backdrop').css('z-index', '102');
+            $('.backdrop').css('z-index', '1999');
             $('.backdrop').fadeIn();
         }, 200);
         $('.alert-top-content').text(content);
@@ -271,7 +271,7 @@ $(function(){
     $('#show-offcanvas').on('click', function(){
         if($(this).attr('aria-expanded') == 'false'){
             $('.head-offcanvas-box').css({
-                'width' : '50%',
+                'width' : '70%',
             });
             $('.backdrop').fadeIn();
             $(this).attr('aria-expanded', 'true');
@@ -294,21 +294,19 @@ $(function(){
     });
 
     // đóng offcanvas theo kích thước màn hình
-    $(window).resize(function(){
-        if($(window).width() >= 1091) {
-            $('.backdrop').fadeOut();
-            $('.head-offcanvas-box').css({
-                'width' : '0',
-            });
-            $('#show-offcanvas').attr('aria-expanded', 'false');
-        }
-    });
+    // $(window).resize(function(){
+    //     if($(window).width() >= 1091) {
+    //         $('.backdrop').fadeOut();
+    //         $('.head-offcanvas-box').css({
+    //             'width' : '0',
+    //         });
+    //         $('#show-offcanvas').attr('aria-expanded', 'false');
+    //     }
+    // });
 
     // dropdown tài khoản trong offcanvas
-    $('.head-offcanvas-account').hover(function(){
-            $('.head-offcanvas-account-option').css('display', 'block');
-    },function(){
-            $('.head-offcanvas-account-option').css('display' ,'none');
+    $('.offcanvas-account').click(function(){
+        $('.offcanvas-account-option').toggle('blind', 300);
     });
 
     $('.head-account').click(function(){
@@ -712,6 +710,11 @@ $(function(){
             return true;
         }
 
+        $('#login_tel').keypress(function(e){
+            if(e.keyCode == 13){
+                $('#btn-login').trigger('click');   
+            }
+        });
         $('#login_tel').keyup(function(){
             valiPhonenumberTyping($(this));
         });
@@ -1079,14 +1082,12 @@ $(function(){
                     $('#noti-' + id).addClass('account-noti-checked').removeClass('account-noti-wait');
 
                     // cập nhật số lượng thông báo chưa đọc
-                    var qty = parseInt($('#not-seen-qty').text());
+                    var qty = parseInt($('.not-seen-qty').text());
                     if(qty == 1){
-                        $('#not-seen-qty').hide();
-                        $('#not-seen-qty-header').hide();
+                        $('.not-seen-qty').hide();
                     } else {
                         qty--;
-                        $('#not-seen-qty').text(qty);
-                        $('#not-seen-qty-header').text(qty);
+                        $('.not-seen-qty').text(qty);
                     }
                     // xóa nút "đánh dấu đã đọc"
                     $('.noti-btn-read[data-id="'+id+'"]').remove();
@@ -1121,14 +1122,12 @@ $(function(){
 
                     // cập nhật số lượng thông báo chưa đọc
                     if($('.noti-btn-read[data-id="'+id+'"]').length){
-                        var qty = parseInt($('#not-seen-qty').text());
+                        var qty = parseInt($('.not-seen-qty').text());
                         if(qty == 1){
-                            $('#not-seen-qty').hide();
-                            $('#not-seen-qty-header').hide();
+                            $('.not-seen-qty').hide();
                         } else {
                             qty--;
-                            $('#not-seen-qty').text(qty);
-                            $('#not-seen-qty-header').text(qty);
+                            $('.not-seen-qty').text(qty);
                         }
                     }
 
@@ -1141,53 +1140,59 @@ $(function(){
 
         // đánh dấu đọc tất cả
         $('#noti-btn-read-all').click(function(){
-            $.ajax({
-                headers:{
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/ajax-check-all-noti',
-                success:function(){
-                    $('.noti-btn-read').remove();
-                    $('.account-noti-wait').addClass('account-noti-checked').removeClass('account-noti-wait');
-                    
-                    $('#not-seen-qty').text(0);
-                    $('#not-seen-qty-header').text(0);
-                    $('#not-seen-qty').hide();
-                    $('#not-seen-qty-header').hide();
-
-                    var toast = $('<span id="success-toast" class="alert-toast">Đã đọc tất cả thông báo</span>');
-                    $('#toast').append(toast);
-                    showToast('#success-toast');
-                }
-            });
+            if(!$('#lst_noti').children().length){
+                $('#toast').append('<span id="success-toast" class="alert-toast">Bạn không có thông báo nào</span>');
+                showToast('#success-toast');
+            } else {
+                $.ajax({
+                    headers:{
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/ajax-check-all-noti',
+                    success:function(){
+                        $('.noti-btn-read').remove();
+                        $('.account-noti-wait').addClass('account-noti-checked').removeClass('account-noti-wait');
+                        
+                        $('.not-seen-qty').text(0);
+                        $('.not-seen-qty').hide();
+    
+                        var toast = $('<span id="success-toast" class="alert-toast">Đã đọc tất cả thông báo</span>');
+                        $('#toast').append(toast);
+                        showToast('#success-toast');
+                    }
+                });
+            }
         });
 
         // xóa tất cả thông báo
         $('#noti-btn-delete-all').click(function(){
-            $.ajax({
-                headers:{
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/ajax-delete-all-noti',
-                success:function(){
-                    setTimeout(() => {
-                        var elmnt = $('<div class="p-70 box-shadow text-center">Bạn không có thông báo nào.</div>');
-                        elmnt.show('fade');
-                        $('#lst_noti').append(elmnt);
-                        $('.single-noti').remove();
-                    }, 800);
-
-                    $('.single-noti').hide('drop');
-
-                    $('#not-seen-qty').text(0);
-                    $('#not-seen-qty-header').text(0);
-                    $('#not-seen-qty').hide();
-                    $('#not-seen-qty-header').hide();
-                    
-                    $('#toast').html('<span id="success-toast" class="alert-toast">Đã xóa tất cả thông báo</span>');
-                    showToast('#success-toast');
-                }
-            });
+            if(!$('#lst_noti').children().length){
+                $('#toast').append('<span id="success-toast" class="alert-toast">Bạn không có thông báo nào</span>');
+                showToast('#success-toast');
+            } else {
+                $.ajax({
+                    headers:{
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/ajax-delete-all-noti',
+                    success:function(){
+                        setTimeout(() => {
+                            var elmnt = $('<div class="p-70 box-shadow text-center">Bạn không có thông báo nào.</div>');
+                            elmnt.show('fade');
+                            $('#lst_noti').append(elmnt);
+                            $('.single-noti').remove();
+                        }, 800);
+    
+                        $('.single-noti').hide('drop');
+    
+                        $('.not-seen-qty').text(0);
+                        $('.not-seen-qty').hide();
+                        
+                        $('#toast').html('<span id="success-toast" class="alert-toast">Đã xóa tất cả thông báo</span>');
+                        showToast('#success-toast');
+                    }
+                });
+            }
         });
 
         // nút 3 chấm trang tài khoản - thông báo
@@ -1217,14 +1222,12 @@ $(function(){
                         $('#noti-' + id).addClass('account-noti-checked').removeClass('account-noti-wait');
 
                         // cập nhật số lượng thông báo chưa đọc
-                        var qty = parseInt($('#not-seen-qty').text());
+                        var qty = parseInt($('.not-seen-qty').text());
                         if(qty == 1){
-                            $('#not-seen-qty').hide();
-                            $('#not-seen-qty-header').hide();
+                            $('.not-seen-qty').hide();
                         } else {
                             qty--;
-                            $('#not-seen-qty').text(qty);
-                            $('#not-seen-qty-header').text(qty);
+                            $('.not-seen-qty').text(qty);
                         }
                         // xóa nút "đánh dấu đã đọc"
                         $('.noti-btn-read[data-id="'+id+'"]').remove();
@@ -1259,14 +1262,12 @@ $(function(){
 
                         // cập nhật số lượng thông báo chưa đọc
                         if($('.noti-btn-read[data-id="'+id+'"]').length){
-                            var qty = parseInt($('#not-seen-qty').text());
+                            var qty = parseInt($('.not-seen-qty').text());
                             if(qty == 1){
-                                $('#not-seen-qty').hide();
-                                $('#not-seen-qty-header').hide();
+                                $('.not-seen-qty').hide();
                             } else {
                                 qty--;
-                                $('#not-seen-qty').text(qty);
-                                $('#not-seen-qty-header').text(qty);
+                                $('.not-seen-qty').text(qty);
                             }
                         }
 
@@ -1314,27 +1315,33 @@ $(function(){
 
         // xóa tất cả điện thoại yêu thích
         $('#fav-btn-delete-all').click(function(){
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/ajax-delete-all-favorite',
-                success:function(){
-                    setTimeout(() => {
-                        $('.signle-favorite').remove();
+            if(!$('#lst_favorite').children().length){
+                $('#toast').append('<span id="success-toast" class="alert-toast">Bạn chưa có sản phẩm nào</span>');
+                showToast('#success-toast');
 
-                        var elmnt = $('<div class="p-70 box-shadow d-flex justify-content-center">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div></div>');
-                        elmnt.show('fade');
-                        elmnt.appendTo($('#lst_favorite'));
-                    }, 500);
+            } else {
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: '/ajax-delete-all-favorite',
+                    success:function(){
+                        setTimeout(() => {
+                            $('.signle-favorite').remove();
 
-                    $('.single-favorite').hide('drop');
+                            var elmnt = $('<div class="p-70 box-shadow d-flex justify-content-center">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div></div>');
+                            elmnt.show('fade');
+                            elmnt.appendTo($('#lst_favorite'));
+                        }, 500);
 
-                    // toast
-                    $('#toast').html('<span id="favorite-toast" class="alert-toast">Đã xóa danh sách yêu thích</span>');
-                    showToast('#favorite-toast');
-                }
-            })
+                        $('.single-favorite').hide('drop');
+
+                        // toast
+                        $('#toast').html('<span id="favorite-toast" class="alert-toast">Đã xóa danh sách yêu thích</span>');
+                        showToast('#favorite-toast');
+                    }
+                });
+            }
         });
 
         //=======================================================================
@@ -1835,7 +1842,7 @@ $(function(){
                     success:function(data){
                         // yêu cầu đăng nhập
                         if(data == false){
-                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn w-100">Đăng nhập</a>'));
                             $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
                             $('#info-modal').modal('show');
                             return;
@@ -1936,7 +1943,7 @@ $(function(){
                     success:function(data){
                         // chưa đăng nhập
                         if(data['status'] == false){
-                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn w-100">Đăng nhập</a>'));
                             $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
                             $('#info-modal').modal('show');
                             return;
@@ -1950,26 +1957,30 @@ $(function(){
                             return;
                         }
                         // cập nhật số lượng badge giỏ hàng
-                        else if(data['status'] == 'success'){
+                        else {
                             if($('.head-qty-cart').hasClass('none-dp')){
                                 $('.head-qty-cart').removeClass('none-dp');
                             }
                             var qtyHeadCart = parseInt($('.head-qty-cart').text());
                             $('.head-qty-cart').text(++qtyHeadCart);
+
+                            if(window.innerWidth > 992){
+                                var addCartSuccess = $('<div class="add-cart-success">' +
+                                                            '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
+                                                            '<a href="giohang" class="checkout-btn w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
+                                                        '</div>');
+                                addCartSuccess.appendTo($('#add-cart-success'));
+
+                                setTimeout(() => {
+                                    setTimeout(() => {
+                                        $('.add-cart-success').remove();
+                                    }, 1000);
+                                    $('.add-cart-success').hide('fade', 300);
+                                }, 5000);
+                            } else {
+                                showAlertTop('Thêm giỏ hàng thành công');
+                            }
                         }
-
-                        var addCartSuccess = $('<div class="add-cart-success">' +
-                                                    '<div class="d-flex align-items-center"><i class="fas fa-check-circle success-color mr-10"></i>Thêm giỏ hàng thành công!</div>' +
-                                                    '<a href="giohang" class="checkout-btn w-100 mt-20">Xem giỏ hàng và thanh toán</a>' +
-                                                '</div>');
-                        addCartSuccess.appendTo($('#add-cart-success'));
-
-                        setTimeout(() => {
-                            setTimeout(() => {
-                                $('.add-cart-success').remove();
-                            }, 1000);
-                            $('.add-cart-success').hide('fade', 300);
-                        }, 5000);
                     }
                 });
             });
@@ -2198,7 +2209,7 @@ $(function(){
                     success:function(data){
                         // yêu cầu đăng nhập
                         if(data['status'] == 'login required'){
-                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                            $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn w-100">Đăng nhập</a>'));
                             $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
                             $('#info-modal').modal('show');
                         }
@@ -2327,9 +2338,12 @@ $(function(){
                 responsiveClass:true,
                 responsive: {
                     0: {
-                        items: 3
+                        items: 2
                     },
-                    600: {
+                    767: {
+                        items: 2
+                    },
+                    768: {
                         items: 3
                     },
                     1000: {
@@ -2358,9 +2372,12 @@ $(function(){
                 responsiveClass:true,
                 responsive: {
                     0: {
-                        items: 3
+                        items: 2
                     },
-                    600: {
+                    767: {
+                        items: 2
+                    },
+                    768: {
                         items: 3
                     },
                     1000: {
@@ -2599,37 +2616,41 @@ $(function(){
                     var fileName = this.files[i].name.split('.');
                     var extend = fileName[fileName.length - 1];
 
-                    // xem trước hình ảnh
-                    if(extend != 'jpg' && extend != 'jpeg' && extend != 'png'){
+                    
+                    if(extend == 'jpg' || extend == 'jpeg' || extend == 'png' && extend == 'mp4'){
+                        // nếu số lượng hình > 3 thì hiển thị modal thông báo
+                        if(qty_img >= 3){
+                            $('#info-modal-content').text('Bạn chỉ được phép chọn 3 ảnh đính kèm');
+                            $('#info-modal-main-btn').attr('dismiss', 'true');
+                            $('#info-modal-main-btn').text('Đã hiểu');
+                            $('#info-modal').modal('show');
+                            break;
+                        }
+
+                        var id = (qty_img + i) + 1;
+
+                        // hình đánh giá
+                        var imageEvaluate = $('<div id="img-rating-'+id+'" class="img-rating">' +
+                                                    '<div class="img-rating-overlay"></div>'+
+                                                    '<div type="button" class="btn-remove-single-img"><i class="fal fa-times-circle fz-30"></i></div>' +
+                                                    '<img class="w-100" src="'+URL.createObjectURL(this.files[i])+'">' +
+                                                '</div>');
+
+                        imageEvaluate.appendTo('.evaluate-img-div');
+
+                        // mảng hình đánh giá
+                        getBase64FromUrl(URL.createObjectURL(this.files[i]), function(data){
+                            arrayEvaluateImage.push(data);
+                        });
+
+                        qty_img++;
+                    } else {
                         showAlertTop('Bạn chỉ có thể upload hình ảnh');
-                        return;
-                    }
-                    // nếu số lượng hình > 3 thì hiển thị modal thông báo
-                    if(qty_img >= 3){
-                        $('#info-modal-content').text('Bạn chỉ được phép chọn 3 ảnh đính kèm');
-                        $('#info-modal-main-btn').attr('dismiss', 'true');
-                        $('#info-modal-main-btn').text('Đã hiểu');
-                        $('#info-modal').modal('show');
+                        if(qty_img == 0){
+                            $(this).val('');
+                        }
                         break;
                     }
-
-                    var id = (qty_img + i) + 1;
-
-                    // hình đánh giá
-                    var imageEvaluate = $('<div id="img-rating-'+id+'" class="img-rating">' +
-                                                '<div class="img-rating-overlay"></div>'+
-                                                '<div type="button" class="btn-remove-single-img"><i class="fal fa-times-circle fz-30"></i></div>' +
-                                                '<img class="w-100" src="'+URL.createObjectURL(this.files[i])+'">' +
-                                            '</div>');
-
-                    imageEvaluate.appendTo('.evaluate-img-div');
-
-                    // mảng hình đánh giá
-                    getBase64FromUrl(URL.createObjectURL(this.files[i]), function(data){
-                        arrayEvaluateImage.push(data);
-                    });
-
-                    qty_img++;
                 }
 
 
@@ -2854,7 +2875,7 @@ $(function(){
                         // chưa đăng nhập
                         if(data['status'] == 'login required'){
                             $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
-                            var loginBtn = $('<a href="dangnhap" id="" class="main-btn p-10">Đăng nhập</a>');
+                            var loginBtn = $('<a href="dangnhap" id="" class="main-btn">Đăng nhập</a>');
                             $('#info-modal-main-btn').replaceWith(loginBtn);
                             $('#info-modal').modal('show');
                         }
@@ -3488,6 +3509,13 @@ $(function(){
                                                         So sánh
     ==============================================================================================================*/
     else if(url == 'sosanh'){
+        if(window.innerWidth <= 992){
+            $('.thirdProduct').hide();
+            $('#blank-td').removeClass('w-25').addClass('w-20');
+            $('#currentProduct').removeClass('w-25').addClass('w-40');
+            $('#compareProduct').removeClass('w-25').addClass('w-40');
+            $('td[colspan="4"]').attr('colspan', '3');
+        }
         // tìm kiếm điện thoại để so sánh
         $('#compare-search-phone').keyup(function(){
             var data = $(this).val();
@@ -3644,9 +3672,9 @@ $(function(){
                         // trạng thái bảo hành
                         $warrantyStatus = data.product.trangthaibaohanh == 'true' ? true : false;
                         
-                        var elmnt = '<div class="col-md-8 mx-auto">'+
-                                        '<div class="d-flex">'+
-                                            '<div class="w-50">'+
+                        var elmnt = '<div class="col-lg-8 mx-auto">'+
+                                        '<div class="row">'+
+                                            '<div class="col-lg-6 col-md-6 col-12 mb-40">'+
                                                 '<img src="images/phone/'+data.product.hinhanh+'" alt="" class="w-80 center-img">'+
                                                 '<div class="d-flex flex-column justify-content-center align-items-center">'+
                                                     '<div class="fz-26 fw-600 pt-20 pb-20">'+data.product.tensp+'</div>'+
@@ -3658,10 +3686,10 @@ $(function(){
                                                         '<div>Dung lượng: <b> '+data.product.dungluong+'</b></div>'+
                                                         '<div class="ml-20">IMEI: <b>'+IMEI+'</b></div>'+
                                                     '</div>'+
-                                                    '<div id="btn-check-another-imei" class="main-color-text pointer-cs">Kiểm tra số IMEI khác<i class="far fa-chevron-right ml-10"></i></div>'+ 
+                                                    '<div id="btn-check-another-imei" class="main-color-text pointer-cs">Kiểm tra số IMEI khác<i class="far fa-chevron-right ml-10"></i></div>'+
                                                 '</div>'+
                                             '</div>'+
-                                            '<div class="w-50">'+
+                                            '<div class="col-lg-6 col-md-6 col-12 mb-40">'+
                                                 '<div class="fz-26 fw-600">'+
                                                     '<i class="fas fa-shield-check mr-10"></i>Bảo hành'+
                                                 '</div>'+
@@ -3739,10 +3767,7 @@ $(function(){
     });
 
     function editAddressModal(id, defaultAdr = false, diachi, phuongxa, quanhuyen, tinhthanh){
-        // gán tỉnh thành
-        $('#TinhThanh-selected').trigger('click');
-        $('.option-tinhthanh[data-type="'+tinhthanh+'/TinhThanh"]').trigger('click');
-
+        $('.loader').fadeIn();
         // gán quận huyện
         setTimeout(() => {
             $('.option-quanhuyen[data-type="'+quanhuyen+'/QuanHuyen"]').trigger('click');
@@ -3752,6 +3777,10 @@ $(function(){
         setTimeout(() => {
             $('.option-phuongxa[data-type="'+phuongxa+'/PhuongXa"]').trigger('click');
         }, 600);
+
+        // gán tỉnh thành
+        $('#TinhThanh-selected').trigger('click');
+        $('.option-tinhthanh[data-type="'+tinhthanh+'/TinhThanh"]').trigger('click');
 
         // gán địa chỉ
         $('input[name="address_inp"]').val(diachi);
@@ -3779,6 +3808,7 @@ $(function(){
         $('input[name="adr_tel_inp"]').val($('#adr-tel-' + id).text());
 
         $('#address-modal').modal('show');
+        $('.loader').fadeOut();
     }
 
     // thêm|sửa địa chỉ mới
@@ -4285,6 +4315,7 @@ $(function(){
                     } 
                 }
                 if(qty == 2){
+                    showAlertTop('Số lượng mua tối đa là 2');
                     return;
                 }
                 
@@ -4312,6 +4343,7 @@ $(function(){
                     return;
                 }
             } if(type == 'plus' && qty == 2){
+                showAlertTop('Số lượng mua tối đa là 2');
                 return;
             }
 
@@ -4540,7 +4572,7 @@ $(function(){
             success:function(data){
                 // yêu cầu đăng nhập
                 if(data['status'] == 'login required'){
-                    $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn p-10 w-100">Đăng nhập</a>'));
+                    $('#info-modal-main-btn').replaceWith($('<a href="/dangnhap" id="info-modal-main-btn" class="main-btn w-100">Đăng nhập</a>'));
                     $('#info-modal-content').text('Vui lòng đăng nhập để thực hiện chức năng này');
                     $('#info-modal').modal('show');
                 }
@@ -4599,21 +4631,18 @@ $(function(){
             }
 
             // cập nhật số lượng thông báo
-            var notiQty = parseInt($('#not-seen-qty-header').text());
+            var notiQty = parseInt($($('.not-seen-qty')[0]).text());
             notiQty++;
-            $('#not-seen-qty-header').text(notiQty);
-            $('#not-seen-qty').text(notiQty);
+            $('.not-seen-qty').text(notiQty);
 
             if(data.notification.type == 'order'){
                 if(data.notification.orderStatus == 'success'){
-                    var processingQty = parseInt($('#processing-qty').text());
+                    var processingQty = parseInt($($('.processing-qty')[0]).text());
                     if(processingQty == 1){
-                        $('#processing-qty').hide();
-                        $('#processing-qty-header').hide();
+                        $('.processing-qty').hide();
                     } else {
                         processingQty--;
-                        $('#processing-qty').text(processingQty);
-                        $('#processing-qty-header').text(processingQty);
+                        $('.processing-qty').text(processingQty);
                     }
                 }
                 

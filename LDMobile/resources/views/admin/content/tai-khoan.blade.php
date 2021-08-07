@@ -139,14 +139,14 @@
                         <div class="row mb-3">
                             <div class="col-lg-6">
                                 <label for="mausp_name" class="mb-5 fw-600">Loại tài khoản</label>
-                            <select class="form-select" id='loai_tk' name="loai_tk" aria-label="Default select example">
+                            <select id='loai_tk' name="loai_tk" aria-label="Default select example">
                                 <option value="0">user</option>
                                 <option value="1">admin</option>
                             </select>
                             </div>
                             <div class="col-lg-6">
                                 <label for="mausp_name" class="mb-5 fw-600">Trạng Thái</label>
-                            <select class="form-select" id='trangthai' name="trangthai"  aria-label="Default select example">
+                            <select id='trangthai' name="trangthai"  aria-label="Default select example">
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Khóa</option>
                             </select>
@@ -155,7 +155,7 @@
                     </div>  
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn" id="close-account" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-taikhoan-btn" data-user="" class="main-btn p-10 ml-10"></div>
+                        <div id="action-taikhoan-btn" data-user="" class="main-btn ml-10"></div>
                     </div>
             </div>
         </div>
@@ -168,7 +168,7 @@
                 <div class="modal-body p-60">
                     <div id="delete-content" class="fz-20"></div>
                     <div class="mt-30 d-flex justify-content-between">
-                        <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
+                        <div class="cancel-btn w-48" data-bs-dismiss="modal">Hủy</div>
                         <div id="lock-account-btn" data-id="" class="checkout-btn w-48">Xóa</div>
                     </div>
                 </div>
@@ -188,7 +188,7 @@
                         <div class="row mb-3">
                             <div class="col-lg-6">
                                 <label for="mausp_name" class="mb-5 fw-600">Hình thức</label>
-                            <select class="form-select" id='loaitk' name="hinhthuc"  aria-label="Default select example">
+                            <select id='loaitk' name="hinhthuc"  aria-label="Default select example">
                                 <option value="0">user</option>
                                 <option value="1">admin</option>
                              
@@ -196,7 +196,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label for="mausp_name" class="mb-5 fw-600">Hình thức</label>
-                            <select class="form-select" id='trangthaitk' name="hinhthuc"  aria-label="Default select example">
+                            <select id='trangthaitk' name="hinhthuc"  aria-label="Default select example">
                                 <option value="1">Hoạt động</option>
                                 <option value="0">Khóa</option>
                             </select>
@@ -204,7 +204,7 @@
                         </div>
                         <div class="col-lg-6">
                             <label for="mausp_name" class="mb-5 fw-600">Hình thức</label>
-                        <select class="form-select" id='hinhthuc' name="hinhthuc"  aria-label="Default select example">
+                        <select id='hinhthuc' name="hinhthuc"  aria-label="Default select example">
                             <option value="normal">normal</option>
                             <option value="google">google</option>
                             <option value="facebook">facebook</option>
@@ -213,7 +213,7 @@
                     </div>
 
                     <div class="mt-30 d-flex justify-content-between">
-                        <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
+                        <div class="cancel-btn w-48" data-bs-dismiss="modal">Hủy</div>
                         <div id="filter-account-btn" data-user="" data-id="" class="checkout-btn w-48">Xóa</div>
                     </div>
                 </div>

@@ -92,7 +92,7 @@
                 <div class="row mb-3">
                     <div class="col-lg-6">
                         <label for="mausp_name" class="mb-5 fw-600">Cho id tài khoản</label>
-                    <select class="form-select" id='account' name="account" aria-label="Default select example">
+                    <select id='account' name="account" aria-label="Default select example">
                         @foreach ($listAccount as $account)
                         <option value="{{$account->id}}">{{$account->id}}</option>
                         @endforeach
@@ -100,7 +100,7 @@
                     </div>
                     <div class="col-lg-6">
                         <label for="mausp_name" class="mb-5 fw-600">Trạng thái thông báo</label>
-                    <select class="form-select" id='status' hidden name="account" aria-label="Default select example">
+                    <select id='status' hidden name="account" aria-label="Default select example">
                         <option value="0">Chưa đọc</option>
                         <option value="1">Đã đọc</option>
                     </select>
@@ -111,7 +111,7 @@
                 
                 <div class="d-flex justify-content-end mt-50">
                     <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                    <div id="action-notification-btn" class="main-btn p-10 ml-10"></div>
+                    <div id="action-notification-btn" class="main-btn ml-10"></div>
                 </div>
             </div>
         </div>
@@ -124,7 +124,7 @@
                 <div class="modal-body p-60">
                     <div id="delete-content" class="fz-20"></div>
                     <div class="mt-30 d-flex justify-content-between">
-                        <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
+                        <div class="cancel-btn w-48" data-bs-dismiss="modal">Hủy</div>
                         <div id="delete-notification-btn" data-id="" class="checkout-btn w-48">Xóa</div>
                     </div>
                 </div>
@@ -158,7 +158,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label for="mausp_name" class="mb-5 fw-600">Trạng thái thông báo</label>
-                            <select class="form-select" id='status-notification' name="status"  aria-label="Default select example">
+                            <select id='status-notification' name="status"  aria-label="Default select example">
                                 <option value="0">Chưa đọc</option>
                                 <option value="1">Đã đọc</option>
                             </select>
@@ -168,7 +168,7 @@
                     </div>
 
                     <div class="mt-30 d-flex justify-content-between">
-                        <div class="cancel-btn p-10 w-48" data-bs-dismiss="modal">Hủy</div>
+                        <div class="cancel-btn w-48" data-bs-dismiss="modal">Hủy</div>
                         <div id="filter-notification-btn" data-id="" class="checkout-btn w-48">Lọc</div>
                     </div>
                 </div>

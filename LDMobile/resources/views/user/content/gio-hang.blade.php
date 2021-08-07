@@ -12,7 +12,7 @@
         <div class='row'>
             @if ($data['cart']['qty'] != 0)
                 <div class="fz-26 fw-600 mb-20">Giỏ hàng</div>
-                <div class="col-lg-9 col-md-12">
+                <div class="col-lg-9 col-12">
                     <div class="header-cart">
                         <div class="w-40">Sản phẩm ({{$data['cart']['qty']}})</div>
                         <div class="w-25">Giá</div>
@@ -64,7 +64,7 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-12">
+                <div class="col-lg-3 col-12">
                     {{-- mã khuyến mãi --}}
                     <div class="p-20 box-shadow mb-20">
                         <div class="fw-600 mb-20">Mã khuyến mãi</div>
@@ -117,7 +117,7 @@
                                                     </table>
                                                 </div>
                                             </div>
-                                            <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn p-5">Bỏ chọn</div>
+                                            <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn">Bỏ chọn</div>
                                         </div>
                                     </div>
                                 </div>
@@ -161,12 +161,14 @@
                     <a href="{{route('user/thanh-toan')}}" class="checkout-btn">Tiến hành thanh toán</a>
                 </div>
             @else
-            <div class="col-lg-12 box-shadow">
-                <div class="row">
-                    <div class="col-lg-4 mx-auto">
-                        <div class="pt-100 pb-100 text-center">
-                            <div class="fz-20 mb-40">Không có sản phẩm nào trong giỏ hàng cả.</div>
-                            <a href="{{route('user/dien-thoai')}}" class="main-btn p-10">Tiếp tục mua hàng</a>
+            <div class="col-lg-12">
+                <div class="box-shadow">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-8 col-10 mx-auto">
+                            <div class="pt-100 pb-100 text-center">
+                                <div class="fz-20 mb-40">Không có sản phẩm nào trong giỏ hàng cả.</div>
+                                <a href="{{route('user/dien-thoai')}}" class="main-btn">Tiếp tục mua hàng</a>
+                            </div>
                         </div>
                     </div>
                 </div>

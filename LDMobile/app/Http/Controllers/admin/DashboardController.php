@@ -132,26 +132,26 @@ class DashboardController extends Controller
 
                 foreach($data as $key){
                     $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center w-5">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->id.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->tenmau.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-30">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                                 </td>
                                 {{-- nút --}}
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center w-10">
                                     <div class="d-flex justify-content-start">
                                         <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
                                         <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.(

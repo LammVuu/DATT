@@ -5,13 +5,13 @@
     <a href="{{route('user/tai-khoan-thong-bao')}}" class='account-sidebar-tag @yield('acc-noti-active')'>
         <i class="fas fa-bell mr-20"></i>Thông báo
         @if ($data['lst_noti']['not-seen'] != 0)
-            <div id="not-seen-qty" class='number-badge ml-10'>{{$data['lst_noti']['not-seen']}}</div>
+            <div class='not-seen-qty number-badge ml-10'>{{$data['lst_noti']['not-seen']}}</div>
         @endif
     </a>
     <a href="{{route('user/tai-khoan-don-hang')}}" class='account-sidebar-tag @yield('acc-order-active')'>
         <i class="fas fa-box mr-20"></i>Quản lý đơn hàng
         @if ($data['lst_order']['processing'] != 0)
-            <div id="processing-qty" class='number-badge ml-10'>{{$data['lst_order']['processing']}}</div>
+            <div class='processing-qty number-badge ml-10'>{{$data['lst_order']['processing']}}</div>
         @endif
     </a>
     <a href="{{route('user/tai-khoan-dia-chi')}}" class='account-sidebar-tag @yield('acc-address-active')'>

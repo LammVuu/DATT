@@ -21,14 +21,14 @@
         </div>
 
         {{-- danh sách yêu thích --}}
-        <div id="lst_favorite">
-            @if (count($data['lst_favorite']) != 0)
+        @if (count($data['lst_favorite']) != 0)
+            <div id="lst_favorite">
                 @foreach ($data['lst_favorite'] as $key)
                     <div id="favorite-{{$key['id']}}" class="single-favorite box-shadow mb-30">
                         <div class="d-flex justify-content-between">
                             {{-- điện thoại --}}
-                            <div class="d-flex p-20">
-                                <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" width="150px">
+                            <div class="favorite-product d-flex p-20">
+                                <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="favorite-img">
                                 <div class='d-flex flex-column'>
                                     <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}?mausac={{$key['sanpham']['mausac_url']}}" class="fw-600 black mb-5">{{$key['sanpham']['tensp']}}</a>
                                     @if ($key['sanpham']['danhgia']['qty'] != 0)
@@ -50,11 +50,13 @@
 
                             {{-- giá & nút xóa --}}
                             <div class="d-flex">
-                                <div class='d-flex flex-column p-20'>
-                                    <b class='red fz-20'>{{number_format($key['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></b>
-                                    @if ($key['sanpham']['khuyenmai'] != 0)
-                                        <span class='text-strike fz-14'>{{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>    
-                                    @endif
+                                <div class="favorite-price">
+                                    <div class='d-flex flex-column p-20'>
+                                        <b class='red fz-20'>{{number_format($key['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></b>
+                                        @if ($key['sanpham']['khuyenmai'] != 0)
+                                            <span class='text-strike fz-14'>{{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>
+                                        @endif
+                                    </div>
                                 </div>
                                 {{-- nút xóa --}}
                                 <div type="button" data-id="{{$key['id']}}" class="fav-btn-delete d-flex align-items-center h-100 p-10"><i class="fal fa-trash-alt fz-24"></i></div>
@@ -62,10 +64,10 @@
                         </div>
                     </div>
                 @endforeach
-            @else
-                <div class="p-70 box-shadow d-flex justify-content-center">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div>
-            @endif
-        </div>
+            </div>
+        @else
+            <div class="p-70 box-shadow d-flex justify-content-center">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div>
+        @endif
     </div>
 </div>
 

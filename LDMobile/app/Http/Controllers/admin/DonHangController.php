@@ -22,6 +22,7 @@ use App\Models\BAOHANH;
 use App\Models\THONGBAO;
 use App\Models\KHO;
 use App\Models\TINHTHANH;
+use App\Models\DONHANG_DIACHI;
 
 class DonHangController extends Controller
 {
@@ -71,7 +72,7 @@ class DonHangController extends Controller
             // giao hàng tận nơi
             if($order->hinhthuc == 'Giao hàng tận nơi'){
                 // địa chỉ tài khoản
-                $order->taikhoan_diachi = TAIKHOAN_DIACHI::find($order->id_tk_dc);
+                $order->taikhoan_diachi = DONHANG_DIACHI::find($order->id_dh_dc);
             }
             // nhận tại cửa hàng
             else {

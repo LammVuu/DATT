@@ -33,6 +33,7 @@ use App\Models\KHO;
 use App\Models\CHINHANH;
 use App\Models\TINHTHANH;
 use App\Models\SANPHAM;
+use App\Models\DONHANG_DIACHI;
 
 
 class UserController extends Controller
@@ -48,7 +49,7 @@ class UserController extends Controller
                                                         Auth
     ==============================================================================================================*/
     public function DangNhap(){
-        if(Auth::check()){
+        if(Auth::check() || session('user')){
             return back()->with('toast_message', 'Bạn đã đăng nhập');
         }
         // $this->IndexController->print(Session::all()); return false;
@@ -524,7 +525,7 @@ class UserController extends Controller
                 // kho theo khu vực người đặt
                 else {
                     // tỉnh thành của người dùng
-                    $userProvince = TAIKHOAN_DIACHI::find($order->id_tk_dc)->tinhthanh;
+                    $userProvince = DONHANG_DIACHI::find($order->id_dh_dc)->tinhthanh;
 
                     // tỉnh thành thuộc bắc || nam
                     $file = file_get_contents('TinhThanh.json');

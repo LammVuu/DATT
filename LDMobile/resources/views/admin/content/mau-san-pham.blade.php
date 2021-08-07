@@ -65,26 +65,26 @@
         <tbody id="lst_data">
             @foreach ($lst_model as $key)
                 <tr data-id="{{$key->id}}">
-                    <td class="vertical-center w-5">
+                    <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key->id}}</div>
                     </td>
-                    <td class="vertical-center w-15">
+                    <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key->tenmau}}</div>
                     </td>
-                    <td class="vertical-center w-15">
+                    <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key['nhacungcap']->tenncc}}</div>
                     </td>
-                    <td class="vertical-center w-10">
+                    <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key->baohanh}}</div>
                     </td>
-                    <td class="vertical-center w-30">
+                    <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key->diachibaohanh}}</div>
                     </td>
-                    <td class="vertical-center w-10">
+                    <td class="vertical-center">
                         <div data-id="{{$key->id}}" class="trangthai pt-10 pb-10">{{$key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh'}}</div>
                     </td>
                     {{-- nút --}}
-                    <td class="vertical-center w-15">
+                    <td class="vertical-center w-10">
                         <div class="d-flex justify-content-start">
                             <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
                             <div data-id="{{$key->id}}" class="edit-btn"><i class="fas fa-pen"></i></div>
@@ -119,7 +119,7 @@
                     </div>
                     <div class="col-lg-6">
                         <label for="mausp_supplier" class="mb-5 fw-600">Nhà cung cấp</label>
-                        <select id="mausp_supplier" class="form-select">
+                        <select id="mausp_supplier">
                             @foreach ($lst_supplier as $key)
                                 <option value="{{$key->id}}">{{$key->tenncc}}</option>
                             @endforeach
@@ -139,7 +139,7 @@
                     <div class="col-lg-6">
                         <div class="mb-3">
                             <label for="mausp_warranty" class="mb-5 fw-600">Bảo hành</label>
-                            <select id="mausp_warranty" class="form-select">
+                            <select id="mausp_warranty">
                                 <option value="0" selected>Không bảo hành</option>
                                 <option value="12 Tháng">12 Tháng</option>
                             </select>
@@ -150,7 +150,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="mausp_status" class="mb-5 fw-600">Trạng thái</label>
-                            <select id="mausp_status" class="form-select">
+                            <select id="mausp_status">
                                 <option value="1" selected>Kinh doanh</option>
                                 <option value="0">Ngừng kinh doanh</option>
                             </select>
@@ -160,7 +160,7 @@
                 
                 <div class="d-flex justify-content-end mt-50">
                     <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                    <div id="action-btn" class="main-btn p-10 ml-10"></div>
+                    <div id="action-btn" class="main-btn ml-10"></div>
                 </div>
             </div>
         </div>

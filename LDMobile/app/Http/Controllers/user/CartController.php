@@ -20,6 +20,7 @@ use App\Models\TAIKHOAN_VOUCHER;
 use App\Models\VOUCHER;
 use App\Models\TAIKHOAN_DIACHI;
 use App\Models\THONGBAO;
+use App\Models\DONHANG_DIACHI;
 
 
 class CartController extends Controller
@@ -28,6 +29,7 @@ class CartController extends Controller
     {
         $this->viewprefix='user.pages.';
         $this->user='user/content/';
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $this->IndexController = new IndexController;
     }
 
@@ -81,11 +83,38 @@ class CartController extends Controller
 
     public function Checkout(Request $request)
     {
-        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        // lưu địa chỉ cho đơn hàng
+        $orderAddress = null;
+        if($request->receciveMethod == 'Giao hàng tận nơi'){
+            $userAddress = TAIKHOAN_DIACHI::find($request->id_tk_dc);
+
+            // sử dụng lại địa chỉ đơn hàng đã có
+            $exists = DONHANG_DIACHI::where('hoten', $userAddress->hoten)
+                                    ->where('diachi', $userAddress->diachi)
+                                    ->where('phuongxa', $userAddress->phuongxa)
+                                    ->where('quanhuyen', $userAddress->quanhuyen)
+                                    ->where('tinhthanh', $userAddress->tinhthanh)
+                                    ->where('sdt', $userAddress->sdt)->first();
+
+            // nếu có
+            if($exists){
+                $orderAddress = $exists;
+            } else {
+                $orderAddress = DONHANG_DIACHI::create([
+                    'hoten' => $userAddress->hoten,
+                    'diachi' => $userAddress->diachi,
+                    'phuongxa' => $userAddress->phuongxa,
+                    'quanhuyen' => $userAddress->quanhuyen,
+                    'tinhthanh' => $userAddress->tinhthanh,
+                    'sdt' => $userAddress->sdt,
+                ]);
+            }
+        }
+
         $order = [
             'thoigian' => date('d/m/Y H:i:s'),
             'id_tk' => session('user')->id,
-            'id_tk_dc' => $request->receciveMethod == 'Giao hàng tận nơi' ? $request->id_tk_dc : null,
+            'id_dh_dc' => $orderAddress ? $orderAddress->id : null,
             'id_cn' => $request->receciveMethod == 'Nhận tại cửa hàng' ? $request->id_cn : null,
             'pttt' => $request->paymentMethod == 'cash' ? 'Thanh toán khi nhận hàng' : 'Thanh toán ZaloPay',
             'id_vc' => $request->id_vc,
@@ -115,10 +144,10 @@ class CartController extends Controller
 
                 CTDH::create($detail);
 
-                // trừ số lượng kho
+                // giao hàng tận nơi
                 if($order['hinhthuc'] == 'Giao hàng tận nơi'){
                     // tỉnh thành của người dùng
-                    $userCity = TAIKHOAN_DIACHI::find($order['id_tk_dc'])->tinhthanh;
+                    $userCity = TAIKHOAN_DIACHI::find($orderAddress->id)->tinhthanh;
 
                     // tỉnh thành thuộc bắc || nam
                     $file = file_get_contents('TinhThanh.json');
@@ -165,7 +194,9 @@ class CartController extends Controller
                         $warehouse->slton -= $detail['sl'];
                         $warehouse->save();
                     }
-                } else{
+                }
+                // nhận tại cửa hàng
+                else{
                     // Kho
                     $warehouse = KHO::where('id_cn', $order['id_cn'])->where('id_sp', $detail['id_sp'])->first();
 

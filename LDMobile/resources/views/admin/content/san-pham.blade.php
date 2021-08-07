@@ -168,7 +168,7 @@
                             {{-- tên mẫu --}}
                             <div class="mb-3">
                                 <label for="sanpham_model" class="mb-5 fw-600">Mẫu sản phẩm</label>
-                                <select id="sanpham_model" class="form-select">
+                                <select id="sanpham_model">
                                     @foreach ($lst_model as $key)
                                         <option value="{{$key['id']}}">{{$key['tenmau']}}</option>
                                     @endforeach
@@ -182,7 +182,7 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <label for="sanpham_ram" class="mb-5 fw-600">Ram</label>
-                                    <select id="sanpham_ram" class="form-select">
+                                    <select id="sanpham_ram">
                                         <option value="2 GB">2 GB</option>
                                         <option value="3 GB">3 GB</option>
                                         <option value="4 GB">4 GB</option>
@@ -193,7 +193,7 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <label for="sanpham_capacity" class="mb-5 fw-600">Dung lượng</label>
-                                    <select id="sanpham_capacity" class="form-select">
+                                    <select id="sanpham_capacity">
                                         <option value="32 GB">32 GB</option>
                                         <option value="64 GB">64GB</option>
                                         <option value="128 GB">128 GB</option>
@@ -211,7 +211,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <label for="sanpham_promotion" class="mb-5 fw-600">Khuyến mãi</label>
-                                    <select id="sanpham_promotion" class="form-select">
+                                    <select id="sanpham_promotion">
                                         <option value="">Không có</option>
                                         @foreach ($lst_promotion as $key)
                                             <option value="{{$key['id']}}">{{$key['chietkhau']*100 . '%'}}</option>
@@ -222,7 +222,7 @@
                             {{-- thông số --}}
                             <div class="mb-3">
                                 <label for="sanpham_specifications" class="mb-5 fw-600">Thông số kỹ thuật</label>
-                                <select id="sanpham_specifications" class="form-select">
+                                <select id="sanpham_specifications">
                                     <option value="create" class="main-color-text">Tạo file mới</option>
                                     @foreach ($lst_specifications as $key)
                                         <option value="{{$key}}">{{$key}}</option>
@@ -232,7 +232,7 @@
                             {{-- trạng thái --}}
                             <div class="mb-3">
                                 <label for="sanpham_status" class="mb-5 fw-600">Trạng thái</label>
-                                <select id="sanpham_status" class="form-select">
+                                <select id="sanpham_status">
                                     <option value="1" selected>Kinh doanh</option>
                                     <option value="0">Ngừng kinh doanh</option>
                                 </select>
@@ -485,7 +485,7 @@
 
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-btn" class="main-btn p-10 ml-10"></div>
+                        <div id="action-btn" class="main-btn ml-10"></div>
                     </div>
                 </form>
             </div>

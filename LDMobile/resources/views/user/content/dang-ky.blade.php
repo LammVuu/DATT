@@ -92,7 +92,7 @@
                                 <input type="text" id="verify-code-inp" maxlength="6" placeholder="Ví dụ: 123456" class="text-center">
                             </div>
 
-                            <div type="button" id="signup-step-2" class="main-btn p-10">Tiếp tục</div>
+                            <div type="button" id="signup-step-2" class="main-btn">Tiếp tục</div>
                         </div>
 
                         {{-- enter password --}}
@@ -112,7 +112,7 @@
                                 <input type='password' id="su_re_pw" name="su_re_pw">
                             </div>
 
-                            <div type='button' id='signup-step-3' class="main-btn p-10">Đăng ký</div>
+                            <div type='button' id='signup-step-3' class="main-btn">Đăng ký</div>
                         </div>
                     </form>
                 </div>

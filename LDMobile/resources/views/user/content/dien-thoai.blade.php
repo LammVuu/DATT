@@ -113,7 +113,7 @@
                     </div>
 
                     {{-- nút thêm giỏ hàng --}}
-                    <div id="btn-add-cart" class="main-btn p-10 w-100">Thêm vào giỏ hàng</div>
+                    <div id="btn-add-cart" class="main-btn w-100">Thêm vào giỏ hàng</div>
                 </div>
             </div>
         </div>
@@ -129,7 +129,7 @@
                 <div class="text-center">
                     <i class="fas fa-info-circle fz-100 main-color-text"></i>
                     <div id="info-modal-content" class="mt-40 mb-40 fz-20"></div>
-                    <div type="button" id="info-modal-main-btn" class="main-btn p-10 w-100">Đóng</div>
+                    <div type="button" id="info-modal-main-btn" class="main-btn w-100">Đóng</div>
                 </div>
             </div>
         </div>

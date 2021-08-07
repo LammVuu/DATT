@@ -16,7 +16,7 @@
         <!-- title of page -->
         <div class="content-header d-flex justify-content-between">
             <div class="d-flex justify-content-between align-items-center">
-                <div class="fz-22 fw-600">@yield('content-title')</div>
+                <div class="fz-26 fw-600">@yield('content-title')</div>
             </div>
         </div>
 

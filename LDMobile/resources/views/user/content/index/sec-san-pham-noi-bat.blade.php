@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="col-lg-8 col-12">
-                <div class="d-flex justify-content-end p-20">
+                <div class="d-flex justify-content-end flex-wrap p-20">
                     @foreach ($lst_brand as $key)
                         <a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="index-brand-tag">{{$key['brand']}}</a>    
                     @endforeach

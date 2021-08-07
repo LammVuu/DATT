@@ -34,9 +34,9 @@ class ComposerStaticInit2c2424aa317aa723b4bf3f3e9eff92d1
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         '9cdd7b9056abc3081735233ba9dd9c7f' => __DIR__ . '/..' . '/facade/flare-client-php/src/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
-        '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
         'ed962a97bd972bc82007176b647d4e36' => __DIR__ . '/..' . '/facade/ignition/src/helpers.php',
     );
 
@@ -596,6 +596,7 @@ class ComposerStaticInit2c2424aa317aa723b4bf3f3e9eff92d1
     public static $classMap = array (
         'App\\Classes\\Helper' => __DIR__ . '/../..' . '/app/Classes/Helper.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Events\\sendNotification' => __DIR__ . '/../..' . '/app/Events/sendNotification.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\API\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/UserController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
@@ -649,6 +650,7 @@ class ComposerStaticInit2c2424aa317aa723b4bf3f3e9eff92d1
         'App\\Models\\Cart' => __DIR__ . '/../..' . '/app/Models/Cart.php',
         'App\\Models\\DANHGIASP' => __DIR__ . '/../..' . '/app/Models/DANHGIASP.php',
         'App\\Models\\DONHANG' => __DIR__ . '/../..' . '/app/Models/DONHANG.php',
+        'App\\Models\\DONHANG_DIACHI' => __DIR__ . '/../..' . '/app/Models/DONHANG_DIACHI.php',
         'App\\Models\\GIOHANG' => __DIR__ . '/../..' . '/app/Models/GIOHANG.php',
         'App\\Models\\HINHANH' => __DIR__ . '/../..' . '/app/Models/HINHANH.php',
         'App\\Models\\IMEI' => __DIR__ . '/../..' . '/app/Models/IMEI.php',

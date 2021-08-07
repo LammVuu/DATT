@@ -77,7 +77,7 @@
                                 <input type='password' id="forget_re_pw" name="forget_re_pw">
                             </div>
 
-                            <div type='button' id='forget-step-3' class="main-btn p-10">Khôi phục</div>
+                            <div type='button' id='forget-step-3' class="main-btn">Khôi phục</div>
                         </div>
                     </form>
                 </div>

@@ -7,7 +7,7 @@
                     <i class="fas fa-info-circle fz-100 main-color-text"></i>
                     {{-- content --}}
                     <div id="info-modal-content" class="mt-40 mb-40 fz-20"></div>
-                    <div type="button" id="info-modal-main-btn" class="main-btn p-10 w-100"></div>
+                    <div type="button" id="info-modal-main-btn" class="main-btn w-100"></div>
                 </div>
             </div>
         </div>

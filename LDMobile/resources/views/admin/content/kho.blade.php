@@ -100,7 +100,7 @@
                     <div class="row mb-3">
                         <div class="col-lg-12">
                             <label for="branch" class="mb-5 fw-600">Chi nhánh</label>
-                            <select id="branch" class="form-select">
+                            <select id="branch">
                                 @foreach ($lst_branch as $key)
                                     <option value="{{$key->id}}">{{$key->diachi}}</option>
                                 @endforeach
@@ -138,7 +138,7 @@
                     </div>
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-btn" class="main-btn p-10 ml-10"></div>
+                        <div id="action-btn" class="main-btn ml-10"></div>
                     </div>
                 </form>
             </div>

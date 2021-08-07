@@ -177,7 +177,7 @@
             <div class="pt-20 pb-20">
                 <div class="statistics-title d-flex align-items-center fz-20">
                     Biểu đồ thống kê doanh thu năm
-                    <select id="sales-year" class="form-select ml-10" style="width: auto">
+                    <select id="sales-year" class="ml-10" style="width: auto">
                         @for ($i = 2018; $i < 2022; $i++)
                             @if ($i == $currentYear)
                                 <option value="{{$i}}" selected>{{$i}}</option>
@@ -200,7 +200,7 @@
             <div class="pt-20 pb-20">
                 <div class="statistics-title d-flex align-items-center fz-20">
                     Biểu đồ thống kê hãng bán chạy năm
-                    <select id="branch-year" class="form-select ml-10" style="width: auto">
+                    <select id="branch-year" class="ml-10" style="width: auto">
                         @for ($i = 2018; $i < 2022; $i++)
                             @if ($i == $currentYear)
                                 <option value="{{$i}}" selected>{{$i}}</option>

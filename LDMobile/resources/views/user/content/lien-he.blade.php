@@ -7,12 +7,14 @@
     <section class="contact">
         <div class="container">
             <div class="row">
-                <div class="col-md-8 col-sm-10 mx-auto box-shadow p-40">
+                <div class="col-lg-8 col-10 mx-auto box-shadow p-40 m-50">
                     {{-- title --}}
-                    <div class="fz-50 fw-600 main-color-text text-center mb-40">Liên hệ</div>
+                    <div class="col-12">
+                        <div class="fz-50 fw-600 main-color-text text-center mb-40">Liên hệ</div>
+                    </div>
                     
                     <div class="row">
-                        <div class="col-md-6 d-flex flex-column justify-content-between">
+                        <div class="col-lg-6 col-md-6 col-12 d-flex flex-column justify-content-between">
                             {{-- hình minh họa --}}
                             <img src="images/customer-service-cartoon.png" alt="" class="center-img pb-40">
                                 
@@ -26,7 +28,7 @@
                             </div>
                         </div>
                         {{-- form --}}
-                        <div class="col-md-6">
+                        <div class="col-lg-6 col-md-6 col-12">
                             <div class="mb-20">
                                 <div class="fw-600 fz-20 mb-10">Tổng đài hỗ trợ</div>
                                 <ul>

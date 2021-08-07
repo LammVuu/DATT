@@ -16,12 +16,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="fw-600 mb-5">Họ và Tên</label>
-                                    <input type="text" name="adr_fullname_inp" class="form-control">
+                                    <input type="text" name="adr_fullname_inp">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="fw-600 mb-5">Số điện thoại nhận hàng</label>
-                                    <input type="text" name="adr_tel_inp" class="form-control" maxlength="10">
+                                    <input type="text" name="adr_tel_inp" maxlength="10">
                                 </div>
                             </div>
                         </div>
@@ -99,8 +99,7 @@
                                 </div>
                                 {{-- số nhà, tên đường --}}
                                 <div class='col-md-6'>
-                                    <input name="address_inp" type="text" class='form-control'
-                                        placeholder="Số nhà, tên đường" required>
+                                    <input name="address_inp" type="text" placeholder="Số nhà, tên đường" required>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +113,7 @@
                         {{-- nút --}}
                         <div class="row mb-3">
                             <div class="d-flex justify-content-end">
-                                <div class="cancel-btn p-10 mr-10" data-bs-dismiss="modal">Hủy</div>
+                                <div class="cancel-btn mr-10" data-bs-dismiss="modal">Hủy</div>
                                 <div class="address-action-btn main-btn p-10"></div>
                             </div>
                         </div>

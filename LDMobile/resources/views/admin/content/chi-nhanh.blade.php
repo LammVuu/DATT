@@ -91,7 +91,7 @@
                         </div>
                         <div class="col-lg-4">
                             <label for="province" class="mb-5 fw-600">Tỉnh thành</label>
-                            <select id="province" class="form-select">
+                            <select id="province">
                                 @foreach ($lst_province as $key)
                                     <option value="{{$key->id}}">{{$key->tentt}}</option>
                                 @endforeach
@@ -99,7 +99,7 @@
                         </div>
                         <div class="col-lg-4">
                             <label for="status" class="mb-5 fw-600">Trạng thái</label>
-                            <select id="status" class="form-select">
+                            <select id="status">
                                 <option value="1" selected>Hoạt động</option>
                                 <option value="0">Ngừng hoạt động</option>
                             </select>
@@ -107,7 +107,7 @@
                     </div>
                     <div class="d-flex justify-content-end mt-50">
                         <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                        <div id="action-btn" class="main-btn p-10 ml-10"></div>
+                        <div id="action-btn" class="main-btn ml-10"></div>
                     </div>
                 </form>
             </div>

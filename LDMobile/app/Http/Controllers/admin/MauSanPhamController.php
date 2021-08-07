@@ -53,25 +53,25 @@ class MauSanPhamController extends Controller
             $create = MAUSP::create($data);
 
             $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center w-5">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$create->id.'</div>
                         </td>
-                        <td class="vertical-center w-15">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$data['tenmau'].'</div>
                         </td>
-                        <td class="vertical-center w-15">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.NHACUNGCAP::find($data['id_ncc'])->tenncc.'</div>
                         </td>
-                        <td class="vertical-center w-10">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$data['baohanh'].'</div>
                         </td>
-                        <td class="vertical-center w-30">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$data['diachibaohanh'].'</div>
                         </td>
-                        <td class="vertical-center w-10">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'; $html .= $data['trangthai'] == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh'.'</div>
                         </td>';
-                        $html .= '<td class="vertical-center w-15">
+                        $html .= '<td class="vertical-center w-10">
                             <div class="d-flex justify-content-start">
                                 <div data-id="'.$create->id.'" class="info-btn"><i class="fas fa-info"></i></div>
                                 <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
@@ -105,25 +105,25 @@ class MauSanPhamController extends Controller
             SANPHAM::where('id_msp', $request->id)->update(['trangthai' => $data['trangthai']]);
 
             $html = '<tr data-id="'.$request->id.'">
-                        <td class="vertical-center w-5">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$request->id.'</div>
                         </td>
-                        <td class="vertical-center w-15">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$data['tenmau'].'</div>
                         </td>
-                        <td class="vertical-center w-15">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.NHACUNGCAP::find($data['id_ncc'])->tenncc.'</div>
                         </td>
-                        <td class="vertical-center w-10">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$data['baohanh'].'</div>
                         </td>
-                        <td class="vertical-center w-30">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.$data['diachibaohanh'].'</div>
                         </td>
-                        <td class="vertical-center w-10">
+                        <td class="vertical-center">
                             <div class="pt-10 pb-10">'.($data['trangthai'] == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                         </td>
-                        <td class="vertical-center w-15">
+                        <td class="vertical-center w-10">
                             <div class="d-flex justify-content-start">
                                 <div data-id="'.$request->id.'" class="info-btn"><i class="fas fa-info"></i></div>
                                 <div data-id="'.$request->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
@@ -171,26 +171,26 @@ class MauSanPhamController extends Controller
                 foreach(MAUSP::limit(10)->get() as $key){
                     $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
                     $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center w-5">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->id.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->tenmau.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$supplierName.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-30">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                                 </td>
                                 {{-- nút --}}
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center w-10">
                                     <div class="d-flex justify-content-start">
                                         <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
                                         <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
@@ -212,26 +212,26 @@ class MauSanPhamController extends Controller
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.$key->baohanh.$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
                 if(str_contains($data, $keyword)){
                     $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center w-5">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->id.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->tenmau.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$supplierName.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-30">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                                 </td>
                                 {{-- nút --}}
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center w-10">
                                     <div class="d-flex justify-content-start">
                                         <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
                                         <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
@@ -271,26 +271,26 @@ class MauSanPhamController extends Controller
                 if(empty($lst_search)){
                     foreach(MAUSP::limit(10)->get() as $key){
                         $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center w-5">
+                                    <td class="vertical-center">
                                         <div class="pt-10 pb-10">'.$key->id.'</div>
                                     </td>
-                                    <td class="vertical-center w-15">
+                                    <td class="vertical-center">
                                         <div class="pt-10 pb-10">'.$key->tenmau.'</div>
                                     </td>
-                                    <td class="vertical-center w-15">
+                                    <td class="vertical-center">
                                         <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
                                     </td>
-                                    <td class="vertical-center w-10">
+                                    <td class="vertical-center">
                                         <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                                     </td>
-                                    <td class="vertical-center w-30">
+                                    <td class="vertical-center">
                                         <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                                     </td>
-                                    <td class="vertical-center w-10">
+                                    <td class="vertical-center">
                                         <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                                     </td>
                                     {{-- nút --}}
-                                    <td class="vertical-center w-15">
+                                    <td class="vertical-center w-10">
                                         <div class="d-flex justify-content-start">
                                             <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
                                             <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
@@ -382,26 +382,26 @@ class MauSanPhamController extends Controller
             if(count($arrFilter) == 1){
                 foreach($lst_temp as $key){
                     $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center w-5">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->id.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->tenmau.'</div>
                                 </td>
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-30">
+                                <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                                 </td>
-                                <td class="vertical-center w-10">
+                                <td class="vertical-center">
                                     <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                                 </td>
                                 {{-- nút --}}
-                                <td class="vertical-center w-15">
+                                <td class="vertical-center w-10">
                                     <div class="d-flex justify-content-start">
                                         <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
                                         <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
@@ -442,26 +442,26 @@ class MauSanPhamController extends Controller
             // render danh sách kết quả
             foreach($lst_result as $key){
                 $html .= '<tr data-id="'.$key->id.'">
-                            <td class="vertical-center w-5">
+                            <td class="vertical-center">
                                 <div class="pt-10 pb-10">'.$key->id.'</div>
                             </td>
-                            <td class="vertical-center w-15">
+                            <td class="vertical-center">
                                 <div class="pt-10 pb-10">'.$key->tenmau.'</div>
                             </td>
-                            <td class="vertical-center w-15">
+                            <td class="vertical-center">
                                 <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
                             </td>
-                            <td class="vertical-center w-10">
+                            <td class="vertical-center">
                                 <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                             </td>
-                            <td class="vertical-center w-30">
+                            <td class="vertical-center">
                                 <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                             </td>
-                            <td class="vertical-center w-10">
+                            <td class="vertical-center">
                                 <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                             </td>
                             {{-- nút --}}
-                            <td class="vertical-center w-15">
+                            <td class="vertical-center w-10">
                                 <div class="d-flex justify-content-start">
                                     <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
                                     <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.

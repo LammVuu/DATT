@@ -14,6 +14,7 @@ use App\Models\DONHANG;
 use App\Models\CHINHANH;
 use App\Models\TAIKHOAN_DIACHI;
 use App\Models\THONGBAO;
+use App\Models\DONHANG_DIACHI;
 
 class UserComposer
 {
@@ -80,12 +81,6 @@ class UserComposer
         foreach(DONHANG::where('id_tk', $id_tk)->orderBy('id', 'desc')->get() as $key){
             // đơn hàng
             $data['order'][$i] = $key;
-
-            // địa chỉ giao hàng
-            $key['hinhthuc'] == 'Giao hàng tận nơi' ? $data['order'][$i]['diachigiaohang'] = TAIKHOAN_DIACHI::find($key['id_tk_dc']) : [];
-
-            // chi nhánh
-            $key['hinhthuc'] == 'Nhận tại cửa hàng' ? $data['order'][$i]['chinhanh'] = CHINHANH::find($key['id_cn']) : [];
             
             // chi tiết đơn hàng
             $data['detail'][$key['id']] = $this->IndexController->getOrderDetail($key['id']);

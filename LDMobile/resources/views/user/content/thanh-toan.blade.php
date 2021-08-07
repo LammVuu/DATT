@@ -16,7 +16,7 @@
                         <div class="col-lg-4 mx-auto">
                             <div class="pt-50 pb-50 text-center">
                                 <div class="mb-20 fz-20">Bạn chưa có sản phẩm để thanh toán.</div>
-                                <a href="{{route('user/dien-thoai')}}" class="main-btn p-10">Tiếp tục mua sắm</a>
+                                <a href="{{route('user/dien-thoai')}}" class="main-btn">Tiếp tục mua sắm</a>
                             </div>
                         </div>
                     </div>
@@ -258,7 +258,7 @@
                                                                                 </table>
                                                                             </div>
                                                                         </div>
-                                                                        <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn p-5">Bỏ chọn</div>
+                                                                        <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn">Bỏ chọn</div>
                                                                     </div>
                                                                 </div>
                                                             </div>

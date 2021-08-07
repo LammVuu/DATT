@@ -17,7 +17,7 @@ class CreateDonhangTable extends Migration
             $table->increments('id');
             $table->string('thoigian', 20);
             $table->unsignedInteger('id_tk');
-            $table->unsignedInteger('id_tk_dc')->nullable();
+            $table->unsignedInteger('id_dh_dc')->nullable();
             $table->unsignedInteger('id_cn')->nullable();
             $table->string('pttt', 100);
             $table->unsignedInteger('id_vc')->nullable();

@@ -92,7 +92,7 @@
                     </div>
                 </div>
                 <div class='see-result-filter pt-20'>
-                    <div id='btn-see-filter' class="main-btn p-10"></div>
+                    <div id='btn-see-filter' class="main-btn"></div>
                     <div class='shop-btn-remove-filter pt-10'>Bỏ chọn tất cả</div>
                 </div>
             </div>

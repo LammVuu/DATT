@@ -26,10 +26,10 @@
                     <div id="change-info-div" class="none-dp">
                         <span id="cancel-change-info" type="button" class="red mb-5">Hủy</span>
                         <div class="d-flex">
-                            <div class="w-70 pr-5">
+                            <div class="w-60 pr-5">
                                 <input type="text" name="new_fullname_inp" placeholder="Họ và tên">
                             </div>
-                            <div id="change-fullname-btn" class="main-btn w-30">Cập nhật</div>
+                            <div id="change-fullname-btn" class="main-btn">Cập nhật</div>
                         </div>
                     </div>
                 @else
@@ -111,7 +111,7 @@
                             <input type="password" id='retype_pw' placeholder="Nhập lại mật khẩu mới">
                         </div>
                         <div class="mb-3">
-                            <div id="change-pw-btn" class="main-btn p-10 w-100">Cập nhật</div>
+                            <div id="change-pw-btn" class="main-btn w-100">Cập nhật</div>
                         </div>
                     </form>
                 </div>
@@ -157,7 +157,7 @@
                         </div>
                         <hr>
                         <div class="d-flex flex-fill align-items-end justify-content-end">
-                            <div class="cancel-btn p-10 mr-10" data-bs-dismiss="modal">Hủy</div>
+                            <div class="cancel-btn mr-10" data-bs-dismiss="modal">Hủy</div>
                             <form id="change-avatar-form" action="{{route('user/ajax-change-avatar')}}" method="POST">
                                 @csrf
                                 <input type="hidden" name="base64data">

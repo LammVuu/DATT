@@ -1,6 +1,3 @@
-@section("breadcrumb")
-    <a href="{{route('user/thanh-toan')}}" class="bc-item active">Thanh toán</a>
-@stop
 <div class='row'>
     <div class='col-md-3'>
         @section("acc-order-active") account-sidebar-active @stop

@@ -40,6 +40,7 @@ use App\Models\THONGBAO;
 use App\Models\TINHTHANH;
 use App\Models\VOUCHER;
 use App\Models\LUOTTRUYCAP;
+use App\Models\DONHANG_DIACHI;
 
 class IndexController extends Controller
 {
@@ -60,10 +61,14 @@ class IndexController extends Controller
                     featured
         ===================================*/
 
-        $lst_model = MAUSP::orderBy('id', 'desc')->take(5)->get();
-        $i = 0;
+        $lst_model = MAUSP::orderBy('id', 'desc')->take(10)->get();
+        $lst_featured = [];
 
         foreach($lst_model as $model){
+            if(count($lst_featured) == 10){
+                break;
+            }
+
             // danh sách sản phẩm theo id_msp
             $SANPHAM = MAUSP::find($model->id)->sanpham;
 
@@ -75,8 +80,10 @@ class IndexController extends Controller
             $lst_temp = $this->getProductByCapacity($SANPHAM);
 
             foreach($lst_temp as $key){
-                $lst_featured[$i] = $key;
-                $i++;
+                if(count($lst_featured) == 10){
+                    break;
+                }
+                array_push($lst_featured, $key);
             }
         }
 
@@ -155,21 +162,21 @@ class IndexController extends Controller
 
     public function ChiTiet($name){
         $phoneName = $this->getPhoneNameByString($name);
-
+        
         if(!$phoneName){
             return redirect()->route('user/dien-thoai');
         }
 
         // điện thoại theo tên
         if($phoneName['ram'] == ''){
-            $SANPHAM = SANPHAM::where('tensp', $phoneName['tensp'])
-                            ->where('dungluong', $phoneName['dungluong'])
-                            ->inRandomOrder()->first();
+            $SANPHAM = SANPHAM::where('tensp', 'like', $phoneName['tensp'])
+                                ->where('dungluong', 'like', $phoneName['dungluong'])
+                                ->inRandomOrder()->first();
         } else {
-            $SANPHAM = SANPHAM::where('tensp', $phoneName['tensp'])
-                            ->where('dungluong', $phoneName['dungluong'])
-                            ->where('ram', $phoneName['ram'])
-                            ->inRandomOrder()->first();
+            $SANPHAM = SANPHAM::where('tensp', 'like', $phoneName['tensp'])
+                                ->where('dungluong', 'like', $phoneName['dungluong'])
+                                ->where('ram', 'like', $phoneName['ram'])
+                                ->inRandomOrder()->first();
         }
 
         // mã sp
@@ -1752,7 +1759,7 @@ class IndexController extends Controller
 
         $count = 0;
         foreach($lst as $key){
-            if($key == 'GB'){
+            if($key == 'GB' || $key == 'gb'){
                 $count++;
             }
         }
@@ -1781,7 +1788,7 @@ class IndexController extends Controller
             $name .= $key.' ';
         }
 
-        $lst_name['tensp'] = $name;
+        $lst_name['tensp'] = trim($name);
 
         return $lst_name;
     }
@@ -1837,7 +1844,7 @@ class IndexController extends Controller
     public function getSpecifications($id_sp)
     {
         $fileName = SANPHAM::where('id', $id_sp)->first()->cauhinh;
-        return json_decode(File::get(public_path('/json//' . $fileName)), true);
+        return json_decode(File::get(public_path('/json/' . $fileName)), true);
     }
 
     // lấy tài khoản theo id_tk
@@ -2331,7 +2338,7 @@ class IndexController extends Controller
         $data['order'] = DONHANG::find($id_dh);
 
         // địa chỉ giao hàng
-        $data['order']->hinhthuc == 'Giao hàng tận nơi' ? $data['order']->diachigiaohang = TAIKHOAN_DIACHI::find($data['order']->id_tk_dc) : null;
+        $data['order']->hinhthuc == 'Giao hàng tận nơi' ? $data['order']->diachigiaohang = DONHANG_DIACHI::find($data['order']->id_dh_dc) : null;
 
         // chi nhánh
         $data['order']->hinhthuc == 'Nhận tại cửa hàng' ? $data['order']->chinhanh = CHINHANH::find($data['order']->id_cn) : null;

@@ -11,7 +11,7 @@ $(function() {
         
         // cuộn tới link đang chọn
         var position = $('.sidebar-link.sidebar-link-selected').position().top;
-        if(position > 700){
+        if(position > 600){
             $('.sidebar.custom-scrollbar').animate({scrollTop: position});
         }
     }, 100);
@@ -435,26 +435,37 @@ $(function() {
     $('#btn-expand-menu').click(function(){
         // đóng
         if($(this).attr('aria-expanded') == 'true'){
-            $('.sidebar-avt').hide();
-            $('.sidebar-menu').hide();
-            $('.sidebar').css('width', '0');
-            $('.content').css('margin-left', '0');
+            $('.sidebar-avt').animate({
+                'width': '0',
+                'height': '0',
+            });
+            $('#avatarSideBarUser').removeAttr('style');
+
+            $('.sidebar-content').animate({
+                'padding-left': '0',
+                'width': '0',
+            });
+            
+            $('.sidebar').css('width', '70px');
+            $('.content').css('margin-left', '70px');
+            
             $(this).attr('aria-expanded', 'false');
         }
         // mở
         else {
-            setTimeout(() => {
-                var position = $('.sidebar-link.sidebar-link-selected').position().top;
-                if(position > 700){
-                    $('.sidebar.custom-scrollbar').animate({scrollTop: position});
-                }
-            }, 500);
+            $('.sidebar-avt').animate({
+                'width': '100%',
+                'height': '150px',
+            });
+            $('#avatarSideBarUser').css('width', '80px');
+
+            $('.sidebar-content').animate({
+                'padding-left': '10px',
+                'width': '180px',
+            });
+
             $('.content').css('margin-left', '250px');
             $('.sidebar').css('width', '250px');
-            setTimeout(() => {
-                $('.sidebar-avt').fadeIn(); 
-                $('.sidebar-menu').fadeIn();
-            },100);
             
             $(this).attr('aria-expanded', 'true');
         }

@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-between mb-40">
+        <div class="d-flex align-items-center justify-content-between flex-wrap mb-40">
             <div data-type="all" class="noti-type noti-type-selected">
                 <i class="fas fa-list mr-10"></i>Tất cả
             </div>
