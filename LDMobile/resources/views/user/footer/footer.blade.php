@@ -64,9 +64,18 @@
                                     <div class="main-color-text"><i class="fab fa-pinterest-p ml-10 mr-10"></i></div>
                                     <div class="main-color-text"><i class="fab fa-whatsapp ml-10 mr-10"></i></div>
                                 </div>
+                                <div style="margin-top:18px">
+                                    <h4><center> Download for</center></h4>
+                                    <p>
+                                 <a href="images/app-release.apk" download style="margin-left:72px">
+                                    <img src="images/logo/android-logo.png" width=80% alt="W3Schools">
+                                  </a>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div><hr class="m-0">
 
                 {{-- copyright --}}

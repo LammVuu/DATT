@@ -182,14 +182,19 @@ class CartController extends Controller
         $order->pttt = request('pttt');
         if(!empty(request('id_tk_dc'))){
             $address = TAIKHOAN_DIACHI::find(request('id_tk_dc'));
-            $orderAddress = new DONHANG_DIACHI();
-            $orderAddress->diachi = $address->diachi;
-            $orderAddress->phuongxa = $address->phuongxa;
-            $orderAddress->quanhuyen = $address->quanhuyen;
-            $orderAddress->tinhthanh = $address->tinhthanh;
-            $orderAddress->sdt = $address->sdt;
-            $orderAddress->save();
-            $order->id_tk_dc = $orderAddress->id;
+            $exists = DONHANG_DIACHI::where('diachi', $address->diachi)->where('phuongxa', $address->phuongxa)->where('quanhuyen', $address->quanhuyen)->where('tinhthanh', $address->tinhthanh)->where('sdt', $address->sdt)->get();
+            $exist = count($exists);
+            if($exist==0){
+                $orderAddress = new DONHANG_DIACHI();
+                $orderAddress->diachi = $address->diachi;
+                $orderAddress->phuongxa = $address->phuongxa;
+                $orderAddress->quanhuyen = $address->quanhuyen;
+                $orderAddress->tinhthanh = $address->tinhthanh;
+                $orderAddress->sdt = $address->sdt;
+                $orderAddress->hoten = $address->hoten;
+                $orderAddress->save();
+                $order->id_dh_dc = $orderAddress->id;
+            }else $order->id_dh_dc =  $exists[0]->id;
         }else $order->id_cn = request('id_cn');
         if(!empty(request('id_vc'))){
             $voucher = TAIKHOAN_VOUCHER::where('id_vc',(request('id_vc')))->get();
@@ -205,7 +210,7 @@ class CartController extends Controller
         $order->trangthaidonhang = "Đã tiếp nhận";
         $order->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
         $order->tongtien = request('tongtien');
-        $order->trangthai = 1;
+        $order->trangthaidonhang = "Đã tiếp nhận";
         if($order->save()){
             foreach(request('listProduct') as $product){
                 $detailOrder = new CTDH();
@@ -221,7 +226,7 @@ class CartController extends Controller
                 
                 //kho
                 if(!empty(request('id_tk_dc'))){
-                    $city = TAIKHOAN_DIACHI::find($order->id_tk_dc);
+                    $city = DONHANG_DIACHI::find($order->id_dh_dc);
                     $url ="TinhThanh.json" ;
                     $datos = file_get_contents($url);
                     $data = json_decode($datos, true);
