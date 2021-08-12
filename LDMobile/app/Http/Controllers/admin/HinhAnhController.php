@@ -20,6 +20,12 @@ class HinhAnhController extends Controller
     {
         $this->admin='admin/content/';
         $this->IndexController = new IndexController;
+
+        // chưa có thư mục lưu hình
+        if(!is_dir('images/banner')){
+            // tạo thư mục lưu hình
+            mkdir('images/banner', 0777, true);
+        }
     }
     public function index()
     {
@@ -47,19 +53,49 @@ class HinhAnhController extends Controller
         return view($this->admin."hinh-anh")->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = MAUSP::find($id);
+        $imageQty = count(HINHANH::where('id_msp', $id)->get());
+        $html = '<tr data-id="'.$data->id.'">
+                    <td class="vertical-center w-50">
+                        <div class="pt-10 pb-10">'.$data->tenmau.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div data-id="'.$data->id.'" class="qty-image pt-10 pb-10">'.$imageQty.' Hình</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
+                            ($imageQty != 0 ? 
+                            '<div data-id="'.$data->id.'" data-name="'.$data->tenmau.'" class="delete-btn"><i class="fas fa-trash"></i></div>'
+                            :
+                            '').'
+                        </div>
+                    </td>
+                </tr>';
+        return $html;
+    }
+
     public function store(Request $request)
     {
         if($request->ajax()){
             $model = MAUSP::find($request->id_msp);
 
             foreach($request->lst_base64 as $i => $key){
-                // thêm hình
-                $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                $image = base64_decode($base64);
-
-                $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' image '.($i + 1).'.jpg'));
-                $urlImage = 'images/phone/' . $imageName;
-                file_put_contents($urlImage, $image);
+                // định dạng hình
+                $imageFormat = $this->IndexController->getImageFormat($key);
+                if($imageFormat == 'png'){
+                    $base64 = str_replace('data:image/png;base64,', '', $key);
+                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.png'));
+                } else {
+                    $base64 = str_replace('data:image/jpeg;base64,', '', $key);
+                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.jpg'));
+                }
+                // lưu hình
+                $this->IndexController->saveImage('images/phone/'.$imageName, $base64);
 
                 $data = [
                     'id_msp' => $model->id,
@@ -71,24 +107,8 @@ class HinhAnhController extends Controller
 
             $html = '';
             foreach(MAUSP::all() as $key){
-                $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
-                $html .= '<tr data-id="'.$key->id.'">
-                            <td class="vertical-center w-50">
-                                <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div data-id="'.$key->id.'" class="qty-image pt-10 pb-10">'.$imageQty.' Hình</div>
-                            </td>
-                            {{-- nút --}}
-                            <td class="vertical-center w-10">
-                                <div class="d-flex justify-content-start">
-                                    <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                    <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                    <div data-id="'.$key->id.'" data-name="'.$model->tenmau.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                                </div>
-                            </td>
-                        </tr>';
-            }
+                $html .= $this->bindElement($key->id);
+            }   
 
             return [
                 'id' => $model->id,
@@ -100,49 +120,41 @@ class HinhAnhController extends Controller
     public function update(Request $request, $id)
     {
         if($request->ajax()){
-            $oldData = HINHANH::where('id_msp', $id)->get();
             $model = MAUSP::find($id);
 
-            // xóa hình cũ, xóa db
-            foreach($oldData as $key){
-                unlink('images/phone/' . $key['hinhanh']);
+            // xóa hình cũ
+            if($request->lst_delete){
+                foreach($request->lst_delete as $name){
+                    unlink('images/phone/' . $name);
+                    HINHANH::where('id_msp', $id)->where('hinhanh', $name)->delete();
+                }
             }
-            HINHANH::where('id_msp', $id)->delete();
 
             // cập nhật hình mới
-            foreach($request->lst_base64 as $i => $key){
-                // thêm hình
-                $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                $image = base64_decode($base64);
-
-                $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' image '.($i + 1).'.jpg'));
-                $urlImage = 'images/phone/' . $imageName;
-                file_put_contents($urlImage, $image);
-
-                $data = [
-                    'id_msp' => $model->id,
-                    'hinhanh' => $imageName,
-                ];
-
-                HINHANH::create($data);
+            if($request->lst_base64){
+                foreach($request->lst_base64 as $i => $key){
+                    // định dạng hình
+                    $imageFormat = $this->IndexController->getImageFormat($key);
+                    if($imageFormat == 'png'){
+                        $base64 = str_replace('data:image/png;base64,', '', $key);
+                        $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.png'));
+                    } else {
+                        $base64 = str_replace('data:image/jpeg;base64,', '', $key);
+                        $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.jpg'));
+                    }
+                    // lưu hình
+                    $this->IndexController->saveImage('images/phone/'.$imageName, $base64);
+    
+                    $data = [
+                        'id_msp' => $model->id,
+                        'hinhanh' => $imageName,
+                    ];
+    
+                    HINHANH::create($data);
+                }
             }
 
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center w-50">
-                            <div class="pt-10 pb-10">'.$model->tenmau.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div data-id="'.$id.'" class="qty-image pt-10 pb-10">'.count($request->lst_base64).' Hình</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$id.'" data-name="'.$model->tenmau.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
             return $html;
         }
     }
@@ -192,25 +204,7 @@ class HinhAnhController extends Controller
             if($keyword == ''){
                 foreach(MAUSP::limit(10)->get() as $key){
                     $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center w-50">
-                                    <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="qty-image pt-10 pb-10">'.$imageQty.' Hình</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($imageQty != 0 ? '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tenmau.'" class="delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
                 return $html;
             }
@@ -219,25 +213,7 @@ class HinhAnhController extends Controller
                 $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
                 $data = strtolower($this->IndexController->unaccent($key->tenmau.$imageQty.' Hình'));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center w-50">
-                                    <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="qty-image pt-10 pb-10">'.$imageQty.' Hình</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($imageQty != 0 ? '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tenmau.'" class="delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);  
                 }
             }
             return $html;

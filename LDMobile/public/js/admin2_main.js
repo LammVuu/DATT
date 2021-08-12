@@ -1,6 +1,8 @@
-$(function() {
+$(window).on('load', function(){
     $('.loader').fadeOut();
-    
+});
+
+$(function() {
     var page = 1;
     var top = null;
     

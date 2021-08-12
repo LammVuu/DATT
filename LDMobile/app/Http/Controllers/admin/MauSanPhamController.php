@@ -33,6 +33,44 @@ class MauSanPhamController extends Controller
         return view($this->admin."mau-san-pham")->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = MAUSP::find($id);
+        $supplierName = NHACUNGCAP::find($data->id_ncc)->tenncc;
+        
+        $html = '<tr data-id="'.$id.'">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$id.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->tenmau.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$supplierName.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.($data->baohanh ? $data->baohanh : 'Không có').'</div>
+                        </td>
+                        <td class="vertical-center w-30">
+                            <div class="pt-10 pb-10">'.$data->diachibaohanh.'</div>
+                        </td>
+                        <td class="vertical-center w-15">
+                            <div class="pt-10 pb-10">'.($data->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
+                        </td>
+                        <td class="vertical-center w-10">
+                            <div class="d-flex justify-content-start">
+                                <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                                <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
+                                ($data->trangthai == 1 ?
+                                '<div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>'
+                                :
+                                '').'
+                            </div>
+                        </td>
+                    </tr>';
+        return $html;
+    }
+
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -52,35 +90,7 @@ class MauSanPhamController extends Controller
 
             $create = MAUSP::create($data);
 
-            $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$create->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['tenmau'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.NHACUNGCAP::find($data['id_ncc'])->tenncc.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['baohanh'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['diachibaohanh'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'; $html .= $data['trangthai'] == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh'.'</div>
-                        </td>';
-                        $html .= '<td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$create->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$create->id.'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($create->id);
             
             return [
                 'id' => $create->id,
@@ -89,7 +99,7 @@ class MauSanPhamController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         if($request->ajax()){
             $data = [
@@ -101,40 +111,10 @@ class MauSanPhamController extends Controller
                 'trangthai' => $request->trangthai,
             ];
 
-            MAUSP::where('id', $request->id)->update($data);
-            SANPHAM::where('id_msp', $request->id)->update(['trangthai' => $data['trangthai']]);
+            MAUSP::where('id', $id)->update($data);
+            SANPHAM::where('id_msp', $id)->update(['trangthai' => $data['trangthai']]);
 
-            $html = '<tr data-id="'.$request->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$request->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['tenmau'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.NHACUNGCAP::find($data['id_ncc'])->tenncc.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['baohanh'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['diachibaohanh'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.($data['trangthai'] == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$request->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$request->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($data['trangthai'] != 0 ? '
-                                <div data-id="'.$request->id.'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>' : '
-                                <div data-id="'.$request->id.'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>').'
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
             
             return $html;
         }
@@ -169,39 +149,7 @@ class MauSanPhamController extends Controller
 
             if($keyword == ''){
                 foreach(MAUSP::limit(10)->get() as $key){
-                    $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$supplierName.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->baohanh.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai != 0 ? '
-                                            <div data-id="'.$key->id.'" class="delete-mausp-btn delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '
-                                            <div data-id="'.$key->id.'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
 
                 return $html;
@@ -209,40 +157,9 @@ class MauSanPhamController extends Controller
 
             foreach(MAUSP::all() as $key){
                 $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
-                $data = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.$key->baohanh.$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
+                $data = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.($key->baohanh ? $key->baohanh : 'Không có').$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$supplierName.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->baohanh.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai != 0 ? '
-                                            <div data-id="'.$key->id.'" class="delete-mausp-btn delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '
-                                            <div data-id="'.$key->id.'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
 
@@ -270,71 +187,11 @@ class MauSanPhamController extends Controller
                 // không có tìm kiếm
                 if(empty($lst_search)){
                     foreach(MAUSP::limit(10)->get() as $key){
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->baohanh.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-10">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
-                                            <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
-                                            ($key->trangthai != 0 ? '
-                                                <div data-id="'.$key->id.'" class="delete-mausp-btn delete-btn">
-                                                    <i class="fas fa-trash"></i>
-                                                </div>' : '' ).'
-                                        </div>
-                                    </td>
-                                </tr>';   
+                        $html .= $this->bindElement($key->id);   
                     }
                 } else {
                     foreach($lst_search as $key){
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center w-5">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center w-15">
-                                        <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                    </td>
-                                    <td class="vertical-center w-15">
-                                        <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
-                                    </td>
-                                    <td class="vertical-center w-10">
-                                        <div class="pt-10 pb-10">'.$key->baohanh.'</div>
-                                    </td>
-                                    <td class="vertical-center w-30">
-                                        <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
-                                    </td>
-                                    <td class="vertical-center w-10">
-                                        <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-15">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
-                                            <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
-                                            ($key->trangthai != 0 ? '
-                                                <div data-id="'.$key->id.'" class="delete-mausp-btn delete-btn">
-                                                    <i class="fas fa-trash"></i>
-                                                </div>' : '' ).'
-                                        </div>
-                                    </td>
-                                </tr>';   
+                        $html .= $this->bindElement($key->id);   
                     }
                 }
 
@@ -381,37 +238,7 @@ class MauSanPhamController extends Controller
             // chỉ có 1 tiêu chí
             if(count($arrFilter) == 1){
                 foreach($lst_temp as $key){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->baohanh.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai != 0 ? '
-                                            <div data-id="'.$key->id.'" class="delete-mausp-btn delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '' ).'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
 
                 return $html;
@@ -441,37 +268,7 @@ class MauSanPhamController extends Controller
 
             // render danh sách kết quả
             foreach($lst_result as $key){
-                $html .= '<tr data-id="'.$key->id.'">
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$key->id.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.NHACUNGCAP::find($key->id_ncc)->tenncc.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$key->baohanh.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                            </td>
-                            {{-- nút --}}
-                            <td class="vertical-center w-10">
-                                <div class="d-flex justify-content-start">
-                                    <div data-id="'.$key->id.'" class="info-mausp-btn info-btn"><i class="fas fa-info"></i></div>
-                                    <div data-id="'.$key->id.'" class="edit-mausp-modal-show edit-btn"><i class="fas fa-pen"></i></div>'.
-                                    ($key->trangthai != 0 ? '
-                                        <div data-id="'.$key->id.'" class="delete-mausp-btn delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '' ).'
-                                </div>
-                            </td>
-                        </tr>';   
+                $html .= $this->bindElement($key->id);   
             }
 
             return $html;
@@ -484,7 +281,7 @@ class MauSanPhamController extends Controller
 
         foreach(MAUSP::all() as $key){
             $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
-            $data = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.$key->baohanh.$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
+            $data = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.($key->baohanh ? $key->baohanh : 'Không có').$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
             if(str_contains($data, $keyword)){
                 array_push($lst_result, $key);
             }

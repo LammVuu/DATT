@@ -1,5 +1,6 @@
 <div class="shop-bar box-shadow">
-    <b id="qty-product" class="fz-18">{{ $fs_title }}</b>
+    <b id="qty-product" class="fz-18">{{!parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ? $fs_title : '' }}</b>
+    @if(!parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY))
     <div id="filter-sort-btn">
         <div class="d-flex">
             {{-- bộ lọc --}}
@@ -33,6 +34,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 
 {{-- modal bộ lọc --}}

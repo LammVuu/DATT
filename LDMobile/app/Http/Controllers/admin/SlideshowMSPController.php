@@ -15,6 +15,12 @@ class SlideshowMSPController extends Controller
     {
         $this->admin='admin/content/';
         $this->IndexController = new IndexController;
+
+        // chưa có thư mục lưu hình
+        if(!is_dir('images/phone/slideshow')){
+            // tạo thư mục lưu hình
+            mkdir('images/phone/slideshow', 0777, true);
+        }
     }
 
     public function index()
@@ -50,6 +56,31 @@ class SlideshowMSPController extends Controller
         return view($this->admin.'slideshow-msp')->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = MAUSP::find($id);
+        $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $id)->get());
+        $html = '<tr data-id="'.$id.'">
+                    <td class="vertical-center w-50">
+                        <div class="pt-10 pb-10">'.$data->tenmau.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div data-id="'.$data->id.'" class="qty-image pt-10 pb-10">'.$slideQty.' hình </div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
+                            ($slideQty != 0 ? '
+                            <div data-id="'.$data->id.'" data-name="'.$data->tenmau.'" class="delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </div>' : '').'
+                        </div>
+                    </td>
+                </tr>';
+        return $html;
+    }
     
     public function store(Request $request)
     {
@@ -57,13 +88,17 @@ class SlideshowMSPController extends Controller
             $model = MAUSP::find($request->id_msp);
 
             foreach($request->image_slideshow as $i => $key){
-                // thêm hình
-                $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                $image = base64_decode($base64);
-
-                $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' slide '.($i + 1).'.jpg'));
-                $urlImage = 'images/phone/slideshow/' . $imageName;
-                file_put_contents($urlImage, $image);
+                // định dạng hình
+                $imageFormat = $this->IndexController->getImageFormat($key);
+                if($imageFormat == 'png'){
+                    $base64 = str_replace('data:image/png;base64,', '', $key);
+                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.png'));
+                } else {
+                    $base64 = str_replace('data:image/jpeg;base64,', '', $key);
+                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.jpg'));
+                }
+                // lưu hình
+                $this->IndexController->saveImage('images/phone/slideshow/'.$imageName, $base64);
 
                 $data = [
                     'id_msp' => $model->id,
@@ -75,28 +110,8 @@ class SlideshowMSPController extends Controller
 
             $html = '';
             foreach(MAUSP::all() as $key){
-                $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $key->id)->get());
-                $html .= '<tr data-id="'.$key->id.'">
-                            <td class="vertical-center w-50">
-                                <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div data-id="'.$key->id.'" class="qty-image pt-10 pb-10">'.$slideQty.' hình </div>
-                            </td>
-                            {{-- nút --}}
-                            <td class="vertical-center w-10">
-                                <div class="d-flex justify-content-start">
-                                    <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                    <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                    ($slideQty != 0 ? '
-                                    <div data-id="'.$key->id.'" data-name="'.$key->tenmau.'" class="delete-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </div>' : '').'
-                                </div>
-                            </td>
-                        </tr>';
+                $html .= $this->bindElement($key->id);
             }
-
             
             return [
                 'id' => $model->id,
@@ -111,46 +126,39 @@ class SlideshowMSPController extends Controller
             $oldData = SLIDESHOW_CTMSP::where('id_msp', $id)->get();
             $model = MAUSP::find($id);
 
-            // xóa hình cũ, xóa db
-            foreach($oldData as $key){
-                unlink('images/phone/slideshow/' . $key['hinhanh']);
+            // xóa hình cũ
+            if($request->lst_delete){
+                foreach($request->lst_delete as $name){
+                    unlink('images/phone/slideshow/' . $name);
+                    SLIDESHOW_CTMSP::where('id_msp', $id)->where('hinhanh', $name)->delete();
+                }
             }
-            SLIDESHOW_CTMSP::where('id_msp', $id)->delete();
 
             // cập nhật hình mới
-            foreach($request->image_slideshow as $i => $key){
-                // thêm hình
-                $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                $image = base64_decode($base64);
-
-                $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' slide '.($i + 1).'.jpg'));
-                $urlImage = 'images/phone/slideshow/' . $imageName;
-                file_put_contents($urlImage, $image);
-
-                $data = [
-                    'id_msp' => $model->id,
-                    'hinhanh' => $imageName,
-                ];
-
-                SLIDESHOW_CTMSP::create($data);
+            if($request->lst_slideshow){
+                foreach($request->lst_slideshow as $i => $key){
+                    // định dạng hình
+                    $imageFormat = $this->IndexController->getImageFormat($key);
+                    if($imageFormat == 'png'){
+                        $base64 = str_replace('data:image/png;base64,', '', $key);
+                        $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.png'));
+                    } else {
+                        $base64 = str_replace('data:image/jpeg;base64,', '', $key);
+                        $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.jpg'));
+                    }
+                    // lưu hình
+                    $this->IndexController->saveImage('images/phone/slideshow/'.$imageName, $base64);
+    
+                    $data = [
+                        'id_msp' => $model->id,
+                        'hinhanh' => $imageName,
+                    ];
+    
+                    SLIDESHOW_CTMSP::create($data);
+                }
             }
 
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center w-50">
-                            <div class="pt-10 pb-10">'.$model->tenmau.'</div>
-                        </td>
-                        <td class="vertical-center">
-                        <div data-id="'.$id.'" class="qty-image pt-10 pb-10">'.count($request->image_slideshow).' hình </div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$id.'" data-name="'.$model->tenmau.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
             return $html;
         }
     }

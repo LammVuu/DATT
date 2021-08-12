@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\SANPHAM;
 use App\Models\MAUSP;
 use App\Models\KHUYENMAI;
+use App\Models\HINHANH;
 
 class SanPhamController extends Controller
 {
@@ -21,7 +22,19 @@ class SanPhamController extends Controller
     {
         $this->admin='admin/content/';
         $this->IndexController = new IndexController;
+
+        // chưa có thư mục lưu hình
+        if(!is_dir('images/phone')){
+            // tạo thư mục lưu hình
+            mkdir('images/phone', 0777, true);
+        }
+
+        if(!is_dir('json')){
+            // tạo thư mục lưu hình
+            mkdir('json', 0777, true);
+        }
     }
+
     public function index()
     {
         // danh sách sản phẩm theo dung lượng
@@ -61,13 +74,86 @@ class SanPhamController extends Controller
         return view($this->admin."san-pham")->with($data);
     }
     
+    public function bindElement($id)
+    {
+        $data = SANPHAM::find($id);
+
+        if($data->id_km){
+            $promotion = KHUYENMAI::find($data->id_km)->chietkhau*100 .'%';
+        } else {
+            $promotion = 'Không có';
+        }
+
+        $html = '<tr data-id="'.$data->id.'">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->id.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->tensp.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->mausac.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->ram.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->dungluong.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.number_format($data->gia, 0, '', '.').'<sup>đ</sup></div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$promotion.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div data-id="'.$data->id.'" class="trangthai pt-10 pb-10">'.($data->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
+                        </td>
+                        {{-- nút --}}
+                        <td class="vertical-center w-10">
+                            <div class="d-flex justify-content-start">
+                                <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                                <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                <div data-id="'.$data->id.'" data-name="'.$data->tensp.' '.$data->dungluong.' - '.$data->ram.' Ram - '.$data->mausac.'" class="delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>';
+        return $html;
+    }
+
     public function store(Request $request)
     {
         if($request->ajax()){
+            // chọn hình từ mẫu sản phẩm
+            if($request->image_from == 'model'){
+                $imageName = $request->hinhanh;
+            } else {
+                // định dạng hình
+                $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
+                if($imageFormat == 'png'){
+                    $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
+                    $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.png'));
+                } else {
+                    $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
+                    $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.jpg'));
+                }
+                // lưu hình
+                $this->IndexController->saveImage('images/phone/'.$imageName, $base64);
+
+                // thêm hình mới vào bảng HINHANH
+                HINHANH::create([
+                    'id_msp' => $request->id_msp,
+                    'hinhanh' => $imageName,
+                ]);
+            }
+            
+
             $data = [
                 'tensp' => $request->tensp,
                 'id_msp' => $request->id_msp,
-                'hinhanh' => strtolower(str_replace(' ', '_', $request->tensp).'_'.$this->IndexController->unaccent($request->mausac).'.jpg'),
+                'hinhanh' => $imageName,
                 'mausac' => $request->mausac,
                 'ram' => $request->ram,
                 'dungluong' => $request->dungluong,
@@ -107,55 +193,9 @@ class SanPhamController extends Controller
                 file_put_contents($url, $json);
             }
 
-            // lưu hình ảnh
-            $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-            $image = base64_decode($base64);
-
-            $imageName = $data['hinhanh'];
-            $urlImage = 'images/phone/' . $imageName;
-            file_put_contents($urlImage, $image);
-
             $create = SANPHAM::create($data);
 
-            // trạng thái mẫu sp
-            $modelStatus = MAUSP::find($create->id_msp)->trangthai;
-
-            $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$create->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['tensp'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['mausac'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['ram'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['dungluong'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.number_format($data['gia'], 0, '', '.').'<sup>đ</sup></div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.(KHUYENMAI::find($data['id_km'])->chietkhau*100).'%'.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div data-id="'.$create->id.'" class="trangthai pt-10 pb-10">'.($data['trangthai'] == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$create->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$create->id.'" data-name="'.$data['tensp'].' '.$data['dungluong'].' - '.$data['ram'].' Ram - '.$data['mausac'].'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($create->id);
 
             return [
                 'id' => $create->id,
@@ -187,63 +227,42 @@ class SanPhamController extends Controller
             file_put_contents($url, $json);
 
             // cập nhật hình
-            // có chỉnh sửa hình ảnh
-            if($request->hinhanh){
-                // xóa hình cũ
-                unlink('images/phone/' . $oldData->hinhanh);
+            if($request->image_from == 'model'){
+                $data['hinhanh'] = $request->hinhanh;
+            } else {
+                // hình mới
+                if($request->hinhanh && str_contains($request->hinhanh, 'data:image')){
+                    // xóa hình cũ
+                    unlink('images/phone/' . $oldData->hinhanh);
+                    HINHANH::where('hinhanh', $oldData->hinhanh)->delete();
 
-                $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                $image = base64_decode($base64);
+                    // định dạng hình
+                    $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
+                    if($imageFormat == 'png'){
+                        $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
+                        $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.png'));
+                    } else {
+                        $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
+                        $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.jpg'));
+                    }
+                    // lưu hình
+                    $this->IndexController->saveImage('images/phone/'.$imageName, $base64);
 
-                $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac)).'.jpg');
-                $data['hinhanh'] = $imageName;
-                $urlImage = 'images/phone/' . $imageName;
-                file_put_contents($urlImage, $image);
+                    // thêm hình mới vào bảng HINHANH
+                    HINHANH::create([
+                        'id_msp' => $request->id_msp,
+                        'hinhanh' => $imageName,
+                    ]);
+
+                    $data['hinhanh'] = $imageName;
+                } else {
+                    $data['hinhanh'] = $oldData->hinhanh;
+                }
             }
 
             SANPHAM::where('id', $id)->update($data);
 
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['tensp'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['mausac'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['ram'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['dungluong'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.number_format($data['gia'], 0, '', '.').'<sup>đ</sup></div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.(KHUYENMAI::find($data['id_km'])->chietkhau*100).'%'.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div data-id="'.$id.'" class="trangthai pt-10 pb-10">'.($data['trangthai'] == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($data['trangthai'] == 1 ? '
-                                <div data-id="'.$id.'" data-name="'.$data['tensp'].' '.$data['dungluong'].' - '.$data['ram'].' Ram - '.$data['mausac'].'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>' : '
-                                <div data-id="'.$id.'" data-name="'.$data['tensp'].' '.$data['dungluong'].' - '.$data['ram'].' Ram - '.$data['mausac'].'" class="undelete-btn">
-                                    <i class="fas fa-trash-undo"></i>
-                                </div>
-                                ').'
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
 
             return $html;
         }
@@ -305,100 +324,23 @@ class SanPhamController extends Controller
 
             if($keyword == ''){
                 foreach(SANPHAM::limit(10)->get() as $key){
-                    $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                    
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$promotion.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai == 1 ? '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                            <i class="fas fa-trash-undo"></i>
-                                        </div>
-                                        ').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
 
                 return $html;
             }
 
             foreach(SANPHAM::all() as $key){
-                $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                if($key->id_km){
+                    $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                } else {
+                    $promotion = 'Không có';
+                }
+                
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->tensp.$key->mausac.$key->ram.$key->dungluong.$key->gia.$promotion.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
                 
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$promotion.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai == 1 ? '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                            <i class="fas fa-trash-undo"></i>
-                                        </div>
-                                        ').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
             return $html;
@@ -441,238 +383,27 @@ class SanPhamController extends Controller
                 // ko có tìm kiếm
                 if(empty($lst_productSearch)){
                     if($sort == 'id-asc' || $sort == ''){
-                        foreach(SANPHAM::get() as $key){
-                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                            
-                            $html .= '<tr data-id="'.$key->id.'">
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->id.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$promotion.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                        </td>
-                                        {{-- nút --}}
-                                        <td class="vertical-center w-10">
-                                            <div class="d-flex justify-content-start">
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                                <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                                ($key->trangthai == 1 ? '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                    <i class="fas fa-trash"></i>
-                                                </div>' : '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                    <i class="fas fa-trash-undo"></i>
-                                                </div>
-                                                ').'
-                                            </div>
-                                        </td>
-                                    </tr>';
-                        }
+                        $data = SANPHAM::all();
                     } else if($sort == 'id-desc'){
-                        foreach(SANPHAM::orderBy('id', 'desc')->get() as $key){
-                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                            
-                            $html .= '<tr data-id="'.$key->id.'">
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->id.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$promotion.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                        </td>
-                                        {{-- nút --}}
-                                        <td class="vertical-center w-10">
-                                            <div class="d-flex justify-content-start">
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                                <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                                ($key->trangthai == 1 ? '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                    <i class="fas fa-trash"></i>
-                                                </div>' : '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                    <i class="fas fa-trash-undo"></i>
-                                                </div>
-                                                ').'
-                                            </div>
-                                        </td>
-                                    </tr>';
-                        }
+                        $data = SANPHAM::orderBy('id', 'desc')->get();
                     } else if($sort == 'price-asc'){
-                        foreach(SANPHAM::orderBy('gia')->get() as $key){
-                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                            
-                            $html .= '<tr data-id="'.$key->id.'">
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->id.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$promotion.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                        </td>
-                                        {{-- nút --}}
-                                        <td class="vertical-center w-10">
-                                            <div class="d-flex justify-content-start">
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                                <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                                ($key->trangthai == 1 ? '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                    <i class="fas fa-trash"></i>
-                                                </div>' : '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                    <i class="fas fa-trash-undo"></i>
-                                                </div>
-                                                ').'
-                                            </div>
-                                        </td>
-                                    </tr>';
-                        }
+                        $data = SANPHAM::orderBy('gia')->get();
                     } else if($sort == 'price-desc'){
-                        foreach(SANPHAM::orderBy('gia', 'desc')->get() as $key){
-                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                            
-                            $html .= '<tr data-id="'.$key->id.'">
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->id.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div class="pt-10 pb-10">'.$promotion.'</div>
-                                        </td>
-                                        <td class="vertical-center">
-                                            <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                        </td>
-                                        {{-- nút --}}
-                                        <td class="vertical-center w-10">
-                                            <div class="d-flex justify-content-start">
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                                <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                                ($key->trangthai == 1 ? '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                    <i class="fas fa-trash"></i>
-                                                </div>' : '
-                                                <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                    <i class="fas fa-trash-undo"></i>
-                                                </div>
-                                                ').'
-                                            </div>
-                                        </td>
-                                    </tr>';
-                        }
+                        $data = SANPHAM::orderBy('gia', 'desc')->get();
                     } else {
+                        $data = [];
                         foreach(KHUYENMAI::orderBy('chietkhau', 'desc')->select('id')->get() as $promotion){
                             foreach(SANPHAM::where('id_km', $promotion->id)->get() as $key){
-                                $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                                
-                                $html .= '<tr data-id="'.$key->id.'">
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$key->id.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$promotion.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                            </td>
-                                            {{-- nút --}}
-                                            <td class="vertical-center w-10">
-                                                <div class="d-flex justify-content-start">
-                                                    <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                                    <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                                    ($key->trangthai == 1 ? '
-                                                    <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                        <i class="fas fa-trash"></i>
-                                                    </div>' : '
-                                                    <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                        <i class="fas fa-trash-undo"></i>
-                                                    </div>
-                                                    ').'
-                                                </div>
-                                            </td>
-                                        </tr>';
+                                array_push($data, $key);
                             }
                         }
                     }
+
+                    foreach($data as $key){
+                        $html .= $this->bindElement($key->id);
+                    }
+
+                    return $html;
                 } else {
                     if($sort == 'id-asc' || $sort == ''){
                         $lst_productSearch = $this->sortID($lst_productSearch);
@@ -687,49 +418,7 @@ class SanPhamController extends Controller
                     }
 
                     foreach($lst_productSearch as $key){
-                        $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                        
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$promotion.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-10">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                            <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                            ($key->trangthai == 1 ? '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                <i class="fas fa-trash-undo"></i>
-                                            </div>
-                                            ').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 }
                 return $html;
@@ -790,49 +479,7 @@ class SanPhamController extends Controller
                 // không có sắp xếp
                 if(!$arrFilterSort['sort']){
                     foreach($lst_temp as $key){
-                        $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                        
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$promotion.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-10">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                            <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                            ($key->trangthai == 1 ? '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                <i class="fas fa-trash-undo"></i>
-                                            </div>
-                                            ').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 } else {
                     $sort = $arrFilterSort['sort'];
@@ -849,49 +496,7 @@ class SanPhamController extends Controller
                     }
 
                     foreach($lst_temp as $key){
-                        $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                        
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$promotion.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-10">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                            <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                            ($key->trangthai == 1 ? '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                                <i class="fas fa-trash"></i>
-                                            </div>' : '
-                                            <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                                <i class="fas fa-trash-undo"></i>
-                                            </div>
-                                            ').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 }
                 return $html;
@@ -937,49 +542,7 @@ class SanPhamController extends Controller
             // không có sắp xếp
             if(!$arrFilterSort['sort']){
                 foreach($lst_result as $key){
-                    $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                    
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$promotion.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai == 1 ? '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                            <i class="fas fa-trash-undo"></i>
-                                        </div>
-                                        ').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             } else {
                 $sort = $arrFilterSort['sort'];
@@ -996,49 +559,7 @@ class SanPhamController extends Controller
                 }
 
                 foreach($lst_result as $key){
-                    $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
-                    
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tensp.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->mausac.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ram.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->dungluong.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$promotion.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai == 1 ? '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tensp.' '.$key->dungluong.' - '.$key->ram.' Ram - '.$key->mausac.'" class="undelete-btn">
-                                            <i class="fas fa-trash-undo"></i>
-                                        </div>
-                                        ').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
 
@@ -1052,7 +573,12 @@ class SanPhamController extends Controller
         $lst_product = [];
 
         foreach(SANPHAM::all() as $key){
-            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+            if($key->id_km){
+                $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+            } else {
+                $promotion = 'Không có';
+            }
+            
             $data = strtolower($this->IndexController->unaccent($key->id.$key->tensp.$key->mausac.$key->ram.$key->dungluong.$key->gia.$promotion.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
             
             if(str_contains($data, $keyword)){
@@ -1146,5 +672,12 @@ class SanPhamController extends Controller
             }
         }
         return $lst;
+    }
+
+    public function AjaxGetModelImage(Request $request)
+    {
+        if($request->ajax()){
+            return HINHANH::where('id_msp', $request->id_msp)->get();
+        }
     }
 }

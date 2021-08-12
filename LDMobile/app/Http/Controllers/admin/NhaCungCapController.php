@@ -34,12 +34,66 @@ class NhaCungCapController extends Controller
         return view($this->admin."nha-cung-cap")->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = NHACUNGCAP::find($id);
+        $html = '<tr data-id="'.$id.'">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$id.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->tenncc.'</div>
+                        </td>
+                        <td class="vertical-center w-10">
+                            <div class="pt-10 pb-10">
+                                <img src="images/logo/'.$data->anhdaidien.'" alt="">
+                            </div>
+                        </td>
+                        <td class="vertical-center w-25">
+                            <div class="pt-10 pb-10">'.$data->diachi.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->sdt.'</div>
+                        </td>
+                        <td class="vertical-center w-10">
+                            <div class="pt-10 pb-10">'.$data->email.'</div>
+                        </td>
+                        <td class="vertical-center w-10">
+                            <div data-id="'.$id.'" class="trangthai pt-10 pb-10">Hoạt động</div>
+                        </td>
+                        {{-- nút --}}
+                        <td class="vertical-center w-5">
+                            <div class="d-flex justify-content-start">
+                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
+                                ($data->trangthai == 1 ?
+                                '<div data-id="'.$id.'" data-name="'.$data->tenncc.'" class="delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </div>' : '').'
+                            </div>
+                        </td>
+                    </tr>';
+        return $html;
+    }
+
     public function store(Request $request)
     {
         if($request->ajax()){
+            // định dạng hình
+            $imageFormat = $this->IndexController->getImageFormat($request->anhdaidien);
+            if($imageFormat == 'png'){
+                $base64 = str_replace('data:image/png;base64,', '', $request->anhdaidien);
+                $imageName = strtolower(str_replace(' ','-', $this->IndexController->unaccent($request->tenncc))).'.png';
+            } else {
+                $base64 = str_replace('data:image/jpeg;base64,', '', $request->anhdaidien);
+                $imageName = strtolower(str_replace(' ','-', $this->IndexController->unaccent($request->tenncc))).'.jpg';
+            }
+            // lưu hình
+            $this->IndexController->saveImage('images/logo/'.$imageName, $base64);
+
             $data = [
                 'tenncc' => $request->tenncc,
-                'anhdaidien' => strtolower(str_replace(' ','-', $this->IndexController->unaccent($request->tenncc))).'-logo.jpg',
+                'anhdaidien' => $imageName,
                 'diachi' => $request->diachi,
                 'sdt' => $request->sdt,
                 'email' => $request->email,
@@ -58,51 +112,9 @@ class NhaCungCapController extends Controller
                 return 'exists';
             }
 
-            // lưu hình
-            $base64 = str_replace('data:image/jpeg;base64,', '', $request->anhdaidien);
-            $image = base64_decode($base64);
-
-            $imageName = $data['anhdaidien'];
-            $urlImage = 'images/logo/' . $imageName;
-            file_put_contents($urlImage, $image);
-
             $create = NHACUNGCAP::create($data);
 
-            $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$create->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['tenncc'].'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="pt-10 pb-10">
-                                <img src="images/logo/'.$data['anhdaidien'].'" alt="">
-                            </div>
-                        </td>
-                        <td class="vertical-center w-25">
-                            <div class="pt-10 pb-10">'.$data['diachi'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['sdt'].'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="pt-10 pb-10">'.$data['email'].'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div data-id="'.$create->id.'" class="trangthai pt-10 pb-10">Hoạt động</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-5">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$create->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$create->id.'" data-name="'.$data['tenncc'].'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($create->id);
 
             return [
                 'id' => $create->id,
@@ -126,18 +138,22 @@ class NhaCungCapController extends Controller
 
             // nếu có chỉnh sửa hình
             if($request->anhdaidien){
-                $data['anhdaidien'] = strtolower(str_replace(' ','-', $this->IndexController->unaccent($request->tenncc))).'-logo.jpg';
-
                 // xóa hình cũ
                 unlink('images/logo/' . $oldData->anhdaidien);
 
+                // định dạng hình
+                $imageFormat = $this->IndexController->getImageFormat($request->anhdaidien);
+                if($imageFormat == 'png'){
+                    $base64 = str_replace('data:image/png;base64,', '', $request->anhdaidien);
+                    $imageName = strtolower(str_replace(' ','-', $this->IndexController->unaccent($request->tenncc))).'.png';
+                } else {
+                    $base64 = str_replace('data:image/jpeg;base64,', '', $request->anhdaidien);
+                    $imageName = strtolower(str_replace(' ','-', $this->IndexController->unaccent($request->tenncc))).'.jpg';
+                }
                 // lưu hình
-                $base64 = str_replace('data:image/jpeg;base64,', '', $request->anhdaidien);
-                $image = base64_decode($base64);
+                $this->IndexController->saveImage('images/logo/'.$imageName, $base64);
 
-                $imageName = $data['anhdaidien'];
-                $urlImage = 'images/logo/' . $imageName;
-                file_put_contents($urlImage, $image);
+                $data['anhdaidien'] = $imageName;
             } else {
                 $data['anhdaidien'] = $oldData->anhdaidien;
             }
@@ -153,45 +169,7 @@ class NhaCungCapController extends Controller
                 SANPHAM::where('id_msp', $key['id'])->update(['trangthai' => $data['trangthai']]);
             }
 
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['tenncc'].'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="pt-10 pb-10">
-                                <img src="images/logo/'.$data['anhdaidien'].'?'.time().'" alt="">
-                            </div>
-                        </td>
-                        <td class="vertical-center w-25">
-                            <div class="pt-10 pb-10">'.$data['diachi'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['sdt'].'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="pt-10 pb-10">'.$data['email'].'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div data-id="'.$id.'" class="trangthai pt-10 pb-10">'.($data['trangthai'] == 1 ? 'Hoạt động' : 'Ngừng kinh doanh').'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-5">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($data['trangthai'] == 1 ? '
-                                <div data-id="'.$id.'" data-name="'.$data['tenncc'].'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>' : '
-                                <div data-id="'.$id.'" data-name="'.$data['tenncc'].'" class="undelete-btn">
-                                    <i class="fas fa-trash-undo"></i>
-                                </div>') .'
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
 
             return $html;
         }
@@ -244,45 +222,7 @@ class NhaCungCapController extends Controller
 
             if($keyword == ''){
                 foreach(NHACUNGCAP::all() as $key){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tenncc.'</div>
-                                </td>
-                                <td class="vertical-center w-10">
-                                    <div class="pt-10 pb-10">
-                                        <img src="images/logo/'.$key->anhdaidien.'?'.time().'" alt="">
-                                    </div>
-                                </td>
-                                <td class="vertical-center w-25">
-                                    <div class="pt-10 pb-10">'.$key->diachi.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->sdt.'</div>
-                                </td>
-                                <td class="vertical-center w-10">
-                                    <div class="pt-10 pb-10">'.$key->email.'</div>
-                                </td>
-                                <td class="vertical-center w-10">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Hoạt động' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai == 1 ? '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tenncc.'" class="delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tenncc.'" class="undelete-btn">
-                                            <i class="fas fa-trash-undo"></i>
-                                        </div>') .'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
 
                 return $html;
@@ -291,45 +231,7 @@ class NhaCungCapController extends Controller
             foreach(NHACUNGCAP::all() as $key){
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->tenncc.$key->diachi.$key->sdt.$key->email.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->tenncc.'</div>
-                                </td>
-                                <td class="vertical-center w-10">
-                                    <div class="pt-10 pb-10">
-                                        <img src="images/logo/'.$key->anhdaidien.'?'.time().'" alt="">
-                                    </div>
-                                </td>
-                                <td class="vertical-center w-25">
-                                    <div class="pt-10 pb-10">'.$key->diachi.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->sdt.'</div>
-                                </td>
-                                <td class="vertical-center w-10">
-                                    <div class="pt-10 pb-10">'.$key->email.'</div>
-                                </td>
-                                <td class="vertical-center w-10">
-                                    <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Hoạt động' : 'Ngừng kinh doanh').'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                        ($key->trangthai == 1 ? '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tenncc.'" class="delete-btn">
-                                            <i class="fas fa-trash"></i>
-                                        </div>' : '
-                                        <div data-id="'.$key->id.'" data-name="'.$key->tenncc.'" class="undelete-btn">
-                                            <i class="fas fa-trash-undo"></i>
-                                        </div>') .'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
 

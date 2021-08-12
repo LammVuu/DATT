@@ -33,6 +33,32 @@ class BaoHanhController extends Controller
         return view($this->admin."bao-hanh")->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = BAOHANH::find($id);
+        $html = '<tr data-id="'.$id.'">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$id.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->imei.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->ngaymua.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->ngayketthuc.'</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-5">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                        </div>
+                    </td>
+                </tr>';
+        return $html;
+    }
+
     public function AjaxGetBaoHanh(Request $request)
     {
         if($request->ajax()){
@@ -41,7 +67,14 @@ class BaoHanhController extends Controller
 
             $warranty->sanpham = SANPHAM::find($id_sp);
             $warranty->baohanh = MAUSP::find(SANPHAM::find($id_sp)->id_msp)->baohanh;
-            $warranty->trangthai = $this->warrantyStatus($warranty->ngayketthuc);
+            // có bảo hành
+            if($warranty->baohanh){
+                $warranty->trangthai = $this->warrantyStatus($warranty->ngayketthuc);
+            }
+            // không có bảo hành
+            else {
+                $warranty->trangthai = 'no';
+            }
 
             return $warranty;
         }
@@ -67,26 +100,7 @@ class BaoHanhController extends Controller
 
             if($keyword == ''){
                 foreach(BAOHANH::limit(10)->get() as $key){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->imei.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ngaymua.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ngayketthuc.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
                 return $html;
             }
@@ -94,26 +108,7 @@ class BaoHanhController extends Controller
             foreach(BAOHANH::all() as $key){
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->imei.$key->ngaymua.$key->ngayketthuc));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$key->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$key->imei.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$key->ngaymua.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$key->ngayketthuc.'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-5">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
             return $html;

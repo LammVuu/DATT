@@ -1,12 +1,26 @@
-$(function() {
+$(window).on('load', function(){
     $('.loader').fadeOut();
+});
 
+function showAlertTop(content){
+    setTimeout(() => {
+        $('.alert-top').css({
+            '-ms-transform': 'translateY(0)',
+            'transform': 'translateY(0)',
+        });
+        $('.backdrop').css('z-index', '1999');
+        $('.backdrop').fadeIn();
+    }, 200);
+    $('.alert-top-content').text(content);
+}
+
+$(function() {
     // auto cuộn
     setTimeout(() => {
         // cuộn lên đầu trang
         setTimeout(() => {
             loadMoreFlag = false;
-        }, 200);
+        }, 500);
         $(window).scrollTop(0);
         
         // cuộn tới link đang chọn
@@ -14,7 +28,7 @@ $(function() {
         if(position > 600){
             $('.sidebar.custom-scrollbar').animate({scrollTop: position});
         }
-    }, 100);
+    }, 200);
 
     var url = window.location.pathname.split('/')[2];
     if(url == undefined){
@@ -30,7 +44,7 @@ $(function() {
 
     var loadMoreFlag = false;
 
-    // hiển thị button cuộn lên đầu
+    // xử lý cuộn trang
     $(window).scroll(function(e){
         var scrollTop = $(window).scrollTop();
         var docHeight = $(document).height();
@@ -61,7 +75,7 @@ $(function() {
                     if($('#lst_data').attr('data-loadmore') != 'done'){
                         var row = $('#lst_data').children().length;
                         var sort = $('input[name="sort"]:checked').val();
-                        if(sort == undefined){
+                        if(sort === undefined){
                             sort = '';
                         }
                         $.ajax({
@@ -161,6 +175,20 @@ $(function() {
                 }
             }
         }
+    });
+
+    // đóng alert top
+    $('.close-alert-top').click(function(){
+        setTimeout(() => {
+            $('.alert-top-content').text('');
+            $('.backdrop').removeAttr('style');
+            $('.alert-top').removeAttr('style');
+        }, 500);
+        $('.alert-top').css({
+            '-ms-transform': 'translateY(-500px)',
+            'transform': 'translateY(-500px)',
+        });
+        $('.backdrop').fadeOut();
     });
 
     // xử lý cuộn lên đầu trang
@@ -432,43 +460,36 @@ $(function() {
     =======================================================================================================================*/
     
     // đóng/mở sidebar menu
-    $('#btn-expand-menu').click(function(){
-        // đóng
-        if($(this).attr('aria-expanded') == 'true'){
-            $('.sidebar-avt').animate({
+    $('.sidebar').hover(function(){
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            setTimeout(() => {
+                $('.sidebar-content').css({
+                    'width': '180px',
+                    'display': 'flex',
+                    'align-items': 'center',
+                });
+            }, 250);
+            // $('.content').css('margin-left', '250px');
+            $('.sidebar').css('width', '250px');
+            
+            
+            $(this).attr('aria-expanded', 'true');
+        }, 200);
+    }, function(){
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            $('.sidebar-content').css({
                 'width': '0',
-                'height': '0',
-            });
-            $('#avatarSideBarUser').removeAttr('style');
-
-            $('.sidebar-content').animate({
-                'padding-left': '0',
-                'width': '0',
+                'display': 'none',
             });
             
             $('.sidebar').css('width', '70px');
-            $('.content').css('margin-left', '70px');
+            
+            // $('.content').css('margin-left', '70px');
             
             $(this).attr('aria-expanded', 'false');
-        }
-        // mở
-        else {
-            $('.sidebar-avt').animate({
-                'width': '100%',
-                'height': '150px',
-            });
-            $('#avatarSideBarUser').css('width', '80px');
-
-            $('.sidebar-content').animate({
-                'padding-left': '10px',
-                'width': '180px',
-            });
-
-            $('.content').css('margin-left', '250px');
-            $('.sidebar').css('width', '250px');
-            
-            $(this).attr('aria-expanded', 'true');
-        }
+        }, 200);
     });
     
     // đóng/mở tùy chọn tài khoản
@@ -1123,6 +1144,7 @@ $(function() {
         });
 
         function filter(){
+            $('.loader').show();
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1144,6 +1166,7 @@ $(function() {
                     $('#loadmore').hide();
                 }
             });
+            $('.loader').fadeOut();
         }
     }
     /*=======================================================================================================================
@@ -1539,6 +1562,12 @@ $(function() {
 
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
+            if(!$('#sanpham_model').children().length){
+                $('#info-modal-content').text('Bạn chưa có mẫu sản phẩm. Vui lòng tạo mới mẫu sản phẩm trước.');
+                $('#info-modal-main-btn').attr('data-bs-dismiss', 'modal').text('Đã hiểu');
+                $('#info-modal').modal('show');
+                return;
+            }
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1566,6 +1595,9 @@ $(function() {
             $('#action-btn').text('Thêm');
 
             $('#product-color-carousel').parent().hide();
+
+            // label màu sắc khác
+            $('#another-color-label').hide();
 
             // hiển thị modal
             $('#modal').modal('show');
@@ -1630,28 +1662,21 @@ $(function() {
             else{
                 $('#sanpham_review_image').attr('src', 'images/600x600.png');
                 $(this).val('');
-                alert('file upload không hợp lệ');
+                showAlertTop('Bạn chỉ có thể upload hình ảnh');
             }
         });
 
-        // chọn mẫu sản phẩm và gán khuyến mãi, gán tên sp
-        $('#sanpham_model').change(function(){
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/sanpham/ajax-get-promotionID-by-modelID',
-                type: 'POST',
-                data: {'id': $(this).val()},
-                success:function(data){
-                    if(data.id_km != null){
-                        $('#sanpham_promotion option[value="'+data.id_km+'"]').prop('selected', true);
-                    }
-                }
-            });
+        // chọn hình từ mẫu sản phẩm
+        $(document).on('click', '.single-image-from-model', function(e){
+            removeRequried($('.image-from-model'));
+            $('.single-image-from-model').removeClass('single-image-from-model-selected');
+            $(e.currentTarget).addClass('single-image-from-model-selected');
+        });
 
-            var modelName = $(this).find(':selected').text();
-            $('#sanpham_name').val(modelName);
+        // chọn mẫu sản phẩm và gán khuyến mãi, gán tên sp, load hình ảnh
+        $('#sanpham_model').change(function(){
+            getModelPromotion();
+            getModelImage();
         });
 
         // chọn file cấu hình
@@ -1712,6 +1737,11 @@ $(function() {
                     $('#sanpham_review_image').attr('src', 'images/phone/' + product.hinhanh);
                     bool == true ? $('#sanpham_choose_image').hide() : $('#sanpham_choose_image').show();
 
+                    $('.image-from-model').hide();
+                    $('.new-image').show();
+                    $('#sanpham_image_from option[value="new"]').prop('selected', true);
+                    bool == true ? $('#sanpham_image_from').hide(): $('#sanpham_image_from').show();
+
                     // các màu sắc khác
                     if(data.lst_color.length != 1){
                         var html = '';
@@ -1723,8 +1753,10 @@ $(function() {
                         owl.trigger('replace.owl.carousel', html).trigger('refresh.owl.carousel');
                         $('#product-color-carousel').parent().show();
                         data.lst_color.length <= 4 ? $('#prev-next-btn').hide() : $('#prev-next-btn').show();
+                        $('#another-color-label').show();
                     } else {
                         $('#product-color-carousel').parent().hide();
+                        $('#another-color-label').hide();
                     }
                     
 
@@ -1963,14 +1995,13 @@ $(function() {
         // thêm|sửa
         $('#action-btn').click(function(){
             // bẫy lỗi
-            var valiName = validateName($('#sanpham_name'));
             var valiColor = validateColor($('#sanpham_color'));
             var valiPrice = validatePrice($('#sanpham_price'));
-            var valiImage = validateProductImage($('#sanpham_image'));
+            var valiImage = validateProductImage();
 
             // bẫy lỗi xong kiểm tra loại
-            if(valiName & valiColor & valiPrice & valiImage){
-                var tensp = $('#sanpham_name').val();
+            if(valiColor & valiPrice & valiImage){
+                var tensp = $('#sanpham_model').find(':selected').text();
                 var id_msp = $('#sanpham_model').val();
                 var mausac = $('#sanpham_color').val();
                 var ram = $('#sanpham_ram').val();
@@ -1978,7 +2009,12 @@ $(function() {
                 var gia = $('#sanpham_price').val();
                 var id_km = $('#sanpham_promotion').val();
                 var trangthai = $('#sanpham_status').val();
-                var hinhanhBase64 = $('#sanpham_image_base64').val();
+                if($('#sanpham_image_from').val() == 'model'){
+                    var hinhanhName = $('.single-image-from-model-selected').attr('data-name');
+                } else {
+                    var hinhanhBase64 = $('#sanpham_image_base64').val();
+                }
+                
                 var cauhinhName = $('#sanpham_specifications').val();
                 var cauhinh = {
                     "thong_so_ky_thuat": {
@@ -2191,7 +2227,8 @@ $(function() {
                     'tensp': tensp,
                     'id_msp': id_msp,
                     'mausp': $('#sanpham_model').find(':selected').text(),
-                    'hinhanh': hinhanhBase64,
+                    'image_from': $('#sanpham_image_from').val(),
+                    'hinhanh': $('#sanpham_image_from').val() == 'model' ? hinhanhName : hinhanhBase64,
                     'mausac': mausac,
                     'ram': ram,
                     'dungluong': dungluong,
@@ -2201,8 +2238,9 @@ $(function() {
                     'cauhinhName': cauhinhName,
                     'cauhinh': cauhinh,
                     'trangthai': trangthai,
-                    'trangthaimausp': $('#sanpham_status_model').val(),
                 };
+
+                //console.log(data);return;
 
                 // thêm mới
                 if($(this).attr('data-type') == 'create'){
@@ -2217,9 +2255,7 @@ $(function() {
                             $('.loader').fadeOut();
                             // sản phẩm đã tồn tại
                             if(data == 'exists'){
-                                $('.loader').fadeOut();
-                                $('#sanpham_name').addClass('required');
-                                $('#sanpham_name').after('<span class="required-text">Sản phẩm này đã tồn tại</span>');
+                                showAlertTop('Sản phẩm này đã tồn tại');
                                 return;
                             }
 
@@ -2353,26 +2389,41 @@ $(function() {
         }
 
         // bẫy lỗi hình ảnh
-        function validateProductImage(image) {
-            if($('#sanpham_review_image').hasClass('required')){
-                $('.modal-body').animate({scrollTop: image.position().top});
-                return false;
-            }
+        function validateProductImage() {
+            if($('#sanpham_image_from option:selected').val() == 'model'){
+                image = $('.image-from-model');
+                if(image.hasClass('required')){
+                    $('.modal-body').animate({scrollTop: image.position().top});
+                    return false;
+                }
 
-            // chưa chọn
-            if(image.val() == '' && $('#sanpham_review_image').attr('src') == 'images/600x600.png'){
-                $('#sanpham_review_image').addClass('required');
-                $('#sanpham_review_image').after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
-                $('.modal-body').animate({scrollTop: image.position().top});
-                return false;
-            }
+                // chưa chọn
+                if(!$('.single-image-from-model-selected').length){
+                    image.addClass('required');
+                    image.after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
+                    $('.modal-body').animate({scrollTop: image.position().top});
+                    return false;
+                }
 
-            return true;
+                return true;
+            } else {
+                if($('#sanpham_review_image').hasClass('required')){
+                    $('.modal-body').animate({scrollTop: $('#sanpham_image').position().top});
+                    return false;
+                }
+    
+                // chưa chọn
+                if($('#sanpham_image').val() == '' && $('#sanpham_review_image').attr('src') == 'images/600x600.png'){
+                    $('#sanpham_review_image').addClass('required');
+                    $('#sanpham_review_image').after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
+                    $('.modal-body').animate({scrollTop: $('#sanpham_image').position().top});
+                    return false;
+                }
+    
+                return true;
+            }
         }
 
-        $('#sanpham_name').keyup(function(){
-            removeRequried($(this));
-        });
         $('#sanpham_color').keyup(function(){
             removeRequried($(this));
         });
@@ -2383,6 +2434,35 @@ $(function() {
         // reset modal
         $('#modal').on('shown.bs.modal', function(){
             // chọn sẵn khuyến mãi theo mẫu sản phẩm
+            getModelPromotion();
+            getModelImage();
+            
+            // gán tên sản phẩm
+            var modelName = $('#sanpham_model').find(':selected').text();
+            $('#sanpham_name').val(modelName);
+        })
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#sanpham-form').trigger('reset');
+            $('input, textarea').attr('readonly', false);
+            $('select').attr('disabled', false);
+            removeRequried($('#sanpham_review_image'));
+            removeRequried($('#sanpham_color'));
+            removeRequried($('#sanpham_price'));
+            removeRequried($('.image-from-model'));
+            $('#sanpham_review_image').attr('src', 'images/600x600.png');
+            $('#sanpham_choose_image').show();
+            $('#create-specifications-div').show('blind');
+            $('#sanpham_specifications option[value="create"]').show();
+            $('#action-btn').show();
+            $('#sanpham_model').children().show();
+            $('.image-from-model').show();
+            $('#sanpham_image_from').show();
+            $('.image-from-model').children().remove();
+            $('.new-image').hide();
+            $('#another-color-label').show();
+        });
+
+        function getModelPromotion(){
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2393,29 +2473,41 @@ $(function() {
                 success:function(data){
                     if(data.id_km != null){
                         $('#sanpham_promotion option[value="'+data.id_km+'"]').prop('selected', true);
+                    } else {
+                        $('#sanpham_promotion option[value=""]').prop('selected', true);
                     }
                 }
             });
-
-            // gán tên sản phẩm
-            var modelName = $('#sanpham_model').find(':selected').text();
-            $('#sanpham_name').val(modelName);
-        })
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#sanpham-form').trigger('reset');
-            $('input, textarea').attr('readonly', false);
-            $('select').attr('disabled', false);
-            removeRequried($('#sanpham_name'));
-            removeRequried($('#sanpham_review_image'));
-            removeRequried($('#sanpham_color'));
-            removeRequried($('#sanpham_price'));
-            $('#sanpham_review_image').attr('src', 'images/600x600.png');
-            $('#sanpham_choose_image').show();
-            $('#create-specifications-div').show('blind');
-            $('#sanpham_specifications option[value="create"]').show();
-            $('#action-btn').show();
-            $('#sanpham_model').children().show();
-        });
+        }
+        function getModelImage(){
+            removeRequried($('.image-from-model'));
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: 'admin/sanpham/ajax-get-model-image',
+                type: 'POST',
+                data: {'id_msp': $('#sanpham_model option:selected').val()},
+                success:function(data){
+                    $('.image-from-model').children().remove();
+                    if(!data.length){
+                        var elmnt = $('<div class="fw-600 text-center pt-50">Mẫu sản phẩm chưa có hình ảnh</div>');
+                        elmnt.appendTo($('.image-from-model'));
+                    } else {
+                        var row = $('<div class="row"></div>');
+                        $.each(data, function(key, val){
+                            var elmnt = $('<div class="col-6 mb-20">'+
+                                                '<div data-name="'+val.hinhanh+'" class="single-image-from-model">'+
+                                                    '<img src="images/phone/'+val.hinhanh+'" alt="">'+
+                                                '</div>'+
+                                            '</div>');
+                            elmnt.appendTo(row);
+                        });
+                        row.appendTo($('.image-from-model'));
+                    }
+                }
+            });
+        }
 
         // xóa
         $('#delete-btn').click(function(){
@@ -2660,6 +2752,7 @@ $(function() {
 
         // danh sách kết quả lọc & sắp xếp
         function filterSort() {
+            $('.loader').show();
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2682,8 +2775,27 @@ $(function() {
                     loadMoreFlag = true;
                     $('#loadmore').hide();
                 }
-            })
+            });
+            $('.loader').fadeOut();
         }
+
+        // thay đổi chọn hình ảnh
+        $('#sanpham_image_from').change(function(){
+            // hình từ mẫu sản phẩm
+            if($(this).val() == 'model'){
+                removeRequried($('.image-from-model'));
+                removeRequried($('#sanpham_review_image'));
+                $('.image-from-model').show();
+                $('.new-image').hide();
+            }
+            // chọn hình mới
+            else {
+                removeRequried($('.image-from-model'));
+                removeRequried($('#sanpham_review_image'));
+                $('.image-from-model').hide();
+                $('.new-image').show();
+            }
+        });
     }
     /*=======================================================================================================================
                                                            Nhà cung cấp
@@ -2771,7 +2883,7 @@ $(function() {
             else{
                 $('#ncc_review_image').attr('src', 'images/320x320.png');
                 $(this).val('');
-                alert('Bạn chỉ được phép upload hình ảnh');
+                showAlertTop('Bạn chỉ có thể upload hình ảnh');
             }
         });
 
@@ -2978,6 +3090,7 @@ $(function() {
             $('#ncc_choose_image').show();
             $('#ncc_review_image').attr('src', 'images/320x320.png');
             $('#ncc_image_base64').val('');
+            $('#action-ncc-btn').show();
         });
 
         $('#lst_data').bind('DOMSubtreeModified', function(){
@@ -3144,6 +3257,10 @@ $(function() {
             loadMoreFlag = true;
         }
 
+        var idx = 1;
+        var arrayBase64 = [];
+        var arrayDelete = [];
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             $.ajax({
@@ -3212,7 +3329,6 @@ $(function() {
         });
 
         // chọn hình ảnh
-        var idx = 1;
         $('#image_inp').change(function(){
             // hủy chọn hình
             if($(this).val() == ''){
@@ -3226,11 +3342,11 @@ $(function() {
             var length = this.files.length;
 
             // tổng số hình hiện tại
-            var qty = $('.image-preview-div').children().length;
+            var qty = $('.image-preview-div > .row').children().length;
 
             for(var i = 0; i < length; i++){
                 if(qty >= 20){
-                    alert('Tối đa 20 hình');
+                    showAlertTop('Hình ảnh upload tối đa là 20');
                     break;
                 }
 
@@ -3241,18 +3357,19 @@ $(function() {
                 // kiểm tra có phải là hình ảnh không
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
                     // tạo hình
-                    var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-lg-3 p-10">'+
+                    var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-lg-3 mb-20">'+
                                         '<div class="image-preview">'+
                                             '<div class="overlay-image-preview"></div>'+
                                             '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
                                             '<img data-id="'+idx+'" class="image_preview_img" src="'+URL.createObjectURL(this.files[i])+'" alt="">'+
                                         '</div>'+
                                     '</div>');
-                    elmnt.appendTo($('.image-preview-div'));
+                    elmnt.appendTo($('.image-preview-div > .row'));
                 }
                 // không phải hình ảnh
                 else{
-                    alert('Bạn chỉ được phép upload hình ảnh');
+                    showAlertTop('Bạn chỉ có thể upload hình ảnh');
+                    break;
                 }
                 idx++;
                 qty++;
@@ -3265,10 +3382,15 @@ $(function() {
             // xóa hình
             $('.delete-image-preview').off('click').click(function(){
                 var id = $(this).data('id');
-                $('#image-' + id).remove();
-                var qty = $('.image-preview-div').children().length;
+                var image = $('#image-' + id);
+                if(image.attr('data-name') != null){
+                    arrayDelete.push(image.attr('data-name'));
+                }
+                image.remove();
+                var qty = $('.image-preview-div > .row').children().length;
                 if(qty == 0){
                     $('#qty-image').hide();
+                    $('#image_inp').val('');
                 } else {
                     $('#qty-image').text('('+qty+')');
                 }
@@ -3295,16 +3417,16 @@ $(function() {
                     // gán dữ liệu cho modal
                     setTimeout(() => {
                         // gán hình ảnh
-                        $('.image-preview-div').children().remove();
+                        $('.image-preview-div > .row').children().remove();
                         for(var i = 0; i < lst_slide.length; i++){
-                            var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-lg-3 p-10">'+
+                            var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" data-name="'+lst_slide[i].hinhanh+'" class="col-lg-3 mb-20">'+
                                             '<div class="image-preview">'+
                                                 '<div class="overlay-image-preview"></div>'+
                                                 '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
                                                 '<img data-id="'+idx+'" class="image_preview_img" src="images/phone/slideshow/'+lst_slide[i].hinhanh+'" alt="">'+
                                             '</div>'+
                                         '</div>');
-                            elmnt.appendTo($('.image-preview-div'));
+                            elmnt.appendTo($('.image-preview-div > .row'));
 
                             idx++;
                         }
@@ -3347,31 +3469,22 @@ $(function() {
         });
 
         // thêm|sửa
-        var arrayBase64 = [];
         $('#action-btn').click(function(){
             // bẫy lỗi
-            var valiImage = validateSlideshowImage($('#image_inp'))
+            var valiImage = validateSlideshowImage()
 
             // bẫy lỗi xong kiểm tra loại
             if(valiImage){
                 $('.loader').show();
 
-                // hình => base64
-                for(var i = 0; i < $('.image-preview-div').children().length; i++){
-                    var id = $($('.image-preview-div').children()[i]).attr('data-id');
-                    getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
-                        arrayBase64.push(dataUrl);
-                    });    
-                }
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    setTimeout(() => {
+                        var data = {
+                            'id_msp': $('#model').val(),
+                            'image_slideshow': arrayBase64,
+                        };
 
-                var data = {
-                    'id_msp': $('#model').val(),
-                    'image_slideshow': arrayBase64,
-                };
-
-                setTimeout(() => {
-                    // thêm mới
-                    if($(this).attr('data-type') == 'create'){
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -3411,11 +3524,26 @@ $(function() {
                                 });
                             }
                         });
+                    }, 1000);
+
+                    // hình => base64
+                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
+                        var id = $($('.image-preview-div > .row').children()[i]).attr('data-id');
+                        getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
+                            arrayBase64.push(dataUrl);
+                        });    
                     }
-                    // chỉnh sửa
-                    else {
+                }
+                // chỉnh sửa
+                else {
+                    setTimeout(() => {
                         var id = $(this).attr('data-id');
 
+                        var data = {
+                            'lst_slideshow': arrayBase64,
+                            'lst_delete': arrayDelete,
+                        };
+                        
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -3454,22 +3582,34 @@ $(function() {
                                 });
                             }
                         });
+                    }, 1000);
+
+                    // hình => base64
+                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
+                        var image = $($('.image-preview-div > .row').children()[i]);
+                        if(image.attr('data-name') == null){
+                            var id = image.attr('data-id');
+                            getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
+                                arrayBase64.push(dataUrl);
+                            });    
+                        }
                     }
-                }, 1000);
+                }
             }
         });
 
         // bẫy lỗi hình ảnh
-        function validateSlideshowImage(image) {
-            if($('.image-preview-div').hasClass('required')){
+        function validateSlideshowImage() {
+            var image = $('.image-preview-div');
+            if(image.hasClass('required')){
                 $('.modal-body').animate({scrollTop: image.position().top});
                 return false;
             }
 
             // chưa chọn
-            if(image.val() == '' && $('.image-preview-div').children().length == 0){
-                $('.image-preview-div').addClass('required');
-                $('.image-preview-div').after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
+            if($('.image-preview-div > .row').children().length == 0){
+                image.addClass('required');
+                image.after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
                 $('.modal-body').animate({scrollTop: image.position().top});
                 return false;
             }
@@ -3483,11 +3623,12 @@ $(function() {
             $('select').attr('disabled', false);
             $('#model').children().remove();
             removeRequried($('.image-preview-div'));
-            $('.image-preview-div').children().remove();
+            $('.image-preview-div > .row').children().remove();
             $('#choose_image').show();
             $('#action-btn').show();
             idx = 1;
             arrayBase64 = [];
+            arrayDelete = [];
             $('#qty-image').text('');
         });
 
@@ -3596,6 +3737,10 @@ $(function() {
             loadMoreFlag = true;
         }
 
+        var idx = 1;
+        var arrayBase64 = [];
+        var arrayDelete = [];
+
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             $.ajax({
@@ -3664,7 +3809,6 @@ $(function() {
         });
 
         // chọn hình ảnh
-        var idx = 1;
         $('#image_inp').change(function(){
             // hủy chọn hình
             if($(this).val() == ''){
@@ -3678,11 +3822,11 @@ $(function() {
             var length = this.files.length;
 
             // tổng số hình hiện tại
-            var qty = $('.image-preview-div').children().length;
+            var qty = $('.image-preview-div > .row').children().length;
 
             for(var i = 0; i < length; i++){
                 if(qty >= 20){
-                    alert('Tối đa 20 hình');
+                    showAlertTop('Hình ảnh upload tối đa là 20');
                     break;
                 }
 
@@ -3693,18 +3837,19 @@ $(function() {
                 // kiểm tra có phải là hình ảnh không
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
                     // tạo hình
-                    var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-lg-3 p-10">'+
+                    var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-3 mb-20">'+
                                         '<div class="image-preview">'+
                                             '<div class="overlay-image-preview"></div>'+
                                             '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
                                             '<img data-id="'+idx+'" class="image_preview_img" src="'+URL.createObjectURL(this.files[i])+'" alt="">'+
                                         '</div>'+
                                     '</div>');
-                    elmnt.appendTo($('.image-preview-div'));
+                    elmnt.appendTo($('.image-preview-div > .row'));
                 }
                 // không phải hình ảnh
                 else{
-                    alert('Bạn chỉ được phép upload hình ảnh');
+                    showAlertTop('Bạn chỉ có thể upload hình ảnh');
+                    break;
                 }
                 idx++;
                 qty++;
@@ -3713,14 +3858,19 @@ $(function() {
             $('#qty-image').text('('+qty+')');
         });
 
-        $('.image-preview-div').bind('DOMSubtreeModified', function(){
+        $('.image-preview-div').bind('DOMSubtreeModified', function(){  
             // xóa hình
             $('.delete-image-preview').off('click').click(function(){
                 var id = $(this).data('id');
-                $('#image-' + id).remove();
-                var qty = $('.image-preview-div').children().length;
+                var imageDelete = $('#image-' + id);
+                if(imageDelete.attr('data-name') != null){
+                    arrayDelete.push(imageDelete.attr('data-name'));
+                }
+                imageDelete.remove();
+                var qty = $('.image-preview-div > .row').children().length;
                 if(qty == 0){
                     $('#qty-image').hide();
+                    $('#image_inp').val('');
                 } else {
                     $('#qty-image').text('('+qty+')');
                 }
@@ -3747,16 +3897,16 @@ $(function() {
                     // gán dữ liệu cho modal
                     setTimeout(() => {
                         // gán hình ảnh
-                        $('.image-preview-div').children().remove();
+                        $('.image-preview-div > .row').children().remove();
                         for(var i = 0; i < lst_image.length; i++){
-                            var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-lg-3 p-10">'+
+                            var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" data-name="'+lst_image[i].hinhanh+'" class="col-lg-3 mb-20">'+
                                             '<div class="image-preview">'+
                                                 '<div class="overlay-image-preview"></div>'+
                                                 '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
                                                 '<img data-id="'+idx+'" class="image_preview_img" src="images/phone/'+lst_image[i].hinhanh+'" alt="">'+
                                             '</div>'+
                                         '</div>');
-                            elmnt.appendTo($('.image-preview-div'));
+                            elmnt.appendTo($('.image-preview-div > .row'));
 
                             idx++;
                         }
@@ -3799,31 +3949,20 @@ $(function() {
         });
 
         // thêm|sửa
-        var arrayBase64 = [];
         $('#action-btn').click(function(){
             // bẫy lỗi
-            var valiImage = validateSlideshowImage($('#image_inp'))
+            var valiImage = validateImage();
 
-            // bẫy lỗi xong kiểm tra loại
             if(valiImage){
                 $('.loader').show();
-
-                // hình => base64
-                for(var i = 0; i < $('.image-preview-div').children().length; i++){
-                    var id = $($('.image-preview-div').children()[i]).attr('data-id');
-                    getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
-                        arrayBase64.push(dataUrl);
-                    });    
-                }
-
-                var data = {
-                    'id_msp': $('#model').val(),
-                    'lst_base64': arrayBase64,
-                };
-
-                setTimeout(() => {
-                    // thêm mới
-                    if($(this).attr('data-type') == 'create'){
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    setTimeout(() => {
+                        var data = {
+                            'id_msp': $('#model').val(),
+                            'lst_base64': arrayBase64,
+                        };
+    
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -3834,21 +3973,21 @@ $(function() {
                             success:function(data){
                                 $('.loader').fadeOut();
                                 $('#modal').modal('hide');
-
+    
                                 // render vào view
                                 $('#lst_data').children().remove();
                                 $('#lst_data').append(data.html);
-
+    
                                 // xóa option
                                 $('#model option[value="'+data.id+'"]').remove();
-
+    
                                 // toast
                                 if($('#toast').children().length){
                                     $('#toast').children().remove();
                                 }
                                 $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
                                 showToast('#slideshow-msp-toast');
-
+    
                                 // đánh dấu dòng được thêm/chỉnh sửa
                                 var tr = $('tr[data-id="'+data.id+'"]'); 
                                 setTimeout(() => {
@@ -3866,11 +4005,25 @@ $(function() {
                                 });
                             }
                         });
+                    }, 1000);
+                    // hình => base64
+                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
+                        var id = $($('.image-preview-div > .row').children()[i]).attr('data-id');
+                        getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
+                            arrayBase64.push(dataUrl);
+                        });    
                     }
-                    // chỉnh sửa
-                    else {
+                }
+                // chỉnh sửa
+                else {
+                    setTimeout(() => {
                         var id = $(this).attr('data-id');
 
+                        var data = {
+                            'lst_base64': arrayBase64,
+                            'lst_delete': arrayDelete,
+                        };
+    
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -3881,7 +4034,7 @@ $(function() {
                             success:function(data){
                                 $('.loader').fadeOut();
                                 $('#modal').modal('hide');
-
+    
                                 // thay thế
                                 $('tr[data-id="'+id+'"]').replaceWith(data); 
                                 
@@ -3891,7 +4044,7 @@ $(function() {
                                 }
                                 $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
                                 showToast('#slideshow-msp-toast');
-
+    
                                 // đánh dấu dòng được thêm/chỉnh sửa
                                 var tr = $('tr[data-id="'+id+'"]'); 
                                 setTimeout(() => {
@@ -3909,22 +4062,36 @@ $(function() {
                                 });
                             }
                         });
+                    }, 1000);
+                    
+
+                    // hình => base64
+                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
+                        var image = $($('.image-preview-div > .row').children()[i]);
+                        // chỉ thêm hình mới`
+                        if(image.attr('data-name') == null){
+                            var id = image.attr('data-id');
+                            getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
+                                arrayBase64.push(dataUrl);
+                            });
+                        }
                     }
-                }, 1000);
+                }
             }
         });
 
         // bẫy lỗi hình ảnh
-        function validateSlideshowImage(image) {
-            if($('.image-preview-div').hasClass('required')){
+        function validateImage() {
+            var image = $('.image-preview-div');
+            if(image.hasClass('required')){
                 $('.modal-body').animate({scrollTop: image.position().top});
                 return false;
             }
 
             // chưa chọn
-            if(image.val() == '' && $('.image-preview-div').children().length == 0){
-                $('.image-preview-div').addClass('required');
-                $('.image-preview-div').after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
+            if($('.image-preview-div > .row').children().length == 0){
+                image.addClass('required');
+                image.after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
                 $('.modal-body').animate({scrollTop: image.position().top});
                 return false;
             }
@@ -3937,12 +4104,14 @@ $(function() {
             $('#form').trigger('reset');
             $('select').attr('disabled', false);
             removeRequried($('.image-preview-div'));
-            $('.image-preview-div').children().remove();
+            $('.image-preview-div > .row').children().remove();
             $('#choose_image').show();
             $('#action-btn').show();
             idx = 1;
             arrayBase64 = [];
+            arrayDelete = [];
             $('#qty-image').text('');
+            $('#image_inp').val('');
         });
 
         $('#lst_data').bind('DOMSubtreeModified', function(){
@@ -4526,6 +4695,7 @@ $(function() {
         });
 
         function filter() {
+            $('.loader').show();
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -4542,6 +4712,7 @@ $(function() {
                         loadMoreFlag = true;
                     }
                     $('#loadmore').hide();
+                    $('.loader').fadeOut();
                 }
             });
         }
@@ -5892,6 +6063,7 @@ $(function() {
 
         // danh sách kết quả lọc & sắp xếp
         function filterSort(){
+            $('.loader').show();
             var keyword = $('#search').val().toLocaleLowerCase();
             $.ajax({
                 headers: {
@@ -5915,6 +6087,7 @@ $(function() {
                         $('.sort-badge').show();
                     }
                     $('#loadmore').hide();
+                    $('.loader').fadeOut();
                 }
             })
         }
@@ -5951,13 +6124,23 @@ $(function() {
                     $('#product-capacity').text(data.sanpham.dungluong);
                     $('#product-color').text(data.sanpham.mausac);
                     $('#product-imei').text(data.imei);
+
+                    $('#warranty').parent().parent().show();
+                    $('#start').parent().parent().parent().show();
+                    
                     if(data.trangthai == 1){
                         $('#warranty-status').text('Trong bảo hành');
-                        $('#warranty-status').addClass('success-color');
+                        $('#warranty-status').removeClass('warning-color').addClass('success-color');
+                    } else if(data.trangthai == 'no'){
+                        $('#warranty-status').text('Không bảo hành');
+                        $('#warranty-status').removeClass('success-color').addClass('warning-color');
+                        $('#warranty').parent().parent().hide();
+                        $('#start').parent().parent().parent().hide();
                     } else {
                         $('#warranty-status').text('Hết hạn');
-                        $('#warranty-status').addClass('warning-color');
+                        $('#warranty-status').removeClass('success-color').addClass('warning-color');
                     }
+
                     $('#warranty').text(data.baohanh);
                     $('#start').text(data.ngaymua);
                     $('#end').text(data.ngayketthuc);
@@ -6128,7 +6311,7 @@ $(function() {
             }
             // không phải hình ảnh
             else{
-                alert('Bạn chỉ được phép upload hình ảnh');
+                showAlertTop('Bạn chỉ có thể upload hình ảnh');
                 $(this).val('');
                 $('#image-preview').attr('src', 'images/700x400.png');
             }
@@ -6436,7 +6619,7 @@ $(function() {
             }
             // không phải hình ảnh
             else{
-                alert('Bạn chỉ được phép upload hình ảnh');
+                showAlertTop('Bạn chỉ có thể upload hình ảnh');
                 $(this).val('');
                 $('#image-preview').attr('src', 'images/700x400.png');
             }

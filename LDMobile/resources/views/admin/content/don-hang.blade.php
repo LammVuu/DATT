@@ -140,7 +140,7 @@
                                 @endif
                             @endif
                             <div data-id="{{$key->id}}" class="info-btn"><i class="fas fa-info"></i></div>
-                            @if ($key->trangthaidonhang != 'Đã hủy')
+                            @if ($key->trangthaidonhang != 'Đã hủy' && $key->trangthaidonhang != 'Thành công')
                                 <div data-id="{{$key->id}}" class="delete-btn"><i class="fas fa-trash"></i></div>
                             @endif
                         </div>

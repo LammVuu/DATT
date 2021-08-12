@@ -4,6 +4,7 @@ namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\user\IndexController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -138,7 +139,7 @@ class CartController extends Controller
                     'id_sp' => $key['sanpham']['id'],
                     'gia' => $key['sanpham']['gia'],
                     'sl' => $key['sl'],
-                    'giamgia' => $key['sanpham']['khuyenmai'],
+                    'giamgia' => $key['sanpham']['khuyenmai'] ? $key['sanpham']['khuyenmai'] : null,
                     'thanhtien' => $key['thanhtien'],
                 ];
 
@@ -407,34 +408,29 @@ class CartController extends Controller
                 foreach(TAIKHOAN::find(session('user')->id)->giohang as $cart){
                     // cập nhật số lượng sản phẩm trong giỏ hàng
                     if($cart->pivot->id_sp == $request->id_sp){
+                        // slg sp trong giỏ hàng hiện tại
                         $sl = Intval(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()->sl);
-
-                        // số lượng mua tối đa là 2
-                        if($sl == 2){
-                            return [
-                                'status' => 'usuccess',
-                            ];
-                        }
-
+                        // slg cộng thêm
                         $sl += $request->sl;
 
                         // số lượng tồn kho hiện tại
-                        $qtyInStock = 0;
-                        foreach(KHO::where('id_sp', $request->id_sp)->get() as $key){
-                            $qtyInStock += $key['slton'];
-                        }
+                        $qtyInStock = KHO::where('id_sp', $request->id_sp)->select(DB::raw('sum(slton) as slton'))->first()->slton;
 
                         // so sánh số lượng tồn với số lượng trong giỏ hàng
-                        // mua quá số lượng
+                        // mua quá số lượng || slg mua tối đa là 2
                         if($sl > $qtyInStock){
+                            return ['status' => 'only one'];
+                        } elseif($sl > 2){
                             return [
                                 'status' => 'invalid qty',
                             ];
                         }
+
+                        // cập nhật số lượng sp trong giỏ hàng
                         GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->update(['sl' => $sl]);
 
                         return [
-                            'status' => 'usuccess',
+                            'status' => 'success',
                         ];
                     }
                 }
@@ -501,7 +497,15 @@ class CartController extends Controller
 
             // tăng số lượng
             if($request->type == 'plus'){
-                GIOHANG::where('id', $request->id)->update(['sl' => ++$qty]);
+                // kiểm tra số lượng tồn kho
+                $qtyInStock = KHO::where('id_sp', $cart->id_sp)->groupBy('id_sp')->select(DB::raw('sum(slton) as slton'))->first();
+                if($qtyInStock->slton != 1){
+                    GIOHANG::where('id', $request->id)->update(['sl' => ++$qty]);
+                }
+                // chỉ còn 1 sản phẩm
+                else {
+                    return 'only one';
+                }
             } 
             // giảm số lượng
             else {

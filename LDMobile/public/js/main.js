@@ -1,5 +1,35 @@
-$(function(){
+function iOS() {
+    return [
+      'iPad Simulator',
+      'iPhone Simulator',
+      'iPod Simulator',
+      'iPad',
+      'iPhone',
+      'iPod'
+    ].includes(navigator.platform)
+    // iPad on iOS 13 detection
+    || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+}
+
+function showIOSMessage(text){
+    $('.backdrop').css('z-index', '1999');
+    $('.backdrop').fadeIn();
+    var message = $('<div class="ios-message">'+text+'</div>');
+    message.fadeIn();
+    
+    $('body').prepend(message);
+}
+
+$(window).on('load', function(){
     $('.loader').fadeOut();
+});
+
+$(function(){
+
+    if(iOS()){
+        showIOSMessage('Website trên hệ điều hành iOS đang trong quá trình phát triển. Xin lỗi vì sự bất tiện này');
+        return;
+    }
     
     var url = window.location.pathname.split('/')[1];
     var page = window.location.pathname.split('/')[2];
@@ -168,7 +198,7 @@ $(function(){
         setTimeout(() => {
             $('.backdrop').fadeOut();
             $('.head-search-result').css('display', 'none');
-        }, 100);
+        }, 150);
     });
 
     var enterKey = false;
@@ -271,7 +301,7 @@ $(function(){
     $('#show-offcanvas').on('click', function(){
         if($(this).attr('aria-expanded') == 'false'){
             $('.head-offcanvas-box').css({
-                'width' : '70%',
+                'width' : '80%',
             });
             $('.backdrop').fadeIn();
             $(this).attr('aria-expanded', 'true');
@@ -293,17 +323,6 @@ $(function(){
         $('#show-offcanvas').attr('aria-expanded', 'false');
     });
 
-    // đóng offcanvas theo kích thước màn hình
-    // $(window).resize(function(){
-    //     if($(window).width() >= 1091) {
-    //         $('.backdrop').fadeOut();
-    //         $('.head-offcanvas-box').css({
-    //             'width' : '0',
-    //         });
-    //         $('#show-offcanvas').attr('aria-expanded', 'false');
-    //     }
-    // });
-
     // dropdown tài khoản trong offcanvas
     $('.offcanvas-account').click(function(){
         $('.offcanvas-account-option').toggle('blind', 300);
@@ -314,7 +333,7 @@ $(function(){
     });
 
     /*============================================================================================================
-                                            Đăng ký & Quên mật khẩu
+                                                Đăng ký & Quên mật khẩu
     ==============================================================================================================*/
     if(url == 'dangky' || url == 'khoiphuctaikhoan'){
         var firebaseConfig = {
@@ -741,7 +760,7 @@ $(function(){
         ==============================================================================================================*/
         // sec khuyến mãi
         var owl_promotion = $('#index-promotion-carousel');
-        owl_promotion.owlCarousel({
+        owl_promotion.owlCarousel({ 
             nav: false,
             rewind: true,
             dots: false,
@@ -1881,18 +1900,20 @@ $(function(){
                         type: 'POST',
                         data: {'id_sp': $(this).data('id')},
                         success:function(data){
-                            // ngưng kinh doanh
-                            if(data == 'false'){
-                                $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này đã ngừng kinh doanh.</div>')
-                                $('#btn-add-cart').hide();
-                                $('#qty-div').hide();
-                            }
+                            console.log(data);
                             // hết hàng
-                            else if(data == 0){
+                            if(data == 0){
                                 $('#max-qty').val(data);
                                 $('#phone-color').after('<div class="required text-center red p-5 mt-20">Màu sắc này tạm hết hàng.</div>')
                                 $('#btn-add-cart').hide();
                                 $('#qty-div').hide();
+                                $('#only-one-message').remove();
+                            } else if(data == 1){
+                                $('#max-qty').val(data);
+                                $('#qty').text(1);
+                                if(!$('#only-one-message').length){
+                                    $('#qty-div > .d-flex').append('<div id="only-one-message" class="required-text ml-10">*Chỉ còn 1 sản phẩm</div>');
+                                }
                             }
                             // còn hàng
                             else{
@@ -1900,6 +1921,7 @@ $(function(){
                                 $('#phone-color').next().remove();
                                 $('#btn-add-cart').show();
                                 $('#qty-div').show();
+                                $('#only-one-message').remove();
                             }
                         }
                     });
@@ -1921,13 +1943,7 @@ $(function(){
 
                 // mua quá số lượng
                 if(parseInt($('#qty').text()) > $('#max-qty').val()){
-                    clearTimeout(timer);
-                    $('.tooltip-qty').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                    $('.tooltip-qty').show();
-                    timer = setTimeout(() => {
-                        $('.tooltip-qty').hide('fade');
-                    }, 3000);
-
+                    showAlertTop('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
                     return;
                 }
 
@@ -1949,12 +1965,12 @@ $(function(){
                             return;
                         } 
                         // mua quá số lượng tồn kho
+                        else if(data['status'] == 'only one'){
+                            showAlertTop('Chỉ còn 1 sản phẩm trong kho');
+                        }
+                        // sl mua tối đa là 2
                         else if(data['status'] == 'invalid qty'){
-                            $('#info-modal-content').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                            $('#info-modal-main-btn').attr('dismiss', 'true');
-                            $('#info-modal-main-btn').text('Đã hiểu');
-                            $('#info-modal').modal('show');
-                            return;
+                            showAlertTop('Số lượng mua tối đa là 2');
                         }
                         // cập nhật số lượng badge giỏ hàng
                         else {
@@ -2002,11 +2018,21 @@ $(function(){
                                         Chi tiết
         =============================================================================*/
         else {
-            if(sessionStorage.getItem('reload_chitiet')){
-                var toastMessage = sessionStorage.getItem('reload_chitiet');
-                sessionStorage.removeItem('reload_chitiet');
+            if(sessionStorage.getItem('toast_message')){
+                var toastMessage = sessionStorage.getItem('toast_message');
+                sessionStorage.removeItem('toast_message');
                 $('#toast').append('<span id="edit-evaluate-toast" class="alert-toast">'+toastMessage+'</span');
                 showToast('#edit-evaluate-toast');
+            }
+
+            if(sessionStorage.getItem('positionEvaluate')){
+                var position = sessionStorage.getItem('positionEvaluate');
+                
+                setTimeout(() => {
+                    console.log(position);
+                    $(window).scrollTop(position);
+                    sessionStorage.removeItem('positionEvaluate');
+                }, 250);
             }
 
             // chuyển sang màu sắc cần xem
@@ -2252,7 +2278,7 @@ $(function(){
                     },
                     url: '/ajax-choose-color',
                     type: 'POST',
-                    data: {'id_sp': id_sp},
+                    data: {'id_sp': id_sp, 'page': page},
                     success:function(data){
                         $('#check-qty-in-stock-phone-name').text(data['tensp']);
                         for(var i = 0; i < data['mausac'].length; i++){
@@ -2725,10 +2751,8 @@ $(function(){
                                     'evaluateContent': $('#evaluate_content').val(),
                                     'evaluateImage' : arrayEvaluateImage},
                             success:function(){
-                                sessionStorage.setItem('reload_chitiet', 'Đã đánh giá sản phẩm');
+                                sessionStorage.setItem('toast_message', 'Đã đánh giá sản phẩm');
                                 location.reload();
-                                // sessionStorage.setItem("reload_chitiet", "true");
-                                // location.reload();
                             }
                         });
                     }, 200);
@@ -2955,7 +2979,7 @@ $(function(){
                     type: 'POST',
                     data: {'id_dg': id_dg, 'replyContent': replyContent.val(), 'id_dg': id_dg},
                     success:function(){
-                        sessionStorage.setItem('reload_chitiet', 'Đã trả lời đánh giá');
+                        sessionStorage.setItem('toast_message', 'Đã trả lời đánh giá');
                         location.reload();
                     }
                 });
@@ -3037,6 +3061,7 @@ $(function(){
             $('#edit-evaluate-modal').on('hidden.bs.modal', function(){
                 arrayBase64 = [];
                 $('.edit-evaluate-img-div').children().remove();
+                $('.edit-star-rating').removeAttr('style');
             });
 
             // đánh giá sao sản phẩm
@@ -3234,7 +3259,7 @@ $(function(){
                                 'evaluateContent': $('#edit_evaluate_content').val(),
                                 'evaluateImage' : arrayBase64},
                         success:function(){
-                            sessionStorage.setItem("reload_chitiet", "Chỉnh sửa đánh giá thành công");
+                            sessionStorage.setItem("toast_message", "Chỉnh sửa đánh giá thành công");
                             location.reload();
                         }
                     });
@@ -3244,10 +3269,14 @@ $(function(){
 
             // xóa đánh giá
             $('.delete-evaluate').off('click').click(function(){
-                $('#delete-content').text('Bạn muốn xóa đánh giá này?')
-                $('#delete-btn').attr('data-object', 'evaluate');
-                $('#delete-btn').attr('data-id', $(this).data('id'));
-                $('#delete-modal').modal('show');
+                setTimeout(() => {
+                    $('#delete-content').text('Bạn muốn xóa đánh giá này?')
+                    $('#delete-btn').attr('data-object', 'evaluate');
+                    $('#delete-btn').attr('data-id', $(this).data('id'));
+                    $('#delete-modal').modal('show');
+
+                }, 200);
+                sessionStorage.setItem('positionEvaluate', parseInt($('#evaluate-section').position().top) - 50);
             });
         }
     }
@@ -3332,7 +3361,7 @@ $(function(){
                         if(data[i]['trangthai'] == 'Tạm hết hàng'){
                             var elmnt = $('<div class="d-flex red pb-10 fz-14">'+
                                                 '<img src="images/phone/'+data[i]['hinhanh']+'" width="60px">'+
-                                                '<div>'+
+                                                '<div class="ml-5">'+
                                                     data[i]['tensp'] +' - '+data[i]['mausac']+
                                                     '<div>ram: '+data[i]['ram']+'</div>'+
                                                     '<div class="d-flex align-items-center">'+
@@ -3350,7 +3379,7 @@ $(function(){
                         else if(data[i]['trangthai'] == 'Không đủ'){
                             var elmnt = $('<div class="d-flex red pb-10 fz-14">'+
                                                 '<img src="images/phone/'+data[i]['hinhanh']+'" width="60px">'+
-                                                '<div>'+
+                                                '<div class="ml-5">'+
                                                     data[i]['tensp'] +' - '+data[i]['mausac']+
                                                     '<div>ram: '+data[i]['ram']+'</div>'+
                                                     '<div class="d-flex align-items-center">'+
@@ -3369,7 +3398,7 @@ $(function(){
                         if(data[i]['trangthai'] == 'Còn hàng'){
                             var elmnt = $('<div class="d-flex pb-10 fz-14">'+
                                                 '<img src="images/phone/'+data[i]['hinhanh']+'" width="60px">'+
-                                                '<div>'+
+                                                '<div class="ml-5">'+
                                                     data[i]['tensp'] +' - '+data[i]['mausac']+
                                                     '<div>ram: '+data[i]['ram']+'</div>'+
                                                     '<div class="d-flex align-items-center">'+
@@ -3670,41 +3699,46 @@ $(function(){
                         $('#check-imei').hide();
 
                         // trạng thái bảo hành
-                        $warrantyStatus = data.product.trangthaibaohanh == 'true' ? true : false;
+                        var warrantyStatus = data.product.trangthaibaohanh == 'true' ? true : false;
                         
-                        var elmnt = '<div class="col-lg-8 mx-auto">'+
-                                        '<div class="row">'+
-                                            '<div class="col-lg-6 col-md-6 col-12 mb-40">'+
-                                                '<img src="images/phone/'+data.product.hinhanh+'" alt="" class="w-80 center-img">'+
-                                                '<div class="d-flex flex-column justify-content-center align-items-center">'+
-                                                    '<div class="fz-26 fw-600 pt-20 pb-20">'+data.product.tensp+'</div>'+
-                                                    '<div class="d-flex pb-10">'+
-                                                        '<div>Màu sắc: <b>'+data.product.mausac+'</b></div>'+
-                                                        '<div class="ml-20">Ram: <b>'+data.product.ram+'</b></div>'+
+                        var elmnt = $('<div class="row">'+
+                                        '<div class="col-lg-8 mx-auto">'+
+                                            '<div class="row">'+
+                                                '<div class="col-lg-6 col-md-6 col-12 mb-40">'+
+                                                    '<img src="images/phone/'+data.product.hinhanh+'" alt="" class="w-80 center-img">'+
+                                                    '<div class="d-flex flex-column justify-content-center align-items-center">'+
+                                                        '<div class="fz-26 fw-600 pt-20 pb-20">'+data.product.tensp+'</div>'+
+                                                        '<div class="d-flex pb-10">'+
+                                                            '<div>Màu sắc: <b>'+data.product.mausac+'</b></div>'+
+                                                            '<div class="ml-20">Ram: <b>'+data.product.ram+'</b></div>'+
+                                                        '</div>'+
+                                                        '<div class="d-flex mb-20">'+
+                                                            '<div>Dung lượng: <b> '+data.product.dungluong+'</b></div>'+
+                                                            '<div class="ml-20">IMEI: <b>'+IMEI+'</b></div>'+
+                                                        '</div>'+
+                                                        '<div id="btn-check-another-imei" class="main-color-text pointer-cs">Kiểm tra số IMEI khác<i class="far fa-chevron-right ml-10"></i></div>'+
                                                     '</div>'+
-                                                    '<div class="d-flex mb-20">'+
-                                                        '<div>Dung lượng: <b> '+data.product.dungluong+'</b></div>'+
-                                                        '<div class="ml-20">IMEI: <b>'+IMEI+'</b></div>'+
+                                                '</div>'+
+
+                                                '<div class="col-lg-6 col-md-6 col-12 mb-40">'+
+                                                    '<div class="fz-26 fw-600">'+
+                                                        '<i class="fas fa-shield-check mr-10"></i>Bảo hành'+
                                                     '</div>'+
-                                                    '<div id="btn-check-another-imei" class="main-color-text pointer-cs">Kiểm tra số IMEI khác<i class="far fa-chevron-right ml-10"></i></div>'+
-                                                '</div>'+
-                                            '</div>'+
-                                            '<div class="col-lg-6 col-md-6 col-12 mb-40">'+
-                                                '<div class="fz-26 fw-600">'+
-                                                    '<i class="fas fa-shield-check mr-10"></i>Bảo hành'+
-                                                '</div>'+
-                                                '<div class="d-flex fz-20 mt-10">'+
-                                                    '<div>Trạng thái bảo hành:</div>';
-                                                    elmnt += $warrantyStatus == true ? '<b class="success-color ml-10">Trong bảo hành</b>' : '<b class="warning-color ml-10">Hết hạn bảo hành</b>';
-                                                    elmnt += '</div>'+
-                                                '<div class="mt-10">Bảo hành: <b>'+data.product.baohanh+'</b></div>'+
-                                                '<div class="d-flex mt-10">'+
-                                                    '<div>Bắt đầu: <b>'+data.product.ngaymua+'</b></div>'+
-                                                    '<div class="ml-20">Kết thúc: <b>'+data.product.ngayketthuc+'</b></div>'+
+                                                    '<div class="d-flex fz-20 mt-10">'+
+                                                        '<div>Trạng thái bảo hành:</div>'+
+                                                        (data.product.baohanh ? 
+                                                            (warrantyStatus == true ? '<b class="success-color ml-10">Trong bảo hành</b>' : '<b class="warning-color ml-10">Hết hạn bảo hành</b>')+
+                                                        '</div>'+
+                                                        '<div class="mt-10">Bảo hành: <b>'+data.product.baohanh+'</b></div>'+
+                                                        '<div class="d-flex mt-10">'+
+                                                            '<div>Bắt đầu: <b>'+data.product.ngaymua+'</b></div>'+
+                                                            '<div class="ml-20">Kết thúc: <b>'+data.product.ngayketthuc+'</b></div>'
+                                                        : '<b class="warning-color ml-10">Không bảo hành</b></div>')+
+                                                    '</div>'+
                                                 '</div>'+
                                             '</div>'+
                                         '</div>'+
-                                    '</div>';
+                                    '</div>');
                         $(elmnt).appendTo($('#valid-imei'));
                     }
                 }
@@ -4304,13 +4338,7 @@ $(function(){
                 if($('#max-qty').val() != ''){
                     // vượt số lượng tối đa
                     if(qty >= $('#max-qty').val()){
-                        clearTimeout(timer);
-                        $('.tooltip-qty').text('Số lượng tối đa có thể mua là ' + $('#max-qty').val());
-                        $('.tooltip-qty').show();
-                        timer = setTimeout(() => {
-                            $('.tooltip-qty').hide('fade');
-                        }, 3000);
-    
+                        showAlertTop('Chỉ còn 1 sản phẩm trong kho');
                         return;
                     } 
                 }
@@ -4355,6 +4383,10 @@ $(function(){
                 data: {id:id, type:type},
                 url: '/ajax-update-cart',
                 success:function(data){
+                    if(data == 'only one'){
+                        showAlertTop('Chỉ còn 1 sản phẩm trong kho');
+                        return;
+                    }
                     // số lượng sản phẩm
                     $('#qty_' + id).text(data['newQty']);
 

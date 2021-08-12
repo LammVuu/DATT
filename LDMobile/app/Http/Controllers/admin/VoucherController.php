@@ -35,6 +35,49 @@ class VoucherController extends Controller
         return view($this->admin.'voucher')->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = VOUCHER::find($id);
+
+        // trạng thái
+        $dateEnd = strtotime(str_replace('/', '-', $data->ngayketthuc));
+        $currentDate = strtotime(date('d-m-Y'));
+        $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
+
+        $html = '<tr data-id="'.$id.'">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$id.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->code.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->chietkhau*100 .'%</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->ngaybatdau.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->ngayketthuc.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->sl.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$status.'</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
+                            <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </td>
+                </tr>';
+        return $html;
+    }
+
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -54,42 +97,7 @@ class VoucherController extends Controller
 
             $create = VOUCHER::create($data);
 
-            // trạng thái
-            $dateEnd = strtotime(str_replace('/', '-', $data['ngayketthuc']));
-            $currentDate = strtotime(date('d-m-Y'));
-            $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
-
-            $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$create->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['code'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['chietkhau']*100 .'%</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['ngaybatdau'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['ngayketthuc'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['sl'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$status.'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$create->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$create->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($create->id);
 
             return [
                 'id' => $create->id,
@@ -122,42 +130,7 @@ class VoucherController extends Controller
     
             VOUCHER::where('id', $id)->update($data);
 
-            // trạng thái
-            $dateEnd = strtotime(str_replace('/', '-', $data['ngayketthuc']));
-            $currentDate = strtotime(date('d-m-Y'));
-            $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
-    
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['code'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['chietkhau']*100 .'%</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['ngaybatdau'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['ngayketthuc'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['sl'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$status.'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
     
             return $html;
         }
@@ -190,41 +163,7 @@ class VoucherController extends Controller
 
             if($keyword == ''){
                 foreach(VOUCHER::limit(10)->get() as $key){
-                    $dateEnd = strtotime(str_replace('/', '-', $key->ngayketthuc));
-                    $currentDate = strtotime(date('d-m-Y'));
-                    $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
-
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->code.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->chietkhau*100 .'%</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ngaybatdau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ngayketthuc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->sl.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$status.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                        <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
                 return $html;
             }
@@ -236,37 +175,7 @@ class VoucherController extends Controller
 
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->code.$key->chietkhau*100 .'%'.$key->ngaybatdau.$key->ngayketthuc.$key->sl.$status));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->code.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->chietkhau*100 .'%</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ngaybatdau.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->ngayketthuc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->sl.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$status.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                        <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
             return $html;

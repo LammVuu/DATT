@@ -28,7 +28,7 @@
                             {{-- sản phẩm --}}
                             <div class="w-40 d-flex">
                                 <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="w-30">
-                                <div>
+                                <div class="ml-5">
                                     <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}" class="black fw-600 mb-10">{{$key['sanpham']['tensp']}}</a>
                                     <div class="fz-14">Dung lượng: {{$key['sanpham']['dungluong']}}</div>
                                     <div class="fz-14">Màu sắc: {{$key['sanpham']['mausac']}}</div>

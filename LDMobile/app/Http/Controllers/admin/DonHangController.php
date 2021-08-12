@@ -37,6 +37,7 @@ class DonHangController extends Controller
         $this->IndexController = new IndexController;
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
+
     public function index()
     {
         $lst_order = DONHANG::orderBy('id', 'desc')->limit(10)->get();
@@ -49,6 +50,53 @@ class DonHangController extends Controller
         ];
 
         return view($this->admin."don-hang")->with($data);
+    }
+
+    public function bindElement($id)
+    {
+        $data = DONHANG::find($id);
+        $fullname = TAIKHOAN::find($data->id_tk)->hoten;
+        $html = '<tr data-id="'.$id.'">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$id.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->thoigian.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$fullname.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->pttt.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->hinhthuc.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.number_format($data->tongtien, 0, '', '.').'<sup>đ</sup></div>
+                    </td>
+                    <td class="vertical-center">
+                        <div data-id="'.$id.'" class="trangthaidonhang pt-10 pb-10">'.$data->trangthaidonhang.'</div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-5">
+                        <div class="d-flex justify-content-start">'.
+                        ($data->trangthaidonhang != 'Thành công' && $data->trangthaidonhang != 'Đã hủy' ?
+                                ($data->trangthaidonhang == 'Đã tiếp nhận' ? '
+                                    <div data-id="'.$id.'" class="confirm-btn">
+                                        <i class="fas fa-file-check"></i>
+                                    </div>' :'
+                                    <div data-id="'.$id.'" class="success-btn">
+                                        <i class="fas fa-box-check"></i>
+                                    </div>' ) : '') .'
+                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
+                        ($data->trangthaidonhang != 'Đã hủy' && $data->trangthaidonhang != 'Thành công' ? '
+                            <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
+                        </div>
+                    </td>
+                </tr>';
+
+        return $html;
     }
 
     public function AjaxGetDonHang(Request $request)
@@ -182,7 +230,7 @@ class DonHangController extends Controller
                                                 <div class="pt-10 pb-10">'.$key->pivot->sl.'</div>
                                             </td>
                                             <td class="vertical-center">
-                                                <div class="pt-10 pb-10">-'.$key->pivot->giamgia*100 .'%</div>
+                                                <div class="pt-10 pb-10">'.($key->pivot->giamgia ? '-'.$key->pivot->giamgia*100 .'%' : '0').'</div>
                                             </td>
                                             <td class="vertical-center">
                                                 <div class="pt-10 pb-10">'.number_format($key->pivot->thanhtien, 0, '', '.').'<sup>đ</sup></div>
@@ -386,8 +434,14 @@ class DonHangController extends Controller
 
                     // tháng bảo hành
                     $month = explode(' ', MAUSP::find(SANPHAM::find($imei->id_sp)->id_msp)->baohanh)[0];
-                    // ngày kết thúc
-                    $end = date('d/m/Y', strtotime('+'.$month.' months', $startTimestamp));
+                    // nếu có bảo hành
+                    if($month){
+                        $end = date('d/m/Y', strtotime('+'.$month.' months', $startTimestamp));
+                    }
+                    // không có bảo hành
+                    else {
+                        $end = $start;
+                    }
 
                     $data = [
                         'id_imei' => $imei->id,
@@ -475,46 +529,7 @@ class DonHangController extends Controller
 
             if($keyword == ''){
                 foreach(DONHANG::orderBy('id', 'desc')->limit(10)->get() as $key){
-                    $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$fullname.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">'.
-                                        ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                            ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                <div data-id="'.$key->id.'" class="confirm-btn">
-                                                    <i class="fas fa-file-check"></i>
-                                                </div>' :'
-                                                <div data-id="'.$key->id.'" class="success-btn">
-                                                    <i class="fas fa-box-check"></i>
-                                                </div>' ) : '') .'
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                        ($key->trangthaidonhang != 'Đã hủy' ? '
-                                            <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
                 return $html;
             }
@@ -523,45 +538,7 @@ class DonHangController extends Controller
                 $fullname = TAIKHOAN::find($key->id_tk)->hoten;
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->thoigian.$fullname.$key->pttt.$key->hinhthuc.$key->tongtien.$key->trangthaidonhang));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->taikhoan->hoten.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">'.
-                                    ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                            ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                <div data-id="'.$key->id.'" class="confirm-btn">
-                                                    <i class="fas fa-file-check"></i>
-                                                </div>' :'
-                                                <div data-id="'.$key->id.'" class="success-btn">
-                                                    <i class="fas fa-box-check"></i>
-                                                </div>' ) : '') .'
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                    ($key->trangthaidonhang != 'Đã hủy' ? '
-                                        <div data-id="{{$key->id}}" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
             return $html;
@@ -608,46 +585,7 @@ class DonHangController extends Controller
                     }
 
                     foreach($lst_result as $key){
-                        $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$fullname.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-5">
-                                        <div class="d-flex justify-content-start">'.
-                                            ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                                ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                    <div data-id="'.$key->id.'" class="confirm-btn">
-                                                        <i class="fas fa-file-check"></i>
-                                                    </div>' :'
-                                                    <div data-id="'.$key->id.'" class="success-btn">
-                                                        <i class="fas fa-box-check"></i>
-                                                    </div>' ) : '') .'
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                            ($key->trangthaidonhang != 'Đã hủy' ? '
-                                                <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 } else {
                     if($sort == '' || $sort == 'date-desc'){
@@ -661,46 +599,7 @@ class DonHangController extends Controller
                     }
 
                     foreach($lst_result as $key){
-                        $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$fullname.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-5">
-                                        <div class="d-flex justify-content-start">'.
-                                            ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                                ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                    <div data-id="'.$key->id.'" class="confirm-btn">
-                                                        <i class="fas fa-file-check"></i>
-                                                    </div>' :'
-                                                    <div data-id="'.$key->id.'" class="success-btn">
-                                                        <i class="fas fa-box-check"></i>
-                                                    </div>' ) : '') .'
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                            ($key->trangthaidonhang != 'Đã hủy' ? '
-                                                <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 }
 
@@ -769,46 +668,7 @@ class DonHangController extends Controller
                 // Không có sắp xếp
                 if(!$arrFilterSort['sort']){
                     foreach($lst_temp as $key){
-                        $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$fullname.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-5">
-                                        <div class="d-flex justify-content-start">'.
-                                            ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                                ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                    <div data-id="'.$key->id.'" class="confirm-btn">
-                                                        <i class="fas fa-file-check"></i>
-                                                    </div>' :'
-                                                    <div data-id="'.$key->id.'" class="success-btn">
-                                                        <i class="fas fa-box-check"></i>
-                                                    </div>' ) : '') .'
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                            ($key->trangthaidonhang != 'Đã hủy' ? '
-                                                <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 } else {
                     $sort = $arrFilterSort['sort'];
@@ -823,46 +683,7 @@ class DonHangController extends Controller
                     }
 
                     foreach($lst_result as $key){
-                        $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$fullname.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-5">
-                                        <div class="d-flex justify-content-start">'.
-                                            ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                                ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                    <div data-id="'.$key->id.'" class="confirm-btn">
-                                                        <i class="fas fa-file-check"></i>
-                                                    </div>' :'
-                                                    <div data-id="'.$key->id.'" class="success-btn">
-                                                        <i class="fas fa-box-check"></i>
-                                                    </div>' ) : '') .'
-                                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                            ($key->trangthaidonhang != 'Đã hủy' ? '
-                                                <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
                 }
 
@@ -912,45 +733,7 @@ class DonHangController extends Controller
             if(!$arrFilterSort['sort']){
                 foreach($lst_result as $key){
                     $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$fullname.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">'.
-                                        ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                            ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                <div data-id="'.$key->id.'" class="confirm-btn">
-                                                    <i class="fas fa-file-check"></i>
-                                                </div>' :'
-                                                <div data-id="'.$key->id.'" class="success-btn">
-                                                    <i class="fas fa-box-check"></i>
-                                                </div>' ) : '') .'
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                        ($key->trangthaidonhang != 'Đã hủy' ? '
-                                            <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             } else {
                 $sort = $arrFilterSort['sort'];
@@ -966,45 +749,7 @@ class DonHangController extends Controller
 
                 foreach($lst_result as $key){
                     $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->thoigian.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$fullname.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->pttt.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->hinhthuc.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.number_format($key->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div data-id="'.$key->id.'" class="trangthaidonhang pt-10 pb-10">'.$key->trangthaidonhang.'</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-5">
-                                    <div class="d-flex justify-content-start">'.
-                                        ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy' ?
-                                            ($key->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                                <div data-id="'.$key->id.'" class="confirm-btn">
-                                                    <i class="fas fa-file-check"></i>
-                                                </div>' :'
-                                                <div data-id="'.$key->id.'" class="success-btn">
-                                                    <i class="fas fa-box-check"></i>
-                                                </div>' ) : '') .'
-                                            <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                        ($key->trangthaidonhang != 'Đã hủy' ? '
-                                            <div data-id="'.$key->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
 

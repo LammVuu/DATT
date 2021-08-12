@@ -1,15 +1,15 @@
-{{-- button collapse --}}
-<div id='btn-expand-menu' aria-expanded="false"><i class="far fa-bars"></i></div>
+{{-- logo --}}
+<div id='header-logo' aria-expanded="false"><img src="images/logo/LDMobile-logo.png" alt=""></div>
 {{-- navigation --}}
 <div class="navigation">
     <!-- logo -->
     <a href={{route('admin/dashboard')}} class="d-flex align-items-center">
-        <img src="images/logo/LDMobile-logo.png" alt="" width="40px">
+        
         <div class="fz-22 ml-10 white">ADMIN</div>
     </a>
 
     <!-- account -->
-    <div class="relative d-flex justify-content-end align-items-center pl-100">
+    <div class="relative d-flex justify-content-end align-items-center pl-100 pr-20">
         <div class="d-flex align-items-center">
             {{-- avatar --}}
             <img src="{{$url_user.$user->anhdaidien}}" id="avatarHeaderUser" alt="" width="40px" class="circle-img mr-10">

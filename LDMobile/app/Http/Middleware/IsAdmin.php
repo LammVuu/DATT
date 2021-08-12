@@ -18,7 +18,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::check() && Auth::user()->loaitk == 1 && Auth::user()->login_status == 1){
+        if(Auth::check() && Auth::user()->loaitk == 1){
             return redirect('/admin');
         }
 

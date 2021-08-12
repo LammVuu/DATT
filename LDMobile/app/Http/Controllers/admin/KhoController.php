@@ -53,6 +53,45 @@ class KhoController extends Controller
         return view($this->admin.'kho')->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = KHO::find($id);
+        $branch = CHINHANH::find($data->id_cn);
+        $product = SANPHAM::find($data->id_sp);
+
+        $html = '<tr data-id="'.$id.'">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$id.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$branch->diachi.'</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="d-flex pt-10 pb-10">
+                                <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
+                                <div class="ml-5 fz-14">
+                                    <div class="d-flex align-items-center fw-600">'.
+                                        $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
+                                    </div>
+                                    <div>Ram: '.$product->ram.'</div>
+                                    <div>Dung lượng: '.$product->dungluong.'</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">'.$data->slton.' Chiếc</div>
+                        </td>
+                        {{-- nút --}}
+                        <td class="vertical-center w-10">
+                            <div class="d-flex justify-content-start">
+                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                <div data-id="'.$id.'" data-branch="'.$branch->diachi.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
+                            </div>
+                        </td>
+                    </tr>';
+        return $html;
+    }
+
     public function createIMEI($id_ncc)
     {
         $rand = strval(mt_rand(1, 9999999));
@@ -109,40 +148,9 @@ class KhoController extends Controller
                 ]);
             }
 
-
             $branch = CHINHANH::find($data['id_cn']);
             $product = SANPHAM::find($data['id_sp']);
-
-            $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$create->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$branch->diachi.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="d-flex pt-10 pb-10">
-                                <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                <div class="ml-5 fz-14">
-                                    <div class="d-flex align-items-center fw-600">'.
-                                        $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                    </div>
-                                    <div>Ram: '.$product->ram.'</div>
-                                    <div>Dung lượng: '.$product->dungluong.'</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['slton'].' Chiếc</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$create->id.'" data-branch="'.$branch->diachi.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($create->id);
 
             return [
                 'id' => $create->id,
@@ -190,40 +198,10 @@ class KhoController extends Controller
 
             KHO::where('id', $id)->update($data);
 
-
             $branch = CHINHANH::find($data['id_cn']);
             $product = SANPHAM::find($data['id_sp']);
 
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$branch->diachi.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="d-flex pt-10 pb-10">
-                                <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                <div class="ml-5 fz-14">
-                                    <div class="d-flex align-items-center fw-600">'.
-                                        $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                    </div>
-                                    <div>Ram: '.$product->ram.'</div>
-                                    <div>Dung lượng: '.$product->dungluong.'</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['slton'].' Chiếc</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$id.'" data-branch="'.$branch->diachi.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
 
             return [
                 'id' => $id,
@@ -323,36 +301,7 @@ class KhoController extends Controller
                     $address = CHINHANH::find($key->id_cn)->diachi;
                     $product = SANPHAM::find($key->id_sp);
 
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$address.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="d-flex pt-10 pb-10">
-                                        <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                        <div class="ml-5 fz-14">
-                                            <div class="d-flex align-items-center fw-600">'.
-                                                $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                            </div>
-                                            <div>Ram: '.$product->ram.'</div>
-                                            <div>Dung lượng: '.$product->dungluong.'</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->slton.' Chiếc</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                        <div data-id="'.$key->id.'" data-branch="'.$address.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
                 return $html;
             }
@@ -363,36 +312,7 @@ class KhoController extends Controller
     
                 $data = strtolower($this->IndexController->unaccent($key->id.$address.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$key->slton. ' Chiếc'));
                 if(strpos($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->id.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$address.'</div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="d-flex pt-10 pb-10">
-                                        <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                        <div class="ml-5 fz-14">
-                                            <div class="d-flex align-items-center fw-600">'.
-                                                $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                            </div>
-                                            <div>Ram: '.$product->ram.'</div>
-                                            <div>Dung lượng: '.$product->dungluong.'</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.$key->slton.' Chiếc</div>
-                                </td>
-                                {{-- nút --}}
-                                <td class="vertical-center w-10">
-                                    <div class="d-flex justify-content-start">
-                                        <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                        <div data-id="'.$key->id.'" data-branch="'.$address.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                                    </div>
-                                </td>
-                            </tr>';
+                    $html .= $this->bindElement($key->id);
                 }
             }
             return $html;
@@ -422,36 +342,7 @@ class KhoController extends Controller
                         $address = CHINHANH::find($key->id_cn)->diachi;
                         $product = SANPHAM::find($key->id_sp);
 
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$address.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="d-flex pt-10 pb-10">
-                                            <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                            <div class="ml-5 fz-14">
-                                                <div class="d-flex align-items-center fw-600">'.
-                                                    $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                                </div>
-                                                <div>Ram: '.$product->ram.'</div>
-                                                <div>Dung lượng: '.$product->dungluong.'</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->slton.' Chiếc</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-10">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                            <div data-id="'.$key->id.'" data-branch="'.$address.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
 
                     return $html;
@@ -461,36 +352,7 @@ class KhoController extends Controller
                         $address = CHINHANH::find($key->id_cn)->diachi;
                         $product = SANPHAM::find($key->id_sp);
 
-                        $html .= '<tr data-id="'.$key->id.'">
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->id.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$address.'</div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="d-flex pt-10 pb-10">
-                                            <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                            <div class="ml-5 fz-14">
-                                                <div class="d-flex align-items-center fw-600">'.
-                                                    $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                                </div>
-                                                <div>Ram: '.$product->ram.'</div>
-                                                <div>Dung lượng: '.$product->dungluong.'</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="vertical-center">
-                                        <div class="pt-10 pb-10">'.$key->slton.' Chiếc</div>
-                                    </td>
-                                    {{-- nút --}}
-                                    <td class="vertical-center w-10">
-                                        <div class="d-flex justify-content-start">
-                                            <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                            <div data-id="'.$key->id.'" data-branch="'.$address.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                                        </div>
-                                    </td>
-                                </tr>';
+                        $html .= $this->bindElement($key->id);
                     }
 
                     return $html;
@@ -524,36 +386,7 @@ class KhoController extends Controller
                 $address = CHINHANH::find($key->id_cn)->diachi;
                 $product = SANPHAM::find($key->id_sp);
 
-                $html .= '<tr data-id="'.$key->id.'">
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$key->id.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$address.'</div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="d-flex pt-10 pb-10">
-                                    <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                    <div class="ml-5 fz-14">
-                                        <div class="d-flex align-items-center fw-600">'.
-                                            $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                        </div>
-                                        <div>Ram: '.$product->ram.'</div>
-                                        <div>Dung lượng: '.$product->dungluong.'</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="vertical-center">
-                                <div class="pt-10 pb-10">'.$key->slton.' Chiếc</div>
-                            </td>
-                            {{-- nút --}}
-                            <td class="vertical-center w-10">
-                                <div class="d-flex justify-content-start">
-                                    <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                    <div data-id="'.$key->id.'" data-branch="'.$address.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                                </div>
-                            </td>
-                        </tr>';
+                $html .= $this->bindElement($key->id);
             }
 
             return $html;

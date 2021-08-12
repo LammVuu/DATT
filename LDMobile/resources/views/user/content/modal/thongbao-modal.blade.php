@@ -3,6 +3,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body p-60">
+                <div type="button" class="btn-close" data-bs-dismiss="modal"></div> 
                 <div class="text-center">
                     <i class="fas fa-info-circle fz-100 main-color-text"></i>
                     {{-- content --}}

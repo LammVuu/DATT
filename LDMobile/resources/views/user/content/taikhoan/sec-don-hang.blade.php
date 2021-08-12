@@ -44,7 +44,7 @@
                                 <td class='w-40 vertical-center'>
                                     <div class='pt-15 pb-15'>
                                         <div class='d-flex'>
-                                            <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="90px">
+                                            <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="110px" class="mr-5">
                                             <div class="d-flex flex-column">
                                                 <div class="fw-600">{{$detail[0]['sanpham']['tensp'].' - '.$detail[0]['sanpham']['mausac']}}</div>
                                                 <div class="fz-14">Dung lượng: {{$detail[0]['sanpham']['dungluong']}}</div>
@@ -108,11 +108,12 @@
                                     <td class='w-40 vertical-center'>
                                         <div class='pt-15 pb-15'>
                                             <div class='d-flex'>
-                                                <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="90px">
+                                                <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="110px" class="mr-5">
                                                 <div class="d-flex flex-column">
                                                     <div class="fw-600">{{$detail[0]['sanpham']['tensp'].' - '.$detail[0]['sanpham']['mausac']}}</div>
+                                                    <div class="fz-14">Ram: {{$detail[0]['sanpham']['ram']}}</div>
                                                     <div class="fz-14">Dung lượng: {{$detail[0]['sanpham']['dungluong']}}</div>
-                                                    <div class="fz-14">Số lượng: 2{{count($detail) > 1 ? ' ... và '.count($detail).' sản phẩm khác' : ''}}</div>
+                                                    <div class="fz-14">Số lượng: {{$detail[0]['sl']}}{{count($detail) > 1 ? ' ... và '.count($detail).' sản phẩm khác' : ''}}</div>
                                                     <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">Xem chi tiết</a>
                                                 </div>
                                             </div>

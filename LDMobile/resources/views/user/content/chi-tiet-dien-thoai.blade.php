@@ -16,9 +16,9 @@
             <div class="d-flex align-items-center">
                 <div class='fz-32 fw-600'>{{ $phone['tensp'] }}</div>
                 <div class='pl-20'>
-                    @if ($lst_evaluate['total-rating'] != 0)
+                    @if ($starRating['total-rating'] != 0)
                         @for ($i = 1; $i <= 5; $i++)
-                            @if($lst_evaluate['total-star'] >= $i)
+                            @if($starRating['total-star'] >= $i)
                             <i class="fas fa-star checked"></i>
                             @else
                             <i class="fas fa-star uncheck"></i>
@@ -46,7 +46,7 @@
                     </div>
                     {{-- ảnh khác --}}
                     <div class='detail-another-div'>
-                        <div id='detail-carousel' class="owl-carousel owl-theme">
+                        <div id='detail-carousel' class="owl-carousel">
                             @foreach($lst_variation['image'] as $key)
                                 <img class="another-img" src="{{ $url_phone.$key['hinhanh'] }}">
                             @endforeach
@@ -135,17 +135,17 @@
                     </div>
                 </div>
                 {{-- bảo hành --}}
-                <div class='detail-warranty p-10 mb-30'>
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-shield-check mr-10 fz-18 main-color-text"></i>
-                        <span>Bảo hành chính hãng {{ $phone['baohanh'] }}</span>
+                @if($phone['baohanh'])
+                    <div class='detail-warranty p-10 mb-30'>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-shield-check mr-10 fz-18 main-color-text"></i>
+                            <span>Bảo hành chính hãng {{ $phone['baohanh'] }}</span>
+                        </div>
                     </div>
-                </div>
+                @endif
 
                 {{-- kiểm tra còn hàng --}}
-                @if (session('user'))
-                    <div id="check-qty-in-stock-btn" type="button" class="main-color-text ml-10" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
-                @endif
+                <div id="check-qty-in-stock-btn" type="button" class="main-color-text ml-10" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
             </div>
         </div> <hr>
 
@@ -347,7 +347,7 @@
                     <div class="detail-item">
                         <div class='detail-item-title'>Sản phẩm tương tự</div>
                         <div class='relative'>
-                            <div id='similar-pro-carousel' class="owl-carousel owl-theme m-0">
+                            <div id='similar-pro-carousel' class="owl-carousel m-0">
                                 @foreach($lst_similarPro as $key)
                                 <div class='detail-item-content'>
                                     {{-- hình ảnh --}}
@@ -409,11 +409,11 @@
         @endif
 
         {{-- gửi đánh giá --}}
-        <div class='row pt-50 pb-50'>
+        <div id="evaluate-section" class='row pt-50 pb-50'>
             <div class="col-12">
                 <div class='fz-20 fw-600 mb-10 p-0'>
-                    @if ($lst_evaluate['total-rating'] != 0)
-                        {{ $lst_evaluate['total-rating']}} đánh giá {{ $phone['tensp'] }}
+                    @if ($starRating['total-rating'] != 0)
+                        {{ $starRating['total-rating']}} đánh giá {{ $phone['tensp'] }}
                     @else
                         <div class='fz-20 fw-600'>Hãy là người đầu tiên đánh giá {{ $phone['tensp'] }}</div>
                     @endif
@@ -423,14 +423,14 @@
             <div class="col-12">
                 <div class="d-flex flex-wrap">
                     {{-- nếu đã có đánh giá --}}
-                    @if ($lst_evaluate['total-rating'] != 0)
+                    @if ($starRating['total-rating'] != 0)
                         <div class="star-rating-div">
                             <span class='detail-vote-avg'></span>
                             <i class="fas fa-star checked fz-34 ml-5"></i>
                         </div>
                         <div class="detail-star-rating-div">
                             {{-- tổng số lương đánh giá --}}
-                            <input type="hidden" id='total_rating' value='{{ $lst_evaluate['total-rating'] }}'>
+                            <input type="hidden" id='total_rating' value='{{ $starRating['total-rating'] }}'>
                             {{-- sao đánh giá --}}
                             <div class="w-100">
                                 @for ($i = 5; $i >= 1; $i--)
@@ -442,11 +442,11 @@
                                         <div class='d-flex align-items-center w-60'>
                                             <div class='detail-progress-bar'>
                                                 <div id='{{'percent-' . $i . '-star'}}'
-                                                    data-id='{{ $lst_evaluate['rating'][$i] }}'>
+                                                    data-id='{{ $starRating['rating'][$i] }}'>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class='d-flex align-items-center w-20'>{{ $lst_evaluate['rating'][$i] }} đánh giá</div>
+                                        <div class='d-flex align-items-center w-20'>{{ $starRating['rating'][$i] }} đánh giá</div>
                                     </div>
                                 @endfor
                             </div>
@@ -457,14 +457,14 @@
                         @if (empty($haveNotEvaluated))
                             {{-- chưa mua sản phẩm này --}}
                             @if (!$bought)
-                                <div class='d-flex justify-content-center w-100'>
+                                <div class='d-flex justify-content-center w-100 p-40'>
                                     <div class='gray-1 mr-10'>Nhanh tay sở hữu sản phẩm.</div>
                                     <div type="button" data-id="{{$phone['id']}}" class='buy-now main-color-text'>Mua ngay</div>
                                 </div>
                             @endif
                         {{-- gửi đánh giá --}}
                         @else
-                            <div class="w-100">
+                            <div class="w-100 p-20">
                                 <div class='d-flex flex-column'>
                                     {{-- sao đánh giá --}}
                                     <div class="d-flex align-items-center">
@@ -515,17 +515,12 @@
 
         {{-- đánh giá sản phẩm và đã đăng nhập --}}
         @if (session('user'))
-            @if ($lst_evaluate['total-rating'] != 0)
+            @if ($starRating['total-rating'] != 0)
                 <div id='list-comment' class="row">
                     {{-- đánh giá của người dùng --}}
-                    @foreach($lst_evaluate['evaluate'] as $key)
-                        @if ($key['taikhoan']['id'] == session('user')->id)
-                            <div class="fw-600 fz-20 mb-10">Đánh giá của tôi</div>
-                            @break
-                        @endif
-                    @endforeach
-                    @foreach($lst_evaluate['evaluate'] as $key)
-                        @if ($key['taikhoan']['id'] == session('user')->id)
+                    @if (!empty($userEvaluate))
+                        <div class="fw-600 fz-20 mb-10">Đánh giá của tôi</div>
+                        @foreach ($userEvaluate as $key)
                             <div data-id="{{$key['id']}}" class="evaluate col-lg-8 col-sm-10">
                                 <div class='d-flex flex-column mt-20 mb-20'>
                                     {{-- ảnh đại diện & tên & sao & ngày đăng --}}
@@ -555,9 +550,7 @@
                                     </div>
 
                                     {{-- nội dung --}}
-                                    <div class='evaluate-content-div pt-10'>
-                                        <div>{{ $key['noidung'] }}</div>
-                                    </div>
+                                    <div class='evaluate-content-div pt-10'>{{ $key['noidung'] }}</div>
                                     <input type="hidden" id="evaluate-content-{{$key['id']}}" value="{{ $key['noidung'] }}">
 
                                     {{-- hình ảnh --}}
@@ -659,18 +652,13 @@
                                 </div>
                                 <hr>
                             </div>
-                        @endif
-                    @endforeach
+                        @endforeach
+                    @endif
 
                     {{-- đánh giá khác --}}
-                    @foreach($lst_evaluate['evaluate'] as $key)
-                        @if ($key['taikhoan']['id'] != session('user')->id)
+                    @if (!empty($anotherEvaluate))
                         <div class="fw-600 fz-20 mb-10">Đánh giá khác</div>
-                            @break
-                        @endif
-                    @endforeach
-                    @foreach($lst_evaluate['evaluate'] as $key)
-                        @if ($key['taikhoan']['id'] != session('user')->id)
+                        @foreach($anotherEvaluate as $key)
                             <div data-id="{{$key['id']}}" class="evaluate col-lg-8 col-sm-10">
                                 <div class='d-flex flex-column mt-20 mb-20'>
                                     {{-- ảnh đại diện & tên & sao & ngày đăng --}}
@@ -796,8 +784,8 @@
                                 </div>
                                 <hr>
                             </div>
-                        @endif
-                    @endforeach
+                        @endforeach
+                    @endif
                 </div>
             @endif
         @else
@@ -1351,7 +1339,7 @@
                             <div class="col-lg-6 mb-20">
                                 <div data-id="{{$key['id']}}" class="d-flex phone-evaluate p-10">
                                     <img src="{{$url_phone.$key['hinhanh']}}" alt="" width="100px">
-                                    <div>
+                                    <div class="ml-5">
                                         <div class="fw-600">{{$key['tensp']}}</div>
                                         <div>Màu sắc: {{$key['mausac']}}</div>
                                     </div>

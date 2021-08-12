@@ -87,9 +87,7 @@
                     </div>
                 </div>     
 
-                <div class='head-offcanvas'>
-                    <div id='show-offcanvas' aria-expanded="false"><i class="fas fa-bars white fz-30"></i></div>
-                </div>
+                <div id='show-offcanvas' aria-expanded="false"><i class="fas fa-bars white fz-30"></i></div>
             </div>
         </div>
     </div>

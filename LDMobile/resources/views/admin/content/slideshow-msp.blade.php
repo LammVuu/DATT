@@ -66,8 +66,7 @@
                     <div class="row mb-3">
                         <div class="col-lg-6">
                             <label for="model" class="mb-5 fw-600">Mẫu sản phẩm</label>
-                            <select id="model">
-                            </select>
+                            <select id="model"></select>
                         </div>
                     </div>
                     {{-- hình ảnh --}}
@@ -78,7 +77,8 @@
                                 <b id="qty-image" class="ml-5"></b>
                             </div>
                             <input type="file" id="image_inp" class="none-dp" multiple accept="image/*">
-                            <div class="image-preview-div row">
+                            <div class="image-preview-div">
+                                <div class="row"></div>
                             </div>
                             
                             <div id="choose_image" class="file-input-btn mt-5">Chọn hình</div>

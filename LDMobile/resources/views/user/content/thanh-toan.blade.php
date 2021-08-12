@@ -82,7 +82,7 @@
                                 {{-- nhận tại cửa hàng --}}
                                 <div class='atStore p-20 mt-10'>
                                     <div class='row'>
-                                        <div class='col-lg-6'>
+                                        <div class='col-6'>
                                             <div class="select">
                                                 <div id='area-selected' class="select-selected">
                                                     <div id='area-name'>Chọn khu vực</div>
@@ -115,8 +115,10 @@
                                                 @endforeach
                                             </div>
                                         </div>
-                                        <div class="col-lg-6 white-bg relative p-0 none-dp">
-                                            <div class="info-qty-in-stock">
+                                        <div class="col-6">
+                                            <div class="white-bg relative none-dp">
+                                                <div class="info-qty-in-stock">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

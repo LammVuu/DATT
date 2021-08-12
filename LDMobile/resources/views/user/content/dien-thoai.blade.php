@@ -98,7 +98,7 @@
                     <div id="qty-div">
                         <div class="d-flex align-items-center mb-30">
                             <div class="fw-600 mr-20">Chọn số lượng</div>
-                            <div class='cart-qty-input relative'>
+                            <div class='cart-qty-input'>
                                 {{-- tooltip thông báo --}}
                                 <div class="tooltip-qty"></div>
                                 {{-- số lượng tối đa có thể mua --}}
@@ -107,7 +107,6 @@
                                 <button type='button' data-id="color" class='update-qty minus'><i class="fas fa-minus"></i></button>
                                 <b id="qty">1</b>
                                 <button type='button' data-id="color" class='update-qty plus'><i class="fas fa-plus"></i></button>
-                                
                             </div>
                         </div>
                     </div>

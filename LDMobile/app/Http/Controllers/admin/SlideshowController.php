@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 
 use App\Models\SLIDESHOW;
@@ -17,6 +18,13 @@ class SlideshowController extends Controller
     public function __construct()
     {
         $this->admin='admin/content/';
+        $this->IndexController = new IndexController;
+
+        // chưa có thư mục lưu hình
+        if(!is_dir('images/slideshow')){
+            // tạo thư mục lưu hình
+            mkdir('images/slideshow', 0777, true);
+        }
     }
     public function index()
     {
@@ -27,51 +35,57 @@ class SlideshowController extends Controller
         return view($this->admin."slideshow")->with($data);
     }
 
+    public function bindElement($id)
+    {
+        $data = SLIDESHOW::find($id);
+        $html = '<tr data-id="'.$id.'">
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$id.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">'.$data->link.'</div>
+                    </td>
+                    <td class="vertical-center">
+                        <div class="pt-10 pb-10">
+                            <img src="images/slideshow/'.$data->hinhanh.'" alt="" width="300px">
+                        </div>
+                    </td>
+                    {{-- nút --}}
+                    <td class="vertical-center w-10">
+                        <div class="d-flex justify-content-start">
+                            <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
+                            <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
+                            <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
+                        </div>
+                    </td>
+                </tr>';
+        return $html;
+    }
+
     public function store(Request $request)
     {
         if($request->ajax()){
-            $data = [
-                'link' => $request->link,
-                'hinhanh' => 'slide'.(count(SLIDESHOW::all()) + 1).'.jpg',
-            ];
-
-            // chưa có thư mục lưu hình
-            if(!is_dir('images/slideshow')){
-                // tạo thư mục lưu hình
-                mkdir('images/slideshow', 0777, true);
+            // định dạng hình
+            $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
+            if($imageFormat == 'png'){
+                $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
+                $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.png';
+            } else {
+                $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
+                $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.jpg';
             }
 
             // lưu hình
-            $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-            $image = base64_decode($base64);
+            $this->IndexController->saveImage('images/slideshow/'.$imageName, $base64);
 
-            $imageName = $data['hinhanh'];
-            $urlImage = 'images/slideshow/' . $imageName;
-            file_put_contents($urlImage, $image);
+            $data = [
+                'link' => $request->link,
+                'hinhanh' => $imageName,
+            ];
 
             $create = SLIDESHOW::create($data);
 
-            $html = '<tr data-id="'.$create->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$create->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['link'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">
-                                <img src="images/slideshow/'.$data['hinhanh'].'" alt="" width="300px">
-                            </div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$create->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$create->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$create->id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($create->id);
 
             return [
                 'id' => $create->id,
@@ -85,55 +99,35 @@ class SlideshowController extends Controller
         if($request->ajax()){
             $oldData = SLIDESHOW::find($id);
 
-            $data = [
-                'link' => $request->link,
-                'hinhanh' => $oldData->hinhanh,
-            ];
+            $imageName = $oldData->hinhanh;
 
             // nếu có thay đổi hình ảnh
             if($request->hinhanh){
                 // xóa hình cũ
-                unlink('images/slideshow/' . $data['hinhanh']);
+                unlink('images/slideshow/' . $oldData->hinhanh);
 
-                // chưa có thư mục lưu hình
-                if(!is_dir('images/slideshow')){
-                    // tạo thư mục lưu hình
-                    mkdir('images/slideshow', 0777, true);
+                // định dạng hình
+                $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
+                if($imageFormat == 'png'){
+                    $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
+                    $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.png';
+                } else {
+                    $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
+                    $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.jpg';
                 }
 
                 // lưu hình
-                $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                $image = base64_decode($base64);
-
-                $imageName = $data['hinhanh'];
-                $urlImage = 'images/slideshow/' . $imageName;
-                file_put_contents($urlImage, $image);
+                $this->IndexController->saveImage('images/slideshow/'.$imageName, $base64);
             }
             
+            $data = [
+                'link' => $request->link,
+                'hinhanh' => $imageName,
+            ];
 
             SLIDESHOW::where('id', $id)->update($data);
 
-            $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data['link'].'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">
-                                <img src="images/slideshow/'.$data['hinhanh'].'?'.time().'" alt="" width="300px">
-                            </div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                            </div>
-                        </td>
-                    </tr>';
+            $html = $this->bindElement($id);
 
             return $html;
         }
@@ -150,7 +144,9 @@ class SlideshowController extends Controller
     public function AjaxGetslideshow(Request $request)
     {
         if($request->ajax()){
-            return SLIDESHOW::find($request->id);
+            $slide = SLIDESHOW::find($request->id);
+            $slide->hinhanh .= '?'.time();
+            return $slide;
         }
     }
 }

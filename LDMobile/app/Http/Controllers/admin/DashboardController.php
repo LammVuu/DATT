@@ -144,10 +144,10 @@ class DashboardController extends Controller
                                 <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->baohanh.'</div>
                                 </td>
-                                <td class="vertical-center">
+                                <td class="vertical-center w-30">
                                     <div class="pt-10 pb-10">'.$key->diachibaohanh.'</div>
                                 </td>
-                                <td class="vertical-center">
+                                <td class="vertical-center w-15">
                                     <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
                                 </td>
                                 {{-- nút --}}
@@ -231,6 +231,11 @@ class DashboardController extends Controller
                 }
 
                 foreach($data as $key){
+                    if($key->id_km){
+                        $promotion = KHUYENMAI::find($key->id_km)->chietkhau*100 .'%';
+                    } else {
+                        $promotion = 'Không có';
+                    }
                     $html .= '<tr data-id="'.$key->id.'">
                                 <td class="vertical-center">
                                     <div class="pt-10 pb-10">'.$key->id.'</div>
@@ -251,7 +256,7 @@ class DashboardController extends Controller
                                     <div class="pt-10 pb-10">'.number_format($key->gia, 0, '', '.').'<sup>đ</sup></div>
                                 </td>
                                 <td class="vertical-center">
-                                    <div class="pt-10 pb-10">'.(KHUYENMAI::find($key->id_km)->chietkhau*100).'%'.'</div>
+                                    <div class="pt-10 pb-10">'.$promotion.'</div>
                                 </td>
                                 <td class="vertical-center">
                                     <div data-id="'.$key->id.'" class="trangthai pt-10 pb-10">'.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
@@ -586,7 +591,7 @@ class DashboardController extends Controller
                                                         <i class="fas fa-box-check"></i>
                                                     </div>' ) : '') .'
                                                 <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                        ($key->trangthaidonhang != 'Đã hủy' ? '
+                                        ($key->trangthaidonhang != 'Đã hủy' && $key->trangthaidonhang != 'Thành công' ? '
                                             <div data-id="{{$key->id}}" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
                                         </div>
                                     </td>
@@ -645,7 +650,7 @@ class DashboardController extends Controller
                                                         <i class="fas fa-box-check"></i>
                                                     </div>' ) : '') .'
                                                 <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                                        ($key->trangthaidonhang != 'Đã hủy' ? '
+                                        ($key->trangthaidonhang != 'Đã hủy' && $key->trangthaidonhang != 'Đã công' ? '
                                             <div data-id="{{$key->id}}" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
                                         </div>
                                     </td>

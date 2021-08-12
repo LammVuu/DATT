@@ -253,6 +253,8 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Admi
 
     Route::post("sanpham/ajax-filtersort", [App\Http\Controllers\admin\SanPhamController::class, "AjaxFilterSort"]);
 
+    Route::post("sanpham/ajax-get-model-image", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetModelImage"]);
+
     /*=======================================================================================================
                                                         Nhà cung cấp
     =========================================================================================================*/

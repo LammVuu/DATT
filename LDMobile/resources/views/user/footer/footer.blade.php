@@ -9,7 +9,7 @@
             <div class="container">
                 <div class="row mt-30 mb-30">
                     {{-- link --}}
-                    <div class="col-lg-8 col-sm-12">
+                    <div class="col-lg-8 col-sm-12 mb-40">
                         <div class="row">
                             {{-- sản phẩm --}}
                             <div class="col-lg-3 col-6 mb-20">
@@ -52,31 +52,31 @@
                     </div>
 
                     {{-- logo --}}
-                    <div class="col-lg-4 col-sm-12">
-                        <div class="d-flex justify-content-center">
-                            <div class='d-flex flex-column align-items-center'>
-                                <img src="images/logo/LDMobile-logo.png" alt="logo-footer" width="100px">
-                                <div class="pt-20 pb-20">Theo dõi chúng tôi</div>
-                                <div class="d-flex fz-22">
-                                    <div class="main-color-text"><i class="fab fa-facebook-f ml-10 mr-10"></i></div>
-                                    <div class="main-color-text"><i class="fab fa-instagram ml-10 mr-10"></i></div>
-                                    <div class="main-color-text"><i class="fab fa-twitter ml-10 mr-10"></i></div>
-                                    <div class="main-color-text"><i class="fab fa-pinterest-p ml-10 mr-10"></i></div>
-                                    <div class="main-color-text"><i class="fab fa-whatsapp ml-10 mr-10"></i></div>
+                    <div class="col-lg-4 col-sm-12 mb-40">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="d-flex justify-content-center">
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <img src="images/logo/LDMobile-logo.png" alt="logo-footer" width="100px">
+                                        <div class="pt-20 pb-20">Theo dõi chúng tôi</div>
+                                        <div class="d-flex fz-22">
+                                            <div class="main-color-text"><i class="fab fa-facebook-f ml-10 mr-10"></i></div>
+                                            <div class="main-color-text"><i class="fab fa-instagram ml-10 mr-10"></i></div>
+                                            <div class="main-color-text"><i class="fab fa-twitter ml-10 mr-10"></i></div>
+                                            <div class="main-color-text"><i class="fab fa-pinterest-p ml-10 mr-10"></i></div>
+                                            <div class="main-color-text"><i class="fab fa-whatsapp ml-10 mr-10"></i></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style="margin-top:18px">
-                                    <h4><center> Download for</center></h4>
-                                    <p>
-                                 <a href="images/app-release.apk" download style="margin-left:72px">
-                                    <img src="images/logo/android-logo.png" width=80% alt="W3Schools">
-                                  </a>
-                                    </p>
-                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="fz-24 text-center mb-20">Download for</div>
+                                <a href="images/app-release.apk" download><img src="images/logo/android-logo.png" alt="W3Schools" class="center-img w-80"></a>
                             </div>
                         </div>
                     </div>
-                    
-                </div><hr class="m-0">
+                </div>
+                <hr class="m-0">
 
                 {{-- copyright --}}
                 <div class="copyright-footer">

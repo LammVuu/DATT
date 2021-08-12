@@ -65,31 +65,37 @@
             <div class="modal-body p-40">
                 <div class="row">
                     {{-- sản phẩm --}}
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 mb-20">
                         {{-- hình ảnh --}}
                         <div class="mb-20">
                             <img id="product-img" src="" alt="" class="w-90 center-img">
                         </div>
-                        {{-- tên --}}
-                        <div id="product-name" class="fz-26 fw-600 mb-10 text-center"></div>
-                        {{-- ram --}}
-                        <div class="d-flex mb-5">
-                            <div class="gray-1">Ram:</div>
-                            <div id="product-ram" class="ml-5 fw-600"></div>
-                        </div>
-                        {{-- dung lượng --}}
-                        <div class="d-flex mb-5">
-                            <div class="gray-1">Dung lượng:</div>
-                            <div id="product-capacity" class="ml-5 fw-600"></div>
-                        </div>
-                        {{-- màu sắc --}}
-                        <div class="d-flex mb-5">
-                            <div class="gray-1">Màu sắc:</div>
-                            <div id="product-color" class="ml-5 fw-600"></div>
-                        </div>
-                        <div class="d-flex">
-                            <div class="gray-1">IMEI:</div>
-                            <div id="product-imei" class="ml-5 fw-600"></div>
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                            {{-- tên --}}
+                            <div id="product-name" class="fz-26 fw-600 mb-10 text-center"></div>
+                            <div class="d-flex mb-10">
+                                {{-- màu sắc --}}
+                                <div class="d-flex mr-20">
+                                    <div class="gray-1">Màu sắc:</div>
+                                    <div id="product-color" class="ml-5 fw-600"></div>
+                                </div>
+                                {{-- ram --}}
+                                <div class="d-flex ">
+                                    <div class="gray-1">Ram:</div>
+                                    <div id="product-ram" class="ml-5 fw-600"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-10">
+                                {{-- dung lượng --}}
+                                <div class="d-flex mr-20">
+                                    <div class="gray-1">Dung lượng:</div>
+                                    <div id="product-capacity" class="ml-5 fw-600"></div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="gray-1">IMEI:</div>
+                                    <div id="product-imei" class="ml-5 fw-600"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {{-- bảo hành --}}
@@ -101,18 +107,22 @@
                             <div class="gray-1">Trạng thái bảo hành:</div>
                             <div id="warranty-status" class="ml-10 fz-20 fw-600"></div>
                         </div>
-                        <div class="d-flex mb-5">
-                            <div class="gray-1">Bảo hành:</div>
-                            <div id="warranty" class="ml-5 fw-600"></div>
-                        </div>
-                        <div class="d-flex">
+                        <div class="mb-5">
                             <div class="d-flex">
-                                <div class="gray-1">Bắt đầu:</div>
-                                <div id="start" class="ml-5 fw-600"></div>
+                                <div class="gray-1">Bảo hành:</div>
+                                <div id="warranty" class="ml-5 fw-600"></div>
                             </div>
-                            <div class="d-flex ml-20">
-                                <div class="gray-1">Kết thúc:</div>
-                                <div id="end" class="ml-5 fw-600"></div>
+                        </div>
+                        <div class="mb-5">
+                            <div class="d-flex">
+                                <div class="d-flex">
+                                    <div class="gray-1">Bắt đầu:</div>
+                                    <div id="start" class="ml-5 fw-600"></div>
+                                </div>
+                                <div class="d-flex ml-20">
+                                    <div class="gray-1">Kết thúc:</div>
+                                    <div id="end" class="ml-5 fw-600"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

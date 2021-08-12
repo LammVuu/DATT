@@ -8,7 +8,7 @@
         </div>
 
         <div class='relative'>
-            <div id='index-promotion-carousel' class="owl-carousel owl-theme m-0">
+            <div id='index-promotion-carousel' class="owl-carousel m-0">
                 @foreach($lst_promotion as $key)
                 <a href="{{route('user/chi-tiet', ['name' => $key['tensp_url']])}}" class="index-promotion-phone">
                     {{-- hình ảnh --}}

@@ -77,10 +77,10 @@
                     <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key->baohanh}}</div>
                     </td>
-                    <td class="vertical-center">
+                    <td class="vertical-center w-30">
                         <div class="pt-10 pb-10">{{$key->diachibaohanh}}</div>
                     </td>
-                    <td class="vertical-center">
+                    <td class="vertical-center w-15">
                         <div data-id="{{$key->id}}" class="trangthai pt-10 pb-10">{{$key->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh'}}</div>
                     </td>
                     {{-- nút --}}
@@ -140,7 +140,7 @@
                         <div class="mb-3">
                             <label for="mausp_warranty" class="mb-5 fw-600">Bảo hành</label>
                             <select id="mausp_warranty">
-                                <option value="0" selected>Không bảo hành</option>
+                                <option value="" selected>Không bảo hành</option>
                                 <option value="12 Tháng">12 Tháng</option>
                             </select>
                         </div>

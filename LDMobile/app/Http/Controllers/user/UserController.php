@@ -117,7 +117,6 @@ class UserController extends Controller
             Session::regenerate();
 
             $user = TAIKHOAN::where('sdt', $data['sdt'])->first();
-            TAIKHOAN::where('id', $user->id)->update(['login_status' => 1]);
             session(['user' => $user]);
 
             // quay về url trước đó
@@ -258,7 +257,10 @@ class UserController extends Controller
         }
 
         Auth::logout();
-        TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
+        if(session('user')->htdn != 'nomal'){
+            TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
+        }
+        
         if(session('user')->htdn != 'nomal'){
             Cookie::queue(Cookie::forget('acccount_social_id'));
         }
