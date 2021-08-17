@@ -52,7 +52,7 @@ Route::group(['namespace' => 'API','middleware' => ['throttle:500,1', 'auth:api'
     Route::get('check-warranty','SanPhamController@checkWarranty');
     Route::get('my-cart/{id}','CartController@getMyCart');
     Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
-    Route::post('add-to-cart/{id}','CartController@addToCart');
+    Route::post('add-to-cart','CartController@addToCart');
     Route::put('update-cart/{id}','CartController@updateCart');
     Route::delete('delete-product-in-cart/{id}','CartController@deleteProductInCart');
     Route::get('my-voucher/{id}', 'CartController@getMyVoucher');

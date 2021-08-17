@@ -62,7 +62,7 @@ class SanPhamController extends Controller
         $time ="";
         $idUser = -1;
         $listProductHotSale = array();
-        $listProduct = SANPHAM::where('trangthai', 1);
+        $listProduct = SANPHAM::where('trangthai', 1)->get();
         $listDiscount = KHUYENMAI::orderBy("chietkhau", "desc")->get();
         $max = 0; 
         $min = 0;
@@ -245,11 +245,10 @@ class SanPhamController extends Controller
     }
     public function getDetailProduct($id, Request $request){
         $color = array();
-        array_push($color, "M.Sắc");
         $storage = array();
-        array_push($storage, "D.Lượng");
-       
+        $images = array();
         $productCurrent = SANPHAM::find($id);
+        array_push($images, $productCurrent->hinhanh);
         $cateProduct = MAUSP::find($productCurrent->id_msp);
         $product = SANPHAM::where('id_msp', $cateProduct->id)->get();
         $nhacungcap = NHACUNGCAP::find($cateProduct->id_ncc);
@@ -260,13 +259,20 @@ class SanPhamController extends Controller
             if($this->checkArray($color, $product[$i]->mausac)){
                 array_push($color, $product[$i]->mausac);
             }
-          if($this->checkArray($storage,$product[$i]->dungluong)){
-           array_push($storage, $product[$i]->dungluong);
-         }
+            if($this->checkArray($storage, $product[$i]->dungluong)){
+                 array_push($storage, $product[$i]->dungluong);
+            }
+            if($this->checkArray($images, $product[$i]->hinhanh)){
+                array_push($images, $product[$i]->hinhanh);
+            }
+        }
+        foreach($images as $image){
+            $image = Helper::$URL."phone/".$image;
         }
         $cateProduct->nhacungcap = $nhacungcap;
         $cateProduct->mausac = $color;
         $cateProduct->dungluong = $storage;
+        $cateProduct->dsHinhAnh = $images;
         $wish = SP_YEUTHICH::where('id_tk', $request->id_tk)->where('id_sp', $id)->get();
         $count = count($wish);
         if($count > 0){

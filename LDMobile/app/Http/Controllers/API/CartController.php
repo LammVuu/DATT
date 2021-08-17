@@ -57,9 +57,12 @@ class CartController extends Controller
     		'data' =>$listProduct
     	]);
     }
-    public function addToCart(Request $req, $id){
+    public function addToCart(Request $req){
         $i = 0;
-        $product = SANPHAM::find($id);
+        $image = str_replace(Helper::$URL.'phone/','',$req->hinhanh);
+       
+        $pro = SANPHAM::where('dungluong', $req->dungluong)->where('hinhanh','LIKE','%'.$image.'%')->get();
+        $product = SANPHAM::find($pro[0]->id);
         $cart = GIOHANG::where("id_tk", $req->id_user)->where("id_sp", $product->id)->get();
         if(count($cart)==0){
                 $cart = new GIOHANG;
