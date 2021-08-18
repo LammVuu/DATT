@@ -32,12 +32,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // supplier
         $lst_brand = [];
-        $i = 0;
 
-        foreach(NHACUNGCAP::all() as $key){
+        foreach(NHACUNGCAP::all() as $i => $key){
             $lst_brand[$i]['brand'] = explode(' ', $key->tenncc)[0];
             $lst_brand[$i]['image'] = $key->anhdaidien;
-            $i++;
         }
 
         // url user

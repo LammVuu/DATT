@@ -8,12 +8,20 @@
     @include("admin/header/header")
     @include("admin.content.section.sec-sidebar")
 
-    {{-- alert top --}}
-    <div class="alert-top"><div class="alert-top-content"></div><hr class="m-0"><div type="button" class="close-alert-top"></div></div>
-    <div class='backdrop'></div>
-
     {{-- loader --}}
     <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
+
+    <div class='backdrop'></div>
+    
+    {{-- alert top --}}
+    <div class="alert-top">
+        <div class="close-alert-top-icon"><i class="far fa-times-circle"></i></div>
+        <div class="alert-top-title"></div>
+        <div class="alert-top-content"></div>
+        <div class="alert-top-footer">
+            <div class="close-alert-top">OK</div>
+        </div>
+    </div>
     
     <!-- content -->
     <div class="content">

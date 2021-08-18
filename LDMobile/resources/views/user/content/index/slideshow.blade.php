@@ -14,10 +14,10 @@
                         @endfor
                     </div>
                     <div class="slideshow-btn-prev" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                        <i class="far fa-chevron-left fz-30"></i>
+                        <i class="far fa-chevron-left"></i>
                     </div>
                     <div class='slideshow-btn-next' data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                        <i class="far fa-chevron-right fz-30"></i>
+                        <i class="far fa-chevron-right"></i>
                     </div>
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
@@ -30,12 +30,10 @@
             </div>
 
             {{-- banner --}}
-            <div class='col-lg-4 col-md-12 col-sm-12'>
-                <div class='d-flex flex-column'>
+            <div class='col-lg-4 col-12'>
+                <div class="row">
                     @foreach ($lst_banner as $key)
-                        <div class='mb-20 box-shadow'>
-                            <img src="{{$url_banner.$key->hinhanh}}" class='single-banner' alt="banner-1">
-                        </div>
+                        <div class="col-lg-12 col-md-4 col-12"><img src="{{$url_banner.$key->hinhanh}}" class='single-banner' alt="banner"></div>
                     @endforeach
                 </div>
             </div>

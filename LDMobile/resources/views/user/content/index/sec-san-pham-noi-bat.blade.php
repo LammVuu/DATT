@@ -5,12 +5,12 @@
                 <div class="d-flex align-items-center p-20">
                     <div class="fz-22 fw-600">ĐIỆN THOẠI NỔI BẬT NHẤT</div>
                     <div class="relative ml-10">
-                        <div class="fire-animation"><i class="fas fa-fire"></i></div>
+                        <div class="fire-animation"><i class="fad fa-fire-alt"></i></div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-8 col-12">
-                <div class="d-flex justify-content-end flex-wrap p-20">
+                <div class="featured-brand">
                     @foreach ($lst_brand as $key)
                         <a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="index-brand-tag">{{$key['brand']}}</a>    
                     @endforeach

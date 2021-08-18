@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="fz-20 fw-600">Mã khuyến mãi của tôi</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></div>
                 </div>
             </div>
             <div class="modal-body">

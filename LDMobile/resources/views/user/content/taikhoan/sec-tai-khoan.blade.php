@@ -23,13 +23,12 @@
                         <div id="user_fullname" class="text-center fz-24 black">{{session('user')->hoten}}</div>
                         <div type="button" id='btn-change-info' class="ml-10"><i class="fas fa-user-edit"></i></div>
                     </div>
-                    <div id="change-info-div" class="none-dp">
-                        <span id="cancel-change-info" type="button" class="red mb-5">Hủy</span>
-                        <div class="d-flex">
-                            <div class="w-60 pr-5">
-                                <input type="text" name="new_fullname_inp" placeholder="Họ và tên">
-                            </div>
-                            <div id="change-fullname-btn" class="main-btn">Cập nhật</div>
+                    <div id="change-info-div" class="none-dp mt-10">
+                        <div class="mb-5">
+                            <input type="text" name="new_fullname_inp" placeholder="Họ và tên">
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <div type="button" id="change-fullname-btn" class="main-color-text">Cập nhật</div>
                         </div>
                     </div>
                 @else
@@ -125,44 +124,50 @@
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-body">
-                <div class="d-flex">
-                    <div class="w-70 m-10">
-                        <img id='pre-avt-big' src="" alt="">
-                        <div class="mt-20">
-                            <div class="d-flex align-items-center">
-                                <b>Thu Phóng</b>
-                                <b class="ml-10 mr-10">|</b>
-                                <i id='reset-canvas' class="far fa-redo"></i>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center justify-content-between mt-10">
-                                    <span><i class="far fa-search-minus"></i></span>
-                                    <div class="flex-fill pl-20 pr-20">
-                                        <div class="slidecontainer">
-                                            <input type="range" step='0.1' min="-1" max="1" value='0' class="slider" id="zoom-range">
+                <div class="row">
+                    <div class="col-lg-8 col-12">
+                        <div class="m-10">
+                            <img id='pre-avt-big' src="" alt="">
+                            <div class="mt-20">
+                                <div class="d-flex align-items-center">
+                                    <b>Thu Phóng</b>
+                                    <b class="ml-10 mr-10">|</b>
+                                    <i id='reset-canvas' class="far fa-redo"></i>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center justify-content-between mt-10">
+                                        <span><i class="far fa-search-minus"></i></span>
+                                        <div class="flex-fill pl-20 pr-20">
+                                            <div class="slidecontainer">
+                                                <input type="range" step='0.1' min="-1" max="1" value='0' class="slider" id="zoom-range">
+                                            </div>
                                         </div>
+                                        <span><i class="far fa-search-plus"></i></span>
                                     </div>
-                                    <span><i class="far fa-search-plus"></i></span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex flex-column w-30 m-10">
-                        <div class="fw-600 text-end">Xem trước</div>
-                        <div class="mt-20 mb-20">
-                            <div class="preview-avt center-img"></div>
+                    <div class="d-flex flex-column col-lg-4 col-12">
+                        <div class="m-10">
+                            <div class="fw-600 text-end">Xem trước</div>
+                            <div class="mt-20 mb-20">
+                                <div class="preview-avt center-img"></div>
+                            </div>
+                            <div class="text-end">
+                                <span class="reselect-img pointer-cs main-color-text">Chọn ảnh khác</span>
+                            </div>
+                            <hr>
                         </div>
-                        <div class="text-end">
-                            <span class="reselect-img pointer-cs main-color-text">Chọn ảnh khác</span>
-                        </div>
-                        <hr>
-                        <div class="d-flex flex-fill align-items-end justify-content-end">
-                            <div class="cancel-btn mr-10" data-bs-dismiss="modal">Hủy</div>
-                            <form id="change-avatar-form" action="{{route('user/ajax-change-avatar')}}" method="POST">
-                                @csrf
-                                <input type="hidden" name="base64data">
-                                <div class="crop-img main-btn p-10">Cập nhật</div>               
-                            </form>
+                        <div class="mt-a">
+                            <div class="d-flex flex-fill align-items-end justify-content-end">
+                                <div class="cancel-btn mr-10" data-bs-dismiss="modal">Hủy</div>
+                                <form id="change-avatar-form" action="{{route('user/ajax-change-avatar')}}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="base64data">
+                                    <div class="crop-img main-btn p-10">Cập nhật</div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

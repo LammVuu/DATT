@@ -123,7 +123,7 @@
                         <div class="pt-10 pb-10">{{number_format($key->gia, 0, '', '.')}}<sup>đ</sup></div>
                     </td>
                     <td class="vertical-center">
-                        <div class="pt-10 pb-10">{{($key->khuyenmai*100).'%'}}</div>
+                        <div class="pt-10 pb-10">{{$key->id_km ? ($key->khuyenmai*100).'%' : 'Không có'}}</div>
                     </td>
                     <td class="vertical-center">
                         <div data-id="{{$key->id}}" class="trangthai pt-10 pb-10">{{$key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh'}}</div>
@@ -191,11 +191,11 @@
                                     <label for="sanpham_capacity" class="mb-5 fw-600">Dung lượng</label>
                                     <select id="sanpham_capacity">
                                         <option value="32 GB">32 GB</option>
-                                        <option value="64 GB">64GB</option>
+                                        <option value="64 GB">64 GB</option>
                                         <option value="128 GB">128 GB</option>
                                         <option value="256 GB">256 GB</option>
                                         <option value="512 GB">512 GB</option>
-                                        <option value="1TB">1TB</option>
+                                        <option value="1 TB">1 TB</option>
                                     </select>
                                 </div>
                             </div>
@@ -505,8 +505,6 @@
 
 {{-- modal xóa --}}
 @include("user.content.modal.xoa-modal")
-
-@include("user.content.modal.thongbao-modal")
 
 <div id="toast"></div>
 

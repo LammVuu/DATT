@@ -652,6 +652,7 @@ class ComposerStaticInit2c2424aa317aa723b4bf3f3e9eff92d1
         'App\\Models\\DONHANG' => __DIR__ . '/../..' . '/app/Models/DONHANG.php',
         'App\\Models\\DONHANG_DIACHI' => __DIR__ . '/../..' . '/app/Models/DONHANG_DIACHI.php',
         'App\\Models\\GIOHANG' => __DIR__ . '/../..' . '/app/Models/GIOHANG.php',
+        'App\\Models\\HANGDOI' => __DIR__ . '/../..' . '/app/Models/HANGDOI.php',
         'App\\Models\\HINHANH' => __DIR__ . '/../..' . '/app/Models/HINHANH.php',
         'App\\Models\\IMEI' => __DIR__ . '/../..' . '/app/Models/IMEI.php',
         'App\\Models\\KHO' => __DIR__ . '/../..' . '/app/Models/KHO.php',

@@ -26,7 +26,9 @@
                                 </div>
 
                                 {{-- danh sách kết quả --}}
-                                <div class="head-search-result border"></div>
+                                <div class="head-search-result">
+                                </div>
+                                <div class="search-loading"><div class="spinner-border search-loading-icon" role="status"></div></div>
                             </div>
             
                             {{-- giỏ hàng --}}
@@ -110,7 +112,7 @@
                             <div class="offcanvas-account">
                                 <img src="{{$user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="user avatar" class="offcanvas-avatar">
                                 <div class="offcanvas-account-name">
-                                    <div class="fw-600 mr-5">{{$user->hoten}}</div>
+                                    <div id="offcanvas-name" class="fw-600 mr-5">{{$user->hoten}}</div>
                                     <i class="fas fa-caret-down"></i>
                                 </div>
                             </div>
@@ -145,30 +147,15 @@
                 
                 {{-- tìm kiếm --}}
                 <div class='d-flex justify-content-center mb-20 relative'>
-                    <div class="head-input-grp w-70">
+                    <div class="head-input-grp">
                         <input type="text" class='head-search-input border' placeholder="Tìm kiếm">
                         <span class='input-icon-right'><i class="fal fa-search"></i></span>
                     </div>
+
                     {{-- danh sách kết quả --}}
-                    <div class="head-search-result border">
-                        @for ($i = 0; $i < 15; $i++)
-                        <a href="#" class="head-single-result black fz-14">
-                            <div class="d-flex">
-                                <div class="w-25 p-10">
-                                    <img src="images/phone/iphone_12_red.jpg" alt="">
-                                </div>
-                                <div class="d-flex flex-column w-75 p-10">
-                                    <b>iPhone 12 PRO MAX 128GB</b>
-                                    <div class="d-flex align-items-center mt-5">
-                                        <span class="red fw-600">25.000.000<sup>đ</sup></span>
-                                        <span class="text-strike ml-10">29.000.000<sup>đ</sup></span>
-                                        <span class="red ml-10">-10%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        @endfor
+                    <div class="head-search-result">
                     </div>
+                    <div class="search-loading border"><div class="spinner-border search-loading-icon" role="status"></div></div>
                 </div>
                 
             

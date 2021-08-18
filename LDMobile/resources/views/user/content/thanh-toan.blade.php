@@ -11,10 +11,10 @@
         <div class='row'>
             {{-- chưa có giỏ hàng --}}
             @if ($cartRequired == 'true')
-                <div class="col-lg-12 box-shadow">
-                    <div class="row">
-                        <div class="col-lg-4 mx-auto">
-                            <div class="pt-50 pb-50 text-center">
+                <div class="col-lg-12 col-12">
+                    <div class="box-shadow">
+                        <div class="col-lg-4 col-10 mx-auto">
+                            <div class="pt-100 pb-100 text-center">
                                 <div class="mb-20 fz-20">Bạn chưa có sản phẩm để thanh toán.</div>
                                 <a href="{{route('user/dien-thoai')}}" class="main-btn">Tiếp tục mua sắm</a>
                             </div>
@@ -165,16 +165,23 @@
                     </div>
                 </div>
 
-                {{-- giỏ hàng --}}
                 <div class='col-lg-4 col-md-10'>
-                    <h3>Giỏ hàng</h3>
-                    <hr>
+                    {{-- thời gian thanh toán --}}
+                    <div class="countdown-checkout">
+                        <div class="countdown-text">Thanh toán kết thúc sau</div>
+                        <div class="countdown-number">
+                            <div class="minute-number"></div>
+                            <div class="second-number"></div>
+                        </div>
+                    </div>
+                    {{-- giỏ hàng --}}
                     <div class='pt-20 pb-20'>
                         <div class='checkout-cart-box box-shadow'>
-                            <div class='d-flex justify-content-end white-bg p-10'>
+                            <div class='d-flex justify-content-between white-bg p-10'>
+                                <div class="fw-600 fz-20">Giỏ hàng</div>
                                 <div href="#collapseExample" class='checkout-btn-collapse-cart' data-bs-toggle="collapse"
                                     href="#collapseExample" role="button" aria-expanded="true"
-                                    aria-controls="collapseExample"><i class="fas fa-chevron-up"></i></div>
+                                    aria-controls="collapseExample"><i class="far fa-chevron-up"></i></div>
                             </div>
                             <div class="collapse show" id="collapseExample">
                                 <table class="table">
@@ -184,7 +191,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <a href="{{route('user/gio-hang')}}"><i class="fas fa-chevron-left mr-5"></i>Chỉnh sửa giỏ hàng</a>
+                                                <a href="{{route('user/gio-hang')}}"><i class="fal fa-chevron-left mr-5"></i>Chỉnh sửa giỏ hàng</a>
                                             </td>
                                         </tr>
                                         {{-- sản phẩm trong giỏ hàng --}}
@@ -260,7 +267,7 @@
                                                                                 </table>
                                                                             </div>
                                                                         </div>
-                                                                        <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn">Bỏ chọn</div>
+                                                                        <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn" style="padding: 5px">Bỏ chọn</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -316,9 +323,6 @@
 
 {{-- modal chọn khuyến mãi --}}
 @include("user.content.modal.voucher-modal")
-
-{{-- modal thông báo --}}
-@include("user.content.modal.thongbao-modal")
 
 {{-- modal thêm/sửa địa chỉ --}}
 @include("user.content.modal.dia-chi-modal")

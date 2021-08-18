@@ -24,7 +24,6 @@
                                 <div class="vl"></div>
                             </div>
                             <div class="col-md-5 d-flex justify-content-center align-items-center">
-                                
                                 <a href={{route('user/dien-thoai')}} class="main-btn w-100">Tiếp tục mua sắm</a>
                             </div>
                         </div>

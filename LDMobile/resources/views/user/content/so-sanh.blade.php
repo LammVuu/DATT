@@ -20,8 +20,10 @@
                                 <img src="{{ $url_phone.$currentProduct['sanpham']['hinhanh'] }}" alt="" class='w-80 center-img pt-20 pb-10'>
                                 {{-- giá & đánh giá --}}
                                 <div class='pt-10 pb-10'>
-                                    <b class="red">{{ number_format($currentProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
-                                    <span class='text-strike ml-10'>{{ number_format($currentProduct['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></span>
+                                    <b class="red">{{ number_format($currentProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></b>
+                                    @if ($currentProduct['sanpham']['khuyenmai'])
+                                        <span  pan class='text-strike ml-10'>{{ number_format($currentProduct['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>    
+                                    @endif
                                 </div>
                                 <div>
                                     @if ($currentProduct['sanpham']['danhgia']['qty'] != 0)
@@ -65,8 +67,10 @@
                                 <img src="{{ $url_phone.$compareProduct['sanpham']['hinhanh'] }}" alt="" class='w-80 center-img pt-20 pb-10'>
                                 {{-- giá & đánh giá --}}
                                 <div class='pt-10 pb-10'>
-                                    <b class="red">{{ number_format($compareProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
-                                    <span class='text-strike ml-10'>{{ number_format($compareProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                                    <b class="red">{{ number_format($compareProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></b>
+                                    @if ($compareProduct['sanpham']['khuyenmai'])
+                                        <span class='text-strike ml-10'>{{ number_format($compareProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></span>
+                                    @endif
                                 </div>
                                 {{-- đánh giá --}}
                                 <div>
@@ -116,8 +120,10 @@
                                     <img src="{{ $url_phone.$thirdProduct['sanpham']['hinhanh'] }}" alt="" class='w-80 center-img pt-20 pb-10'>
                                     {{-- giá & đánh giá --}}
                                     <div class='pt-10 pb-10'>
-                                        <b class="red">{{ number_format($thirdProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></b>
-                                        <span class='text-strike ml-10'>{{ number_format($thirdProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                                        <b class="red">{{ number_format($thirdProduct['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></b>
+                                        @if ($thirdProduct['sanpham']['khuyenmai'])
+                                            <span class='text-strike ml-10'>{{ number_format($thirdProduct['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></span>
+                                        @endif
                                     </div>
                                     {{-- đánh giá --}}
                                     <div>
@@ -1114,14 +1120,14 @@
                     <tr class='border'>
                         <td></td>
                         <td>
-                            <div data-id="{{$currentProduct['sanpham']['id']}}"class="buy-now main-btn w-100 p-10">Mua ngay</div>
+                            <div data-id="{{$currentProduct['sanpham']['id']}}"class="compare-buy-now main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                         </td>
                         <td>
-                            <div data-id="{{$compareProduct['sanpham']['id']}}"class="buy-now main-btn w-100 p-10">Mua ngay</div>
+                            <div data-id="{{$compareProduct['sanpham']['id']}}"class="compare-buy-now main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                         </td>
                         @if (!empty($third))
                             <td>
-                                <div data-id="{{$thirdProduct['sanpham']['id']}}"class="buy-now main-btn w-100 p-10">Mua ngay</div>
+                                <div data-id="{{$thirdProduct['sanpham']['id']}}"class="compare-buy-now main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                             </td>
                         @else
                             <td class="thirdProduct"></td>
@@ -1152,6 +1158,9 @@
         </div>
     </div>
 </div>
+
+{{-- modal chọn màu sản phẩm --}}
+@include("user.content.modal.chon-mau-sac-modal");
 
 @include('user.content.section.sec-logo')
 

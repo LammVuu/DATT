@@ -64,6 +64,7 @@ return array(
     'App\\Models\\DONHANG' => $baseDir . '/app/Models/DONHANG.php',
     'App\\Models\\DONHANG_DIACHI' => $baseDir . '/app/Models/DONHANG_DIACHI.php',
     'App\\Models\\GIOHANG' => $baseDir . '/app/Models/GIOHANG.php',
+    'App\\Models\\HANGDOI' => $baseDir . '/app/Models/HANGDOI.php',
     'App\\Models\\HINHANH' => $baseDir . '/app/Models/HINHANH.php',
     'App\\Models\\IMEI' => $baseDir . '/app/Models/IMEI.php',
     'App\\Models\\KHO' => $baseDir . '/app/Models/KHO.php',

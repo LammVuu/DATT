@@ -27,6 +27,8 @@ Route::get("khoiphuctaikhoan", [UserController::class, "KhoiPhucTaiKhoan"])->nam
 
 Route::post("recover-account", [UserController::class, "RecoverAccount"])->name("user/recover-account");
 
+Route::get("thongbao", [IndexController::class, "ThongBao"])->name("user/thongbao");
+
 Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin", "AccessTimes"]], function(){
     /*=======================================================================================================
                                                                 Page
@@ -48,7 +50,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
     Route::get("dienthoai", [IndexController::class, "DienThoai"])->name("user/dien-thoai");
 
-    Route::get("timkiem/{name?}", [IndexController::class, "TimKiemDienThoai"])->name("user/tim-kiem");
+    Route::get("timkiem", [IndexController::class, "TimKiemDienThoai"])->name("user/tim-kiem");
 
     Route::get("dienthoai/{name}", [IndexController::class, "ChiTiet"])->name("user/chi-tiet");
 
@@ -101,6 +103,14 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
     Route::post("ajax-load-more", [IndexController::class, "AjaxLoadMore"]);
 
     Route::post("ajax-get-product-by-brand", [IndexController::class, "AjaxGetProductByBrand"]);
+
+    Route::get("ajax-reduce-warehouse-temporary", [IndexController::class, "AjaxReduceWarehouseTemporary"]);
+
+    Route::get("ajax-backup-warehouse", [IndexController::class, "AjaxBackupWarehouse"]);
+
+    Route::post("ajax-checkout-queue", [IndexController::class, "AjaxCheckoutQueue"]);
+
+    route::post("ajax-remove-queue", [IndexController::class, "AjaxRemoveQueue"]);
 
     Route::middleware("CheckLogin")->group(function(){
         /*=======================================================================================================

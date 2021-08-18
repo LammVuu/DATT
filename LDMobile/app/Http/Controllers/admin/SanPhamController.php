@@ -42,7 +42,11 @@ class SanPhamController extends Controller
 
         foreach($lst_product as $i => $key){
             // khuyến mãi
-            $lst_product[$i]->khuyenmai = KHUYENMAI::find($key->id_km)->chietkhau;
+            if($key->id_km){
+                $lst_product[$i]->khuyenmai = KHUYENMAI::find($key->id_km)->chietkhau;
+            } else {
+                $lst_product[$i]->khuyenmai = 0;
+            }
 
             // trạng thái mausp
             $lst_product[$i]->trangthaimausp = MAUSP::find($key->id_msp)->trangthai;
@@ -279,6 +283,7 @@ class SanPhamController extends Controller
             $product = SANPHAM::find($request->id);
             $product->hinhanh .= '?'.time();
             $specifications = $this->IndexController->getSpecifications($request->id);
+            $product->trangthaimausp = MAUSP::find($product->id_msp)->trangthai;
 
             // các màu sắc sản phẩm
             $lst_color = [];

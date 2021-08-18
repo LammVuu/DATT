@@ -143,6 +143,29 @@
                         </div>
                     </div>
                 @endif
+                <div class="row mb-20">
+                    <div class="col-4">
+                        <div class="detail-badge">
+                            <div class="detail-badge-icon"><img src="images/icon/free-ship.png" alt="badge"></div>
+                            <div class="detail-badge-text">Miễn phí giao hàng</div>
+                            <div class="detail-badge-checked-icon"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="detail-badge">
+                            <div class="detail-badge-icon"><img src="images/icon/box-check.png" alt="badge"></div>
+                            <div class="detail-badge-text">Mở hộp kiểm tra nhận hàng</div>
+                            <div class="detail-badge-checked-icon"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="detail-badge">
+                            <div class="detail-badge-icon"><img src="images/icon/return.png" alt="badge"></div>
+                            <div class="detail-badge-text">Đổi trả trong vòng 30 ngày</div>
+                            <div class="detail-badge-checked-icon"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- kiểm tra còn hàng --}}
                 <div id="check-qty-in-stock-btn" type="button" class="main-color-text ml-10" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
@@ -426,7 +449,7 @@
                     @if ($starRating['total-rating'] != 0)
                         <div class="star-rating-div">
                             <span class='detail-vote-avg'></span>
-                            <i class="fas fa-star checked fz-34 ml-5"></i>
+                            <i class="fas fa-star ml-5"></i>
                         </div>
                         <div class="detail-star-rating-div">
                             {{-- tổng số lương đánh giá --}}
@@ -1331,6 +1354,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="fz-22 fw-600">Sản phẩm đã mua</div>
+                <div type="button" class="btn-close" data-bs-dismiss="modal"></div>
             </div>
             <div class="modal-body">
                 <div class="p-20 phone-evaluate-div">
@@ -1362,9 +1386,6 @@
         </div>
     </div>
 </div>
-
-{{-- info modal --}}
-@include("user.content.modal.thongbao-modal")
 
 {{-- delete modal --}}
 @include("user.content.modal.xoa-modal")

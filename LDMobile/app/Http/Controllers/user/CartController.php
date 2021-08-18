@@ -22,6 +22,7 @@ use App\Models\VOUCHER;
 use App\Models\TAIKHOAN_DIACHI;
 use App\Models\THONGBAO;
 use App\Models\DONHANG_DIACHI;
+use App\Models\HANGDOI;
 
 
 class CartController extends Controller
@@ -32,6 +33,7 @@ class CartController extends Controller
         $this->user='user/content/';
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $this->IndexController = new IndexController;
+        $this->nofiticationContent = 'Oops! Có sản phẩm đã hết hàng hoặc số lượng không đủ, bạn không thể thanh toán đơn hàng này.';;
     }
 
     /*======================================================================================================
@@ -42,6 +44,41 @@ class CartController extends Controller
     }
 
     public function ThanhToan(){
+        // giỏ hàng của người dùng
+        $cart = $this->IndexController->getCart(session('user')->id);
+
+        // có sản phẩm không thể thanh toán hay không
+        $checkoutFlag = true;
+
+        foreach($cart['cart'] as $key){
+            $id_sp = $key['sanpham']['id'];
+            // sl của sp trong giỏ hàng
+            $qtyCart = $key['sl'];
+            // slton của sản phẩm trong kho
+            $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+            // nếu sp hết hàng
+            if(!$qtyInStock){
+                // xóa hàng đợi
+                HANGDOI::where('id_tk', session('user')->id)->delete();
+                return redirect()->route('user/thongbao')->with('message', $this->nofiticationContent);
+            }
+            // nếu sl của sp trong giỏ hàng > slton trong kho => không đủ hàng
+            elseif($qtyCart > $qtyInStock){
+                $checkoutFlag = false;
+                // cập nhật sl của sp trong giỏ hàng = slton hiện tại
+                GIOHANG::where('id', $key['id'])->update(['sl' => $qtyInStock]);
+            }
+        }
+
+        if(!$checkoutFlag){
+            // xóa hàng đợi
+            HANGDOI::where('id_tk', session('user')->id)->delete();
+            
+            // quay về trang giỏ hàng và thông báo
+            $message = 'Số lượng tồn kho của một số sản phẩm không đủ để thanh toán.';
+            return redirect('/giohang')->with('alert_top', $message);
+        }
+
         $json_file = file_get_contents('TinhThanh.json');
         $tinhThanh = json_decode($json_file, true);
 
@@ -84,214 +121,236 @@ class CartController extends Controller
 
     public function Checkout(Request $request)
     {
-        // lưu địa chỉ cho đơn hàng
-        $orderAddress = null;
-        if($request->receciveMethod == 'Giao hàng tận nơi'){
-            $userAddress = TAIKHOAN_DIACHI::find($request->id_tk_dc);
-
-            // sử dụng lại địa chỉ đơn hàng đã có
-            $exists = DONHANG_DIACHI::where('hoten', $userAddress->hoten)
-                                    ->where('diachi', $userAddress->diachi)
-                                    ->where('phuongxa', $userAddress->phuongxa)
-                                    ->where('quanhuyen', $userAddress->quanhuyen)
-                                    ->where('tinhthanh', $userAddress->tinhthanh)
-                                    ->where('sdt', $userAddress->sdt)->first();
-
-            // nếu có
-            if($exists){
-                $orderAddress = $exists;
-            } else {
-                $orderAddress = DONHANG_DIACHI::create([
-                    'hoten' => $userAddress->hoten,
-                    'diachi' => $userAddress->diachi,
-                    'phuongxa' => $userAddress->phuongxa,
-                    'quanhuyen' => $userAddress->quanhuyen,
-                    'tinhthanh' => $userAddress->tinhthanh,
-                    'sdt' => $userAddress->sdt,
-                ]);
+        // giỏ hàng của người dùng
+        $cart = $this->IndexController->getCart(session('user')->id);
+        
+        /*kiểm tra slton kho của sản phẩm. nếu 1 trong những sp trong giỏ hàng hết hàng
+        thì trả về lỗi. ngược lại tiến hành thanh toán*/
+        $checkout = true;
+        foreach($cart['cart'] as $key){
+            $qtyInStock = KHO::where('id_sp', $key['sanpham']['id'])->sum('slton');
+            if($qtyInStock == 0 || $qtyInStock < $key['sl']){
+                $checkout = false;
             }
         }
 
-        $order = [
-            'thoigian' => date('d/m/Y H:i:s'),
-            'id_tk' => session('user')->id,
-            'id_dh_dc' => $orderAddress ? $orderAddress->id : null,
-            'id_cn' => $request->receciveMethod == 'Nhận tại cửa hàng' ? $request->id_cn : null,
-            'pttt' => $request->paymentMethod == 'cash' ? 'Thanh toán khi nhận hàng' : 'Thanh toán ZaloPay',
-            'id_vc' => $request->id_vc,
-            'hinhthuc' => $request->receciveMethod,
-            'tongtien' => $request->cartTotal,
-            'trangthaidonhang' => 'Đã tiếp nhận',
-            'trangthai' => 1,
-        ];
+        // đã có sản phẩm hết hàng hoặc slton không đủ và trả về lỗi
+        if(!$checkout){
+            // xóa hàng đợi
+            HANGDOI::where('id_tk', session('user')->id)->delete();
+            return redirect()->route('user/thongbao')->with('message', $this->nofiticationContent);
+        }
+        // tiến hành thanh toán
+        else {
+            // lưu địa chỉ cho đơn hàng
+            $orderAddress = null;
+            if($request->receciveMethod == 'Giao hàng tận nơi'){
+                $userAddress = TAIKHOAN_DIACHI::find($request->id_tk_dc);
 
-        // thanh toán khi nhận hàng
-        if($request->paymentMethod == 'cash'){
-            // tạo đơn hàng
-            $create = DONHANG::create($order);
+                // sử dụng lại địa chỉ đơn hàng đã có
+                $exists = DONHANG_DIACHI::where('hoten', $userAddress->hoten)
+                                        ->where('diachi', $userAddress->diachi)
+                                        ->where('phuongxa', $userAddress->phuongxa)
+                                        ->where('quanhuyen', $userAddress->quanhuyen)
+                                        ->where('tinhthanh', $userAddress->tinhthanh)
+                                        ->where('sdt', $userAddress->sdt)->first();
 
-            //chi tiết đơn hàng & trừ số lượng kho
-            $cart = $this->IndexController->getCart(session('user')->id);
+                // nếu có
+                if($exists){
+                    $orderAddress = $exists;
+                } else {
+                    $orderAddress = DONHANG_DIACHI::create([
+                        'hoten' => $userAddress->hoten,
+                        'diachi' => $userAddress->diachi,
+                        'phuongxa' => $userAddress->phuongxa,
+                        'quanhuyen' => $userAddress->quanhuyen,
+                        'tinhthanh' => $userAddress->tinhthanh,
+                        'sdt' => $userAddress->sdt,
+                    ]);
+                }
+            }
 
-            foreach($cart['cart'] as $key){
-                $detail = [
-                    'id_dh' => $create->id,
-                    'id_sp' => $key['sanpham']['id'],
-                    'gia' => $key['sanpham']['gia'],
-                    'sl' => $key['sl'],
-                    'giamgia' => $key['sanpham']['khuyenmai'] ? $key['sanpham']['khuyenmai'] : null,
-                    'thanhtien' => $key['thanhtien'],
-                ];
+            $order = [
+                'thoigian' => date('d/m/Y H:i:s'),
+                'id_tk' => session('user')->id,
+                'id_dh_dc' => $orderAddress ? $orderAddress->id : null,
+                'id_cn' => $request->receciveMethod == 'Nhận tại cửa hàng' ? $request->id_cn : null,
+                'pttt' => $request->paymentMethod == 'cash' ? 'Thanh toán khi nhận hàng' : 'Thanh toán ZaloPay',
+                'id_vc' => $request->id_vc,
+                'hinhthuc' => $request->receciveMethod,
+                'tongtien' => $request->cartTotal,
+                'trangthaidonhang' => 'Đã tiếp nhận',
+                'trangthai' => 1,
+            ];
 
-                CTDH::create($detail);
+            // thanh toán khi nhận hàng
+            if($request->paymentMethod == 'cash'){
+                // tạo đơn hàng
+                $create = DONHANG::create($order);
 
-                // giao hàng tận nơi
-                if($order['hinhthuc'] == 'Giao hàng tận nơi'){
-                    // tỉnh thành của người dùng
-                    $userCity = TAIKHOAN_DIACHI::find($orderAddress->id)->tinhthanh;
+                foreach($cart['cart'] as $key){
+                    $detail = [
+                        'id_dh' => $create->id,
+                        'id_sp' => $key['sanpham']['id'],
+                        'gia' => $key['sanpham']['gia'],
+                        'sl' => $key['sl'],
+                        'giamgia' => $key['sanpham']['khuyenmai'] ? $key['sanpham']['khuyenmai'] : null,
+                        'thanhtien' => $key['thanhtien'],
+                    ];
 
-                    // tỉnh thành thuộc bắc || nam
-                    $file = file_get_contents('TinhThanh.json');
-                    $lst_province = json_decode($file, true);
-                    $province = [];
-                    foreach($lst_province as $key){
-                        if($key['Name'] == $userCity){
-                            $province = $key;
-                            break;
+                    CTDH::create($detail);
+
+                    // giao hàng tận nơi
+                    if($order['hinhthuc'] == 'Giao hàng tận nơi'){
+                        // tỉnh thành của người dùng
+                        $userCity = TAIKHOAN_DIACHI::find($orderAddress->id)->tinhthanh;
+
+                        // tỉnh thành thuộc bắc || nam
+                        $file = file_get_contents('TinhThanh.json');
+                        $lst_province = json_decode($file, true);
+                        $province = [];
+                        foreach($lst_province as $key){
+                            if($key['Name'] == $userCity){
+                                $province = $key;
+                                break;
+                            }
+                        }
+
+                        // chi nhánh tại Hà Nội
+                        if($province['ID'] < 48){
+                            $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
+                        }
+                        // chi nhánh tại Hồ Chí Minh
+                        else {
+                            $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hồ Chí Minh')->first()->id)->first();
+                        }
+
+                        // Kho tại chi nhánh
+                        $warehouse = KHO::where('id_cn', $branch->id)->where('id_sp', $detail['id_sp'])->first();
+
+                        // slton
+                        $slton = intval($warehouse->slton);
+
+                        // cập nhật số lượng
+                        // nếu kho tại chi nhánh không đủ thì lấy tiếp từ kho ở chi nhánh khác
+                        if($warehouse->slton < $detail['sl']){
+                            $missingQty = $detail['sl'] - $warehouse->slton;
+
+                            $warehouse->slton = 0;
+                            $warehouse->save();
+
+                            // chi nhánh khác
+                            $anotherBranch = KHO::where('id_cn', '!=', $branch->id)->where('id_sp', $detail['id_sp'])->first();
+
+                            $anotherBranch->slton -= $missingQty;
+                            $anotherBranch->save();
+                        }
+                        // ngược lại trừ số lượng kho tại chi nhánh bình thường
+                        else {
+                            $warehouse->slton -= $detail['sl'];
+                            $warehouse->save();
                         }
                     }
+                    // nhận tại cửa hàng
+                    else{
+                        // Kho
+                        $warehouse = KHO::where('id_cn', $order['id_cn'])->where('id_sp', $detail['id_sp'])->first();
 
-                    // chi nhánh tại Hà Nội
-                    if($province['ID'] < 48){
-                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
-                    }
-                    // chi nhánh tại Hồ Chí Minh
-                    else {
-                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hồ Chí Minh')->first()->id)->first();
-                    }
+                        // slton
+                        $slton = intval($warehouse->slton);
 
-                    // Kho tại chi nhánh
-                    $warehouse = KHO::where('id_cn', $branch->id)->where('id_sp', $detail['id_sp'])->first();
-
-                    // slton
-                    $slton = intval($warehouse->slton);
-
-                    // cập nhật số lượng
-                    // nếu kho tại chi nhánh không đủ thì lấy tiếp từ kho ở chi nhánh khác
-                    if($warehouse->slton < $detail['sl']){
-                        $missingQty = $detail['sl'] - $warehouse->slton;
-
-                        $warehouse->slton = 0;
-                        $warehouse->save();
-
-                        $anotherBranch = KHO::where('id_cn', '!=', CHINHANH::where('id_tt', TINHTHANH::where('tentt', $userCity)->first()->id)->first()->id)
-                        ->where('id_sp', $detail['id_sp'])->first();
-
-                        $anotherBranch->slton -= $missingQty;
-                        $anotherBranch->save();
-                    }
-                    // ngược lại trừ số lượng kho tại chi nhánh bình thường
-                    else {
-                        $warehouse->slton -= $detail['sl'];
+                        // cập nhật số lượng
+                        $warehouse->slton = $slton - $detail['sl'];
                         $warehouse->save();
                     }
                 }
-                // nhận tại cửa hàng
-                else{
-                    // Kho
-                    $warehouse = KHO::where('id_cn', $order['id_cn'])->where('id_sp', $detail['id_sp'])->first();
 
-                    // slton
-                    $slton = intval($warehouse->slton);
+                // gửi thông báo
+                THONGBAO::create([
+                    'id_tk' => session('user')->id,
+                    'tieude' => 'Đơn đã tiếp nhận',
+                    'noidung' => "Đã tiếp nhận đơn hàng <b>#$create->id</b> của bạn.",
+                    'thoigian' => date('d/m/Y H:i'),
+                    'trangthaithongbao' => 0,
+                ]);
 
-                    // cập nhật số lượng
-                    $warehouse->slton = $slton - $detail['sl'];
-                    $warehouse->save();
-                }
-            }
+                // xóa giỏ hàng
+                GIOHANG::where('id_tk', session('user')->id)->delete();
 
-            // gửi thông báo
-            THONGBAO::create([
-                'id_tk' => session('user')->id,
-                'tieude' => 'Đơn đã tiếp nhận',
-                'noidung' => "Đã tiếp nhận đơn hàng <b>#$create->id</b> của bạn.",
-                'thoigian' => date('d/m/Y H:i'),
-                'trangthaithongbao' => 0,
-            ]);
+                // xóa voucher đã áp dụng
+                if($request->id_vc){
+                    $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->where('id_vc', $request->id_vc)->first();
+                    $qty = $userVoucher->sl;
+                    if($qty == 1){
+                        $userVoucher->delete();
+                    } else {
+                        $userVoucher->sl = --$qty;
+                        $userVoucher->save();
+                    }
 
-            // xóa giỏ hàng
-            GIOHANG::where('id_tk', session('user')->id)->delete();
-
-            // xóa voucher đã áp dụng
-            if($request->id_vc){
-                $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->where('id_vc', $request->id_vc)->first();
-                $qty = $userVoucher->sl;
-                if($qty == 1){
-                    $userVoucher->delete();
-                } else {
-                    $userVoucher->sl = --$qty;
-                    $userVoucher->save();
+                    // giảm số lượng voucher
+                    $voucher = VOUCHER::find($userVoucher->id_vc);
+                    $qty = $voucher->sl;
+                    $voucher->sl = --$qty;
+                    $voucher->save();
                 }
 
-                // giảm số lượng voucher
-                $voucher = VOUCHER::find($userVoucher->id_vc);
-                $qty = $voucher->sl;
-                $voucher->sl = --$qty;
-                $voucher->save();
+                // xóa voucher trong session
+                Session::forget('voucher');
+
+                // xóa hàng đợi
+                HANGDOI::where('id_tk', session('user')->id)->delete();
+
+                return redirect()->route('user/thanhcong', ['id' => $create->id]);
             }
-
-            // xóa voucher trong session
-            Session::forget('voucher');
-
-            return redirect()->route('user/thanhcong', ['id' => $create->id]);
-        }
-        // thanh toán zalo pay
-        else {
-            $config = [
-                "app_id" => 2553,
-                "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-                "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-                "endpoint" => "https://sb-openapi.zalopay.vn/v2/create"
-            ];
-    
-            $embeddata = '{}'; // Merchant's data
-            $items = '[]'; // Merchant's data
-            $transID =  rand(0,1000000);
-            $order = [
-                "app_id" => $config["app_id"],
-                "app_user" => session('user')->id,
-                "app_trans_id" => date("ymd") . "_" . $transID, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-                "app_time" => round(microtime(true) * 1000), // miliseconds
-                "amount" => $order['tongtien'],
-                "item" => $items,
-                "embed_data" => $embeddata,
-                "description" => "LDMobile - Thanh toán đơn hàng",
-                "bank_code" => ""
-            ];
-    
-            // appid|app_trans_id|appuser|amount|apptime|embeddata|item
-            $data = $order["app_id"] . "|" . $order["app_trans_id"] . "|" . $order["app_user"] . "|" . $order["amount"]
-                . "|" . $order["app_time"] . "|" . $order["embed_data"] . "|" . $order["item"];
-            $order["mac"] = hash_hmac("sha256", $data, $config["key1"]);
-    
-            $context = stream_context_create([
-                "http" => [
-                    "header" => "Content-type: application/x-www-form-urlencoded\r\n",
-                    "method" => "POST",
-                    "content" => http_build_query($order)
-                ]
-            ]);
-    
-            $resp = file_get_contents($config["endpoint"], false, $context);
-            $result = json_decode($resp, true);
-    
-            return redirect($result['order_url']);
-    
-            // foreach ($result as $key => $value) {
-            //     echo "$key: $value<br>";
-            // }
-            
-            // return false;
+            // thanh toán zalo pay
+            else {
+                $config = [
+                    "app_id" => 2553,
+                    "key1" => "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
+                    "key2" => "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
+                    "endpoint" => "https://sb-openapi.zalopay.vn/v2/create"
+                ];
+        
+                $embeddata = '{}'; // Merchant's data
+                $items = '[]'; // Merchant's data
+                $transID =  rand(0,1000000);
+                $order = [
+                    "app_id" => $config["app_id"],
+                    "app_user" => session('user')->id,
+                    "app_trans_id" => date("ymd") . "_" . $transID, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+                    "app_time" => round(microtime(true) * 1000), // miliseconds
+                    "amount" => $order['tongtien'],
+                    "item" => $items,
+                    "embed_data" => $embeddata,
+                    "description" => "LDMobile - Thanh toán đơn hàng",
+                    "bank_code" => ""
+                ];
+        
+                // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+                $data = $order["app_id"] . "|" . $order["app_trans_id"] . "|" . $order["app_user"] . "|" . $order["amount"]
+                    . "|" . $order["app_time"] . "|" . $order["embed_data"] . "|" . $order["item"];
+                $order["mac"] = hash_hmac("sha256", $data, $config["key1"]);
+        
+                $context = stream_context_create([
+                    "http" => [
+                        "header" => "Content-type: application/x-www-form-urlencoded\r\n",
+                        "method" => "POST",
+                        "content" => http_build_query($order)
+                    ]
+                ]);
+        
+                $resp = file_get_contents($config["endpoint"], false, $context);
+                $result = json_decode($resp, true);
+        
+                return redirect($result['order_url']);
+        
+                // foreach ($result as $key => $value) {
+                //     echo "$key: $value<br>";
+                // }
+                
+                // return false;
+            }
         }
     }
 
@@ -383,13 +442,6 @@ class CartController extends Controller
     public function AjaxAddCart(Request $request)
     {
         if($request->ajax()){
-            // chưa đăng nhập
-            if(!Auth::check()){
-                return [
-                    'status' => false,
-                ];
-            }
-
             $data = [
                 'id_tk' => session('user')->id,
                 'id_sp' => $request->id_sp,
@@ -422,7 +474,7 @@ class CartController extends Controller
                             return ['status' => 'only one'];
                         } elseif($sl > 2){
                             return [
-                                'status' => 'invalid qty',
+                                'status' => 'already have',
                             ];
                         }
 
@@ -461,13 +513,6 @@ class CartController extends Controller
                     'status' => 'redirect cart'
                 ];
             }
-            // sản phẩm hết hàng
-            $qtyInStock = KHO::where('id_sp', $request->id_sp)->count('slton');
-            if($qtyInStock == 0){
-                return [
-                    'status' => 'out of stock'
-                ];
-            }
             // thêm sản phẩm vào giỏ hàng
             else {
                 GIOHANG::create([
@@ -493,6 +538,7 @@ class CartController extends Controller
             ];
 
             $cart = GIOHANG::where('id', $request->id)->first();
+            $id_msp = SANPHAM::find($cart->id_sp)->id_msp;
             $qty = intval($cart->sl);
 
             // tăng số lượng

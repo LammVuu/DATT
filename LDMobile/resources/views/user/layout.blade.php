@@ -33,11 +33,21 @@
     </script>
 
     {{-- alert top --}}
-    <div class="alert-top"><div class="alert-top-content"></div><hr class="m-0"><div type="button" class="close-alert-top"></div></div>
+    <div class="alert-top">
+        <div class="close-alert-top-icon"><i class="far fa-times-circle"></i></div>
+        <div class="alert-top-title"></div>
+        <div class="alert-top-content"></div>
+        <div class="alert-top-footer">
+            <div class="close-alert-top">OK</div>
+        </div>
+    </div>
     
     {{-- session --}}
     @if (session('toast_message'))
         <div id="toast-message" data-message="{{session('toast_message')}}"></div>
+    @endif
+    @if(session('alert_top'))
+        <div id="alert-top" data-message="{{session('alert_top')}}"></div>
     @endif
     @if (session('user'))
         <?php $user = session('user') ?>

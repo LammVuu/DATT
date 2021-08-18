@@ -31,7 +31,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <input type="checkbox" id='remember' name="remember" value="0">
-                                <label for="remember" class='form-check-label'>Lưu đăng nhập</label>
+                                <label for="remember" class='form-check-label'>Ghi nhớ đăng nhập</label>
                             </div>
                             <a href="{{route('user/khoi-phuc-tai-khoan')}}">Quên mật khẩu?</a>
                         </div>

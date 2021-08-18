@@ -16,9 +16,9 @@
                                 <div class="fw-600 fz-20">Điện thoại</div>
                                 <div class="d-flex flex-column mt-20">
                                     @foreach ($lst_brand as $key)
-                                        <a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="gray-1 mb-5">{{$key['brand']}}</a>    
+                                        <div class="d-inline-flex mb-5"><a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="gray-1">{{$key['brand']}}</a></div>
                                     @endforeach
-                                    <a href="{{route('user/tra-cuu')}}" class="fw-600 text-color">Tra cứu</a>
+                                    <div class="d-inline-flex"><a href="{{route('user/tra-cuu')}}" class="fw-600 text-color">Tra cứu</a></div>
                                 </div>
                             </div>
 
@@ -26,9 +26,9 @@
                             <div class="col-lg-3 col-6 mb-20">
                                 <div class="fw-600 fz-20">Tài khoản</div>
                                 <div class="d-flex flex-column mt-20">
-                                    <a href="{{route('user/tai-khoan')}}" class="gray-1 mb-5">Quản lý tài khoản</a>
-                                    <a href="{{route('user/tai-khoan-don-hang')}}" class="gray-1 mb-5">Lịch sử mua hàng</a>
-                                    <a href="{{route('user/tai-khoan-yeu-thich')}}" class="gray-1 mb-5">Sản phẩm yêu thích</a>
+                                    <div class="d-inline-flex mb-5"><a href="{{route('user/tai-khoan')}}" class="gray-1">Quản lý tài khoản</a></div>
+                                    <div class="d-inline-flex mb-5"><a href="{{route('user/tai-khoan-don-hang')}}" class="gray-1">Lịch sử mua hàng</a></div>
+                                    <div class="d-inline-flex mb-5"><a href="{{route('user/tai-khoan-yeu-thich')}}" class="gray-1">Sản phẩm yêu thích</a></div>
                                 </div>
                             </div>
 
@@ -45,7 +45,7 @@
                             <div class="col-lg-3 col-6 mb-20">
                                 <div class="fw-600 fz-20">Về chúng tôi</div>
                                 <div class="d-flex flex-column mt-20">
-                                    <a href={{route('user/lien-he')}} class="gray-1 mb-5">Liên hệ</a>
+                                    <div class="d-inline-flex"><a href={{route('user/lien-he')}} class="gray-1">Liên hệ</a></div>
                                 </div>
                             </div>
                         </div>

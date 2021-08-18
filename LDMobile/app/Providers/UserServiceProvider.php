@@ -46,6 +46,7 @@ class UserServiceProvider extends ServiceProvider
     
                         $socialAccount = TAIKHOAN::find($id_tk);
         
+                        // facebook
                         if($socialAccount && $socialAccount->htdn == 'facebook'){
                             if(!session('login_status')){
                                 $token = $socialAccount->user_social_token;

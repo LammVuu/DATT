@@ -764,13 +764,6 @@ class UserController extends Controller
     public function AjaxLikeComment(Request $request)
     {
         if($request->ajax()){
-            // chưa đăng nhập
-            if(!session('user')){
-                return [
-                    'status' => 'login required'
-                ];
-            }
-
             // chưa thích bình luận
             if(!LUOTTHICH::where('id_tk', session('user')->id)->where('id_dg', $request->id_dg)->first()){
                 LUOTTHICH::create([
@@ -807,7 +800,7 @@ class UserController extends Controller
                 $voucher = VOUCHER::find($key->pivot->id_vc);
                 if($request->cartTotal >= $voucher->dieukien){
                     $html .= '
-                                <div class="pb-30">
+                                <div class="col-lg-8 col-md-10 col-12 mx-auto pb-30">
                                     <div class="account-voucher">
                                         <div class="voucher-left w-20 p-70">'.
                                             ($key->pivot->sl != 1 ? '
@@ -865,7 +858,7 @@ class UserController extends Controller
                     ';
                 } else {
                     $html .= '
-                                <div class="pb-30">
+                                <div class="col-lg-8 col-md-10 col-12 mx-auto pb-30">
                                     <div class="account-voucher">
                                         <div class="dis-voucher-left w-20 p-70">'.
                                             ($key->pivot->sl != 1 ? '
@@ -1103,7 +1096,8 @@ class UserController extends Controller
                 THONGBAO::create([
                     'id_tk' => $user->id,
                     'tieude' => 'Phản hồi',
-                    'noidung' => "Bạn có một phản hồi từ <b>$userReply->hoten</b> ở sản phẩm <b>".$product['tensp'] .' - '. $product['mausac']."</b>."
+                    'noidung' => "Bạn có một phản hồi từ <b>$userReply->hoten</b> ở sản phẩm <b>".$product['tensp'] .' - '. $product['mausac']."</b>.",
+                    'thoigian' => date('d/m/Y H:i:s')
                 ]);
 
                 $notification = [
