@@ -72,7 +72,7 @@ class UserServiceProvider extends ServiceProvider
                         }
                     }
                 }
-            }
+            }   
         });
 
         View::composer([

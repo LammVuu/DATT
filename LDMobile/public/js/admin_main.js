@@ -10,8 +10,9 @@ function showAlertTop(content){
         });
         $('.backdrop').css('z-index', '1999');
         $('.backdrop').fadeIn();
+        
     }, 200);
-    $('.alert-top-content').text(content);
+    $('.alert-top-content').html(content);
 }
 
 function closeAlertTop(){
@@ -199,7 +200,6 @@ $(function() {
         closeAlertTop();
     });
     
-
     // xử lý cuộn lên đầu trang
     $('#btn-scroll-top').on('click', function(){
         $(window).scrollTop(0);

@@ -49,8 +49,7 @@
                                     @endif
                                 </div>
                                 <div class="d-flex">
-                                    <div type="button" data-id="{{ $addressDefault->id }}" data-diachi="{{$addressDefault->diachi}}" data-phuongxa="{{$addressDefault->phuongxa}}"
-                                        data-quanhuyen="{{$addressDefault->quanhuyen}}" data-tinhthanh="{{$addressDefault->tinhthanh}}" class="btn-edit-address main-color-text">Chỉnh sửa</div>
+                                    <div type="button" data-id="{{ $addressDefault->id }}" class="btn-edit-address main-color-text">Chỉnh sửa</div>
                                 </div>
                             </div>
                 

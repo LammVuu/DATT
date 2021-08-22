@@ -51,6 +51,7 @@ class IndexController extends Controller
         $this->user='user/content/';
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
+    
     public function Index(){
         /*=================================
                     hotsale
@@ -306,19 +307,13 @@ class IndexController extends Controller
         ================================================================================================*/
 
         // danh sách id_sp cùng mẫu cùng dung lượng
-        $lst_id_sp = [];
-
-        // các điện thoại cùng dung lượng
-        foreach($phoneByModel as $key){
-            if($key['dungluong'] == $capacity){
-                array_push($lst_id_sp, $key['id']);
-            }
-        }
+        $lst_id_sp = $this->getListIdByCapacity($id);
 
         // đánh giá theo dung lượng
         session('user') ? $lst_evaluate = $this->getEvaluateByCapacity($lst_id_sp, session('user')->id) : $lst_evaluate = $this->getEvaluateByCapacity($lst_id_sp);
         // đánh giá của người dùng & đánh giá khac
-        // $this->print($lst_evaluate); return false;
+        //$this->print($lst_evaluate); return false;
+
         $userEvaluate = [];
         $anotherEvaluate = [];
         if(session('user')){
@@ -329,6 +324,16 @@ class IndexController extends Controller
                     array_push($anotherEvaluate, $evaluate);
                 }
             }
+        }
+
+        // số lượng đánh giá khác
+        $anotherEvaluateQty = count($anotherEvaluate);
+
+        // đánh giá khác đầu tiên
+        if(!empty($anotherEvaluate)){
+            $firstAnotherEvaluate = $anotherEvaluate[0];
+        } else {
+            $firstAnotherEvaluate = [];
         }
 
         // đánh giá sao
@@ -451,7 +456,8 @@ class IndexController extends Controller
             'phone' => $phone,
             'starRating' => $starRating,
             'userEvaluate' => $userEvaluate,
-            'anotherEvaluate' => $anotherEvaluate,
+            'firstAnotherEvaluate' => $firstAnotherEvaluate,
+            'anotherEvaluateQty' => $anotherEvaluateQty,
             'lst_variation' => $lst_variation,
             'supplier' => $supplier,
             'slide_model' => $slide_model,
@@ -578,6 +584,72 @@ class IndexController extends Controller
 
                 return $phuongXa;
             }
+        }
+    }
+
+    public function AjaxBindAddress(Request $request){
+        if($request->ajax()){
+            // id_tk_dc
+            $id = $request->id;
+            $address = TAIKHOAN_DIACHI::find($id);
+
+            $province = $address->tinhthanh;
+            $district = $address->quanhuyen;
+            $wards = $address->phuongxa;
+
+            $result = [];
+            $result['diachi'] = $address->diachi;
+
+            $lst_province = [];
+            $lst_district = [];
+            $lst_wards = [];
+
+            //tỉnh thành
+            $file = file_get_contents('TinhThanh.json');
+            $provinceFile = json_decode($file, true);
+            foreach($provinceFile as $key){
+                if($key['Name'] == $province){
+                    $lst_province = [
+                        'id' => $key['ID'],
+                        'name' => $province,
+                        'type' => 'TinhThanh'
+                    ];
+                    array_push($result, $lst_province);
+                    break;
+                }
+            }
+
+            // quận huyện
+            $file = file_get_contents('QuanHuyen.json');
+            $districtFile = json_decode($file, true)[$lst_province['id']];
+            foreach($districtFile as $key){
+                if($key['Name'] == $district){
+                    $lst_district = [
+                        'id' => $key['ID'],
+                        'name' => $district,
+                        'type' => 'QuanHuyen',
+                    ];
+                    array_push($result, $lst_district);
+                    break;
+                }
+            }
+                    
+            // phường xã
+            $file = file_get_contents('PhuongXa.json');
+            $wardsFile = json_decode($file, true)[$lst_district['id']];
+            foreach($wardsFile as $key){
+                if($key['Name'] == $wards){
+                    $lst_wards = [
+                        'id' => $key['ID'],
+                        'name' => $wards,
+                        'type' => 'PhuongXa',
+                    ];
+                    array_push($result, $lst_wards);
+                    break;
+                }
+            }
+
+            return $result;
         }
     }
 
@@ -1264,6 +1336,152 @@ class IndexController extends Controller
         }
     }
 
+    // xem tất cả các đánh giá khác
+    public function AjaxGetAllAnotherEvaluate(Request $request){
+        if($request->ajax()){
+            // danh sách id_sp cùng mẫu cùng dung lượng
+            $lst_id_sp = $this->getListIdByCapacity($request->id_sp);
+            
+            // đánh giá theo dung lượng
+            $lst_evaluate = $this->getEvaluateByCapacity($lst_id_sp, session('user')->id);
+            // đánh giá khac
+            $anotherEvaluate = [];
+            foreach($lst_evaluate['evaluate'] as $evaluate){
+                if($evaluate['taikhoan']['id'] != session('user')->id){
+                    array_push($anotherEvaluate, $evaluate);
+                }
+            }
+
+            unset($anotherEvaluate[0]);
+
+            $html = '';
+
+            foreach($anotherEvaluate as $key){
+                $html .= '
+                    <div data-id="'.$key['id'].'" class="evaluate">
+                        <div class="d-flex flex-column mt-20 mb-20">
+                            <div class="d-flex">
+                                <img src="'.$key['taikhoan']['anhdaidien'].'" class="circle-img" alt="" width="80px">
+                                <div class="d-flex flex-column justify-content-between pl-20">
+                                    <div class="d-flex align-items-center">
+                                        <b>'.$key['taikhoan']['hoten'].'</b>
+                                        <div class="ml-10 success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
+                                    </div>
+                                    <div class="d-flex align-items-center">';
+                                        for ($i = 1; $i <= 5; $i++){
+                                            if($key['danhgia'] >= $i){
+                                                $html .= '<i class="fas fa-star checked"></i>';
+                                            } else {
+                                                $html .= '<i class="fas fa-star uncheck"></i>';
+                                            }
+                                        }
+                                        $html .= '
+                                        <div class="ml-10 mr-10 gray-1">|</div>
+                                        <div class="gray-1">Màu sắc: '.$key['sanpham']['mausac'].'</div>
+                                    </div>
+                                    <div>'.$key['thoigian'].'</div>
+                                </div>
+                            </div>
+
+                            <div class="evaluate-content-div pt-10">
+                                <div>'.$key['noidung'].'</div>
+                            </div>';
+
+                            if (count($key['hinhanh']) != 0){
+                                $html .= '
+                                <div class="pt-10">';
+                                    foreach ($key['hinhanh'] as $img){
+                                        $html .= '
+                                        <img type="button" data-id="'.$img['id'].'" data-evaluate="'.$key['id'].'"
+                                            src="'.$url_evaluate.$img['hinhanh'].'" alt="" class="img-evaluate">';
+                                    }
+                                    $html .= '
+                                </div>';
+                            }
+
+                            $html .= '
+                            <div class="mt-20 mb-20 d-flex align-items-center">
+                                <div type="button" data-id="'.$key['id'].'" class="like-comment '.($key['liked'] ? 'liked-comment' : '').'>
+                                    <i id="like-icon" class="'.($key['liked'] ? "fas fa-thumbs-up" : "fal fa-thumbs-up").' ml-5 mr-5"></i>Hữu ích
+                                    (<div data-id="'.$key['id'].'" class="qty-like-comment">'.$key['soluotthich'].'</div>)
+                                </div>
+                                <div data-id="'.$key['id'].'" class="reply-btn">
+                                    <i class="fas fa-reply mr-5"></i>Trả lời
+                                </div>
+                            </div>
+                            <div data-id="'.$key['id'].'" class="reply-div">
+                                <div class="d-flex">
+                                    <img src="'.(session('user')->htdn == 'nomal' ? 'images/user/'.session('user')->anhdaidien : session('user')->anhdaidien).'" alt="" width="40px" height="40px" class="circle-img">
+                                    <div class="d-flex flex-column ml-10">
+                                        <textarea data-id="'.$key['id'].'" name="reply-content" id="reply-content-'.$key['id'].'" 
+                                        cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
+                                        maxlength="250"></textarea>
+                                    </div>
+                                    
+                                </div>
+                                <div class="d-flex justify-content-end mt-5">
+                                    <div data-id="'.$key['id'].'" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
+                                    <div data-id="'.$key['id'].'" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
+                                </div>
+                            </div>';
+                            if ($key['phanhoi-qty']){
+                                $html .= '
+                                    <div data-id="'.$key['id'].'" class="all-reply">
+                                        <div class="d-flex mb-20">
+                                            <img src="'.$key['phanhoi-first']['taikhoan']['anhdaidien'].'" alt="" width="40px" height="40px" class="circle-img">
+                                            <div class="reply-content-div ml-10">
+                                                <div class="d-flex align-items-center">
+                                                    <b>'.$key['phanhoi-first']['taikhoan']['hoten'].'</b>
+                                                    <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
+                                                    <div class="gray-1">'.$key['phanhoi-first']['thoigian'].'</div>
+                                                </div>
+                                                <div class="mt-5">'.$key['phanhoi-first']['noidung'].'</div>
+                                            </div>
+                                        </div>
+                                    </div>';
+                                if ($key['phanhoi-qty'] > 1){
+                                    $html .= '
+                                    <div type="button" data-id="'.$key['id'].'" class="see-more-reply main-color-text fw-600"><i class="far fa-level-up mr-10" style="transform: rotate(90deg)"></i>Xem thêm '.($key['phanhoi-qty'] - 1) .' câu trả lời</div>';
+                                }
+                            }
+                            $html .= '
+                        </div>
+                        <hr>
+                    </div>';
+            }
+
+            return $html;
+        }
+    }
+
+    // xem tất cả phản hồi
+    public function AjaxGetAllReply(Request $request){
+        if($request->ajax()){
+            $lst_reply = $this->getReply($request->id_dg);
+
+            unset($lst_reply[0]);
+
+            $html = '';
+
+            foreach($lst_reply as $key){
+                $html .= '
+                    <div class="d-flex mb-20">
+                        <img src="'.$key['taikhoan']['anhdaidien'].'" alt="" width="40px" height="40px" class="circle-img">
+                        <div class="reply-content-div ml-10">
+                            <div class="d-flex align-items-center">
+                                <b>'.$key['taikhoan']['hoten'].'</b>
+                                <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
+                                <div class="gray-1">'.$key['thoigian'].'</div>
+                            </div>
+                            <div class="mt-5">'.$key['noidung'].'</div>
+                        </div>
+                    </div>';
+            }
+
+            return $html;
+        }
+    }
+
     // có yêu cầu hàng đợi không
     public function needToQueue($id_tk){
         $queueFlag = false;
@@ -1298,7 +1516,13 @@ class IndexController extends Controller
             if(!$exists){
                 $newQueue = HANGDOI::create([
                     'id_tk' => $id_tk,
+                    'trangthai' => 1
                 ]);
+            }
+            // nếu hàng đợi của người dùng trạng thái = 0 thì cập nhật lại = 1
+            elseif(!$exists->trangthai){
+                $exists->trangthai = 1;
+                $exists->save();
             }
 
             $queueFlag = $this->needToQueue($id_tk);
@@ -1307,6 +1531,12 @@ class IndexController extends Controller
             if($queueFlag){
                 // sắp xếp theo id
                 $queue = HANGDOI::orderBy('id')->get();
+
+                // nếu hàng đợi đầu tiên trạng thái = 0 thì xóa hàng đợi đó
+                if(!$queue[0]['trangthai']){
+                    HANGDOI::where('id', $queue[0]['id'])->delete();
+                    $queue = HANGDOI::orderBy('id')->get();
+                }
     
                 foreach($queue as $i => $queue){
                     // thanh toán theo thứ tự FIFO
@@ -1333,6 +1563,31 @@ class IndexController extends Controller
             if(!HANGDOI::count()){
                 HANGDOI::truncate();
             }
+        }
+    }
+
+    // cập nhật trạng thái hàng đợi
+    public function AjaxUpdateQueueStatus(Request $request){
+        if($request->ajax()){
+            HANGDOI::where('id_tk', $request->id_tk)->update(['trangthai' => 0]);
+
+            Session::forget('_previous');
+        }
+    }
+
+    // khôi phục hàng đợi khi làm mới trang
+    public function AjaxRecoverQueue(Request $request){
+        if($request->ajax()){
+            HANGDOI::where('id_tk', $request->id_tk)->update(['trangthai' => 1]);
+
+            $host = $_SERVER['SERVER_NAME'];
+            $url = $host . '/' . $request->page;
+            
+            $session = [
+                'url' => $url,
+            ];
+
+            session(['_previous' => $session]);
         }
     }
 
@@ -1470,7 +1725,7 @@ class IndexController extends Controller
         return $starRating;
     }
 
-    // lấy danh sách mẫu sp theo dung lượng
+    // lấy tất cả sản phẩm theo dung lượng
     public function getAllProductByCapacity()
     {
         $lst_product = [];
@@ -2201,7 +2456,22 @@ class IndexController extends Controller
             }
 
             // danh sách phản hồi
-            $lst_evaluate['evaluate'][$idx]['phanhoi'] = $this->getReply($lst_evaluate['evaluate'][$idx]['id']);
+            $id_dg = $lst_evaluate['evaluate'][$idx]['id'];
+
+            // phản hồi đầu tiên
+            $firstReply = PHANHOI::where('id_dg', $id_dg)->orderBy('id', 'desc')->first();
+            if($firstReply){
+                $reply_id_tk = $firstReply->id_tk;
+                $firstReply->thoigian = substr_replace($firstReply->thoigian, '', strlen($firstReply->thoigian) - 3);
+                $firstReply->taikhoan = $this->getAccountById($reply_id_tk);
+    
+                $lst_evaluate['evaluate'][$idx]['phanhoi-qty'] = PHANHOI::where('id_dg', $id_dg)->count();
+                $lst_evaluate['evaluate'][$idx]['phanhoi-first'] = $firstReply;
+            } else {
+                $lst_evaluate['evaluate'][$idx]['phanhoi-qty'] = PHANHOI::where('id_dg', $id_dg)->count();
+                $lst_evaluate['evaluate'][$idx]['phanhoi-first'] = $firstReply;
+            }
+            
 
             $idx++;
 
@@ -2257,7 +2527,7 @@ class IndexController extends Controller
     public function getReply($id_dg)
     {
         $lst_reply = [];
-        foreach(PHANHOI::where('id_dg', $id_dg)->orderBy('id', 'desc')->get() as $key){
+        foreach(PHANHOI::where('id_dg', $id_dg)->orderBy('id', 'desc')->get() as $i => $key){
             $data = [
                 'id' => $key['id'],
                 'taikhoan' => $this->getAccountById($key['id_tk']),

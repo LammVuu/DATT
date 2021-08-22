@@ -131,7 +131,7 @@
                                                     <span class="d-flex align-items-end">HSD: {{$key->ngayketthuc}}</span>
 
                                                     {{-- áp dụng --}}
-                                                    <div data-id="{{$key->id}}" class="use-voucher-btn main-btn p-10">Áp dụng</div>
+                                                    <div data-id="{{$key->id}}" class="apply-voucher-btn main-btn p-10">Áp dụng</div>
                                                 </div>
                                             </div>
                                         </div>

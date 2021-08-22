@@ -366,10 +366,27 @@ class UserController extends Controller
         return view ($this->user."tai-khoan")->with($array);
     }
 
-    public function DiaChiGiaoHang()
+    public function DiaChiGiaoHang(Request $request)
     {
-        if(count(TAIKHOAN::find(session('user')->id)->giohang) == 0){
-            return back();
+        // bắt buộc request phải từ trang thanh toán
+        if(Session::get('_previous')){
+            $url = Session::get('_previous')['url'];
+            $arrUrl = explode('/', $url);
+            $page = $arrUrl[count($arrUrl) - 1];
+
+            // mảng các trang cho phép truy cập | redirect
+            $lst_allowPage = [
+                'diachigiaohang',
+                'thanhtoan',
+                'create-update-address'
+            ];
+
+            // các trang không nằm trong mảng cho phép
+            if(!in_array($page, $lst_allowPage)){
+                return back();
+            }
+        } else {
+            return redirect('/');
         }
 
         $json_file = file_get_contents('TinhThanh.json');
@@ -468,23 +485,25 @@ class UserController extends Controller
         return back()->with('toast_message', 'Đã thay đổi địa chỉ');
     }
 
-    public function UseVoucher($id)
+    public function ApplyVoucher(Request $request)
     {
-        if(session('user')){
-            if(count(TAIKHOAN::find(session('user')->id)->giohang) == 0){
-                return back();
+        if($request->ajax()){
+            $id = $request->id;
+    
+            if(session('user')){
+                if(count(TAIKHOAN::find(session('user')->id)->giohang) == 0){
+                    return back();
+                }
+    
+                if(session('voucher')){
+                    Session::forget('voucher');
+                    return 'Đã hủy áp dụng mã giảm giá';
+                }
+    
+                session(['voucher' => VOUCHER::find($id)]);
+                return 'Đã áp dụng mã giảm giá';
             }
-
-            if(session('voucher')){
-                Session::forget('voucher');
-                return back()->with('toast_message', 'Đã hủy áp dụng mã giảm giá');
-            }
-
-            session(['voucher' => VOUCHER::find($id)]);
-            return back()->with('toast_message', 'Đã áp dụng mã giảm giá');
         }
-
-        return back();
     }
 
     public function DeleteObject(Request $request)
@@ -849,7 +868,7 @@ class UserController extends Controller
                                                 </div>
                                                 <div class="d-flex justify-content-between">
                                                     <span class="d-flex align-items-end">HSD: '.$voucher->ngayketthuc.'</span>
-                                                    <div data-id="'.$key->id.'" class="use-voucher-btn main-btn p-10">Áp dụng</div>
+                                                    <div data-id="'.$key->id.'" class="apply-voucher-btn main-btn p-10">Áp dụng</div>
                                                 </div>
                                             </div>
                                         </div>

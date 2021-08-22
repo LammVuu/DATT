@@ -1,5 +1,5 @@
 @extends("admin.layout")
-@section("sidebar-product-samples") sidebar-link-selected @stop
+@section("sidebar-product-model") sidebar-link-selected @stop
 @section("content-title") Mẫu sản phẩm @stop
 @section("content")
 
@@ -72,7 +72,7 @@
                         <div class="pt-10 pb-10">{{$key->tenmau}}</div>
                     </td>
                     <td class="vertical-center">
-                        <div class="pt-10 pb-10">{{$key['nhacungcap']->tenncc}}</div>
+                        <div class="pt-10 pb-10">{{$key->nhacungcap}}</div>
                     </td>
                     <td class="vertical-center">
                         <div class="pt-10 pb-10">{{$key->baohanh}}</div>

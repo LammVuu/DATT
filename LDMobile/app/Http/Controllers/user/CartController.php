@@ -33,17 +33,48 @@ class CartController extends Controller
         $this->user='user/content/';
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $this->IndexController = new IndexController;
-        $this->nofiticationContent = 'Oops! Có sản phẩm đã hết hàng hoặc số lượng không đủ, bạn không thể thanh toán đơn hàng này.';;
+        $this->nofiticationContent = 'Oops! Có sản phẩm đã hết hàng hoặc số lượng không đủ, bạn không thể thanh toán đơn hàng này.';
     }
 
     /*======================================================================================================
                                                     Page
     ========================================================================================================*/
-    public function GioHang(){
+    public function GioHang(Request $request){
+        if(!Session::get('_previous')){
+            $url = [
+                'url' => $request->fullUrl(),
+            ];
+
+            session(['_previous' => $url]);
+        }
+
         return view($this->user."gio-hang");
     }
 
-    public function ThanhToan(){
+    public function ThanhToan(Request $request){
+        // bắt buộc request phải từ trang giỏ hàng
+        if(Session::get('_previous')){
+            $url = Session::get('_previous')['url'];
+            $arrUrl = explode('/', $url);
+            $page = $arrUrl[count($arrUrl) - 1];
+
+            // mảng các trang cho phép truy cập | redirect
+            $lst_allowPage = [
+                'thanhtoan',
+                'giohang',
+                'diachigiaohang',
+                'create-update-address',
+                'apply-voucher'
+            ];
+
+            // các trang không nằm trong mảng cho phép
+            if(!in_array($page, $lst_allowPage)){
+                return redirect('/giohang');
+            }
+        } else {
+            return redirect('/');
+        }
+
         // giỏ hàng của người dùng
         $cart = $this->IndexController->getCart(session('user')->id);
 
@@ -105,11 +136,15 @@ class CartController extends Controller
     {
         // đã thanh toán
         if($request->id){
-            $data = [
-                'order' => DONHANG::find($request->id),
-            ];
+            if(DONHANG::orderBy('id', 'desc')->first()->id == $request->id){
+                $data = [
+                    'order' => DONHANG::find($request->id),
+                ];
+                
+                return view($this->user.'thanh-cong')->with($data);
+            }
 
-            return view($this->user.'thanh-cong')->with($data);
+            return back();
         }
 
         return back();
@@ -203,7 +238,7 @@ class CartController extends Controller
                     // giao hàng tận nơi
                     if($order['hinhthuc'] == 'Giao hàng tận nơi'){
                         // tỉnh thành của người dùng
-                        $userCity = TAIKHOAN_DIACHI::find($orderAddress->id)->tinhthanh;
+                        $userCity = DONHANG_DIACHI::find($orderAddress->id)->tinhthanh;
 
                         // tỉnh thành thuộc bắc || nam
                         $file = file_get_contents('TinhThanh.json');

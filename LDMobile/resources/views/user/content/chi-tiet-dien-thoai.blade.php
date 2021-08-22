@@ -41,9 +41,7 @@
             <div class='col-lg-4 col-md-6 col-12 mb-20'>
                 <div class='d-flex flex-column'>
                     {{-- ảnh sản phẩm --}}
-                    <div class='detail-product-image-div'>
-                        <img id='main-img' src="{{ $url_phone.$phone['hinhanh'] }}" alt="product-image">
-                    </div>
+                    <img id='main-img' src="{{ $url_phone.$phone['hinhanh'] }}" alt="product-image">
                     {{-- ảnh khác --}}
                     <div class='detail-another-div'>
                         <div id='detail-carousel' class="owl-carousel">
@@ -175,11 +173,11 @@
         {{-- Bài giới thiệu & thông số --}}
         <div class='row'>
             {{-- bài giới thiệu --}}
-            <div class='col-md-8'>
+            <div class='col-lg-8 col-12'>
                 <div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-interval="false" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <iframe height="400" class="w-100" allowfullscreen
+                            <iframe id="youtube-iframe" height="400" class="w-100" allowfullscreen
                                 src="{{ 'https://www.youtube.com/embed/' . $phone['id_youtube'] }}">
                             </iframe>
                         </div>
@@ -190,10 +188,10 @@
                         @endforeach
                     </div>
                     <div class="slideshow-btn-prev" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                        <i class="far fa-chevron-left fz-30"></i>
+                        <i class="far fa-chevron-left"></i>
                     </div>
                     <div class='slideshow-btn-next' data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                        <i class="far fa-chevron-right fz-30"></i>
+                        <i class="far fa-chevron-right"></i>
                     </div>
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
@@ -206,7 +204,7 @@
             </div>
             
             {{-- thông số kỹ thuật --}}
-            <div class='col-md-4'>
+            <div class='col-lg-4 col-12'>
                 <div class='detail-specifications'>Thông số kỹ thuật</div>
                     <table class='table border'>
                         <tbody class='fz-14 '>
@@ -540,280 +538,232 @@
         @if (session('user'))
             @if ($starRating['total-rating'] != 0)
                 <div id='list-comment' class="row">
-                    {{-- đánh giá của người dùng --}}
-                    @if (!empty($userEvaluate))
-                        <div class="fw-600 fz-20 mb-10">Đánh giá của tôi</div>
-                        @foreach ($userEvaluate as $key)
-                            <div data-id="{{$key['id']}}" class="evaluate col-lg-8 col-sm-10">
-                                <div class='d-flex flex-column mt-20 mb-20'>
-                                    {{-- ảnh đại diện & tên & sao & ngày đăng --}}
-                                    <div class='d-flex'>
-                                        <img src="{{$key['taikhoan']['anhdaidien']}}" class='circle-img' alt="" width="80px">
-                                        <div class='d-flex flex-column justify-content-between pl-20'>
-                                            <div class="d-flex align-items-center">
-                                                <b>{{ $key['taikhoan']['hoten'] }}</b>
-                                                <div class="ml-10 success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
+                    <div class="col-lg-8 col-md-10-col-12">
+                        {{-- đánh giá của người dùng --}}
+                        @if (!empty($userEvaluate))
+                            <div class="fw-600 fz-20 mb-10">Đánh giá của tôi</div>
+                            <div class="user-evaluate">
+                                @foreach ($userEvaluate as $key)
+                                    <div data-id="{{$key['id']}}" class="evaluate">
+                                        <div class='d-flex flex-column mt-20 mb-20'>
+                                            {{-- ảnh đại diện & tên & sao & ngày đăng --}}
+                                            <div class='d-flex'>
+                                                <img src="{{$key['taikhoan']['anhdaidien']}}" class='evaluate-user-avt' alt="">
+                                                <div class='d-flex flex-column justify-content-between pl-20'>
+                                                    <div class="d-flex align-items-center flex-wrap">
+                                                        <b class="mr-10">{{ $key['taikhoan']['hoten'] }}</b>
+                                                        <div class="success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
+                                                    </div>
+                                                    
+                                                    <div class='d-flex align-items-center flex-wrap'>
+                                                        <div class="d-flex align-items center mr-20">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if($key['danhgia'] >= $i)
+                                                                <i class="fas fa-star checked"></i>
+                                                                @else
+                                                                <i class="fas fa-star uncheck"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                        <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
+                                                    </div>
+                                                    {{-- sao đánh giá --}}
+                                                    <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
+                                                    <div>{{ $key['thoigian']}}</div>
+                                                </div>
                                             </div>
-                                            
-                                            <div class='d-flex align-items-center'>
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if($key['danhgia'] >= $i)
-                                                    <i class="fas fa-star checked"></i>
-                                                    @else
-                                                    <i class="fas fa-star uncheck"></i>
-                                                    @endif
-                                                @endfor
-                                                <div class="ml-10 mr-10 gray-1">|</div>
-                                                <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
+
+                                            {{-- nội dung --}}
+                                            <div class='evaluate-content-div pt-10'>{{ $key['noidung'] }}</div>
+                                            <input type="hidden" id="evaluate-content-{{$key['id']}}" value="{{ $key['noidung'] }}">
+
+                                            {{-- hình ảnh --}}
+                                            @if (count($key['hinhanh']) != 0)
+                                                <div class='pt-10'>
+                                                    @foreach ($key['hinhanh'] as $img)
+                                                        <img type="button" data-id="{{$img['id']}}" data-evaluate="{{$key['id']}}"
+                                                            src="{{$url_evaluate.$img['hinhanh']}}" alt="" class='img-evaluate'>    
+                                                    @endforeach
+                                                </div>    
+                                            @endif
+
+                                            {{-- like & reply & edit & delete --}}
+                                            <div class='mt-20 mb-20 d-flex align-items-center'>
+                                                {{-- nút thích --}}
+                                                <div type="button" data-id="{{$key['id']}}" class='like-comment {{$key['liked'] ? 'liked-comment' : ''}}'>
+                                                    <i id="like-icon" class="{{$key['liked'] ? "fas fa-thumbs-up" : "fal fa-thumbs-up"}} ml-5 mr-5"></i>Hữu ích
+                                                    (<div data-id="{{$key['id']}}" class="qty-like-comment">{{ $key['soluotthich'] }}</div>)
+                                                </div>
+                                                {{-- trả lời --}}
+                                                <div data-id="{{$key['id']}}" class="reply-btn">
+                                                    <i class="fas fa-reply mr-5"></i>Trả lời
+                                                </div>
+                                                {{-- chỉnh sửa & xóa --}}
+                                                <div class="d-flex ml-40">
+                                                    <div data-id="{{$key['id']}}" class="edit-evaluate main-btn p-10 mr-10"><i class="fas fa-pen"></i></div>
+                                                    <div data-id="{{$key['id']}}" class="delete-evaluate checkout-btn p-10"><i class="fal fa-trash-alt"></i></div>
+                                                </div>
                                             </div>
-                                            {{-- sao đánh giá --}}
-                                            <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
-                                            <div>{{ $key['thoigian']}}</div>
+                                            {{-- trả lời --}}
+                                            <div data-id="{{$key['id']}}" class="reply-div">
+                                                <div class="d-flex">
+                                                    <img src="{{session('user')->htdn == 'nomal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
+                                                    <div class="d-flex flex-column ml-10">
+                                                        <textarea data-id="{{$key['id']}}" name="reply-content" id="reply-content-{{$key['id']}}" 
+                                                        cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
+                                                        maxlength="250"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-end mt-5">
+                                                    <div data-id="{{$key['id']}}" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
+                                                    <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
+                                                </div>
+                                            </div>
+                                            {{-- danh sách trả lời --}}
+                                            @if ($key['phanhoi-qty'])
+                                                <div data-id="{{$key['id']}}" class="all-reply">
+                                                    <div class="d-flex mb-20">
+                                                        <img src="{{$key['phanhoi-first']['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
+                                                        <div class="reply-content-div ml-10">
+                                                            {{-- họ tên & thời gian reply --}}
+                                                            <div class="d-flex align-items-center">
+                                                                <b>{{$key['phanhoi-first']['taikhoan']['hoten']}}</b>
+                                                                <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
+                                                                <div class="gray-1">{{$key['phanhoi-first']['thoigian']}}</div>
+                                                            </div>
+                                                            {{-- nội dung --}}
+                                                            <div class="mt-5">{{$key['phanhoi-first']['noidung']}}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @if ($key['phanhoi-qty'] > 1)
+                                                    <div type="button" data-id="{{$key['id']}}" class="see-more-reply main-color-text fw-600"><i class="far fa-level-up mr-10" style="transform: rotate(90deg)"></i>Xem thêm {{$key['phanhoi-qty'] - 1}} câu trả lời</div>
+                                                @endif
+                                            @endif
                                         </div>
+                                        <hr>
                                     </div>
+                                @endforeach
+                            </div>
+                        @endif
 
-                                    {{-- nội dung --}}
-                                    <div class='evaluate-content-div pt-10'>{{ $key['noidung'] }}</div>
-                                    <input type="hidden" id="evaluate-content-{{$key['id']}}" value="{{ $key['noidung'] }}">
+                        {{-- đánh giá khác --}}
+                        @if (!empty($firstAnotherEvaluate))
+                            <div class="fw-600 fz-20 mb-10">Đánh giá khác</div>
+                            <div class="another-evaluate">
+                                <?php $key = $firstAnotherEvaluate ?>
+                                <div data-id="{{$key['id']}}" class="evaluate">
+                                    <div class='d-flex flex-column mt-20 mb-20'>
+                                        {{-- ảnh đại diện & tên & sao & ngày đăng --}}
+                                        <div class='d-flex'>
+                                            <img src="{{$key['taikhoan']['anhdaidien']}}" class='evaluate-user-avt' alt="">
+                                            <div class='d-flex flex-column justify-content-between pl-20'>
+                                                <div class="d-flex align-items-center flex-wrap">
+                                                    <b class="mr-10">{{ $key['taikhoan']['hoten'] }}</b>
+                                                    <div class="success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
+                                                </div>
+                                                
+                                                <div class='d-flex align-items-center flex-wrap'>
+                                                    <div class="d-flex align-items center mr-20">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if($key['danhgia'] >= $i)
+                                                            <i class="fas fa-star checked"></i>
+                                                            @else
+                                                            <i class="fas fa-star uncheck"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
+                                                </div>
+                                                {{-- sao đánh giá --}}
+                                                <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
+                                                <div>{{ $key['thoigian']}}</div>
+                                            </div>
+                                        </div>
 
-                                    {{-- hình ảnh --}}
-                                    @if (count($key['hinhanh']) != 0)
-                                        <div class='pt-10'>
-                                            @foreach ($key['hinhanh'] as $img)
-                                                <img type="button" data-id="{{$img['id']}}" data-evaluate="{{$key['id']}}"
-                                                    src="{{$url_evaluate.$img['hinhanh']}}" alt="" class='img-evaluate'>    
-                                            @endforeach
-                                        </div>    
-                                    @endif
+                                        {{-- nội dung --}}
+                                        <div class='evaluate-content-div pt-10'>
+                                            <div>{{ $key['noidung'] }}</div>
+                                        </div>
 
-                                    {{-- like & reply & edit & delete --}}
-                                    <div class='pt-20 d-flex align-items-center'>
-                                        {{-- nút thích --}}
-                                        <div type="button" data-id="{{$key['id']}}" class='like-comment {{$key['liked'] ? 'liked-comment' : ''}}'>
-                                            <i id="like-icon" class="{{$key['liked'] ? "fas fa-thumbs-up" : "fal fa-thumbs-up"}} ml-5 mr-5"></i>Hữu ích
-                                            (<div data-id="{{$key['id']}}" class="qty-like-comment">{{ $key['soluotthich'] }}</div>)
+                                        {{-- hình ảnh --}}
+                                        @if (count($key['hinhanh']) != 0)
+                                            <div class='pt-10'>
+                                                @foreach ($key['hinhanh'] as $img)
+                                                    <img type="button" data-id="{{$img['id']}}" data-evaluate="{{$key['id']}}"
+                                                        src="{{$url_evaluate.$img['hinhanh']}}" alt="" class='img-evaluate'>    
+                                                @endforeach
+                                            </div>    
+                                        @endif
+
+                                        {{-- like --}}
+                                        <div class='mt-20 mb-20 d-flex align-items-center'>
+                                            {{-- nút thích --}}
+                                            <div type="button" data-id="{{$key['id']}}" class='like-comment {{$key['liked'] ? 'liked-comment' : ''}}'>
+                                                <i id="like-icon" class="{{$key['liked'] ? "fas fa-thumbs-up" : "fal fa-thumbs-up"}} ml-5 mr-5"></i>Hữu ích
+                                                (<div data-id="{{$key['id']}}" class="qty-like-comment">{{ $key['soluotthich'] }}</div>)
+                                            </div>
+                                            {{-- trả lời --}}
+                                            <div data-id="{{$key['id']}}" class="reply-btn">
+                                                <i class="fas fa-reply mr-5"></i>Trả lời
+                                            </div>
                                         </div>
                                         {{-- trả lời --}}
-                                        <div data-id="{{$key['id']}}" class="reply-btn">
-                                            <i class="fas fa-reply mr-5"></i>Trả lời
-                                        </div>
-                                        {{-- chỉnh sửa & xóa --}}
-                                        <div class="d-flex ml-40">
-                                            <div data-id="{{$key['id']}}" class="edit-evaluate main-btn p-10 mr-10"><i class="fas fa-pen"></i></div>
-                                            <div data-id="{{$key['id']}}" class="delete-evaluate checkout-btn p-10"><i class="fal fa-trash-alt"></i></div>
-                                        </div>
-                                    </div>
-                                    {{-- trả lời --}}
-                                    <div data-id="{{$key['id']}}" class="reply-div mt-20">
-                                        <div class="d-flex">
-                                            <img src="{{session('user')->htdn == 'nomal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
-                                            <div class="d-flex flex-column ml-10">
-                                                <textarea data-id="{{$key['id']}}" name="reply-content" id="reply-content-{{$key['id']}}" 
-                                                cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
-                                                maxlength="250"></textarea>
+                                        <div data-id="{{$key['id']}}" class="reply-div">
+                                            <div class="d-flex">
+                                                <img src="{{session('user')->htdn == 'nomal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
+                                                <div class="d-flex flex-column ml-10">
+                                                    <textarea data-id="{{$key['id']}}" name="reply-content" id="reply-content-{{$key['id']}}" 
+                                                    cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
+                                                    maxlength="250"></textarea>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="d-flex justify-content-end mt-5">
+                                                <div data-id="{{$key['id']}}" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
+                                                <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
                                             </div>
                                         </div>
-                                        <div class="d-flex justify-content-end mt-5">
-                                            <div data-id="{{$key['id']}}" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
-                                            <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
-                                        </div>
-                                    </div>
-                                    {{-- danh sách trả lời --}}
-                                    <div class="mt-20">
-                                        @if (!empty($key['phanhoi']))
-                                            <?php $count = count($key['phanhoi']); ?>
-                                            @if ($count == 1)
+                                        {{-- danh sách trả lời --}}
+                                        @if ($key['phanhoi-qty'])
+                                            <div data-id="{{$key['id']}}" class="all-reply">
                                                 <div class="d-flex mb-20">
-                                                    <img src="{{$key['phanhoi'][0]['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
+                                                    <img src="{{$key['phanhoi-first']['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
                                                     <div class="reply-content-div ml-10">
                                                         {{-- họ tên & thời gian reply --}}
                                                         <div class="d-flex align-items-center">
-                                                            <b>{{$key['phanhoi'][0]['taikhoan']['hoten']}}</b>
+                                                            <b>{{$key['phanhoi-first']['taikhoan']['hoten']}}</b>
                                                             <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
-                                                            <div class="gray-1">{{$key['phanhoi'][0]['thoigian']}}</div>
+                                                            <div class="gray-1">{{$key['phanhoi-first']['thoigian']}}</div>
                                                         </div>
                                                         {{-- nội dung --}}
-                                                        <div class="mt-5">{{$key['phanhoi'][0]['noidung']}}</div>
+                                                        <div class="mt-5">{{$key['phanhoi-first']['noidung']}}</div>
                                                     </div>
                                                 </div>
-                                            @else
-                                                <div class="d-flex mb-20">
-                                                    <img src="{{$key['phanhoi'][0]['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
-                                                    <div class="reply-content-div ml-10">
-                                                        {{-- họ tên & thời gian reply --}}
-                                                        <div class="d-flex align-items-center">
-                                                            <b>{{$key['phanhoi'][0]['taikhoan']['hoten']}}</b>
-                                                            <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
-                                                            <div class="gray-1">{{$key['phanhoi'][0]['thoigian']}}</div>
-                                                        </div>
-                                                        {{-- nội dung --}}
-                                                        <div class="mt-5">{{$key['phanhoi'][0]['noidung']}}</div>
-                                                    </div>
-                                                </div>
-                                                <div type="button" data-id="{{$key['id']}}" class="see-more-reply main-color-text fw-600"><i class="far fa-level-up mr-10" style="transform: rotate(90deg)"></i>Xem thêm {{$count - 1}} câu trả lời</div>
-                                                <div data-id="{{$key['id']}}" class="reply-content-div-hidden">
-                                                    @foreach($key['phanhoi'] as $idx => $key)
-                                                        @if($idx == 0) @continue @endif
-                                                        <div class="d-flex mb-20">
-                                                            <img src="{{$key['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
-                                                            <div class="reply-content-div ml-10">
-                                                                {{-- họ tên & thời gian reply --}}
-                                                                <div class="d-flex align-items-center">
-                                                                    <b>{{$key['taikhoan']['hoten']}}</b>
-                                                                    <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
-                                                                    <div class="gray-1">{{$key['thoigian']}}</div>
-                                                                </div>
-                                                                {{-- nội dung --}}
-                                                                <div class="mt-5">{{$key['noidung']}}</div>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
+                                            </div>
+                                            @if ($key['phanhoi-qty'] > 1)
+                                                <div type="button" data-id="{{$key['id']}}" class="see-more-reply main-color-text fw-600"><i class="far fa-level-up mr-10" style="transform: rotate(90deg)"></i>Xem thêm {{$key['phanhoi-qty'] - 1}} câu trả lời</div>
                                             @endif
                                         @endif
                                     </div>
+                                    <hr>
                                 </div>
-                                <hr>
+                                {{-- Xem tất cả đánh giá --}}
+                                @if ($anotherEvaluateQty > 1)
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-6 col-10 mx-auto">
+                                            <div data-id="{{$phone['id']}}" class="see-all-evaluate"><i class="far fa-chevron-double-down mr-10"></i>Xem tất cả</div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-                        @endforeach
-                    @endif
-
-                    {{-- đánh giá khác --}}
-                    @if (!empty($anotherEvaluate))
-                        <div class="fw-600 fz-20 mb-10">Đánh giá khác</div>
-                        @foreach($anotherEvaluate as $key)
-                            <div data-id="{{$key['id']}}" class="evaluate col-lg-8 col-sm-10">
-                                <div class='d-flex flex-column mt-20 mb-20'>
-                                    {{-- ảnh đại diện & tên & sao & ngày đăng --}}
-                                    <div class='d-flex'>
-                                        <img src="{{$key['taikhoan']['anhdaidien']}}" class='circle-img' alt="" width="80px">
-                                        <div class='d-flex flex-column justify-content-between pl-20'>
-                                            <div class="d-flex align-items-center">
-                                                <b>{{ $key['taikhoan']['hoten'] }}</b>
-                                                <div class="ml-10 success-color fz-14"><i class="fas fa-check-circle mr-5"></i>Đã mua hàng tại LDMobile</div>
-                                            </div>
-                                            <div class='d-flex align-items-center'>
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if($key['danhgia'] >= $i)
-                                                    <i class="fas fa-star checked"></i>
-                                                    @else
-                                                    <i class="fas fa-star uncheck"></i>
-                                                    @endif
-                                                @endfor
-                                                <div class="ml-10 mr-10 gray-1">|</div>
-                                                <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
-                                            </div>
-                                            <div>{{ $key['thoigian']}}</div>
-                                        </div>
-                                    </div>
-
-                                    {{-- nội dung --}}
-                                    <div class='evaluate-content-div pt-10'>
-                                        <div>{{ $key['noidung'] }}</div>
-                                    </div>
-
-                                    {{-- hình ảnh --}}
-                                    @if (count($key['hinhanh']) != 0)
-                                        <div class='pt-10'>
-                                            @foreach ($key['hinhanh'] as $img)
-                                                <img type="button" data-id="{{$img['id']}}" data-evaluate="{{$key['id']}}"
-                                                    src="{{$url_evaluate.$img['hinhanh']}}" alt="" class='img-evaluate'>    
-                                            @endforeach
-                                        </div>    
-                                    @endif
-
-                                    {{-- like --}}
-                                    <div class='pt-20 d-flex align-items-center'>
-                                        {{-- nút thích --}}
-                                        <div type="button" data-id="{{$key['id']}}" class='like-comment {{$key['liked'] ? 'liked-comment' : ''}}'>
-                                            <i id="like-icon" class="{{$key['liked'] ? "fas fa-thumbs-up" : "fal fa-thumbs-up"}} ml-5 mr-5"></i>Hữu ích
-                                            (<div data-id="{{$key['id']}}" class="qty-like-comment">{{ $key['soluotthich'] }}</div>)
-                                        </div>
-                                        {{-- trả lời --}}
-                                        <div data-id="{{$key['id']}}" class="reply-btn">
-                                            <i class="fas fa-reply mr-5"></i>Trả lời
-                                        </div>
-                                    </div>
-                                    {{-- trả lời --}}
-                                    <div data-id="{{$key['id']}}" class="reply-div mt-20">
-                                        <div class="d-flex">
-                                            <img src="{{session('user')->htdn == 'nomal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
-                                            <div class="d-flex flex-column ml-10">
-                                                <textarea data-id="{{$key['id']}}" name="reply-content" id="reply-content-{{$key['id']}}" 
-                                                cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
-                                                maxlength="250"></textarea>
-                                            </div>
-                                            
-                                        </div>
-                                        <div class="d-flex justify-content-end mt-5">
-                                            <div data-id="{{$key['id']}}" type="button" class="cancel-reply red mr-10"><i class="far fa-times-circle mr-5"></i>Hủy</div>
-                                            <div data-id="{{$key['id']}}" type="button" class="send-reply main-color-text"><i class="fas fa-reply mr-5"></i>Trả lời</div>
-                                        </div>
-                                    </div>
-                                    {{-- danh sách trả lời --}}
-                                    <div class="mt-20">
-                                        @if (!empty($key['phanhoi']))
-                                            <?php $count = count($key['phanhoi']); ?>
-                                            @if ($count == 1)
-                                                <div class="d-flex mb-20">
-                                                    <img src="{{$key['phanhoi'][0]['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
-                                                    <div class="reply-content-div ml-10">
-                                                        {{-- họ tên & thời gian reply --}}
-                                                        <div class="d-flex align-items-center">
-                                                            <b>{{$key['phanhoi'][0]['taikhoan']['hoten']}}</b>
-                                                            <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
-                                                            <div class="gray-1">{{$key['phanhoi'][0]['thoigian']}}</div>
-                                                        </div>
-                                                        {{-- nội dung --}}
-                                                        <div class="mt-5">{{$key['phanhoi'][0]['noidung']}}</div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="d-flex mb-20">
-                                                    <img src="{{$key['phanhoi'][0]['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
-                                                    <div class="reply-content-div ml-10">
-                                                        {{-- họ tên & thời gian reply --}}
-                                                        <div class="d-flex align-items-center">
-                                                            <b>{{$key['phanhoi'][0]['taikhoan']['hoten']}}</b>
-                                                            <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
-                                                            <div class="gray-1">{{$key['phanhoi'][0]['thoigian']}}</div>
-                                                        </div>
-                                                        {{-- nội dung --}}
-                                                        <div class="mt-5">{{$key['phanhoi'][0]['noidung']}}</div>
-                                                    </div>
-                                                </div>
-                                                <div type="button" data-id="{{$key['id']}}" class="see-more-reply main-color-text fw-600"><i class="far fa-level-up mr-10" style="transform: rotate(90deg)"></i>Xem thêm {{$count - 1}} câu trả lời</div>
-                                                <div data-id="{{$key['id']}}" class="reply-content-div-hidden">
-                                                    @foreach($key['phanhoi'] as $idx => $key)
-                                                        @if($idx == 0) @continue @endif
-                                                        <div class="d-flex mb-20">
-                                                            <img src="{{$key['taikhoan']['anhdaidien']}}" alt="" width="40px" height="40px" class="circle-img">
-                                                            <div class="reply-content-div ml-10">
-                                                                {{-- họ tên & thời gian reply --}}
-                                                                <div class="d-flex align-items-center">
-                                                                    <b>{{$key['taikhoan']['hoten']}}</b>
-                                                                    <div class="ml-10 mr-10 fz-6 gray-1"><i class="fas fa-circle"></i></div>
-                                                                    <div class="gray-1">{{$key['thoigian']}}</div>
-                                                                </div>
-                                                                {{-- nội dung --}}
-                                                                <div class="mt-5">{{$key['noidung']}}</div>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                        @endif
-                                    </div>
-                                </div>
-                                <hr>
-                            </div>
-                        @endforeach
-                    @endif
+                        @endif
+                    </div>
                 </div>
             @endif
         @else
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-12">
                     <div class="p-50 text-center border">Vui lòng đăng nhập để xem đánh giá.</div>
                 </div>
             </div>

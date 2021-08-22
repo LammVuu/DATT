@@ -14,7 +14,8 @@ class HANGDOI extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'id_tk'
+        'id_tk',
+        'trangthai'
     ];
 
     public $timestamps = false;

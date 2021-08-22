@@ -19,9 +19,7 @@
                                 <div class="d-flex align-items-center success-color fw-600 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
                             </div>
                             <div class="d-flex align-items-center">
-                                <div type="button" data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
-                                data-phuongxa="{{$key['phuongxa']}}" data-quanhuyen="{{$key['quanhuyen']}}"
-                                data-tinhthanh="{{$key['tinhthanh']}}" class="btn-edit-address main-color-text"><i class="fas fa-pen mr-5"></i>Chỉnh sửa</div>
+                                <div type="button" data-id="{{$key['id']}}" class="btn-edit-address main-color-text"><i class="fas fa-pen mr-5"></i>Chỉnh sửa</div>
                             </div>
                         </div>
             
@@ -51,9 +49,7 @@
                             </div>
                             {{-- nút chức năng --}}
                             <div class="d-flex align-items-center">
-                                <div type="button" data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
-                                data-phuongxa="{{$key['phuongxa']}}" data-quanhuyen="{{$key['quanhuyen']}}"
-                                data-tinhthanh="{{$key['tinhthanh']}}" class="btn-edit-address main-color-text mr-10"><i class="fas fa-pen mr-5"></i>Chỉnh sửa</div>
+                                <div type="button" data-id="{{$key['id']}}" class="btn-edit-address main-color-text mr-10"><i class="fas fa-pen mr-5"></i>Chỉnh sửa</div>
                                 <div type="button" data-id="{{$key['id']}}" class="btn-delete-address red"><i class="fas fa-trash mr-5"></i>Xóa</div>
                             </div>
                         </div>

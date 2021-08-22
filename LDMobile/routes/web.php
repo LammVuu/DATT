@@ -112,6 +112,8 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
     route::post("ajax-remove-queue", [IndexController::class, "AjaxRemoveQueue"]);
 
+    Route::post("ajax-bind-address", [IndexController::class, "AjaxBindAddress"]);
+
     Route::middleware("CheckLogin")->group(function(){
         /*=======================================================================================================
                                                         Page
@@ -175,7 +177,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
         Route::post("ajax-check-qty-in-stock-branch", [IndexController::class, "AjaxCheckQtyInStockBranch"]);
 
-        Route::get("use-voucher/{id}", [UserController::Class, "UseVoucher"]);
+        Route::post("apply-voucher", [UserController::Class, "ApplyVoucher"]);
 
         Route::post("ajax-check-voucher-conditions", [UserController::class, "CheckVoucherConditions"]);
 
@@ -188,6 +190,14 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
         Route::post("ajax-edit-evaluate", [UserController::class, "AjaxEditEvaluate"]);
 
         Route::post("ajax-reply", [UserController::class, "AjaxReply"]);
+
+        Route::post("ajax-get-all-another-evaluate", [IndexController::class, "AjaxGetAllAnotherEvaluate"]);
+
+        Route::post("ajax-get-all-reply", [IndexController::class, "AjaxGetAllReply"]);
+
+        Route::post("ajax-update-queue-status", [IndexController::class, "AjaxUpdateQueueStatus"]);
+        
+        Route::post("ajax-recover-queue", [IndexController::class, "AjaxRecoverQueue"]);
     });
 });
 

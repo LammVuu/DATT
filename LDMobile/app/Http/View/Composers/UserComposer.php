@@ -26,15 +26,17 @@ class UserComposer
     public function compose(View $view)
     {
         if(session('user')){
+            $id_tk = session('user')->id;
+            
             $data = [
-                'lst_noti' => $this->getNotification(session('user')->id),
-                'lst_order' => $this->getListOrder(session('user')->id),
-                'lst_address' => $this->getAddress(session('user')->id),
-                'lst_favorite' => $this->getFavorite(session('user')->id),
-                'lst_voucher' => $this->getVoucher(session('user')->id),
-                'cart' => $this->IndexController->getCart(session('user')->id),
+                'lst_noti' => $this->getNotification($id_tk),
+                'lst_order' => $this->getListOrder($id_tk),
+                'lst_address' => $this->getAddress($id_tk),
+                'lst_favorite' => $this->getFavorite($id_tk),
+                'lst_voucher' => $this->getVoucher($id_tk),
+                'cart' => $this->IndexController->getCart($id_tk),
             ];
-
+    
             $view->with('data', $data);
         }
     }

@@ -22,7 +22,8 @@ class MauSanPhamController extends Controller
         $lst_model = MAUSP::limit(10)->get();
 
         foreach($lst_model as $idx => $key){
-            $lst_model[$idx]['nhacungcap'] = NHACUNGCAP::find($key->id_ncc);
+            $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
+            $lst_model[$idx]->nhacungcap = $supplierName;
         }
 
         $data = [

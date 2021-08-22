@@ -4,8 +4,11 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\LUOTTRUYCAP;
+use Illuminate\Support\Facades\Auth;
 use Session;
+
+use App\Models\LUOTTRUYCAP;
+use App\Models\TAIKHOAN;
 
 class AccessTimes
 {
@@ -25,6 +28,12 @@ class AccessTimes
                 'thoigian' => date('d/m/Y H:i:s')
             ]);
         }
+
+        if(Auth::check() && !session('user')){
+            $user = TAIKHOAN::find(Auth::user()->id);
+            session(['user' => $user]);
+        }
+
         return $next($request);
     }
 }

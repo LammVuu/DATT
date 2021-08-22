@@ -12,14 +12,16 @@
                         <input type="hidden" name="address_type" name="address-type">
                         {{-- id --}}
                         <input type="hidden" name="tk_dc_id">
-                        <div class="mb-3">
-                            <div class="row">
-                                <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
                                     <label class="fw-600 mb-5">Họ và Tên</label>
                                     <input type="text" name="adr_fullname_inp">
                                 </div>
+                            </div>
 
-                                <div class="col-md-6">
+                            <div class="col-md-6">
+                                <div class="mb-3">
                                     <label class="fw-600 mb-5">Số điện thoại nhận hàng</label>
                                     <input type="text" name="adr_tel_inp" maxlength="10">
                                 </div>
@@ -47,7 +49,7 @@
                                             {{-- option --}}
                                             <div id='list-tinh-thanh' class="select-option">
                                                 @foreach($lstTinhThanh as $lst)
-                                                <div id='{{ $lst['ID'] }}' data-type='{{ $lst['Name'] . '/TinhThanh' }}' class="option-tinhthanh select-single-option">{{ $lst['Name'] }}</div>
+                                                    <div id='{{ $lst['ID'] }}' data-type='TinhThanh' data-name="{{$lst['Name']}}" class="option-tinhthanh select-single-option">{{ $lst['Name'] }}</div>
                                                 @endforeach
                                             </div>
                                         </div>
@@ -71,14 +73,14 @@
                                             {{-- option --}}
                                             <div id='list-quan-huyen' class="select-option">
                                                 @foreach($lstQuanHuyen as $lst)
-                                                <div id='{{ $lst['ID'] }}' data-type='{{ $lst['Name'] . '/QuanHuyen' }}' class="option-quanhuyen select-single-option">{{ $lst['Name'] }}</div>
+                                                    <div id='{{ $lst['ID'] }}' data-type='QuanHuyen' data-name="{{$lst['Name']}}" class="option-quanhuyen select-single-option">{{ $lst['Name'] }}</div>
                                                 @endforeach
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 {{-- chọn phường xã --}}
-                                <div class='col-md-6'>
+                                <div class='col-md-6 mb-3'>
                                     <div class="select">
                                         <div id='PhuongXa-selected' class="select-disable">
                                             <div id="PhuongXa-name">Chọn Phường / Xã</div>
@@ -98,7 +100,7 @@
                                     </div>
                                 </div>
                                 {{-- số nhà, tên đường --}}
-                                <div class='col-md-6'>
+                                <div class='col-md-6 mb-3'>
                                     <input name="address_inp" type="text" placeholder="Số nhà, tên đường" required>
                                 </div>
                             </div>

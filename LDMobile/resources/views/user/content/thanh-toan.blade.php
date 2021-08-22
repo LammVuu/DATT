@@ -267,7 +267,7 @@
                                                                                 </table>
                                                                             </div>
                                                                         </div>
-                                                                        <div data-id="{{$voucher->id}}" class="use-voucher-btn main-btn" style="padding: 5px">Bỏ chọn</div>
+                                                                        <div data-id="{{$voucher->id}}" class="apply-voucher-btn main-btn" style="padding: 5px">Bỏ chọn</div>
                                                                     </div>
                                                                 </div>
                                                             </div>

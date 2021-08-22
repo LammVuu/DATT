@@ -20,6 +20,33 @@ function showIOSMessage(text){
     $('body').prepend(message);
 }
 
+function showAlertTop(content){
+    setTimeout(() => {
+        $('.alert-top').css({
+            '-ms-transform': 'translateY(0)',
+            'transform': 'translateY(0)',
+        });
+        $('.backdrop').css('z-index', '1999');
+        $('.backdrop').fadeIn();
+        
+    }, 200);
+    $('.alert-top-content').html(content);
+}
+
+function closeAlertTop(){
+    setTimeout(() => {
+        $('.alert-top-content').text('');
+        $('.backdrop').removeAttr('style');
+        $('.alert-top').removeAttr('style');
+        $('.close-alert-top').replaceWith($('<div class="close-alert-top">OK</div>'));
+    }, 500);
+    $('.alert-top').css({
+        '-ms-transform': 'translateY(-500px)',
+        'transform': 'translateY(-500px)',
+    });
+    $('.backdrop').fadeOut();
+}
+
 $(window).on('load', function(){
     $('.loader').fadeOut();
 });
@@ -30,35 +57,67 @@ $(function(){
         return;
     }
 
+    const url = window.location.pathname.split('/')[1];
+    const page = window.location.pathname.split('/')[2];
+    const navigation = performance.getEntriesByType("navigation")[0].type;
+    console.log(navigation);
+
+    var loadMoreFlag = false;
+    var storageFlag = false;
+    var loadMoreRow = 0;
+    var timer = null;
+    var checkoutTimer;
+    var removeQueueFlag = true;
+
     if (window.location.hash == '#_=_') {
         window.location.hash = ''; // for older browsers, leaves a # behind
         history.pushState('', document.title, window.location.pathname); // nice and clean
     }
 
-    var url = window.location.pathname.split('/')[1];
-    var page = window.location.pathname.split('/')[2];
-    var navigation = performance.getEntriesByType("navigation")[0].type;
-    var loadMoreFlag = false;
-    var storageFlag = false;
-    var loadMoreRow = 0;
-    var timer = null;
-
     // xóa hàng đợi
-    setTimeout(() => {
-        var lastestPage = sessionStorage.getItem('lastestPage');
-        if(lastestPage == 'thanhtoan' && url != 'thanhtoan'){
-            // xóa hàng đợi
+    var checkoutQueueFlag = sessionStorage.getItem('checkoutQueueFlag');
+    var lst_allowPage = ['thanhtoan', 'diachigiaohang'];
+    if(checkoutQueueFlag){
+        if(lst_allowPage.indexOf(url) == -1){
             removeQueue($('#session-user').data('id'), function(){
-                sessionStorage.removeItem('lastestPage');
+                sessionStorage.removeItem('checkoutQueueFlag');
+                sessionStorage.removeItem('minute');
+                sessionStorage.removeItem('second');
             });
-        }
-        if(navigation == 'back_forward'){
-            removeQueue($('#session-user').data('id'), function(){
-                console.log('remove queue');
-            });
-        }
-    },100);
 
+        }
+    }
+
+    // cập nhật & khôi phục hàng đợi
+    if(url == 'thanhtoan' || url == 'diachigiaohang'){
+        $(window).on('unload', function(){
+            if(removeQueueFlag){
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: 'ajax-update-queue-status',
+                    type: 'POST',
+                    data: {'id_tk': $('#session-user').data('id')}
+                });
+            }
+        });
+
+        if(navigation == 'reload'){
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: 'ajax-recover-queue',
+                type: 'POST',
+                data: {'id_tk': $('#session-user').data('id'), 'page': url},
+                success: function(){
+                    console.log('recover queue');
+                }
+            })
+        }
+    }
+    
     // xử lý cuộn trang
     $(window).scroll(function(e){
         var scrollTop = $(window).scrollTop();
@@ -328,33 +387,6 @@ $(function(){
     $(document).on('click', '.close-alert-top-icon', function(){
         closeAlertTop();
     });
-    
-    function showAlertTop(content){
-        setTimeout(() => {
-            $('.alert-top').css({
-                '-ms-transform': 'translateY(0)',
-                'transform': 'translateY(0)',
-            });
-            $('.backdrop').css('z-index', '1999');
-            $('.backdrop').fadeIn();
-            
-        }, 200);
-        $('.alert-top-content').html(content);
-    }
-
-    function closeAlertTop(){
-        setTimeout(() => {
-            $('.alert-top-content').text('');
-            $('.backdrop').removeAttr('style');
-            $('.alert-top').removeAttr('style');
-            $('.close-alert-top').replaceWith($('<div class="close-alert-top">OK</div>'));
-        }, 500);
-        $('.alert-top').css({
-            '-ms-transform': 'translateY(-500px)',
-            'transform': 'translateY(-500px)',
-        });
-        $('.backdrop').fadeOut();
-    }
 
     /*============================================================================================================
                                                             Header
@@ -1952,25 +1984,28 @@ $(function(){
 
             if(params.has('danhgia')){
                 var id_dg = params.get('danhgia');
-                var position = parseFloat($('.evaluate[data-id="'+id_dg+'"]').position().top) + 650;
-
-                setTimeout(() => {
+                var evaluate = $('.evaluate[data-id="'+id_dg+'"]');
+                if(evaluate.length){
+                    var position = parseFloat(evaluate.position().top) + 650;
+    
                     setTimeout(() => {
                         setTimeout(() => {
-                            $('.evaluate[data-id="'+id_dg+'"]').removeAttr('style');
-                        }, 1000);
+                            setTimeout(() => {
+                                $('.evaluate[data-id="'+id_dg+'"]').removeAttr('style');
+                            }, 1000);
+                            $('.evaluate[data-id="'+id_dg+'"]').css({
+                                'background-color': '#fff'
+                            });    
+                        }, 3000);
+    
+                        $(window).scrollTop(position);
+    
                         $('.evaluate[data-id="'+id_dg+'"]').css({
-                            'background-color': '#fff'
-                        });    
-                    }, 3000);
-
-                    $(window).scrollTop(position);
-
-                    $('.evaluate[data-id="'+id_dg+'"]').css({
-                        'background-color': '#D2F4EA',
-                        'transition': '.5s',
-                    });
-                }, 300);
+                            'background-color': '#D2F4EA',
+                            'transition': '.5s',
+                        });
+                    }, 300);
+                }
             }
             
             // slide hình ảnh khác của sản phẩm
@@ -2832,8 +2867,17 @@ $(function(){
             // phản hồi
             $('.reply-btn').off('click').click(function(){
                 var id_dg = $(this).data('id');
+                setTimeout(() => {
+                    $('.reply-div[data-id="'+id_dg+'"]').toggle('blind');
+                }, 200);
 
-                $('.reply-div[data-id="'+id_dg+'"]').toggle('blind');
+                $('.reply-div').each(function(){
+                    if($(this).data('id') != id_dg){
+                        $(this).hide();
+                    }
+                })
+                $('[name="reply-content"]').val('');
+                removeRequried($('[name="reply-content"]'));
             });
 
             // hủy phản hồi
@@ -2886,10 +2930,20 @@ $(function(){
             });
 
             // xem thêm phản hồi
-            $('.see-more-reply').click(function(){
+            $(document).on('click', '.see-more-reply', function(){
                 var id_dg = $(this).data('id');
-                $('.see-more-reply[data-id="'+id_dg+'"]').remove();
-                $('.reply-content-div-hidden[data-id="'+id_dg+'"]').show();
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: 'ajax-get-all-reply',
+                    type: 'POST',
+                    data: {'id_dg': id_dg},
+                    success: function (data) {
+                        $('.all-reply[data-id="'+id_dg+'"]').append(data);
+                        $('.see-more-reply[data-id="'+id_dg+'"]').remove();
+                    }
+                })
             });
 
             /*=======================================================
@@ -3166,6 +3220,28 @@ $(function(){
                 }, 200);
                 sessionStorage.setItem('positionEvaluate', parseInt($('#evaluate-section').position().top) - 50);
             });
+
+            /*=======================================================
+                            Xem tất cả đánh giá khác
+            =========================================================*/
+
+            $('.see-all-evaluate').click(function(){
+                var id_sp = $(this).data('id');
+                $('.loader').show();
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: 'ajax-get-all-another-evaluate',
+                    type: 'POST',
+                    data: {'id_sp': id_sp},
+                    success: function(data){
+                        $('.another-evaluate').append(data);
+                        $('.see-all-evaluate').remove();
+                        $('.loader').fadeOut();
+                    }
+                })
+            });
         }
     }
     /*============================================================================================================
@@ -3177,10 +3253,16 @@ $(function(){
             return;
         }
 
-        if(sessionStorage.getItem('checkoutTimeout')){
-            var message = sessionStorage.getItem('checkoutTimeout');
-            sessionStorage.removeItem('checkoutTimeout');
+        if(sessionStorage.getItem('messageTimeout')){
+            var message = sessionStorage.getItem('messageTimeout');
+            sessionStorage.removeItem('messageTimeout');
             showAlertTop(message);
+        }
+        if(sessionStorage.getItem('toast-message')){
+            var message = sessionStorage.getItem('toast-message');
+            sessionStorage.removeItem('toast-message');
+            $('body').prepend('<span id="alert-toast" class="alert-toast">'+message+'</span>');
+            showToast('#alert-toast');
         }
         // modal xác nhận xóa giỏ hàng
         $('.remove-all-cart').click(function(){
@@ -3252,53 +3334,50 @@ $(function(){
                                                         Thanh toán
     ==============================================================================================================*/
     else if(url == 'thanhtoan'){
-        console.log(navigation);
         if(navigation == "back_forward"){
             location.reload();
             return;
         }
-        sessionStorage.removeItem('lastestPage');
-        sessionStorage.setItem('lastestPage', 'thanhtoan');
-
-        // thời gian thanh toán
-        function checkoutTimeout(minute = 0, callback){
-            timer = setInterval(() => {
-                if(minute < 10){
-                    $('.minute-number').text('0'+minute);
-                } else {
-                    $('.minute-number').text(minute);
-                }
-                if(second < 10){
-                    $('.second-number').text('0'+second);
-                } else {
-                    $('.second-number').text(second);
-                }
-                
-                // hết thời gian
-                if(!second && !minute){
-                    clearInterval(timer);
-                    callback();
-                }
-                // trừ phút
-                else if(!second && minute){
-                    minute -= 1;
-                    second = 59;
-                }
-                // trừ giây
-                else {
-                    second--;
-                }
-            }, 1000);
-            var second = 0;
+        // toast thông báo
+        if(sessionStorage.getItem('toast-message')){
+            var message = sessionStorage.getItem('toast-message');
+            sessionStorage.removeItem('toast-message');
+            $('body').prepend('<span id="alert-toast" class="alert-toast">'+message+'</span>');
+            showToast('#alert-toast');
         }
+
+        sessionStorage.removeItem('checkoutQueueFlag');
+        sessionStorage.setItem('checkoutQueueFlag', true);
         
-        checkoutTimeout(10, function(){
-            var id_tk = $('#session-user').data('id');
-            removeQueue(id_tk, function(){
-                sessionStorage.setItem('checkoutTimeout', 'Đã hết thời gian thanh toán.');
-                location.href = '/giohang';
+        if(sessionStorage.getItem('minute')){
+            var minute = parseInt(sessionStorage.getItem('minute'));
+            // trừ 2s khi load trang
+            var second = parseInt(sessionStorage.getItem('second') - 2);
+            if(second < 0){
+                if(minute){
+                    second = 59;
+                    minute--;
+                } else {
+                    second = 0;
+                }
+            }
+
+            checkoutTimeout(minute, second, function(){
+                var id_tk = $('#session-user').data('id');
+                removeQueue(id_tk, function(){
+                    sessionStorage.setItem('messageTimeout', 'Đã hết thời gian thanh toán.');
+                    location.href = '/giohang';
+                });
+            });    
+        } else {
+            checkoutTimeout(10, 0, function(){
+                var id_tk = $('#session-user').data('id');
+                removeQueue(id_tk, function(){
+                    sessionStorage.setItem('messageTimeout', 'Đã hết thời gian thanh toán.');
+                    location.href = '/giohang';
+                });
             });
-        });
+        }
 
         /*=============================================================================
                                         nhận tại nhà
@@ -3325,7 +3404,11 @@ $(function(){
 
         // thay đổi địa chỉ giao hàng
         $('#btn-change-address-delivery').click(function(){
-            location.href = "diachigiaohang";
+            setTimeout(() => {
+                location.href = "diachigiaohang";
+            }, 200);
+
+            removeQueueFlag = false;
         });
 
         /*=============================================================================
@@ -3418,9 +3501,6 @@ $(function(){
 
         // xác nhận thanh toán
         $('#btn-confirm-checkout').click(function(){
-            // ngừng thời gian thanh toán
-            clearInterval(timer);
-
             // tổng tiền
             $('#cartTotal').val($('#total').data('total'));
 
@@ -3435,7 +3515,8 @@ $(function(){
                     $('.atHome').after(required);
                     return;
                 }
-
+                // ngừng thời gian thanh toán
+                clearInterval(checkoutTimer);
                 // hình thức nhận hàng
                 $('#receciveMethod').val('Giao hàng tận nơi');
 
@@ -3454,6 +3535,9 @@ $(function(){
                         showAlertTop('Bạn không thể thanh toán khi sản phẩm đã hết hàng hoặc số lượng không đủ.');
                         return;
                     }
+                    // ngừng thời gian thanh toán
+                    clearInterval(checkoutTimer);
+
                     // hình thức nhận hàng
                     $('#receciveMethod').val('Nhận tại cửa hàng');
                     $('#id_cn').val($('input[name="branch"]:checked').attr('id').split('-')[1]);
@@ -3520,11 +3604,41 @@ $(function(){
                                                     Địa chỉ giao hàng
     ==============================================================================================================*/
     else if(url == 'diachigiaohang'){
+        if(navigation == 'back_forward'){
+            location.reload();
+            return;
+        }
         // chọn địa chỉ giao hàng
         $('.choose-address-delivery').click(function(){
+            if(url == 'diachigiaohang' || url == 'thanhtoan'){
+                removeQueueFlag = false;
+            }
+
             $('#address_id').val($(this).data('id'));
             $('#change-address-delivery-form').submit();
         });
+
+        if(sessionStorage.getItem('minute')){
+            var minute = parseInt(sessionStorage.getItem('minute'));
+            // trừ 2s khi load trang
+            var second = parseInt(sessionStorage.getItem('second') - 2);
+            if(second < 0){
+                if(minute){
+                    second = 59;
+                    minute--;
+                } else {
+                    second = 0;
+                }
+            }
+            
+            checkoutTimeout(minute, second, function(){
+                var id_tk = $('#session-user').data('id');
+                removeQueue(id_tk, function(){
+                    sessionStorage.setItem('messageTimeout', 'Đã hết thời gian thanh toán.');
+                    location.href = '/giohang';
+                });
+            });  
+        }
     }
     /*============================================================================================================
                                                         So sánh
@@ -3782,63 +3896,69 @@ $(function(){
     $('.btn-edit-address').off('click').click(function(){
         var id = $(this).data('id');
 
-        var diachi = $(this).data('diachi');
-        var phuongxa = $(this).data('phuongxa');
-        var quanhuyen = $(this).data('quanhuyen');
-        var tinhthanh = $(this).data('tinhthanh');
-
         var defaultAdr = $('#address-' + id).data('default');
-
-        editAddressModal(id, defaultAdr, diachi, phuongxa, quanhuyen, tinhthanh);
+        editAddressModal(id, defaultAdr);
     });
 
-    function editAddressModal(id, defaultAdr = false, diachi, phuongxa, quanhuyen, tinhthanh){
+    function editAddressModal(id, defaultAdr = false){
         $('.loader').fadeIn();
-        // gán quận huyện
-        setTimeout(() => {
-            $('.option-quanhuyen[data-type="'+quanhuyen+'/QuanHuyen"]').trigger('click');
-        }, 300);
 
-        // gán phường xã
-        setTimeout(() => {
-            $('.option-phuongxa[data-type="'+phuongxa+'/PhuongXa"]').trigger('click');
-        }, 600);
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: 'ajax-bind-address',
+            type: 'POST',
+            data: {'id': id},
+            cache: false,
+            success: function(data){
+                // set quận huyện
+                setTimeout(() => {
+                    // set phường xã
+                    setTimeout(() => {
+                        choosePlace(data[2].id, data[2].name, data[2].type);
+                        // gán địa chỉ
+                        $('input[name="address_inp"]').val(data.diachi);
+                    }, 300);
+                    choosePlace(data[1].id, data[1].name, data[1].type);
+                }, 300);
+                // set tỉnh thành
+                choosePlace(data[0].id, data[0].name, data[0].type);
+                
+                // tiêu đề modal
+                $('#address-modal-title').text('Chỉnh sửa địa chỉ');
+        
+                if(defaultAdr == true){
+                    $('#set_default_address').prop('checked', true);
+                } else {
+                    $('#set_default_address').prop('checked', false);
+                }
+        
+                // thiết lập nút
+                $('.address-action-btn').attr('data-type', 'edit');
+                $('.address-action-btn').attr('data-id', id);
+                $('.address-action-btn').text('Cập nhật');
+        
+                // chỉnh sửa
+                $('input[name="address_type"]').val('edit');
+                $('input[name="tk_dc_id"]').val(id);
+        
+                // gán họ tên, sdt
+                $('input[name="adr_fullname_inp"]').val($('#adr-fullname-' + id).text());
+                $('input[name="adr_tel_inp"]').val($('#adr-tel-' + id).text());
 
-        // gán tỉnh thành
-        $('#TinhThanh-selected').trigger('click');
-        $('.option-tinhthanh[data-type="'+tinhthanh+'/TinhThanh"]').trigger('click');
-
-        // gán địa chỉ
-        $('input[name="address_inp"]').val(diachi);
-
-        // tiêu đề modal
-        $('#address-modal-title').text('Chỉnh sửa địa chỉ');
-
-        if(defaultAdr == true){
-            $('#set_default_address').attr('checked', true);
-        } else {
-            $('#set_default_address').attr('checked', false);
-        }
-
-        // thiết lập nút
-        $('.address-action-btn').attr('data-type', 'edit');
-        $('.address-action-btn').attr('data-id', id);
-        $('.address-action-btn').text('Cập nhật');
-
-        // chỉnh sửa
-        $('input[name="address_type"]').val('edit');
-        $('input[name="tk_dc_id"]').val(id);
-
-        // gán họ tên, sdt
-        $('input[name="adr_fullname_inp"]').val($('#adr-fullname-' + id).text());
-        $('input[name="adr_tel_inp"]').val($('#adr-tel-' + id).text());
-
-        $('#address-modal').modal('show');
-        $('.loader').fadeOut();
+                $('#address-modal').modal('show');
+                $('.loader').fadeOut();
+            }
+        });
     }
 
     // thêm|sửa địa chỉ mới
     $('.address-action-btn').off('click').click(function(){
+        if(url == 'diachigiaohang' || url == 'thanhtoan'){
+            removeQueueFlag = false;
+        }
+
         var valiFullname = validateFullname($('input[name="adr_fullname_inp"]'));
         var valiTel = validatePhoneNumber($('input[name="adr_tel_inp"]'));
         var valiQuanHuyenPhuongXa = validateDistrict_Wards($('#QuanHuyen-name'), $('#PhuongXa-name'));
@@ -3885,6 +4005,11 @@ $(function(){
 
     // xóa đối tượng
     $('#delete-btn').click(function(){
+        // ngăn xóa hàng đợi
+        if(url == 'diachigiaohang'){
+            removeQueueFlag = false;
+        }
+
         var object = $(this).data('object');
 
         if(object == 'address'){
@@ -3985,45 +4110,33 @@ $(function(){
     // thay đổi tỉnh/thành
     $('.option-tinhthanh').off('click').click(function(){
         var id = $(this).attr('id');
-        var name = $(this).data('type').split('/')[0];
-        var type = $(this).data('type').split('/')[1];
+        var name = $(this).attr('data-name');
+        var type = $(this).attr('data-type');
 
         choosePlace(id, name, type);
     });
 
     // thay đổi quận, huyện
-    $('.option-quanhuyen').off('click').click(function(){
+    $(document).on('click', '.option-quanhuyen', function(){
         var id = $(this).attr('id');
-        var name = $(this).data('type').split('/')[0];
-        var type = $(this).data('type').split('/')[1];
-
+        var name = $(this).attr('data-name');
+        var type = $(this).attr('data-type');
         choosePlace(id, name, type);
-    });
-
-    $('#list-quan-huyen').on('DOMSubtreeModified', function(){
-        $('.option-quanhuyen').off('click').click(function(){
-            var id = $(this).attr('id');
-            var name = $(this).data('type').split('/')[0];
-            var type = $(this).data('type').split('/')[1];
-            choosePlace(id, name, type);
-        });
-    });
+    }); 
 
     // thay đổi phường, xã
-    $('#list-phuong-xa').on('DOMSubtreeModified', function(){
-        $('.option-phuongxa').off('click').click(function(){
-            var id = $(this).attr('id');
-            var name = $(this).data('type').split('/')[0];
-            var type = $(this).data('type').split('/')[1];
-            choosePlace(id, name, type);
-        });
+    $(document).on('click', '.option-phuongxa', function(){
+        var id = $(this).attr('id');
+        var name = $(this).attr('data-name');
+        var type = $(this).attr('data-type');
+        choosePlace(id, name, type);
     });
 
     function choosePlace(id, name, type){
         if(type == 'TinhThanh'){
             $('#TinhThanh-name').text(name);
             $('input[name="TinhThanh_name_inp"]').val(name);
-            $('#TinhThanh-box').toggle('blind', 250);
+            $('#TinhThanh-box').hide('blind', 250);
 
             $.ajax({
                 headers: {
@@ -4034,7 +4147,7 @@ $(function(){
                 cache: false,
                 data: {'type':type,'id':id},
                 success:function(data){
-                    $('#QuanHuyen-box').toggle('blind', 250);
+                    $('#QuanHuyen-box').show('blind', 250);
                     $('#list-quan-huyen').children().remove();
                     $('#QuanHuyen-name').text('Chọn Quận / Huyện');
                     $('#QuanHuyen-name').removeAttr('data-flag');
@@ -4047,7 +4160,8 @@ $(function(){
                     for(var i = 0; i < data.length; i++){
                         var div = $('<div>',{
                             id: data[i]['ID'],
-                            'data-type': data[i]['Name'] + '/QuanHuyen',
+                            'data-type': 'QuanHuyen',
+                            'data-name': data[i]['Name'],
                             class: 'option-quanhuyen select-single-option',
                             text: data[i]['Name']
                         });
@@ -4060,12 +4174,9 @@ $(function(){
             $('input[name="QuanHuyen_name_inp"]').val(name);
             $('#QuanHuyen-name').attr('data-flag', '1');
 
-            if($('#QuanHuyen-name').parent().hasClass('required')){
-                $('#QuanHuyen-name').parent().removeClass('required');
-                $('#QuanHuyen-name').parent().next().remove();
-            }
+            removeRequried($('#QuanHuyen-name').parent());
 
-            $('#QuanHuyen-box').toggle('blind', 250);
+            $('#QuanHuyen-box').hide('blind', 250);
 
             $.ajax({
                 headers: {
@@ -4085,23 +4196,21 @@ $(function(){
                     for(var i = 0; i < data.length; i++){
                         var div = $('<div>',{
                             id: data[i]['ID'],
-                            'data-type': data[i]['Name'] + '/PhuongXa',
+                            'data-type': 'PhuongXa',
+                            'data-name': data[i]['Name'],
                             class: 'option-phuongxa select-single-option',
                             text: data[i]['Name']
                         });
                         div.appendTo($('#list-phuong-xa'));
                     }
-                    $('#PhuongXa-box').toggle('blind', 250);
+                    $('#PhuongXa-box').show('blind', 250);
                 }
             });
         } else {
             $('#PhuongXa-name').text(name);
             $('input[name="PhuongXa_name_inp"]').val(name);
             $('#PhuongXa-name').attr('data-flag', '1');
-            if($('#PhuongXa-name').parent().hasClass('required')){
-                $('#PhuongXa-name').parent().removeClass('required');
-                $('#PhuongXa-name').parent().next().remove();
-            }
+            removeRequried($('#PhuongXa-name').parent());
             $('#PhuongXa-box').toggle('blind', 250);
             $('input[name="address_inp"]').focus();
         }
@@ -4305,19 +4414,38 @@ $(function(){
     }
 
     // sử dụng voucher
-    $('.use-voucher-btn').off('click').click(function(){
+    $('.apply-voucher-btn').off('click').click(function(){
         var id_vc = $(this).data('id');
-        
-        location.href = 'use-voucher/' + id_vc;
+        applyVoucher(id_vc);
     });
 
     $('.choose-voucher-div').bind('DOMSubtreeModified', function(){
-        $('.use-voucher-btn').off('click').click(function(){
+        $('.apply-voucher-btn').off('click').click(function(){
             var id_vc = $(this).data('id');
-            
-            location.href = 'use-voucher/' + id_vc;
+            applyVoucher(id_vc);
         });
     });
+
+    function applyVoucher(id){
+        // ngăn xóa hàng đợi
+        if(url == 'thanhtoan'){
+            removeQueueFlag = false;
+        }
+
+        $('.loader').show();
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: 'apply-voucher',
+            type: 'POST',
+            data: {'id': id},
+            success: function(data){
+                sessionStorage.setItem('toast-message', data);
+                location.reload();
+            }
+        });
+    }
     
     // cập nhật số lượng
     $('.update-qty').off('click').click(function(){
@@ -4789,6 +4917,43 @@ $(function(){
         $('#qty-div').show();
         $('#only-one-message').remove();
     });
+
+    // thời gian thanh toán
+    function checkoutTimeout(minute = 0, second = 0, callback){
+        clearInterval(checkoutTimer);
+        checkoutTimer = setInterval(() => {
+            if(minute < 10){
+                $('.minute-number').text('0'+minute);
+            } else {
+                $('.minute-number').text(minute);
+            }
+            if(second < 10){
+                $('.second-number').text('0'+second);
+            } else {
+                $('.second-number').text(second);
+            }
+
+            sessionStorage.removeItem('minute');
+            sessionStorage.removeItem('second');
+            sessionStorage.setItem('minute', minute);
+            sessionStorage.setItem('second', second);
+            
+            // hết thời gian
+            if(!second && !minute){
+                clearInterval(checkoutTimer);
+                callback();
+            }
+            // trừ phút
+            else if(!second && minute){
+                minute -= 1;
+                second = 59;
+            }
+            // trừ giây
+            else {
+                second--;
+            }
+        }, 1000);
+    }
 
     // xóa hàng đợi
     function removeQueue(id_tk, callback){

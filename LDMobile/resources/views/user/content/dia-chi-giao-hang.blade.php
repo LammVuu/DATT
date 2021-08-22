@@ -13,91 +13,106 @@
     @if (session('toast_message'))
         <div id="toast-message" data-message="{{session('toast_message')}}"></div>
     @endif
+    @if (session('user'))
+        <?php $user = session('user') ?>
+        <input type="hidden" id="session-user" data-id="{{$user->id}}">
+    @endif
+
+    <div class="loader"><div class="loader-bg"></div><div class="loader-img"><img src="images/logo/LDMobile-logo.png" alt=""></div><div class="spinner-border" role="status"></div></div>
 
     <div class="container">
         <div class="pt-20 pb-20">
-            <div class="fz-22 font-weight-700 mb-10">Địa chỉ giao hàng</div>
-            <b>Chọn địa chỉ giao hàng có sẵn bên dưới</b>
+            <h3>Địa chỉ giao hàng</h3>
+            <div class="fw-600 mb-20">Chọn địa chỉ giao hàng có sẵn bên dưới</div>
 
-            <div class="row mt-20">
-                {{-- địa chỉ mặc định --}}
-                @foreach ($data['lst_address'] as $key)
-                    @if($key['macdinh'] == 1)
-                        <div class="col-lg-6">
-                            <div id="address-{{$key['id']}}" data-default="true" class="white-bg p-20 border-success mb-30">
-                                <div class="d-flex justify-content-between pb-10">
-                                    <div class="d-flex">
-                                        <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
-                                        <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
+            <div class="row">
+                <div class="col-lg-8 col-12">
+                    <div class="row">
+                        {{-- địa chỉ mặc định --}}
+                        @foreach ($data['lst_address'] as $key)
+                            @if($key['macdinh'] == 1)
+                                <div class="col-12">
+                                    <div id="address-{{$key['id']}}" data-default="true" class="white-bg p-20 border-success mb-30">
+                                        <div class="d-flex justify-content-between pb-10">
+                                            <div class="d-flex">
+                                                <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
+                                                <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
+                                            </div>
+                                        </div>
+                
+                                        <div class="d-flex mb-5">
+                                            <div class="gray-1">Địa chỉ:</div>
+                                            <div class="ml-5 black">
+                                                {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
+                                            </div>
+                                        </div>
+                
+                                        <div class="d-flex mb-20">
+                                            <div class="gray-1">Điện thoại:</div>
+                                            <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
+                                        </div>
+                                        {{-- button --}}
+                                        <div class="d-flex">
+                                            <form id="change-address-delivery-form" action="{{route('user/change-address-delivery')}}" method="POST">
+                                                @csrf
+                                                <input type="hidden" id="address_id" name="address_id">
+                                            </form>
+                                            <div data-id="{{$key['id']}}" class="choose-address-delivery main-btn p-10">Giao đến địa chỉ này</div>
+                                            <div data-id="{{$key['id']}}" class="btn-edit-address cancel-btn p-10 ml-10">Sửa</div>
+                                        </div>
                                     </div>
                                 </div>
-                    
-                                <div class="d-flex mb-5">
-                                    <div class="gray-1">Địa chỉ:</div>
-                                    <div class="ml-5 black">
-                                        {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
+                                @break
+                            @endif
+                        @endforeach
+                        {{-- địa chỉ khác --}}
+                        @foreach ($data['lst_address'] as $key)
+                            @if($key['macdinh'] == 0)
+                                <div class="col-12">
+                                    <div id="address-{{$key['id']}}" data-default="false" class="white-bg p-20 border mb-30">
+                                        <div class="d-flex justify-content-between pb-10">
+                                            <div class="d-flex">
+                                                <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
+                                            </div>
+                                        </div>
+                
+                                        <div class="d-flex mb-5">
+                                            <div class="gray-1">Địa chỉ:</div>
+                                            <div class="ml-5 black">
+                                                {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
+                                            </div>
+                                        </div>
+                
+                                        <div class="d-flex mb-20">
+                                            <div class="d-flex">
+                                                <div class="gray-1">Điện thoại:</div>
+                                                <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
+                                            </div>
+                                        </div>
+                                        {{-- button --}}
+                                        <div class="d-flex">
+                                            <div data-id="{{$key['id']}}" class="choose-address-delivery main-btn p-10 mr-10">Giao đến địa chỉ này</div>
+                                            <div data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
+                                                data-phuongxa="{{$key['phuongxa']}}" data-quanhuyen="{{$key['quanhuyen']}}"
+                                                data-tinhthanh="{{$key['tinhthanh']}}" class="btn-edit-address cancel-btn p-10 mr-10">Sửa</div>
+                                            <div data-id="{{$key['id']}}" class="btn-delete-address checkout-btn p-10">Xóa</div>
+                                        </div>
                                     </div>
                                 </div>
-                    
-                                <div class="d-flex mb-20">
-                                    <div class="gray-1">Điện thoại:</div>
-                                    <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
-                                </div>
-
-                                {{-- button --}}
-                                <div class="d-flex">
-                                    <form id="change-address-delivery-form" action="{{route('user/change-address-delivery')}}" method="POST">
-                                        @csrf
-                                        <input type="hidden" id="address_id" name="address_id">
-                                    </form>
-                                    <div data-id="{{$key['id']}}" class="choose-address-delivery main-btn p-10">Giao đến địa chỉ này</div>
-                                    <div data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
-                                        data-phuongxa="{{$key['phuongxa']}}" data-quanhuyen="{{$key['quanhuyen']}}"
-                                        data-tinhthanh="{{$key['tinhthanh']}}" class="btn-edit-address cancel-btn p-10 ml-10">Sửa</div>
-                                </div>
-                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12">
+                    {{-- thời gian thanh toán --}}
+                    <div class="countdown-checkout">
+                        <div class="countdown-text">Thanh toán kết thúc sau</div>
+                        <div class="countdown-number">
+                            <div class="minute-number"></div>
+                            <div class="second-number"></div>
                         </div>
-                        @break
-                    @endif
-                @endforeach
-
-                {{-- địa chỉ khác --}}
-                @foreach ($data['lst_address'] as $key)
-                    @if($key['macdinh'] == 0)
-                        <div class="col-lg-6">
-                            <div id="address-{{$key['id']}}" data-default="false" class="white-bg p-20 border mb-30">
-                                <div class="d-flex justify-content-between pb-10">
-                                    <div class="d-flex">
-                                        <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
-                                    </div>
-                                </div>
-                    
-                                <div class="d-flex mb-5">
-                                    <div class="gray-1">Địa chỉ:</div>
-                                    <div class="ml-5 black">
-                                        {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
-                                    </div>
-                                </div>
-                    
-                                <div class="d-flex mb-20">
-                                    <div class="d-flex">
-                                        <div class="gray-1">Điện thoại:</div>
-                                        <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
-                                    </div>
-                                </div>
-                                {{-- button --}}
-                                <div class="d-flex">
-                                    <div data-id="{{$key['id']}}" class="choose-address-delivery main-btn p-10 mr-10">Giao đến địa chỉ này</div>
-                                    <div data-id="{{$key['id']}}" data-diachi="{{$key['diachi']}}"
-                                        data-phuongxa="{{$key['phuongxa']}}" data-quanhuyen="{{$key['quanhuyen']}}"
-                                        data-tinhthanh="{{$key['tinhthanh']}}" class="btn-edit-address cancel-btn p-10 mr-10">Sửa</div>
-
-                                    <div data-id="{{$key['id']}}" class="btn-delete-address checkout-btn p-10">Xóa</div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
+                    </div>
+                </div>
             </div>
 
             {{-- thêm địa chỉ giao hàng mới --}}

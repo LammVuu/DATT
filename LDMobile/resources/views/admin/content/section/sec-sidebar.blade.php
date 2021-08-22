@@ -27,7 +27,7 @@
             <div class="sidebar-content">Slideshow MSP</div>
         </a>
 
-        <a href={{route('mausanpham.index')}} class="sidebar-link @yield('sidebar-product-samples')">
+        <a href={{route('mausanpham.index')}} class="sidebar-link @yield('sidebar-product-model')">
             <div class="sidebar-icon"><i class="fas fa-th-list"></i></div>
             <div class="sidebar-content">Mẫu sản phẩm</div>
         </a>
