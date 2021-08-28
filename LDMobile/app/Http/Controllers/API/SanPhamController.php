@@ -248,7 +248,7 @@ class SanPhamController extends Controller
         $storage = array();
         $images = array();
         $productCurrent = SANPHAM::find($id);
-        array_push($images, $productCurrent->hinhanh);
+        array_push($images,  Helper::$URL."phone/".$productCurrent->hinhanh);
         $cateProduct = MAUSP::find($productCurrent->id_msp);
         $product = SANPHAM::where('id_msp', $cateProduct->id)->get();
         $nhacungcap = NHACUNGCAP::find($cateProduct->id_ncc);
@@ -262,13 +262,11 @@ class SanPhamController extends Controller
             if($this->checkArray($storage, $product[$i]->dungluong)){
                  array_push($storage, $product[$i]->dungluong);
             }
-            if($this->checkArray($images, $product[$i]->hinhanh)){
-                array_push($images, $product[$i]->hinhanh);
+            if($this->checkArray($images,  Helper::$URL."phone/".$product[$i]->hinhanh)){
+                array_push($images,  Helper::$URL."phone/".$product[$i]->hinhanh);
             }
         }
-        foreach($images as $image){
-            $image = Helper::$URL."phone/".$image;
-        }
+       
         $cateProduct->nhacungcap = $nhacungcap;
         $cateProduct->mausac = $color;
         $cateProduct->dungluong = $storage;
