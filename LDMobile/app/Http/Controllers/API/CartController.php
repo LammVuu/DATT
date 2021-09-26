@@ -311,7 +311,10 @@ class CartController extends Controller
                     if($product['sl']==2)$wareHouse->slton--;
                     $wareHouse->update();
                 }
-                
+                if(!empty($product['id'])){
+                    $cart = GIOHANG::find($product['id']);
+                    $cart->delete();
+                }
             }
             $notification = new THONGBAO();
             $notification->id_tk = $id;
@@ -320,7 +323,7 @@ class CartController extends Controller
             $notification->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
             $notification->trangthaithongbao = 0;
             $notification->save();
-            $cart->delete();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Đặt hàng thành công',

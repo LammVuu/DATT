@@ -490,52 +490,7 @@ class SanPhamController extends Controller
                 ])
         ]);
     }
-    // public function checkComment($id, Request $request){
-    //     $listId = array();
-    //     $listResults = array();
-    //     $listOrder = DONHANG::where('id_tk', $id)->get();
-    //     $product1 = SANPHAM::find($request->idProduct);
-    //     foreach($listOrder as $order){
-    //         $detailOrder = CTDH::where('id_dh', $order->id)->get();
-    //         foreach($detailOrder as $detail){
-    //             $product2 = SANPHAM::find($detail->id_sp);
-    //             if($detail->id_sp == $request->idProduct){
-    //                 if($this->checkId($listId,$detail->id_sp)){
-    //                     array_push($listId, $detail->id_sp);
-    //                 }
-                  
-    //             }else if($product1->id_msp == $product2->id_msp){
-    //                 if($product1->dungluong ==  $product2->dungluong){
-    //                     if($this->checkId($listId, $detail->id_sp)){
-    //                         array_push($listId, $detail->id_sp);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     $listReview = DANHGIASP::where('id_tk', $id)->get();
-    //     $sizeListId = count($listId);
-    //         for($i=0;$i<$sizeListId;$i++){
-    //             $check = true;
-    //             foreach($listReview as $review){
-    //                     if($listId[$i] == $review->id_sp){
-    //                         $check = false;
-    //                     }
-    //             }
-    //             if($check == true){
-    //                 array_push($listResults, $listId[$i]);
-    //                 unset($listId[$i]);
-    //             }
-    //         }
-    //     return response()->json([
-    //             'status' => true,
-    //             'message' => '',
-    //             'data' =>  ([
-    //                 "new"=>$listResults,
-    //                 "edit"=>$listId,
-    //                  ]) 
-    //         ]);
-    // }
+   
     public function checkComment($id, Request $request){
         $listId = array();
         $listResults = array();
