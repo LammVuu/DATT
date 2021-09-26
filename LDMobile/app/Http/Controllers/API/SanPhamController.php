@@ -213,7 +213,10 @@ class SanPhamController extends Controller
         foreach($listProductNew as $product){
             $product->tensp = $product->tensp." ".$product->dungluong;
             $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
-            $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($product->id_km)->chietkhau))
+            {
+               $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            } else $product->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $product->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -309,6 +312,10 @@ class SanPhamController extends Controller
             }
             foreach($product as $pro){
                 $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
+                if(!empty(KHUYENMAI::find($pro->id_km)->chietkhau))
+                {
+                    $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+                } else  $pro->giamgia = 0;
                 $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
                 $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
                 $totalVote = 0;
@@ -364,7 +371,10 @@ class SanPhamController extends Controller
        
         foreach($listResult as $pro){
             $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
-            $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($pro->id_km)->chietkhau))
+            {
+                $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+            } else  $pro->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -712,9 +722,8 @@ class SanPhamController extends Controller
             foreach($listReply as $reply){
                 $user = TAIKHOAN::find($reply->id_tk);
                 if($user->htdn =="normal"){
-                    $user->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
-                }
-                $reply->anhdaidien = $user->anhdaidien;
+                    $reply->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
+                }else $reply->anhdaidien = $user->anhdaidien;
                 $reply->hoten = $user->hoten;
             }
             $comment->dsPhanHoi = $listReply;
@@ -722,9 +731,8 @@ class SanPhamController extends Controller
             $comment->thoigian = Carbon::createFromFormat('d/m/Y H:i:s',$comment->thoigian)->format('d/m/Y H:i');
             $user = TAIKHOAN::find($comment->id_tk);
             if($user->htdn =="normal"){
-                $user->avatar = Helper::$URL.'user/'.$user->anhdaidien;
-            }
-            $comment->anhdaidien = $user->avatar;
+                $comment->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
+            }else $comment->anhdaidien = $user->anhdaidien;
             $comment->hoten = $user->hoten;
             $product =  SANPHAM::find($comment->id_sp);
             $comment->mausac = $product->mausac;
