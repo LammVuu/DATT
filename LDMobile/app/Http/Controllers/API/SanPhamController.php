@@ -316,7 +316,7 @@ class SanPhamController extends Controller
                 {
                     $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
                 } else  $pro->giamgia = 0;
-                $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+              
                 $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
                 $totalVote = 0;
                 foreach($allJudge as $judge){
@@ -374,7 +374,7 @@ class SanPhamController extends Controller
             if(!empty(KHUYENMAI::find($pro->id_km)->chietkhau))
             {
                 $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
-            } else  $pro->giamgia = 0;
+            }else  $pro->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -432,7 +432,9 @@ class SanPhamController extends Controller
         }
         foreach($listResult as $pro){
             $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
-            $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($pro->giamgia)->chietkhau)){
+                $pro->giamgia = KHUYENMAI::find($pro->giamgia)->chietkhau;
+            }else $pro->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -671,7 +673,10 @@ class SanPhamController extends Controller
         foreach($listProduct as $product){
             $product->tensp = $product->tensp." ".$product->dungluong;
             $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
-            $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($product->giamgia)->chietkhau)){
+                $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+           } else $product->giamgia = 0;
+            
             $allJudge = DANHGIASP::where("id_sp", $product->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -1044,7 +1049,9 @@ class SanPhamController extends Controller
         $listProduct = SANPHAM::whereIn('id', $listID)->get();
         foreach($listProduct as $pro){
             $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
-            $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($pro->id_km)->chietkhau)){
+                    $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+               } else  $pro->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -1078,7 +1085,10 @@ class SanPhamController extends Controller
             $listProduct = SANPHAM::where("tensp", 'like','%'.$request->q.'%')->groupBy("tensp")->get();
             foreach($listProduct as $pro){
                 $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
-                $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+                if(!empty(KHUYENMAI::find($pro->id_km)->chietkhau))
+                {
+                    $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
+                } else  $pro->giamgia = 0;
                 $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
                 $totalVote = 0;
                 $totalJudge = 0;
