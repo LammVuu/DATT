@@ -45,7 +45,10 @@ class CartController extends Controller
             $product->avatar = Helper::$URL."phone/".$pro->hinhanh;
             $product->color = $pro->mausac;
             $product->storage = $pro->dungluong;
-            $product->discount = KHUYENMAI::find($pro->id_km)->chietkhau;
+            if(!empty($pro->id_km)){
+                $product->discount = KHUYENMAI::find($pro->id_km)->chietkhau;
+            }else  $product->discount = 0 ;
+            
             $product->price = $pro->gia-($pro->gia*$product->discount);
             $product->priceRoot =  $pro->gia;
             $product->isAvailable = true;
@@ -224,8 +227,6 @@ class CartController extends Controller
                 $detailOrder->giamgia = $product['discount'];
                 $detailOrder->thanhtien =  $product['price']*$product['sl'];
                 $detailOrder->save();
-
-                $cart = GIOHANG::find($product['id']);
                 
                 //kho
                 if(!empty(request('id_tk_dc'))){
@@ -311,10 +312,12 @@ class CartController extends Controller
                     if($product['sl']==2)$wareHouse->slton--;
                     $wareHouse->update();
                 }
+                
                 if(!empty($product['id'])){
-                    $cart = GIOHANG::find($product['id']);
-                    $cart->delete();
+                     $cart = GIOHANG::find($product['id']);
+                     $cart->delete();
                 }
+                
             }
             $notification = new THONGBAO();
             $notification->id_tk = $id;
