@@ -23,7 +23,7 @@ use App\Models\THONGBAO;
 use App\Models\KHO;
 use App\Models\TINHTHANH;
 use App\Models\DONHANG_DIACHI;
-
+use App\Http\Controllers\PushNotificationController;
 class DonHangController extends Controller
 {
     /**
@@ -31,6 +31,7 @@ class DonHangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function __construct()
     {
         $this->admin='admin/content/';
@@ -365,6 +366,10 @@ class DonHangController extends Controller
                 KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
             }
         }
+        //push notication to app
+        $user = TAIKHOAN::find($order->id_tk);
+        if(!empty($user->device_token))
+        (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id ."của bạn đã bị hủy");
     }
 
     public function AjaxOrderConfirmation(Request $request)
@@ -389,7 +394,11 @@ class DonHangController extends Controller
                 'orderStatus' => 'confirmed',
                 'notification' => '',
             ];
-
+            //push notication to app
+            $user = TAIKHOAN::find($order->id_tk);
+            if(!empty($user->device_token))
+            (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id." đã được xác nhận");
+            
             $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
                                                 <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
                                                 <div class="d-flex align-items-center">
@@ -500,7 +509,11 @@ class DonHangController extends Controller
                 'orderStatus' => 'success',
                 'notification' => '',
             ];
-
+            //push notication to app
+            $user = TAIKHOAN::find($order->id_tk);
+            if(!empty($user->device_token))
+            (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id ." đã giao thành công. Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá...");
+            
             $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
                                                 <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
                                                 <div class="d-flex align-items-center">

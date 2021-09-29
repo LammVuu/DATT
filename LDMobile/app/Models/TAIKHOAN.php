@@ -26,6 +26,7 @@ class TAIKHOAN extends Authenticatable
         'remember_token',
         'user_social_token',
         'login_status',
+        'device_token',
         'thoigian',
         'trangthai',
     ];

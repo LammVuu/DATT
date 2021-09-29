@@ -870,10 +870,13 @@ class SanPhamController extends Controller
             $user = TAIKHOAN::find(request('id_tk'));
             $notification = new THONGBAO();
             $notification->id_tk =$comment->id_tk;
-            $notification->tieude = "Trả lời";
-            $notification->noidung = "Bạn có 1 trả lời từ ".$user->hoten." cho sản phẩm ".$sanpham->tensp." ".$sanpham->dungluong;
+            $notification->tieude = "Đánh giá";
+            $notification->noidung = $user->hoten." đã trả lời đánh giá của bạn ";
             $notification->trangthaithongbao = 0;
             $notification->save();
+            $userComment = TAIKHOAN::find($comment->id_tk);
+            if(!empty($userComment->device_token))
+            (new PushNotificationController)->sendPush($userComment->device_token, "Phản hồi", $user->hoten." đã trả lời đánh giá của bạn ");
         }
         if($reply->save()){
             return response()->json([
@@ -882,6 +885,7 @@ class SanPhamController extends Controller
                 'data' => null
             ]);
         }
+        
         return response()->json([
             'status' => false,
             'message' => 'Thất bại',

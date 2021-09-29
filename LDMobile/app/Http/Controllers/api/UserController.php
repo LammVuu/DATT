@@ -72,9 +72,11 @@ class UserController extends Controller
         if($request->htdn =="socialNetwork"){
             $id = User::where("email", request('email'))->value('id');
             $user = User::find($id);
+            $user->device_token =  request('device_token');
             $tokenResult = $user->createToken('LD Mobile');
             $token = $tokenResult->token;
             $token->save();
+            $user->save();
             return response()->json([
                 'status' => true,
                 'code'  => 200,
@@ -94,9 +96,11 @@ class UserController extends Controller
             if($user->htdn =="normal"){
                 $user->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
             }
+            $user->device_token =  request('device_token');
             $tokenResult = $user->createToken('LD Mobile');
             $token = $tokenResult->token;
             $token->save();
+            $user->save();
             return response()->json([
                 'status' => true,
                 'code'  => 200,
@@ -114,6 +118,9 @@ class UserController extends Controller
     }
     public function logout(Request $request)
     {
+        $user = $request->user();
+        $user->device_token = "";
+        $user->update();
         $request->user()->token()->revoke();
         return response()->json([
             'status' => 'true',

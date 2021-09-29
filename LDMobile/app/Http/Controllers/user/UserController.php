@@ -34,7 +34,7 @@ use App\Models\CHINHANH;
 use App\Models\TINHTHANH;
 use App\Models\SANPHAM;
 use App\Models\DONHANG_DIACHI;
-
+use App\Http\Controllers\PushNotificationController;
 
 class UserController extends Controller
 {
@@ -1124,6 +1124,9 @@ class UserController extends Controller
                     'type' => 'reply',
                     'notification' => '',
                 ];
+                //PUSH NOTI TO APP 
+                if(!empty($user->device_token))
+                (new PushNotificationController)->sendPush($user->device_token, "Phản hồi", $userReply->hoten." đã trả lời đánh giá của bạn ");
 
                 $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
                                                     <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
