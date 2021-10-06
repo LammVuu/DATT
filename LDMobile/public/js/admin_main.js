@@ -5739,7 +5739,8 @@ $(function() {
                 },
                 url: 'admin/donhang/' + id,
                 type: 'DELETE',
-                success: function(){
+                success: function(data){
+                    console.log(data)
                     $('.loader').fadeOut()
                     $('#delete-modal').modal('hide');
                     

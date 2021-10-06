@@ -108,10 +108,21 @@ class DonHangController extends Controller
         // hoàn lại số lượng kho
         $this->UserController->refundOfInventory($id);
 
+        $notification = [
+            'user' => TAIKHOAN::find($id_tk),
+            'type' => 'order',
+            'orderStatus' => 'cancelled',
+            'id_dh' => $id,
+        ];
+        
+        event(new sendNotification($notification));
+
         //push notication to app
         $user = TAIKHOAN::find($order->id_tk);
         if(!empty($user->device_token))
         (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id ."của bạn đã bị hủy");
+
+        return $notification;
     }
 
     // xác nhận đơn hàng

@@ -4499,38 +4499,57 @@ $(function(){
 
         // đơn hàng
         if(notificationObject.type === 'order') {
-            if(notificationObject.orderStatus === 'confirmed') {
-                toast =
-                    `<div id="alert-toast" class="alert-toast-2">
-                        <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
-                        <div class="d-flex align-items-center">
-                            <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
-                            <div class="alert-toast-2-content">
-                                <div class="mb-10">Đã xác nhận đơn hàng <b>#${notificationObject.id_dh}</b> của bạn.</div>
-                                <div class="d-flex justify-content-end align-items-center mr-5">
-                                    <div class="dot-green mr-5"></div>
-                                    <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+            switch(notificationObject.orderStatus) {
+                case 'confirmed':
+                    toast =
+                        `<div id="alert-toast" class="alert-toast-2">
+                            <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
+                            <div class="d-flex align-items-center">
+                                <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
+                                <div class="alert-toast-2-content">
+                                    <div class="mb-10">Đã xác nhận đơn hàng <b>#${notificationObject.id_dh}</b> của bạn.</div>
+                                    <div class="d-flex justify-content-end align-items-center mr-5">
+                                        <div class="dot-green mr-5"></div>
+                                        <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <div>`
-            } else {
-                toast =
-                    `<div id="alert-toast" class="alert-toast-2">
-                        <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
-                        <div class="d-flex align-items-center">
-                            <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
-                            <div class="alert-toast-2-content">
-                                <div class="mb-10" style="max-width: 350px">
-                                    Đơn hàng <b>#${notificationObject.id_dh}</b> đã được giao thành công. Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá... <a href="taikhoan/thongbao">Chi tiết</a>
-                                </div>
-                                <div class="d-flex justify-content-end align-items-center mr-5">
-                                    <div class="dot-green mr-5"></div>
-                                    <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                        <div>`
+                    break
+                case 'success':
+                    toast =
+                        `<div id="alert-toast" class="alert-toast-2">
+                            <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
+                            <div class="d-flex align-items-center">
+                                <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
+                                <div class="alert-toast-2-content">
+                                    <div class="mb-10" style="max-width: 350px">
+                                        Đơn hàng <b>#${notificationObject.id_dh}</b> đã được giao thành công. Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá... <a href="taikhoan/thongbao">Chi tiết</a>
+                                    </div>
+                                    <div class="d-flex justify-content-end align-items-center mr-5">
+                                        <div class="dot-green mr-5"></div>
+                                        <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <div>`
+                        <div>`
+                    break
+                case 'cancelled':
+                    toast =
+                        `<div id="alert-toast" class="alert-toast-2">
+                            <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
+                            <div class="d-flex align-items-center">
+                                <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
+                                <div class="alert-toast-2-content">
+                                    <div class="mb-10">Đơn hàng <b>#${notificationObject.id_dh}</b> của bạn đã bị hủy.</div>
+                                    <div class="d-flex justify-content-end align-items-center mr-5">
+                                        <div class="dot-green mr-5"></div>
+                                        <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        <div>`
+                    break
             }
         }
         // phản hồi
@@ -6180,8 +6199,7 @@ $(function(){
 
     var channel = pusher.subscribe('my-channel');
     channel.bind('my-event', function (data) {
-        var user = $('#session-user');
-        var id_tk = user.data('id');
+        const id_tk = $('#session-user').attr('data-id');
 
         const notification = data.notification
 
@@ -6191,17 +6209,14 @@ $(function(){
             notiQty++;
             $('.not-seen-qty').text(notiQty);
 
-            if(notification.type == 'order'){
-                if(notification.orderStatus == 'success'){
-                    var processingQty = parseInt($($('.processing-qty')[0]).text());
-                    if(processingQty == 1){
-                        $('.processing-qty').hide();
-                    } else {
-                        processingQty--;
-                        $('.processing-qty').text(processingQty);
-                    }
+            if(notification.type === 'order' && notification.orderStatus === 'success'){
+                var processingQty = parseInt($($('.processing-qty')[0]).text());
+                if(processingQty == 1){
+                    $('.processing-qty').hide();
+                } else {
+                    processingQty--;
+                    $('.processing-qty').text(processingQty);
                 }
-                
             }
 
             // render thông báo

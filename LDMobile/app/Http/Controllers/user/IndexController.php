@@ -308,8 +308,8 @@ class IndexController extends Controller
 
         $userEvaluate = [];
         $anotherEvaluate = [];
-        $id_tk = session('user')->id;
         if(session('user')){
+            $id_tk = session('user')->id;
             foreach($lst_evaluate['evaluate'] as $evaluate){
                 if($evaluate['taikhoan']['id'] == $id_tk){
                     array_push($userEvaluate, $evaluate);
