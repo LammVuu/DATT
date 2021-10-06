@@ -166,7 +166,7 @@
                 </div>
 
                 {{-- kiểm tra còn hàng --}}
-                <div id="check-qty-in-stock-btn" type="button" class="main-color-text ml-10" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
+                <div id="check-qty-in-stock-btn" type="button" class="see-store" data-id="{{$phone['id']}}"><i class="fas fa-store mr-5"></i> Xem các chi nhánh còn hàng</div>
             </div>
         </div> <hr>
 
@@ -515,7 +515,6 @@
                                             <div class="d-flex">
                                                 <input type="hidden" class='qty-img-inp' value='0'>
                                                 <input class='upload-evaluate-image none-dp' type="file" multiple accept="image/*">
-                                                <div class="array_evaluate_image"></div>
                                                 <div id='btn-photo-attached' class='pointer-cs'>
                                                     <i class="fas fa-camera"></i>
                                                     <span>Ảnh đính kèm</span>
@@ -556,7 +555,8 @@
                                                     </div>
                                                     
                                                     <div class='d-flex align-items-center flex-wrap'>
-                                                        <div class="d-flex align-items center mr-20">
+                                                        {{-- icon ngôi sao --}}
+                                                        <div class="d-flex align-items center mr-10">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if($key['danhgia'] >= $i)
                                                                 <i class="fas fa-star checked"></i>
@@ -565,11 +565,22 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
+                                                        {{-- màu sắc đánh giá --}}
                                                         <div class="gray-1">Màu sắc: {{ $key['sanpham']['mausac'] }}</div>
                                                     </div>
                                                     {{-- sao đánh giá --}}
                                                     <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
-                                                    <div>{{ $key['thoigian']}}</div>
+                                                    <div class="d-flex align-items-center flex-wrap">
+                                                        {{-- ngày đăng --}}
+                                                        <div class="mr-10">{{ $key['thoigian']}}</div>
+                                                        {{-- chỉnh sửa --}}
+                                                        @if ($key['chinhsua'] === 1)
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-circle mr-10 fz-6 gray-1"></i>
+                                                                <i class="gray-1 fw-600">Đã chỉnh sửa</i>
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -677,7 +688,17 @@
                                                 </div>
                                                 {{-- sao đánh giá --}}
                                                 <input type="hidden" id="evaluate-rating-{{$key['id']}}" value="{{$key['danhgia']}}">
-                                                <div>{{ $key['thoigian']}}</div>
+                                                <div class="d-flex align-items-center flex-wrap">
+                                                    {{-- ngày đăng --}}
+                                                    <div class="mr-10">{{ $key['thoigian']}}</div>
+                                                    {{-- chỉnh sửa --}}
+                                                    @if ($key['chinhsua'] === 1)
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-circle mr-10 fz-6 gray-1"></i>
+                                                            <i class="gray-1 fw-600">Đã chỉnh sửa</i>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
 
@@ -772,19 +793,22 @@
 </section>
 
 {{-- xem ảnh đánh giá --}}
-<div class="relative">
+<div class="see-review-image-card">
     <div class="see-review-image">
-        {{-- nút đóng --}}
-        <div class="close-see-review-image"><i class="fas fa-times mr-10"></i>Đóng</div>
-        {{-- ảnh đang xem và 2 nút prev, next --}}
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="prev-see-review-image"><i class="fas fa-chevron-left fz-30"></i></div>
-            <img id="review-image-main" src="images/No-image.jpg" alt="review image main">
-            <div class="next-see-review-image"><i class="fas fa-chevron-right fz-30"></i></div>
+        <div class="review-image-header">
+            {{-- nút đóng --}}
+            <div class="close-see-review-image"><i class="fas fa-times mr-10"></i>Đóng</div>
         </div>
-        <hr>
-        {{-- ảnh khác --}}
-        <div id="another-review-image" class="d-flex justify-content-center align-items-center"></div>
+        {{-- ảnh đang xem và 2 nút prev, next --}}
+        <div class="review-image-body">
+            <div class="prev-see-review-image"><i class="fas fa-chevron-left"></i></div>
+            <img id="review-image-main" src="images/No-image.jpg" alt="review image main">
+            <div class="next-see-review-image"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="review-image-footer">
+            {{-- ảnh khác --}}
+            <div id="another-review-image"></div>
+        </div>
     </div>
 </div>
 
@@ -807,25 +831,15 @@
                     <div id="check-qty-in-stock-branch">
                         <div class="row">
                             <div class="col-lg-4">
-                                <div class="select">
-                                    <div id='area-selected' data-id="{{$lst_area[0]->id}}" data-flag="1" class="select-selected">
-                                        <div id='area-name'>{{$lst_area[0]->tentt}}</div>
-                                        <i class="far fa-chevron-down fz-14"></i>
-                                    </div>
-                
-                                    <div id='area-box' class="select-box">
-                                        {{-- option --}}
-                                        <div class="select-option">
-                                            @foreach ($lst_area as $key)
-                                                <div class="option-area select-single-option" data-area='{{ $key->id }}'>{{ $key->tentt }}</div>
-                                            @endforeach 
-                                        </div>
-                                    </div>
-                                </div>
+                                <select id="check-qty-in-stock-select">
+                                    @foreach ($lst_area as $area)
+                                        <option value="{{$area->id}}">{{$area->tentt}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             {{-- danh sách chi nhánh --}}
                             <div class="col-lg-8">
-                                <div class="list-branch mt-0"></div>
+                                <div class="list-branch"></div>
                             </div>
                         </div>
                     </div>

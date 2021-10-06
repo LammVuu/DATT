@@ -21,6 +21,7 @@ class CreateDanhgiaspTable extends Migration
             $table->string('thoigian', 20);
             $table->integer('soluotthich');
             $table->tinyInteger('danhgia');
+            $table->boolean('chinhsua');
         });
     }
 

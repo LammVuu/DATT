@@ -81,42 +81,43 @@
                 <div id="modal-title" class="fw-600 fz-22"></div>
             </div>
             <div class="modal-body p-40">
-                <div class="row mb-3">
-                    {{-- tên km & chiết khấu --}}
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label for="khuyenmai_name" class="mb-5 fw-600">Tên khuyến mãi</label>
-                            <input type="text" id="khuyenmai_name" placeholder="Nhập tên khuyến mãi">
+                <form id="khuyenmai-form">
+                    <div class="row mb-3">
+                        {{-- tên km & chiết khấu --}}
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="khuyenmai_name" class="mb-5 fw-600">Tên khuyến mãi</label>
+                                <input type="text" id="khuyenmai_name" placeholder="Nhập tên khuyến mãi">
+                            </div>
+                            <div>
+                                <label for="khuyenmai_discount" class="mb-5 fw-600">Chiết khấu</label>
+                                <input type="number" id="khuyenmai_discount" min="1" max="100" placeholder="VD: 10">
+                            </div>
                         </div>
-                        <div>
-                            <label for="khuyenmai_discount" class="mb-5 fw-600">Chiết khấu</label>
-                            <input type="number" id="khuyenmai_discount" placeholder="VD: 10">
+                        {{-- nội dung --}}
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="khuyenmai_content" class="mb-5 fw-600">Nội dung</label>
+                                <textarea id="khuyenmai_content" rows="5"></textarea>
+                            </div>
                         </div>
                     </div>
-                    {{-- nội dung --}}
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label for="khuyenmai_content" class="mb-5 fw-600">Nội dung</label>
-                            <textarea id="khuyenmai_content" rows="5"></textarea>
+                    {{-- ngày bắt đầu & ngày kết thúc --}}
+                    <div class="row mb-3">
+                        <div class="col-lg-6">
+                            <label for="khuyenmai_start" class="mb-5 fw-600">Ngày bắt đầu</label>
+                            <input type="date" id="khuyenmai_start">
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="khuyenmai_end" class="mb-5 fw-600">Ngày kết thúc</label>
+                            <input type="date" id="khuyenmai_end">
                         </div>
                     </div>
-                </div>
-                {{-- ngày bắt đầu & ngày kết thúc --}}
-                <div class="row mb-3">
-                    <div class="col-lg-6">
-                        <label for="khuyenmai_start" class="mb-5 fw-600">Ngày bắt đầu</label>
-                        <input type="date" id="khuyenmai_start">
+                    <div class="d-flex justify-content-end mt-50">
+                        <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
+                        <div id="action-khuyenmai-btn" class="main-btn ml-10"></div>
                     </div>
-                    <div class="col-lg-6">
-                        <label for="khuyenmai_end" class="mb-5 fw-600">Ngày kết thúc</label>
-                        <input type="date" id="khuyenmai_end">
-                    </div>
-                </div>
-                <div class="d-flex justify-content-end mt-50">
-                    <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                    <div id="action-khuyenmai-btn" class="main-btn ml-10"></div>
-                </div>
-                
+                </form>
             </div>
         </div>
     </div>

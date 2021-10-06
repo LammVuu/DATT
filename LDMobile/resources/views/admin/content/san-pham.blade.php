@@ -62,7 +62,7 @@
                 <div class="sort-badge"></div>
                 <div class="sort-div">
                     <div class="mb-5">
-                        <input type="radio" name="sort" id="id-asc" value="id-asc">
+                        <input type="radio" name="sort" id="id-asc" value="id-asc" checked>
                         <label for="id-asc">ID tăng dần</label>
                     </div>
                     <div class="mb-5">
@@ -76,10 +76,6 @@
                     <div class="mb-5">
                         <input type="radio" name="sort" id="price-desc" value="price-desc">
                         <label for="price-desc">Giá cao tới thấp</label>
-                    </div>
-                    <div class="mb-5">
-                        <input type="radio" name="sort" id="discount-desc" value="discount-desc">
-                        <label for="discount-desc">Phần trăm giảm</label>
                     </div>
                 </div>
             </div>

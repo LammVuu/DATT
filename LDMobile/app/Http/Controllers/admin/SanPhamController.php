@@ -77,55 +77,6 @@ class SanPhamController extends Controller
 
         return view($this->admin."san-pham")->with($data);
     }
-    
-    public function bindElement($id)
-    {
-        $data = SANPHAM::find($id);
-
-        if($data->id_km){
-            $promotion = KHUYENMAI::find($data->id_km)->chietkhau*100 .'%';
-        } else {
-            $promotion = 'Không có';
-        }
-
-        $html = '<tr data-id="'.$data->id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->tensp.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->mausac.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->ram.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->dungluong.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.number_format($data->gia, 0, '', '.').'<sup>đ</sup></div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$promotion.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div data-id="'.$data->id.'" class="trangthai pt-10 pb-10">'.($data->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$data->id.'" data-name="'.$data->tensp.' '.$data->dungluong.' - '.$data->ram.' Ram - '.$data->mausac.'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>';
-        return $html;
-    }
 
     public function store(Request $request)
     {
@@ -198,12 +149,16 @@ class SanPhamController extends Controller
             }
 
             $create = SANPHAM::create($data);
-
-            $html = $this->bindElement($create->id);
+            if($create->id_km){
+                $promotion = KHUYENMAI::find($create->id_km)->chietkhau*100 .'%';
+            } else {
+                $promotion = 'Không có';
+            }
+            $create->promotion = $promotion;
 
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create]
             ];
         }
     }
@@ -266,9 +221,15 @@ class SanPhamController extends Controller
 
             SANPHAM::where('id', $id)->update($data);
 
-            $html = $this->bindElement($id);
+            $newRow = SANPHAM::find($id);
+            if($newRow->id_km){
+                $promotion = KHUYENMAI::find($newRow->id_km)->chietkhau*100 .'%';
+            } else {
+                $promotion = 'Không có';
+            }
+            $newRow->promotion = $promotion;
 
-            return $html;
+            return [$newRow];
         }
     }
 
@@ -325,14 +286,21 @@ class SanPhamController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(SANPHAM::limit(10)->get() as $key){
-                    $html .= $this->bindElement($key->id);
+                $products = SANPHAM::limit(10)->get();
+                foreach($products as $key){
+                    if($key->id_km){
+                        $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                    } else {
+                        $promotion = 'Không có';
+                    }
+
+                    $key->promotion = $promotion;
                 }
 
-                return $html;
+                return $products;
             }
 
             foreach(SANPHAM::all() as $key){
@@ -342,13 +310,15 @@ class SanPhamController extends Controller
                     $promotion = 'Không có';
                 }
                 
-                $data = strtolower($this->IndexController->unaccent($key->id.$key->tensp.$key->mausac.$key->ram.$key->dungluong.$key->gia.$promotion.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
+                $string = strtolower($this->IndexController->unaccent($key->id.$key->tensp.$key->mausac.$key->ram.$key->dungluong.$key->gia.$promotion.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
                 
-                if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                if(str_contains($string, $keyword)){
+                    $key->promotion = $promotion;
+                    array_push($lst_result, $key);
                 }
             }
-            return $html;
+
+            return $lst_result;
         }
     }
 
@@ -387,28 +357,27 @@ class SanPhamController extends Controller
 
                 // ko có tìm kiếm
                 if(empty($lst_productSearch)){
-                    if($sort == 'id-asc' || $sort == ''){
-                        $data = SANPHAM::all();
+                    if($sort == 'id-asc'){
+                        $data = SANPHAM::limit(10)->get();
                     } else if($sort == 'id-desc'){
-                        $data = SANPHAM::orderBy('id', 'desc')->get();
+                        $data = SANPHAM::orderBy('id', 'desc')->limit(10)->get();
                     } else if($sort == 'price-asc'){
-                        $data = SANPHAM::orderBy('gia')->get();
+                        $data = SANPHAM::orderBy('gia')->limit(10)->get();
                     } else if($sort == 'price-desc'){
-                        $data = SANPHAM::orderBy('gia', 'desc')->get();
-                    } else {
-                        $data = [];
-                        foreach(KHUYENMAI::orderBy('chietkhau', 'desc')->select('id')->get() as $promotion){
-                            foreach(SANPHAM::where('id_km', $promotion->id)->get() as $key){
-                                array_push($data, $key);
-                            }
-                        }
+                        $data = SANPHAM::orderBy('gia', 'desc')->limit(10)->get();
                     }
 
                     foreach($data as $key){
-                        $html .= $this->bindElement($key->id);
+                        if($key->id_km){
+                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                        } else {
+                            $promotion = 'Không có';
+                        }
+
+                        $key->promotion = $promotion;
                     }
 
-                    return $html;
+                    return $data;
                 } else {
                     if($sort == 'id-asc' || $sort == ''){
                         $lst_productSearch = $this->sortID($lst_productSearch);
@@ -423,10 +392,17 @@ class SanPhamController extends Controller
                     }
 
                     foreach($lst_productSearch as $key){
-                        $html .= $this->bindElement($key->id);
+                        if($key->id_km) {
+                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                        } else {
+                            $promotion = 'Không có';
+                        }
+
+                        $key->promotion = $promotion;
                     }
+
+                    return $lst_productSearch;
                 }
-                return $html;
             }
 
             $arrFilter = $arrFilterSort['filter'];
@@ -458,7 +434,9 @@ class SanPhamController extends Controller
                         }
                     }
                 }
-            } else{
+            }
+            // lọc trong db
+            else{
                 if(array_key_first($arrFilter) == 'ram'){
                     foreach($arrFilter['ram'] as $ram){
                         foreach(SANPHAM::where('ram', $ram)->get() as $key){
@@ -484,7 +462,14 @@ class SanPhamController extends Controller
                 // không có sắp xếp
                 if(!$arrFilterSort['sort']){
                     foreach($lst_temp as $key){
-                        $html .= $this->bindElement($key->id);
+                        if($key->id_km) {
+                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                        } else {
+                            $promotion = 'Không có';
+                        }
+
+                        $key->promotion = $promotion;
+                        array_push($lst_result, $key);
                     }
                 } else {
                     $sort = $arrFilterSort['sort'];
@@ -501,10 +486,17 @@ class SanPhamController extends Controller
                     }
 
                     foreach($lst_temp as $key){
-                        $html .= $this->bindElement($key->id);
+                        if($key->id_km) {
+                            $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                        } else {
+                            $promotion = 'Không có';
+                        }
+
+                        $key->promotion = $promotion;
+                        array_push($lst_result, $key);
                     }
                 }
-                return $html;
+                return $lst_result;
             }
 
             array_push($lst_result, $lst_temp);
@@ -547,10 +539,17 @@ class SanPhamController extends Controller
             // không có sắp xếp
             if(!$arrFilterSort['sort']){
                 foreach($lst_result as $key){
-                    $html .= $this->bindElement($key->id);
+                    if($key->id_km) {
+                        $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                    } else {
+                        $promotion = 'Không có';
+                    }
+
+                    $key->promotion = $promotion;
                 }
             } else {
                 $sort = $arrFilterSort['sort'];
+                
                 if($sort == 'id-asc'){
                     $lst_result = $this->sortID($lst_result);
                 } elseif($sort == 'id-desc'){
@@ -563,12 +562,19 @@ class SanPhamController extends Controller
                     $lst_result = $this->sortDiscount($lst_result, 'desc');
                 }
 
+
                 foreach($lst_result as $key){
-                    $html .= $this->bindElement($key->id);
+                    if($key->id_km) {
+                        $promotion = (KHUYENMAI::find($key->id_km)->chietkhau * 100) . '%';
+                    } else {
+                        $promotion = 'Không có';
+                    }
+
+                    $key->promotion = $promotion;
                 }
             }
 
-            return $html;
+            return $lst_result;
         }
     }
 

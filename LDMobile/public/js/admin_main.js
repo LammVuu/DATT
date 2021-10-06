@@ -2,33 +2,6 @@ $(window).on('load', function(){
     $('.loader').fadeOut();
 });
 
-function showAlertTop(content){
-    setTimeout(() => {
-        $('.alert-top').css({
-            '-ms-transform': 'translateY(0)',
-            'transform': 'translateY(0)',
-        });
-        $('.backdrop').css('z-index', '1999');
-        $('.backdrop').fadeIn();
-        
-    }, 200);
-    $('.alert-top-content').html(content);
-}
-
-function closeAlertTop(){
-    setTimeout(() => {
-        $('.alert-top-content').text('');
-        $('.backdrop').removeAttr('style');
-        $('.alert-top').removeAttr('style');
-        $('.close-alert-top').replaceWith($('<div class="close-alert-top">OK</div>'));
-    }, 500);
-    $('.alert-top').css({
-        '-ms-transform': 'translateY(-500px)',
-        'transform': 'translateY(-500px)',
-    });
-    $('.backdrop').fadeOut();
-}
-
 $(function() {
     // auto cuộn
     setTimeout(() => {
@@ -45,19 +18,24 @@ $(function() {
         }
     }, 200);
 
-    var url = window.location.pathname.split('/')[2];
-    if(url == undefined){
-        url = '';
+    let page = window.location.pathname.split('/')[2];
+    if(page === undefined){
+        page = '';
     }
-    var navigation = performance.getEntriesByType("navigation")[0].type;
+    const navigation = performance.getEntriesByType("navigation")[0].type;
     
     const SUCCESS = '#D2F4EA';
     const DANGER = '#F8D7DA';
     const CREATE_MESSAGE = 'Thêm thành công';
     const EDIT_MESSAGE = 'Chỉnh sửa thành công';
     const DELETE_MESSAGE = 'Xóa thành công';
+    const errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại'
+    const TOAST_SUCCESS_TYPE = 1
+    const TOAST_DELETE_TYPE = 2
+    const X_CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content')
 
     var loadMoreFlag = false;
+    var timer = null;
 
     // xử lý cuộn trang
     $(window).scroll(function(e){
@@ -86,24 +64,22 @@ $(function() {
                 loadMoreFlag = true;
                 $('#loadmore').show();
 
-                if(url == 'donhang'){
-                    if($('#lst_data').attr('data-loadmore') != 'done'){
+                if(page === 'donhang'){
+                    if($('#lst_data').attr('data-loadmore') !== 'done'){
                         var row = $('#lst_data').children().length;
                         var sort = $('input[name="sort"]:checked').val();
-                        if(sort === undefined){
-                            sort = '';
-                        }
                         $.ajax({
                             headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                'X-CSRF-TOKEN': X_CSRF_TOKEN
                             },
                             url: 'admin/ajax-load-more',
                             type: 'POST',
-                            data: {'url': url, 'row': row, 'sort': sort},
+                            data: {'page': page, 'row': row, 'sort': sort},
                             success:function(data){
                                 loadMoreFlag = false;
-                                if(data != 'done'){
-                                    $('#lst_data').append(data);
+                                if(data !== 'done'){
+                                    const html = renderNewRow(page, data)
+                                    $('#lst_data').append(html);
                                 } else {
                                     $('#lst_data').attr('data-loadmore', 'done');
                                     $('#loadmore').hide();
@@ -113,24 +89,22 @@ $(function() {
                     } else {
                         $('#loadmore').hide();
                     }
-                } else if(url == 'sanpham'){
-                    if($('#lst_data').attr('data-loadmore') != 'done'){
+                } else if(page === 'sanpham'){
+                    if($('#lst_data').attr('data-loadmore') !== 'done'){
                         var row = $('#lst_data').children().length;
                         var sort = $('input[name="sort"]:checked').val();
-                        if(sort == undefined){
-                            sort = '';
-                        }
                         $.ajax({
                             headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                'X-CSRF-TOKEN': X_CSRF_TOKEN
                             },
                             url: 'admin/ajax-load-more',
                             type: 'POST',
-                            data: {'url': url, 'row': row, 'sort': sort},
+                            data: {'page': page, 'row': row, 'sort': sort},
                             success:function(data){
                                 loadMoreFlag = false;
-                                if(data != 'done'){
-                                    $('#lst_data').append(data);
+                                if(data !== 'done'){
+                                    const html = renderNewRow(page, data);
+                                    $('#lst_data').append(html);
                                 } else {
                                     $('#lst_data').attr('data-loadmore', 'done');
                                     $('#loadmore').hide();
@@ -140,21 +114,22 @@ $(function() {
                     } else {
                         $('#loadmore').hide();
                     }
-                } else if(url == 'imei'){
-                    if($('#lst_data').attr('data-loadmore') != 'done'){
+                } else if(page === 'imei'){
+                    if($('#lst_data').attr('data-loadmore') !== 'done'){
                         var row = $('#lst_data').children().length;
                         var keyword = $('#search').val().toLocaleLowerCase();
                         $.ajax({
                             headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                'X-CSRF-TOKEN': X_CSRF_TOKEN
                             },
                             url: 'admin/ajax-load-more',
                             type: 'POST',
-                            data: {'url': url, 'row': row, 'keyword': keyword},
+                            data: {'page': page, 'row': row, 'keyword': keyword},
                             success:function(data){
                                 loadMoreFlag = false;
-                                if(data != 'done'){
-                                    $('#lst_data').append(data);
+                                if(data !== 'done'){
+                                    const html = renderNewRow(page, data)
+                                    $('#lst_data').append(html);
                                 } else {
                                     $('#lst_data').attr('data-loadmore', 'done');
                                     $('#loadmore').hide();
@@ -165,27 +140,33 @@ $(function() {
                         $('#loadmore').hide();
                     }
                 } else {
-                    if($('#lst_data').attr('data-loadmore') != 'done'){
-                        var row = $('#lst_data').children().length;
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: 'admin/ajax-load-more',
-                            type: 'POST',
-                            data: {'url': url, 'row': row},
-                            success:function(data){
-                                loadMoreFlag = false;
-                                if(data != 'done'){
-                                    $('#lst_data').append(data);
-                                } else {
-                                    $('#lst_data').attr('data-loadmore', 'done');
-                                    $('#loadmore').hide();
+                    // mảng các trang không cần load thêm dữ liệu
+                    const noLoadMoreDataPages = ['', 'slideshow', 'banner']
+
+                    if(noLoadMoreDataPages.indexOf(page) == -1) {
+                        if($('#lst_data').attr('data-loadmore') !== 'done'){
+                            var row = $('#lst_data').children().length;
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                                },
+                                url: 'admin/ajax-load-more',
+                                type: 'POST',
+                                data: {'page': page, 'row': row},
+                                success:function(data){
+                                    loadMoreFlag = false;
+                                    if(data !== 'done'){
+                                        const html = renderNewRow(page, data)
+                                        $('#lst_data').append(html);
+                                    } else {
+                                        $('#lst_data').attr('data-loadmore', 'done');
+                                        $('#loadmore').hide();
+                                    }
                                 }
-                            }
-                        });
-                    } else {
-                        $('#loadmore').hide();
+                            });
+                        } else {
+                            $('#loadmore').hide();
+                        }
                     }
                 }
             }
@@ -205,26 +186,57 @@ $(function() {
         $(window).scrollTop(0);
     });
 
-    var timer = null;
+    function showAlertTop(content){
+        setTimeout(() => {
+            $('.alert-top').css({
+                '-ms-transform': 'translateY(0)',
+                'transform': 'translateY(0)',
+            });
+            $('.backdrop').css('z-index', '1999');
+            $('.backdrop').fadeIn();
+            
+        }, 200);
+        $('.alert-top-content').html(content);
+    }
+    
+    function closeAlertTop(){
+        setTimeout(() => {
+            $('.alert-top-content').text('');
+            $('.backdrop').removeAttr('style');
+            $('.alert-top').removeAttr('style');
+            $('.close-alert-top').replaceWith($('<div class="close-alert-top">OK</div>'));
+        }, 500);
+        $('.alert-top').css({
+            '-ms-transform': 'translateY(-500px)',
+            'transform': 'translateY(-500px)',
+        });
+        $('.backdrop').fadeOut();
+    }
 
     // hiển thị toast
-    function showToast(id){
+    function showToast(message, type){
+        if($('#alert-toast').length) {
+            $('#alert-toast').remove();
+        }
+
+        if(type === TOAST_SUCCESS_TYPE) {
+            $('body').prepend(`<span id="alert-toast" class="alert-toast alert-toast-success">${message}</span>`)
+        } else {
+            $('body').prepend(`<span id="alert-toast" class="alert-toast alert-toast-danger">${message}</span>`)
+        }
+
         setTimeout(() => {
             clearTimeout(timer);
             timer = setTimeout(() => {
                 // xóa toast
                 setTimeout(() => {
-                    $(id).remove();
+                    $('#alert-toast').remove();
                 },100);
-    
-                $(id).css({
-                    'transform': 'translateY(100px)'
-                });
+                
+                $('#alert-toast').css('transform', 'translateY(100px)')
             }, 3000);
-    
-            $(id).css({
-                'transform': 'translateY(0)'
-            });
+
+            $('#alert-toast').css('transform', 'translateY(0)')
         }, 200);
     }
 
@@ -243,8 +255,10 @@ $(function() {
             return false;
         }
 
+        const value = Name.val().trim()
+
         // nếu chưa nhập tên
-        if(Name.val().length == 0){
+        if(value.length == 0){
             var required = $('<span class="required-text">Vui lòng nhập tên</span>');
             Name.addClass('required');
             Name.after(required);
@@ -253,7 +267,7 @@ $(function() {
         }
 
         // tên không hợp lệ
-        if(!isNaN(Name.val())){
+        if(!isNaN(value)){
             var required = $('<span class="required-text">Tên không hợp lệ</span>');
             Name.addClass('required');
             Name.after(required);
@@ -327,8 +341,10 @@ $(function() {
             return false;
         }
 
+        const value = address.val().trim()
+
         // chưa nhập
-        if(address.val() == ''){
+        if(value == ''){
             address.addClass('required');
             address.after('<span class="required-text">Vui lòng nhập địa chỉ</span>');
             $('.modal-body').animate({scrollTop: address.position().top});
@@ -336,7 +352,7 @@ $(function() {
         }
 
         // không hợp lệ
-        if(!isNaN(address.val())){
+        if(!isNaN(value)){
             address.addClass('required');
             address.after('<span class="required-text">Địa chỉ không hợp lệ</span>');
             $('.modal-body').animate({scrollTop: address.position().top});
@@ -347,18 +363,26 @@ $(function() {
     }
 
     // url image => base64
-    function getBase64FromUrl(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-            var reader = new FileReader();
-            reader.onloadend = function () {
-                callback(reader.result);
-            }
-            reader.readAsDataURL(xhr.response);
-        };
-        xhr.open('GET', url);
-        xhr.responseType = 'blob';
-        xhr.send();
+    async function getBase64FromUrl(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return await new Promise(resolve => {
+            let reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => { resolve(reader.result); };
+        });
+
+        //     var xhr = new XMLHttpRequest();
+        //     xhr.onload = function () {
+        //         var reader = new FileReader();
+        //         reader.onloadend = function () {
+        //             callback(reader.result);
+        //         }
+        //         reader.readAsDataURL(xhr.response);
+        //     };
+        //     xhr.open('GET', url);
+        //     xhr.responseType = 'blob';
+        //     xhr.send();
     }
 
     // kiểm tra email
@@ -367,24 +391,13 @@ $(function() {
             return false;
         }
 
-        // chưa nhập
-        if(email.val().length == 0){
-            email.addClass('required');
-            email.after('<span class="required-text">Vui lòng nhập Email<span>');
-            return false;
-        }
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const isValid =  re.test(String(email.val().trim()).toLowerCase());
 
         // không hợp lệ
-        if(!isNaN(email.val())){
+        if(!isValid) {
             email.addClass('required');
             email.after('<span class="required-text">Email không hợp lệ<span>');
-            return false;
-        }
-
-        // không có @
-        if(email.val().indexOf('@') == -1){
-            email.addClass('required');
-            email.after('<span class="required-text">Email không đúng định dạng<span>');
             return false;
         }
 
@@ -397,15 +410,17 @@ $(function() {
             return false;
         }
 
+        const value = discount.val()
+
         // chưa nhập
-        if(discount.val() == ''){
+        if(value == ''){
             discount.addClass('required');
             discount.after('<span class="required-text">Vui lòng nhập chiết khẩu</span>');
             return false;
         }
 
         // không hợp lệ
-        if(discount.val() > 100){
+        if(value < 1 || value > 100){
             discount.addClass('required');
             discount.after('<span class="required-text">Chiết khấu không hợp lệ</span>');
             return false;
@@ -463,6 +478,658 @@ $(function() {
         }
         return capitalizedText.trim();
     }
+
+    function numberWithDot(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function orderStatusPercent(){
+        // tổng số lượng đơn hàng
+        var total = $('#total-order').val();
+        // số lượng đơn tiếp nhận
+        var receivedQty = $('#received-order').data('qty');
+        // số lượng đơn xác nhận
+        var confirmedQty = $('#confirmed-order').data('qty');
+        // số lượng đơn thành công
+        var successQty = $('#successfull-order').data('qty');
+        // số lượng đơn đã hủy
+        var cancelledQty = $('#cancelled-order').data('qty');
+        console.log(total, receivedQty, confirmedQty, successQty, cancelledQty);
+
+        var avg = 0;
+        // progress bar tiếp nhận
+        avg = (receivedQty / total) * 100;
+        $('.received-progress-bar').css('width', avg + '%');
+
+        // progress bar xác nhận
+        avg = (confirmedQty / total) * 100;
+        $('.confirmed-progress-bar').css('width', avg + '%');
+
+        // progress bar thành công
+        avg = (successQty / total) * 100;
+        $('.success-progress-bar').css('width', avg + '%');
+
+        // progress bar tiếp nhận
+        avg = (cancelledQty / total) * 100;
+        $('.cancelled-progress-bar').css('width', avg + '%');
+    }
+
+    function renderNewRow(page, data) {
+        let html = ''
+        switch (page) {
+            case 'donhang':
+                $.each(data, (i, val) => {
+                    html += 
+                    `<tr data-id="${val.id}">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.id}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.thoigian}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.fullname}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.pttt}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.hinhthuc}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${numberWithDot(val.tongtien)}<sup>đ</sup></div>
+                        </td>
+                        <td class="vertical-center">
+                            <div data-id="${val.id}" class="trangthaidonhang pt-10 pb-10">${val.trangthaidonhang}</div>
+                        </td>
+                        <td class="vertical-center w-5">
+                            <div class="d-flex justify-content-start">
+                            ${val.trangthaidonhang != 'Thành công' && val.trangthaidonhang != 'Đã hủy' ?
+                                    val.trangthaidonhang == 'Đã tiếp nhận' ? 
+                                        `<div data-id="${val.id}" class="confirm-btn">
+                                            <i class="fas fa-file-check"></i>
+                                        </div>` :
+                                        `<div data-id="${val.id}" class="success-btn">
+                                            <i class="fas fa-box-check"></i>
+                                        </div>`
+                                    : ''
+                            } 
+                            <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                            ${val.trangthaidonhang != 'Đã hủy' && val.trangthaidonhang != 'Thành công' ?
+                                `<div data-id="${val.id}" class="delete-btn"><i class="fas fa-trash"></i></div>`
+                                : ''
+                            }
+                            </div>
+                        </td>
+                    </tr>`
+                }).join('')
+                break
+            case 'sanpham':
+                $.each(data, (i, val) => {
+                    html += 
+                    `<tr data-id="${val.id}">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.id}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.tensp}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.mausac}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.ram}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.dungluong}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${numberWithDot(val.gia)}<sup>đ</sup></div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.promotion}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh'}</div>
+                        </td>
+                        <td class="vertical-center w-10">
+                            <div class="d-flex justify-content-start">
+                                <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                ${val.trangthai == 1 ?
+                                    `<div data-id="${val.id}" data-name="${val.tensp} ${val.dungluong} - ${val.ram} Ram - ${val.mausac}" class="delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </div>`
+                                    :
+                                    `<div data-id="${val.id}" data-name="${val.tensp} ${val.dungluong} - ${val.ram} Ram - ${val.mausac}" class="undelete-btn">
+                                        <i class="fas fa-trash-undo"></i>
+                                    </div>`
+                                }
+                            </div>
+                        </td>
+                    </tr>`
+                }).join('')
+                break
+            case 'imei':
+                $.each(data, (i, val) => {
+                    html += 
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="d-flex pt-10 pb-10">
+                                    <img src="images/phone/${val.product.hinhanh}" alt="" width="70px">
+                                    <div class="ml-10">
+                                        <div class="d-flex align-items-center fw-600">
+                                            ${val.product.tensp}
+                                            <i class="fas fa-circle fz-5 ml-5 mr-5"></i>
+                                            ${val.product.mausac}
+                                        </div>
+                                        <div>Ram: ${val.product.ram}</div>
+                                        <div>Dung lượng: ${val.product.dungluong}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.imei}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt'}</div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'mausanpham':
+                $.each(data, (i, val) => {
+                    html +=
+                     `<tr data-id="${val.id}">
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.id}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.tenmau}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.supplierName}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${val.baohanh ? val.baohanh : 'Không có'}</div>
+                        </td>
+                        <td class="vertical-center w-30">
+                            <div class="pt-10 pb-10">${val.diachibaohanh ? val.diachibaohanh : ''}</div>
+                        </td>
+                        <td class="vertical-center w-15">
+                            <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh'}</div>
+                        </td>
+                        <td class="vertical-center w-10">
+                            <div class="d-flex justify-content-start">
+                                <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                ${val.trangthai != 0 ?
+                                    `<div data-id="${val.id}" class="delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </div>`
+                                    :
+                                    `<div data-id="${val.id}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>`
+                                }
+                            </div>
+                        </td>
+                    </tr>`
+                }).join('')
+                break
+            case 'khuyenmai':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center w-5">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center w-15">
+                                <div class="pt-10 pb-10">${val.tenkm}</div>
+                            </td>
+                            <td class="vertical-center w-24">
+                                <div class="pt-10 pb-10">${val.noidung}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="pt-10 pb-10">${val.chietkhau*100}%</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="pt-10 pb-10">${val.ngaybatdau}</div>
+                            </td>
+                            <td class="vertival-center w-11">
+                                <div class="pt-10 pb-10">${val.ngayketthuc}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.status}</div>
+                            </td>
+                            <td class="vertical-center w-15">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-khuyenmai-btn info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-khuyenmai-modal-show edit-btn"><i class="fas fa-pen"></i></div>
+                                    <div data-id="${val.id}" data-object="khuyenmai" class="delete-khuyenmai-btn delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'nhacungcap':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.tenncc}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="pt-10 pb-10">
+                                    <img src="images/logo/${val.anhdaidien}?${new Date().getMilliseconds()}" alt="">
+                                </div>
+                            </td>
+                            <td class="vertical-center w-25">
+                                <div class="pt-10 pb-10">${val.diachi}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.sdt}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="pt-10 pb-10">${val.email}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.trangthai == 1 ? 'Hoạt động' : 'Ngừng kinh doanh'}</div>
+                            </td>
+                            <td class="vertical-center w-5">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    ${val.trangthai == 1 ?
+                                        `<div data-id="${val.id}" data-name="${val.tenncc}" class="delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </div>`
+                                        :
+                                        `<div data-id="${val.id}" data-name="${val.tenncc}" class="undelete-btn">
+                                            <i class="fas fa-trash-undo"></i>
+                                        </div>`
+                                    }
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'slideshow-msp':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center w-50">
+                                <div class="pt-10 pb-10">${val.tenmau}</div>
+                            </td>
+                            <td class="vertical-center">
+                            <div data-id="${val.id}" class="qty-image pt-10 pb-10">${val.slideQty} hình</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    ${val.slideQty != 0 ?
+                                    `<div data-id="${val.id}" data-name="${val.tenmau}" class="delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </div>` : ''}
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'hinhanh':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center w-50">
+                                <div class="pt-10 pb-10">${val.tenmau}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div data-id="${val.id}" class="qty-image pt-10 pb-10">${val.imageQty} Hình</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    ${val.imageQty != 0 ?
+                                    `<div data-id="${val.id}" data-name="${val.tenmau}" class="delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </div>` : ''}
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'kho':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.branchAddress}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="d-flex pt-10 pb-10">
+                                    <img src="images/phone/${val.product.hinhanh}" alt="" width="80px">
+                                    <div class="ml-5 fz-14">
+                                        <div class="d-flex align-items-center fw-600">
+                                            ${val.product.tensp}<i class="fas fa-circle ml-5 mr-5 fz-5"></i>${val.product.mausac}
+                                        </div>
+                                        <div>Ram: ${val.product.ram}</div>
+                                        <div>Dung lượng: ${val.product.dungluong}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.slton} Chiếc</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    <div data-id="${val.id}" data-branch="${val.branchAddress}" class="delete-btn"><i class="fas fa-trash"></i></div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'chinhanh':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.diachi}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.sdt}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.cityName}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.trangthai == 1 ? 'Hoạt động' : 'Ngừng hoạt động'}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    ${val.trangthai != 0 ?
+                                        `<div data-id="${val.id}" class="delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </div>`
+                                        :
+                                        `<div data-id="${val.id}" class="undelete-btn">
+                                            <i class="fas fa-trash-undo"></i>
+                                        </div>`
+                                    }
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'tinhthanh':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.tentt}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    <div data-id="${val.id}" data-name="${val.tentt}" class="delete-btn"><i class="fas fa-trash"></i></div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'voucher':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.code}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.chietkhau*100}%</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.ngaybatdau}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.ngayketthuc}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.sl}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.status}</div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    <div data-id="${val.id}" class="delete-btn"><i class="fas fa-trash"></i></div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'baohanh':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.imei}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.ngaymua}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.ngayketthuc}</div>
+                            </td>
+                            <td class="vertical-center w-5">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'slideshow':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.link}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">
+                                    <img src="images/slideshow/${val.hinhanh}" alt="" width="300px">
+                                </div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    <div data-id="${val.id}" class="delete-btn"><i class="fas fa-trash"></i></div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+            case 'banner':
+                $.each(data, (i, val) => {
+                    html +=
+                        `<tr data-id="${val.id}">
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.id}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">${val.link}</div>
+                            </td>
+                            <td class="vertical-center">
+                                <div class="pt-10 pb-10">
+                                    <img src="images/banner/${val.hinhanh}" alt="" width="300px">
+                                </div>
+                            </td>
+                            <td class="vertical-center w-10">
+                                <div class="d-flex justify-content-start">
+                                    <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
+                                    <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
+                                    <div data-id="${val.id}" class="delete-btn"><i class="fas fa-trash"></i></div>
+                                </div>
+                            </td>
+                        </tr>`
+                }).join('')
+                break
+        }
+
+        return html
+    }
+
+    function toastAndHighlight(messageToast, id) {         
+        switch (messageToast) {
+            case CREATE_MESSAGE:
+            case EDIT_MESSAGE:
+                showToast(messageToast, TOAST_SUCCESS_TYPE);
+                highlightRow(id, SUCCESS)
+                break
+            case DELETE_MESSAGE:
+                showToast(messageToast, TOAST_DELETE_TYPE);
+                highlightRow(id, DELETE)
+                break
+        }
+    }
+
+    function pushBase64ToArray(type) {
+        return new Promise(resolve => {
+            let array = []
+            const childs = $('.image-preview-div > .row').children()
+
+            if(type === 'create') {
+                const length = $('.image-preview-div > .row').children().length
+
+                childs.each((i, child) => {
+                    const id = $(child).attr('data-id')
+                    const imageSRC = $(`.image_preview_img[data-id="${id}"]`).attr('src')
+                    getBase64FromUrl(imageSRC)
+                        .then(base64 => {
+                            array.push(base64)
+                            if(array.length === length) {
+                                resolve(array)
+                            }
+                        })
+                })
+            } else {
+                let newImageQty = 0
+                childs.each((i, child) => {
+                    if(!$(child).attr('data-name')) {
+                        newImageQty++
+                    }
+                })
+
+                if(newImageQty === 0) {
+                    resolve(array)
+                } else {
+                    childs.each((i, child) => {
+                        if(!$(child).attr('data-name')) {
+                            const id = $(child).attr('data-id')
+                            const imageSRC = $(`.image_preview_img[data-id="${id}"]`).attr('src')
+                            getBase64FromUrl(imageSRC)
+                                .then(base64 => {
+                                    array.push(base64)
+                                    if(array.length === newImageQty) {
+                                        resolve(array)
+                                    }
+                                })
+                        }
+                    })
+                }
+
+            }
+        })
+    }
+
+    function renderImage(slideList, url) {
+        return new Promise((resolve, reject) => {
+            $('.image-preview-div > .row').children().remove();
+
+            let slide = slideList.map((val, i) => {
+                return (
+                    `<div id="image-${i + 1}" data-id="${i + 1}" data-name="${val.hinhanh}" class="col-lg-3 mb-20">
+                        <div class="image-preview">
+                            <div class="overlay-image-preview"></div>
+                            <div data-id="${i + 1}" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>
+                            <img data-id="${i + 1}" class="image_preview_img" src="${url + val.hinhanh}" alt="">
+                        </div>
+                    </div>`
+                )
+            })
+
+            idx = slideList.length + 1
+
+            $('.image-preview-div > .row').append(slide)
+
+            resolve()
+        })
+    }
+
+    function assignModel(modelList, id) {
+        return new Promise((resolve, reject) => {
+            $('#model').children().remove();
+
+            let option = modelList.map((val) => {
+                return (
+                    `<option value="${val.id}">${val.tenmau}</option>`
+                )
+            })
+
+            $('#model').append(option)
+
+            $(`#model option[value="${id}"]`).prop('selected', true);
+
+            resolve()
+        })
+    }
+
+    function highlightRow(id, color) {
+        const row = $('tr[data-id="'+id+'"]'); 
+        setTimeout(() => {
+            setTimeout(() => {
+                row.removeAttr('style');    
+            }, 1000);
+            row.css({
+                'background-color': 'white',
+            });    
+        }, 3000);
+        $('html, body').animate({scrollTop: row.position().top});
+        row.css({
+            'background-color': color,
+            'transition': '.5s'
+        });
+    }
     
     /*=======================================================================================================================
                                                            Header
@@ -508,40 +1175,9 @@ $(function() {
     /*=======================================================================================================================
                                                            Dashboard
     =======================================================================================================================*/
-    if(url == ''){
+    if(page === ''){
         // phần trăm trạng thái đơn hàng
         orderStatusPercent();
-
-        function orderStatusPercent(){
-            // tổng số lượng đơn hàng
-            var total = $('#total-order').val();
-            // số lượng đơn tiếp nhận
-            var receivedQty = $('#received-order').data('qty');
-            // số lượng đơn xác nhận
-            var confirmedQty = $('#confirmed-order').data('qty');
-            // số lượng đơn thành công
-            var successQty = $('#successfull-order').data('qty');
-            // số lượng đơn đã hủy
-            var cancelledQty = $('#cancelled-order').data('qty');
-            console.log(total, receivedQty, confirmedQty, successQty, cancelledQty);
-
-            var avg = 0;
-            // progress bar tiếp nhận
-            avg = (receivedQty / total) * 100;
-            $('.received-progress-bar').css('width', avg + '%');
-
-            // progress bar xác nhận
-            avg = (confirmedQty / total) * 100;
-            $('.confirmed-progress-bar').css('width', avg + '%');
-
-            // progress bar thành công
-            avg = (successQty / total) * 100;
-            $('.success-progress-bar').css('width', avg + '%');
-
-            // progress bar tiếp nhận
-            avg = (cancelledQty / total) * 100;
-            $('.cancelled-progress-bar').css('width', avg + '%');
-        }
 
         // area chart
         var arrSalesData = $('#sales-data').val().split('-');
@@ -590,7 +1226,7 @@ $(function() {
             
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/ajax-get-sales-of-year',
                 type: 'POST',
@@ -637,7 +1273,7 @@ $(function() {
             
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/ajax-get-supplier-of-year',
                 type: 'POST',
@@ -676,7 +1312,7 @@ $(function() {
     /*=======================================================================================================================
                                                            Mẫu sp
     =======================================================================================================================*/
-    else if(url == 'mausanpham'){
+    else if(page === 'mausanpham'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -699,80 +1335,29 @@ $(function() {
         });
 
         // modal xem chi tiết mẫu sp
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).attr('data-id');
             $('#modal-title').text('Chi tiết mẫu sản phẩm');
             bindMausp(id, true);
         });
 
         // hiển thị modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa mẫu sản phẩm');
             bindMausp(id);
         });
 
         // hiển thị modal xóa
-        $('.delete-btn').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             // gán dữ liệu cho modal xóa
             $('#delete-content').text('Xóa mẫu sản phẩm này?');
             $('#delete-btn').attr('data-id', $(this).data('id'));
             $('#delete-modal').modal('show');
         });
 
-        function bindMausp(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/mausanpham/ajax-get-mausp',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // gán dữ liệu cho modal
-
-                    $('#mausp_name').val(data.tenmau);
-                    $('#mausp_name').attr('readonly', bool);
-
-                    $('#mausp_supplier option[value="'+data.id_ncc+'"]').prop('selected', true);
-                    $('#mausp_supplier').attr('disabled', bool);
-
-                    if(data.mota != null){
-                        editor.setData(data.mota);
-                    }
-
-                    $('#mausp_youtube').val(data.id_youtube);
-                    $('#mausp_youtube').attr('readonly', bool);
-                    showYoutubeVideo(data.id_youtube);
-
-                    $('#mausp_warranty option[value="'+data.baohanh+'"]').prop('selected', true);
-                    $('#mausp_warranty').attr('disabled', bool);
-                    
-                    $('#mausp_warranty_address').val(data.diachibaohanh);
-                    $('#mausp_warranty_address').attr('readonly', bool);
-
-                    $('#mausp_status').show();
-                    $('label[for="mausp_status"]').show();
-                    $('#mausp_status option[value="'+data.trangthai+'"]').prop('selected', true);
-                    $('#mausp_status').attr('disabled', bool);
-
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
-
         // thêm|sửa
-        $('#action-btn').click(function(){
+        $(document).on('click', '#action-btn', function(){
             // bẫy lỗi
             var valiName = validateName($('#mausp_name'));
 
@@ -782,7 +1367,7 @@ $(function() {
                 var id_ncc = $('#mausp_supplier').val();
                 var id_youtube = $('#mausp_youtube').val();
                 var baohanh = $('#mausp_warranty').val();
-                var diachibaohanh = $('#mausp_warranty_address').val();
+                var diachibaohanh = $('#mausp_warranty_address').val().trim();
                 var trangthai = $('#mausp_status').val();
 
                 var data = {
@@ -794,21 +1379,22 @@ $(function() {
                     'trangthai': trangthai,
                 };
                 
-                $('.loader').show();
+                $('.loader').fadeIn();
 
                 // thêm mới
                 if($(this).attr('data-type') == 'create'){
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/mausanpham',
                         type: 'POST',
                         data:data,
                         success:function(data){
                             $('.loader').fadeOut();
+
                             // trùng tên
-                            if(data == 'invalid name'){
+                            if(data === 'invalid name'){
                                 $('#mausp_name').addClass('required');
                                 $('#mausp_name').after('<span class="required-text">Tên mẫu sản phẩm đã tồn tại</span>');
                                 return;
@@ -817,30 +1403,16 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // render dòng mới vào view
-                            $('#lst_data').prepend(data.html);
+                            const html = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(html);
 
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="create-mausp-toast" class="alert-toast-right alert-toast-right-success">Thêm mới thành công</span>');
-                            showToast('#create-mausp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                            
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
@@ -850,54 +1422,70 @@ $(function() {
 
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/mausanpham/'+id,
                         type: 'PUT',
-                        data: {
-                            'id': id,
-                            'tenmau': tenmau,
-                            'mota': '',
-                            'id_ncc': id_ncc,
-                            'id_youtube': id_youtube,
-                            'baohanh': baohanh,
-                            'diachibaohanh': diachibaohanh,
-                            'trangthai': trangthai,
-                        },
+                        data: data,
                         success:function(data){
                             $('.loader').fadeOut();
                             $('#modal').modal('hide');
 
                             // thay thế dòng hiện tại bằng dòng mới chỉnh sửa
-                            $('tr[data-id="'+id+'"]').replaceWith(data);
+                            const html = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(html);
                             
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="create-mausp-toast" class="alert-toast-right alert-toast-right-success">Chỉnh sửa thành công</span>');
-                            showToast('#create-mausp-toast');
-
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
+
+                $('.loader').fadeOut();
             }
+        });
+
+        // xóa
+        $(document).on('click', '#delete-btn', function(){
+            var id = $(this).attr('data-id');
+
+            $('.loader').fadeIn();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/mausanpham/' + id,
+                type: 'DELETE',
+                success:function(){
+                    $('.loader').fadeOut();
+                    $('#delete-modal').modal('hide');
+
+                    // nút khôi phục
+                    var restoreBtn = $(`<div data-id="${id}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>`);
+                    $(`.delete-btn[data-id="${id}"]`).replaceWith(restoreBtn);
+
+                    // cập nhật trạng thái
+                    $(`.trangthai[data-id="${id}"]`).text('Ngừng kinh doanh');
+
+                    // toast + highlight row
+                    toastAndHighlight(DELETE_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
+        });
+
+        // phục hồi
+        $(document).on('click', '.undelete-btn', function(){
+            var id = $(this).attr('data-id');
+            restore(id);
         });
 
         $('#mausp_name').keyup(function(){
@@ -916,188 +1504,45 @@ $(function() {
 
         // reset modal mausp
         $('#modal').on('hidden.bs.modal', function(){
-            $('#mausp_name').val('');
-            removeRequried($('#mausp_name'));
-            $('#mausp_name').attr('readonly', false);
-
-            $($('#mausp_supplier').children()[0]).prop('selected', true);
-            $('#mausp_supplier').attr('disabled', false);
-
-            $('#mausp_youtube').val('');
-            $('#mausp_youtube').attr('readonly', false);
+            $('#mausp-form').trigger('reset');
+            $('input, textarea').attr('readonly', false);
+            $('select').attr('disabled', false);
             $('#youtube_iframe').attr('src', '');
             $('#youtube_iframe').hide();
-
-            $($('#mausp_warranty').children()[0]).prop('selected', true);
-            $('#mausp_warranty').attr('disabled', false);
-
-            $('#mausp_warranty_address').val('');
-            $('#mausp_warranty_address').attr('readonly', false);
-
-            $($('#mausp_status').children()[0]).prop('selected', true);
-            $('#mausp_status').attr('disabled', false);
-
+            removeRequried($('#mausp_name'));
             $('#action-btn').show();
-            mota = null;
         });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal xem chi tiết mẫu sp
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                $('#modal-title').text('Chi tiết mẫu sản phẩm');
-                bindMausp(id, true);
-            });
-
-            // hiển thị modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa mẫu sản phẩm');
-                bindMausp(id);
-            });
-
-            // hiển thị modal xóa
-            $('.delete-btn').click(function(){
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').text('Xóa mẫu sản phẩm này?');
-                $('#delete-btn').attr('data-id', $(this).data('id'));
-                $('#delete-modal').modal('show');
-            });
-
-            // phục hồi
-            $('.undelete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                restore(id);
-            });
-        });
-        
-        function showYoutubeVideo(youtubeId) {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                setTimeout(() => {
-                    $('#youtube_iframe').show('blind');
-                }, 500);
-                $('#youtube_iframe').attr('src', 'https://www.youtube.com/embed/' + youtubeId);
-            }, 500);
-        }
-
-        // xóa
-        $('#delete-btn').click(function(){
-            var id = $(this).attr('data-id');
-
-            $('.loader').show();
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/mausanpham/' + id,
-                type: 'DELETE',
-                success:function(){
-                    $('.loader').fadeOut();
-                    $('#delete-modal').modal('hide');
-
-                    // nút khôi phục
-                    var restoreBtn = $('<div data-id="'+id+'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>');
-                    $('.delete-btn[data-id="'+id+'"]').replaceWith(restoreBtn);
-
-                    // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Ngừng kinh doanh');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="mausp-toast" class="alert-toast-right alert-toast-right-danger">Xóa thành công</span>');
-                    showToast('#mausp-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
-                }
-            });
-        });
-
-        // phục hồi
-        $('.undelete-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            restore(id);
-        });
-
-        function restore(id) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/mausanpham/ajax-restore',
-                type: 'POST',
-                data: {'id': id},
-                success:function(){
-                    $('.loader').fadeOut();
-
-                    // hiện nút xóa
-                    var deleteBtn = $('<div data-id="'+id+'" class="delete-btn"><i class="fas fa-trash"></i></div>');
-                    $('.undelete-btn[data-id="'+id+'"]').replaceWith(deleteBtn);
-
-                    // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Kinh doanh');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="sanpham-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                    showToast('#sanpham-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': SUCCESS,
-                        'transition': '.5s'
-                    });
-                }
-            });
-        }
 
         // tìm kiếm
         $('#search').keyup(function(){
             clearTimeout(timer);
             timer = setTimeout(() => {
                 if(Object.keys(arrFilter).length != 0){
-                    filter();
-                    return;
+                    return filter();
                 }
-                var keyword = $(this).val().toLocaleLowerCase();
+                const keyword = $(this).val().toLocaleLowerCase();
 
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
                     },
                     url: 'admin/mausanpham/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success:function(data){
-                        $('#lst_data').append(data);
-                        loadMoreFlag = keyword == '' ? false : true;
+                        if($('#lst_data').attr('data-loadmore') === 'done') {
+                            $('#lst_data').removeAttr('data-loadmore')
+                        }
+
                         $('#loadmore').hide();
+                        const searchResult = renderNewRow(page, data)
+                        $('#lst_data').append(searchResult);
+
+                        loadMoreFlag = keyword == '' ? false : true;
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
                     }
                 });
             },300);
@@ -1105,6 +1550,9 @@ $(function() {
             $('#lst_data').children().remove();
             $('#loadmore').show();
         });
+        $('#search').focus(function() {
+            $('.filter-div').hide('blind');
+        })
 
         var arrFilter = {};
         // show lọc
@@ -1152,20 +1600,115 @@ $(function() {
             filter();
         });
 
+        function bindMausp(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/mausanpham/ajax-get-mausp',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+                    $('select').attr('disabled', bool);
+
+                    // gán dữ liệu cho modal
+                    $('#mausp_name').val(data.tenmau);
+
+                    $(`#mausp_supplier option[value="${data.id_ncc}"]`).prop('selected', true);
+
+                    $('#mausp_youtube').val(data.id_youtube);
+                    showYoutubeVideo(data.id_youtube);
+
+                    $(`#mausp_warranty option[value="${data.baohanh}"]`).prop('selected', true);
+                    
+                    $('#mausp_warranty_address').val(data.diachibaohanh);
+
+                    $('#mausp_status').show();
+                    $('label[for="mausp_status"]').show();
+                    $(`#mausp_status option[value="${data.trangthai}"]`).prop('selected', true);
+
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // ẩn/hiện nút thêm (cập nhật);
+                    bool == false ? $('#action-btn').show() : $('#action-btn').hide();
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
+                }
+            });
+        }
+
+        function showYoutubeVideo(youtubeId) {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                setTimeout(() => {
+                    $('#youtube_iframe').show('blind');
+                }, 500);
+                $('#youtube_iframe').attr('src', `https://www.youtube.com/embed/${youtubeId}`);
+            }, 500);
+        }
+
+        function restore(id) {
+            $('.loader').fadeIn();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/mausanpham/ajax-restore',
+                type: 'POST',
+                data: {'id': id},
+                success:function(){
+                    $('.loader').fadeOut();
+
+                    // hiện nút xóa
+                    var deleteBtn = $(`<div data-id="${id}" class="delete-btn"><i class="fas fa-trash"></i></div>`);
+                    $(`.undelete-btn[data-id="${id}"]`).replaceWith(deleteBtn);
+
+                    // cập nhật trạng thái
+                    $(`.trangthai[data-id="${id}"]`).text('Kinh doanh');
+
+                    // toast + highlight row
+                    toastAndHighlight(EDIT_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
+        }
+
         function filter(){
             $('#lst_data').children().remove();
             $('#loadmore').show();
+
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/mausanpham/ajax-filter',
                 type: 'POST',
                 data: {'arrFilter': arrFilter, 'keyword': $('#search').val().toLocaleLowerCase()},
                 success: function(data){
-                    $('#lst_data').children().remove();
-                    $('#lst_data').append(data);
+                    $('#loadmore').hide();
+
+                    const html = renderNewRow(page, data)
+                    $('#lst_data').append(html);
+
                     if(Object.keys(arrFilter).length == 0){
+                        if($('#lst_data').attr('data-loadmore') === 'done') {
+                            $('#lst_data').removeAttr('data-loadmore')
+                        }
+
                         $('.filter-badge').hide();    
                         loadMoreFlag = false;
                     } else {
@@ -1173,15 +1716,19 @@ $(function() {
                         $('.filter-badge').show();
                         loadMoreFlag = true;
                     }
+                },
+                error: function() {
                     $('#loadmore').hide();
+                    showAlertTop(errorMessage)
                 }
             });
+
         }
     }
     /*=======================================================================================================================
                                                            Khuyến mãi
     =======================================================================================================================*/
-    else if(url == 'khuyenmai'){
+    else if(page === 'khuyenmai'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -1199,55 +1746,28 @@ $(function() {
             $('#khuyenmai-modal').modal('show');
         });
 
-        // hiển thị modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        // modal xem chi tiết mẫu sp
+        $(document).on('click', '.info-btn', function(){
+            var id = $(this).attr('data-id');
+            $('#modal-title').text('Chi tiết khuyến mãi');
+            bindKhuyenMai(id, true);
+        });
+
+        // modal chỉnh sửa
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa khuyến mãi');
             bindKhuyenMai(id);
         });
 
-        function bindKhuyenMai(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/khuyenmai/ajax-get-khuyenmai',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // gán dữ liệu cho modal
-
-                    $('#khuyenmai_name').val(data.tenkm);
-                    $('#khuyenmai_name').attr('readonly', bool);
-
-                    $('#khuyenmai_content').val(data.noidung);
-                    $('#khuyenmai_content').attr('readonly', bool);
-
-                    $('#khuyenmai_discount').val(data.chietkhau * 100);
-                    $('#khuyenmai_discount').attr('readonly', bool);
-
-                    $('#khuyenmai_start').val(data.ngaybatdau);
-                    $('#khuyenmai_start').attr('readonly', bool);
-
-                    $('#khuyenmai_end').val(data.ngayketthuc);
-                    $('#khuyenmai_end').attr('readonly', bool);
-
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-khuyenmai-btn').attr('data-type', 'edit');
-                    $('#action-khuyenmai-btn').text('Cập nhật');
-                    $('#action-khuyenmai-btn').attr('data-id', id);
-                    
-                    console.log(data);
-
-                    // hiển thị modal
-                    $('#khuyenmai-modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-khuyenmai-btn').show() : $('#action-khuyenmai-btn').hide();
-        }
+        // hiển thị modal xóa
+        $(document).on('click', '.delete-btn', function(){
+            // gán dữ liệu cho modal xóa
+            $('#delete-content').text('Xóa khuyến mãi này?')
+            $('#delete-btn').attr('data-object', 'khuyenmai');
+            $('#delete-btn').attr('data-id', $(this).data('id'));
+            $('#delete-modal').modal('show');
+        });
 
         // thêm|sửa
         $('#action-khuyenmai-btn').click(function(){
@@ -1274,13 +1794,13 @@ $(function() {
                     'ngayketthuc': ngayketthuc,
                 };
                 
-                $('.loader').show();
+                $('.loader').fadeIn();
 
                 // thêm mới
                 if($(this).attr('data-type') == 'create'){
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/khuyenmai',
                         type: 'POST',
@@ -1289,42 +1809,24 @@ $(function() {
                             $('.loader').fadeOut();
 
                             // đã tồn tại khuyến mãi
-                            if(data == 'already exist'){
+                            if(data === 'already exist'){
                                 $('#khuyenmai_name').addClass('required');
                                 $('#khuyenmai_name').after('<span class="required-text">Khuyến mãi này đã tồn tại</span>')
                                 return;
                             }
 
                             $('#khuyenmai-modal').modal('hide');
-                            
-                            // cuộn xuống cuối trang
-                            $(document).scrollTop($(document).height());
 
                             // render dòng mới vào view
-                            $('#lst_data').prepend(data.html);
+                            const html = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(html);
 
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="create-mausp-toast" class="alert-toast-right alert-toast-right-success">Thêm mới thành công</span>');
-                            showToast('#create-mausp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
@@ -1334,7 +1836,7 @@ $(function() {
 
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/khuyenmai/' + id,
                         type: 'PUT',
@@ -1343,7 +1845,7 @@ $(function() {
                             $('.loader').fadeOut();
 
                             // đã tồn tại khuyến mãi
-                            if(data == 'already exist'){
+                            if(data === 'already exist'){
                                 $('#khuyenmai_name').addClass('required');
                                 $('#khuyenmai_name').after('<span class="required-text">Khuyến mãi này đã tồn tại</span>')
                                 return;
@@ -1352,51 +1854,49 @@ $(function() {
                             $('#khuyenmai-modal').modal('hide');
 
                             // thay thế dòng hiện tại bằng dòng mới chỉnh sửa
-                            $('tr[data-id="'+id+'"]').replaceWith(data.html);
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow);
                             
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="create-mausp-toast" class="alert-toast-right alert-toast-right-success">Chỉnh sửa thành công</span>');
-                            showToast('#create-mausp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage);
                         }
                     });
                 }
             }
         });
 
-        // bẫy lỗi nội dung khuyến mãi
-        function validatePromotionContent(promotion) {
-            if(promotion.hasClass('required')){
-                return false;
-            }
+        // xóa
+        $(document).on('click', '#delete-btn', function(){
+            var id = $(this).attr('data-id');
 
-            // chưa nhập
-            if(promotion.val() == ''){
-                promotion.addClass('required');
-                promotion.after('<span class="required-text">Vui lòng nhập nội dung khuyến mãi</span>');
-                return false;
-            }
+            $('.loader').fadeIn();
 
-            return true;
-        }
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/khuyenmai/' + id,
+                type: 'DELETE',
+                success:function(){
+                    $('.loader').fadeOut();
+                    $('#delete-modal').modal('hide');
+
+                    // xóa dòng
+                    $(`tr[data-id="${id}"]`).remove();
+
+                    // toast
+                    showToast(DELETE_MESSAGE, TOAST_DELETE_TYPE);
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
+        });
 
         $('#khuyenmai_name').keyup(function(){
             removeRequried($(this));
@@ -1406,7 +1906,7 @@ $(function() {
             removeRequried($(this));
         });
 
-        $('#khuyenmai_discount').keyup(function(){
+        $('#khuyenmai_discount').change(function(){
             removeRequried($(this));
         });
 
@@ -1420,116 +1920,14 @@ $(function() {
 
         // reset modal
         $('#khuyenmai-modal').on('hidden.bs.modal', function(){
-            $('#khuyenmai_name').val('');
-            $('#khuyenmai_name').attr('readonly', false);
-            removeRequried($('#khuyenmai_name'));
-
-            $('#khuyenmai_content').val('');
-            $('#khuyenmai_content').attr('readonly', false);
-            removeRequried($('#khuyenmai_content'));
-
-            $('#khuyenmai_discount').val('');
-            $('#khuyenmai_discount').attr('readonly', false);
-            removeRequried($('#khuyenmai_discount'));
-
-            $('#khuyenmai_start').val('');
-            $('#khuyenmai_start').attr('readonly', false);
-            removeRequried($('#khuyenmai_start'));
-
-            $('#khuyenmai_end').val('');
-            $('#khuyenmai_end').attr('readonly', false);
-            removeRequried($('#khuyenmai_end'));
-
-            $('#khuyenmai_status option[value="1"]').prop('selected', true);
-            $('#khuyenmai_status').attr('disabled', false);
-
+            $('#khuyenmai-form').trigger('reset')
+            $('input, textarea').attr('readonly', false)
+            $('select').attr('disabled', false)
+            $('.required').removeClass('required')
+            $('.required-text').remove()
             $('#action-khuyenmai-btn').show();
         });
-
-        // hiển thị modal xóa
-        $('.delete-btn').click(function(){
-            // gán dữ liệu cho modal xóa
-            $('#delete-content').text('Xóa khuyến mãi này?')
-            $('#delete-btn').attr('data-object', 'khuyenmai');
-            $('#delete-btn').attr('data-id', $(this).data('id'));
-            $('#delete-modal').modal('show');
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // hiển thị modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa khuyến mãi');
-                bindKhuyenMai(id);
-            });
-
-            // modal xem chi tiết mẫu sp
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                $('#modal-title').text('Chi tiết khuyến mãi');
-                bindKhuyenMai(id, true);
-            });
-
-            // hiển thị modal xóa
-            $('.delete-btn').click(function(){
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').text('Xóa mẫu khuyến mãi này?')
-                $('#delete-btn').attr('data-object', 'khuyenmai');
-                $('#delete-btn').attr('data-id', $(this).data('id'));
-                $('#delete-modal').modal('show');
-            });
-        });
-
-        // modal xem chi tiết mẫu sp
-        $('.info-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            $('#modal-title').text('Chi tiết khuyến mãi');
-            bindKhuyenMai(id, true);
-        });
-
-        // xóa
-        $('#delete-btn').click(function(){
-            var id = $(this).attr('data-id');
-
-            $('.loader').show();
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/khuyenmai/' + id,
-                type: 'DELETE',
-                success:function(){
-                    $('.loader').fadeOut();
-                    $('#delete-modal').modal('hide');
-
-                    // xóa dòng
-                    $('tr[data-id="'+id+'"]').remove();
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="mausp-toast" class="alert-toast-right alert-toast-right-danger">Xóa thành công</span>');
-                    showToast('#mausp-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
-                }
-            });
-        });
-
+        
         // tìm kiếm
         $('#search').keyup(function(){
             clearTimeout(timer);
@@ -1538,27 +1936,92 @@ $(function() {
 
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
                     },
                     url: 'admin/khuyenmai/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success:function(data){
-                        $('#lst_data').children().remove()
-                        $('#lst_data').append(data);
-                        loadMoreFlag = true;
+                        if($('#lst_data').attr('data-loadmore') === 'done') {
+                            $('#lst_data').removeAttr('data-loadmore');
+                        }
+
+                        const html = renderNewRow(page, data)
+                        $('#lst_data').append(html);
+
+                        loadMoreFlag = keyword == '' ? false : true;
                         $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
                     }
                 });
             },300);
             $('#lst_data').children().remove();
             $('#loadmore').show();
         });
+
+        function bindKhuyenMai(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/khuyenmai/ajax-get-khuyenmai',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+                    $('select').attr('disabled', bool);
+
+                    // gán dữ liệu cho modal
+                    $('#khuyenmai_name').val(data.tenkm);
+                    $('#khuyenmai_content').val(data.noidung);
+                    $('#khuyenmai_discount').val(data.chietkhau * 100);
+                    $('#khuyenmai_start').val(data.ngaybatdau);
+                    $('#khuyenmai_end').val(data.ngayketthuc);
+
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-khuyenmai-btn').attr('data-type', 'edit');
+                    $('#action-khuyenmai-btn').text('Cập nhật');
+                    $('#action-khuyenmai-btn').attr('data-id', id);
+
+                    // ẩn/hiện nút thêm (cập nhật);
+                    bool == false ? $('#action-khuyenmai-btn').show() : $('#action-khuyenmai-btn').hide();
+
+                    // hiển thị modal
+                    $('#khuyenmai-modal').modal('show');
+                },
+                error: function () {
+                    showAlertTop(errorMessage)
+                }
+            });
+        }
+
+        // bẫy lỗi nội dung khuyến mãi
+        function validatePromotionContent(promotion) {
+            if(promotion.hasClass('required')){
+                return false;
+            }
+
+            const value = promotion.val().trim()
+
+            // chưa nhập
+            if(value == ''){
+                promotion.addClass('required');
+                promotion.after('<span class="required-text">Vui lòng nhập nội dung khuyến mãi</span>');
+                return false;
+            }
+
+            return true;
+        }
     }
     /*=======================================================================================================================
                                                            Sản phẩm
     =======================================================================================================================*/
-    else if(url == 'sanpham'){
+    else if(page === 'sanpham'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -1569,439 +2032,71 @@ $(function() {
                 showAlertTop('Bạn chưa có mẫu sản phẩm. Vui lòng tạo mới mẫu sản phẩm trước.');
                 return;
             }
+
+            // ẩn các mẫu sp ngừng kinh doanh
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/sanpham/ajax-get-model-status-false',
                 type: 'POST',
                 data: {'data': ''},
                 success: function(data){
                     if(data.length != 0){
-                        for(var i = 0; i < data.length; i++){
-                            $('#sanpham_model option[value="'+data[i]+'"]').hide();
-                        }
+                        $.each(data, (i, val) => {
+                            $(`#sanpham_model option[value="${val}"]`).hide();
+                        })
                     }
+
+                    // gán dữ liệu cho modal
+                    $('#modal-title').text('Tạo mới sản phẩm');
+
+                    // trạng thái = 1
+                    $('#sanpham_status').hide();
+                    $('label[for="sanpham_status"]').hide();
+
+                    // thiết lập nút gửi là thêm mới
+                    $('#action-btn').attr('data-type', 'create');
+                    $('#action-btn').text('Thêm');
+
+                    $('#product-color-carousel').parent().hide();
+
+                    // label màu sắc khác
+                    $('#another-color-label').hide();
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
                 }
             });
-            // gán dữ liệu cho modal
-            $('#modal-title').text('Tạo mới sản phẩm');
-
-            // trạng thái = 1
-            $('#sanpham_status').hide();
-            $('label[for="sanpham_status"]').hide();
-
-            // thiết lập nút gửi là thêm mới
-            $('#action-btn').attr('data-type', 'create');
-            $('#action-btn').text('Thêm');
-
-            $('#product-color-carousel').parent().hide();
-
-            // label màu sắc khác
-            $('#another-color-label').hide();
-
-            // hiển thị modal
-            $('#modal').modal('show');
         });
 
         // modal xem chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).attr('data-id');
             $('#modal-title').text('Chi tiết sản phẩm');
             bindSanPham(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa sản phẩm');
             bindSanPham(id);
         });
 
         // modal xóa
-        $('.delete-btn').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
             // gán dữ liệu cho modal xóa
-            $('#delete-content').html('Xóa <b>'+name+'?</b>');
+            $('#delete-content').html(`Xóa <b>${name}?</b>`);
             $('#delete-btn').attr('data-id', id);
             $('#delete-btn').attr('data-name', name);
             $('#delete-modal').modal('show');
-        });
-
-        // show dialog chọn hình ảnh
-        $('#sanpham_choose_image').click(function(){
-            $('#sanpham_image').click();
-        });
-
-        // chọn hình ảnh
-        $('#sanpham_image').change(function(){
-            // hủy chọn hình
-            if($(this).val() == ''){
-                return;
-            }
-
-            removeRequried($('#sanpham_review_image'));
-
-            // kiểm tra file hình
-            var fileName = this.files[0].name.split('.');
-            var extend = fileName[fileName.length - 1];
-
-            // xem trước hình ảnh
-            if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#sanpham_review_image').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(this.files[0]);
-                getBase64FromUrl(URL.createObjectURL($('#sanpham_image')[0].files[0]), function(dataUrl){
-                    $('#sanpham_image_base64').val(dataUrl);
-                });
-            }
-            // không phải hình ảnh
-            else{
-                $('#sanpham_review_image').attr('src', 'images/600x600.png');
-                $(this).val('');
-                showAlertTop('Bạn chỉ có thể upload hình ảnh');
-            }
-        });
-
-        // chọn hình từ mẫu sản phẩm
-        $(document).on('click', '.single-image-from-model', function(e){
-            removeRequried($('.image-from-model'));
-            $('.single-image-from-model').removeClass('single-image-from-model-selected');
-            $(e.currentTarget).addClass('single-image-from-model-selected');
-        });
-
-        // chọn mẫu sản phẩm và gán khuyến mãi, gán tên sp, load hình ảnh
-        $('#sanpham_model').change(function(){
-            getModelPromotion();
-            getModelImage();
-        });
-
-        // chọn file cấu hình
-        $('#sanpham_specifications').change(function(){
-            $(this).val() != 'create' ? $('#create-specifications-div').hide('blind') : $('#create-specifications-div').show('blind');
-        });
-
-        var owl = $('#product-color-carousel');
-        owl.owlCarousel({
-            stagePadding: 5,
-            nav: false,
-            rewind: true,
-            dots: false,
-            responsiveClass:true,
-            responsive: {
-                0: {
-                    items: 4
-                },
-                600: {
-                    items: 4
-                },
-                1000: {
-                    items: 4
-                }
-            }
-        });
-
-        function bindSanPham(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/sanpham/ajax-get-sanpham',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    var product = data.product;
-                    var specifications = data.specifications;
-
-                    // thiết lập quyền
-                    $('input, textarea').attr('readonly', bool);
-                    $('select').attr('disabled', bool);
-
-                    // gán dữ liệu cho modal
-                    $('#sanpham_name').val(product.tensp);
-                    $('#sanpham_model').val(product.id_msp);
-                    $('#sanpham_color').val(product.mausac);
-                    $('#sanpham_ram').val(product.ram);
-                    $('#sanpham_capacity').val(product.dungluong);
-                    $('#sanpham_price').val(product.gia);
-                    $('#sanpham_promotion').val(product.id_km);
-                    $('#sanpham_specifications').val(product.cauhinh);
-                    if(product.trangthaimausp || bool){
-                        $('#sanpham_status').show();
-                        $('label[for="sanpham_status"]').show();
-                    } else {
-                        $('#sanpham_status').hide();
-                        $('label[for="sanpham_status"]').hide();
-                    }
-                    
-                    $('#sanpham_status option[value="'+product.trangthai+'"]').prop('selected', true);
-                    $('#sanpham_status_model').val(product.trangthaimausp);
-                    $('#sanpham_review_image').attr('src', 'images/phone/' + product.hinhanh);
-                    $('.image-from-model').hide();
-                    $('.new-image').show();
-                    $('#sanpham_image_from option[value="new"]').prop('selected', true);
-
-                    if(bool){
-                        $('#sanpham_choose_image').hide();
-                        $('#sanpham_image_from').hide();
-                    } else {
-                        $('#sanpham_choose_image').show();
-                        $('#sanpham_image_from').show();
-                    }
-
-                    // các màu sắc khác
-                    if(data.lst_color.length != 1){
-                        var html = '';
-                        var type = bool == true ? 'readonly' : 'edit';
-                        for(var i = 0; i < data.lst_color.length; i++){
-                            var img = '<img data-id="'+data.lst_color[i].id+'" data-type="'+type+'" class="product-color" src="images/phone/'+data.lst_color[i].hinhanh+'">';
-                            html += img;
-                        }
-                        owl.trigger('replace.owl.carousel', html).trigger('refresh.owl.carousel');
-                        $('#product-color-carousel').parent().show();
-                        data.lst_color.length <= 4 ? $('#prev-next-btn').hide() : $('#prev-next-btn').show();
-                        $('#another-color-label').show();
-                    } else {
-                        $('#product-color-carousel').parent().hide();
-                        $('#another-color-label').hide();
-                    }
-                    
-
-                    // file thông số
-                    $('#sanpham_specifications option[value="create"]').hide();
-                    // màn hình
-                    $('#cong_nghe_mh').val(specifications.thong_so_ky_thuat.man_hinh.cong_nghe_mh);
-                    $('#do_phan_giai').val(specifications.thong_so_ky_thuat.man_hinh.do_phan_giai);
-                    $('#ty_le_mh').val(specifications.thong_so_ky_thuat.man_hinh.ty_le_mh);
-                    $('#kinh_cam_ung').val(specifications.thong_so_ky_thuat.man_hinh.kinh_cam_ung);
-
-                    // camera sau
-                    $('#cam_sau_do_phan_giai').val(specifications.thong_so_ky_thuat.camera_sau.do_phan_giai);
-                    var str = '';
-                    if(specifications.thong_so_ky_thuat.camera_sau.quay_phim[0].chat_luong != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.camera_sau.quay_phim.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.camera_sau.quay_phim[i].chat_luong;
-                            if(i == specifications.thong_so_ky_thuat.camera_sau.quay_phim.length - 1){
-                                str += obj
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#cam_sau_quay_phim').val(str);
-                    $('#cam_sau_den_flash').val(specifications.thong_so_ky_thuat.camera_sau.den_flash);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.camera_sau.tinh_nang[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.camera_sau.tinh_nang.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.camera_sau.tinh_nang[i].name;
-                            if(i == specifications.thong_so_ky_thuat.camera_sau.tinh_nang.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#cam_sau_tinh_nang').val(str);
-
-                    // camera trước
-                    $('#cam_truoc_do_phan_giai').val(specifications.thong_so_ky_thuat.camera_truoc.do_phan_giai);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.camera_truoc.tinh_nang[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.camera_truoc.tinh_nang.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.camera_truoc.tinh_nang[i].name;
-                            if(i == specifications.thong_so_ky_thuat.camera_truoc.tinh_nang.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#cam_truoc_tinh_nang').val(str);
-
-                    // HDH & CPU
-                    $('#HDH').val(specifications.thong_so_ky_thuat.HDH_CPU.HDH);
-                    $('#CPU').val(specifications.thong_so_ky_thuat.HDH_CPU.CPU);
-                    $('#CPU_speed').val(specifications.thong_so_ky_thuat.HDH_CPU.CPU_speed);
-                    $('#GPU').val(specifications.thong_so_ky_thuat.HDH_CPU.GPU);
-
-                    // lưu trữ
-                    $('#RAM').val(specifications.thong_so_ky_thuat.luu_tru.RAM);
-                    $('#bo_nho_trong').val(specifications.thong_so_ky_thuat.luu_tru.bo_nho_trong);
-                    $('#bo_nho_con_lai').val(specifications.thong_so_ky_thuat.luu_tru.bo_nho_con_lai);
-                    $('#the_nho').val(specifications.thong_so_ky_thuat.luu_tru.the_nho);
-
-                    // kết nối
-                    $('#mang_mobile').val(specifications.thong_so_ky_thuat.ket_noi.mang_mobile);
-                    $('#SIM').val(specifications.thong_so_ky_thuat.ket_noi.SIM);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.ket_noi.wifi[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.wifi.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.ket_noi.wifi[i].name;
-                            if(i == specifications.thong_so_ky_thuat.ket_noi.wifi.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#wifi').val(str);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.ket_noi.GPS[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.GPS.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.ket_noi.GPS[i].name;
-                            if(i == specifications.thong_so_ky_thuat.ket_noi.GPS.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#GPS').val(str);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.ket_noi.bluetooth[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.bluetooth.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.ket_noi.bluetooth[i].name;
-                            if(i == specifications.thong_so_ky_thuat.ket_noi.bluetooth.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#bluetooth').val(str);
-                    $('#cong_sac').val(specifications.thong_so_ky_thuat.ket_noi.cong_sac);
-                    $('#jack_tai_nghe').val(specifications.thong_so_ky_thuat.ket_noi.jack_tai_nghe);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac[i].name;
-                            if(i == specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#ket_noi_khac').val(str);
-
-                    // thiết kế trọng lượng
-                    $('#thiet_ke').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.thiet_ke);
-                    $('#chat_lieu').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.chat_lieu);
-                    $('#kich_thuoc').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.kich_thuoc);
-                    $('#khoi_luong').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.khoi_luong);
-
-                    // pin
-                    $('#loai').val(specifications.thong_so_ky_thuat.pin.loai);
-                    $('#dung_luong').val(specifications.thong_so_ky_thuat.pin.dung_luong);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.pin.cong_nghe[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.pin.cong_nghe.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.pin.cong_nghe[i].name;
-                            if(i == specifications.thong_so_ky_thuat.pin.cong_nghe.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#cong_nghe').val(str);
-
-                    // tiện ích
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.tien_ich.bao_mat[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.bao_mat.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.tien_ich.bao_mat[i].name;
-                            if(i == specifications.thong_so_ky_thuat.tien_ich.bao_mat.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#bao_mat').val(str);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac[i].name;
-                            if(i == specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#tinh_nang_khac').val(str);
-                    $('#ghi_am').val(specifications.thong_so_ky_thuat.tien_ich.ghi_am);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.tien_ich.xem_phim[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.xem_phim.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.tien_ich.xem_phim[i].name;
-                            if(i == specifications.thong_so_ky_thuat.tien_ich.xem_phim.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#xem_phim').val(str);
-                    str = '';
-                    if(specifications.thong_so_ky_thuat.tien_ich.nghe_nhac[0].name != null){
-                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.nghe_nhac.length; i++){
-                            var obj = specifications.thong_so_ky_thuat.tien_ich.nghe_nhac[i].name;
-                            if(i == specifications.thong_so_ky_thuat.tien_ich.nghe_nhac.length - 1){
-                                str += obj    
-                            } else {
-                                str += obj + '\n';
-                            }
-                        }
-                    }
-                    $('#nghe_nhac').val(str);
-
-                    // thông tin khác
-                    var thoidiemramat;
-                    if(specifications.thong_tin_khac.thoi_diem_ra_mat != null){
-                        var temp = specifications.thong_tin_khac.thoi_diem_ra_mat.split('/');
-                        thoidiemramat = temp[1] + '-' + temp[0];
-                    } else {
-                        thoidiemramat = '';
-                    }
-                    
-                    $('#thoi_diem_ra_mat').val(thoidiemramat);
-
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
-
-        // thay đổi màu sắc
-        $('#product-color-carousel').bind('DOMSubtreeModified', function(){
-            $('.product-color').off('click').click(function(){
-                var id = $(this).data('id');
-                var bool = $(this).data('type') == 'readonly' ? true : false;
-                bindSanPham(id, bool);
-            });
-        });
-
-        // nút prev, next
-        $('#prev-product-color').on('click', function(){
-            owl.trigger('prev.owl.carousel', [300]);
-        });
-        $('#next-product-color').on('click', function(){
-            owl.trigger('next.owl.carousel');
         });
 
         // thêm|sửa
@@ -2233,7 +2328,7 @@ $(function() {
                     cauhinh.thong_so_ky_thuat.tien_ich.nghe_nhac.push({"name": ''});
                 }
 
-                $('.loader').show();
+                $('.loader').fadeIn();
 
                 var data = {
                     'tensp': tensp,
@@ -2258,7 +2353,7 @@ $(function() {
                 if($(this).attr('data-type') == 'create'){
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/sanpham',
                         type: 'POST',
@@ -2274,30 +2369,15 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // render dòng mới vào view
-                            $('#lst_data').prepend(data.html);
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
 
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="sanpham-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#sanpham-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': '#b5ffd4',
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
@@ -2307,7 +2387,7 @@ $(function() {
 
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/sanpham/' + id,
                         type: 'PUT',
@@ -2317,36 +2397,617 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // thay thế dòng mới
-                            $('tr[data-id="'+id+'"]').replaceWith(data);
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow);
 
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="sanpham-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#sanpham-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': '#b5ffd4',
-                                'transition': '.5s'
-                            });
-                            
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
             }
         });
+
+        // xóa
+        $('#delete-btn').click(function(){
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/sanpham/' + id,
+                type: 'DELETE',
+                success:function(){
+                    $('.loader').fadeOut();
+                    $('#delete-modal').modal('hide');
+
+                    // ẩn nút xóa
+                    var restoreBtn = $(`<div data-id="${id}" data-name="${name}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>`);
+                    $(`.delete-btn[data-id="${id}"]`).replaceWith(restoreBtn);
+
+                    // cập nhật trạng thái
+                    $(`.trangthai[data-id="${id}"]`).text('Ngừng kinh doanh');
+
+                    // toast + highlight row
+                    toastAndHighlight(DELETE_MESSAGE, id)
+                }
+            });
+        });
+
+        // phục hồi
+        $(document).on('click', '.undelete-btn', function(){
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+            restore(id, name);            
+        });
+
+        /*==================================================
+                            Hình ảnh
+        ====================================================*/
+
+        // show dialog chọn hình ảnh
+        $('#sanpham_choose_image').click(function(){
+            $('#sanpham_image').click();
+        });
+
+        // chọn hình ảnh
+        $('#sanpham_image').change(function(){
+            // hủy chọn hình
+            if($(this).val() == ''){
+                return;
+            }
+
+            removeRequried($('#sanpham_review_image'));
+
+            // kiểm tra file hình
+            var fileName = this.files[0].name.split('.');
+            var extend = fileName[fileName.length - 1];
+
+            if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                const imgURL = URL.createObjectURL(this.files[0])
+
+                // xem trước hình ảnh
+                $('#sanpham_review_image').attr('src', imgURL)
+
+                // image -> base64
+                getBase64FromUrl(imgURL)
+                    .then(dataUrl => $('#sanpham_image_base64').val(dataUrl))
+            }
+            // không phải hình ảnh
+            else{
+                $('#sanpham_review_image').attr('src', 'images/600x600.png');
+                $(this).val('');
+                showAlertTop('Bạn chỉ có thể upload hình ảnh');
+            }
+        });
+
+        // chọn hình từ mẫu sản phẩm
+        $(document).on('click', '.single-image-from-model', function(e){
+            removeRequried($('.image-from-model'));
+            $('.single-image-from-model').removeClass('single-image-from-model-selected');
+            $(e.currentTarget).addClass('single-image-from-model-selected');
+        });
+
+        /*==================================================
+                            owl-carousel
+        ====================================================*/
+
+        var owl = $('#product-color-carousel');
+        owl.owlCarousel({
+            stagePadding: 5,
+            nav: false,
+            rewind: true,
+            dots: false,
+            responsiveClass:true,
+            responsive: {
+                0: {
+                    items: 4
+                },
+                600: {
+                    items: 4
+                },
+                1000: {
+                    items: 4
+                }
+            }
+        });
+
+        // nút prev, next
+        $('#prev-product-color').on('click', function(){
+            owl.trigger('prev.owl.carousel', [300]);
+        });
+        $('#next-product-color').on('click', function(){
+            owl.trigger('next.owl.carousel');
+        });
+
+        /*===================================================*/
+
+        // chọn mẫu sản phẩm và gán khuyến mãi, gán tên sp, load hình ảnh
+        $('#sanpham_model').change(function(){
+            getModelPromotion();
+            getModelImage();
+        });
+
+        // chọn file cấu hình
+        $('#sanpham_specifications').change(function(){
+            $(this).val() != 'create' ? $('#create-specifications-div').hide('blind') : $('#create-specifications-div').show('blind');
+        });
+
+        // thay đổi màu sắc
+        $(document).on('click', '.product-color', function(){
+            var id = $(this).data('id');
+            var bool = $(this).data('type') == 'readonly' ? true : false;
+            bindSanPham(id, bool);
+        });
+
+        $('#sanpham_color').keyup(function(){
+            removeRequried($(this));
+        });
+        $('#sanpham_price').keyup(function(){
+            removeRequried($(this));
+        });
+
+        // reset modal
+        $('#modal').on('shown.bs.modal', function(){
+            // chọn sẵn khuyến mãi theo mẫu sản phẩm
+            getModelPromotion();
+            getModelImage();
+            
+            // gán tên sản phẩm
+            var modelName = $('#sanpham_model').find(':selected').text();
+            $('#sanpham_name').val(modelName);
+        })
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#sanpham-form').trigger('reset');
+            $('input, textarea').attr('readonly', false);
+            $('select').attr('disabled', false);
+            removeRequried($('#sanpham_review_image'));
+            removeRequried($('#sanpham_color'));
+            removeRequried($('#sanpham_price'));
+            removeRequried($('.image-from-model'));
+            $('#sanpham_review_image').attr('src', 'images/600x600.png');
+            $('#sanpham_choose_image').show();
+            $('#create-specifications-div').show('blind');
+            $('#sanpham_specifications option[value="create"]').show();
+            $('#action-btn').show();
+            $('#sanpham_model').children().show();
+            $('.image-from-model').show();
+            $('#sanpham_image_from').show();
+            $('.image-from-model').children().remove();
+            $('.new-image').hide();
+            $('#another-color-label').show();
+        });
+
+        // tìm kiếm
+        $('#search').keyup(function(){
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                // có lọc
+                if(Object.keys(arrFilterSort.filter).length != 0){
+                    return filterSort();
+                } else {
+                    var keyword = $(this).val().toLocaleLowerCase();
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/sanpham/ajax-search',
+                        type: 'POST',
+                        data: {'keyword': keyword},
+                        success:function(data){
+                            if($('#lst_data').attr('data-loadmore') === 'done') {
+                                $('#lst_data').removeAttr('data-loadmore');
+                            }
+
+                            const html = renderNewRow(page, data)
+                            $('#lst_data').append(html);
+
+                            loadMoreFlag = keyword == '' ? false : true;
+                            $('#loadmore').hide();
+                        },
+                        error: function() {
+                            $('#loadmore').hide();
+                            showAlertTop(errorMessage);
+                        }
+                    });
+                }
+            }, 300);
+            $('#lst_data').children().remove();
+            $('#loadmore').show();
+        });
+        $('#search').focus(function() {
+            $('.filter-div').hide('blind');
+            $('.sort-div').hide('blind');
+        })
+
+        // show bộ lọc
+        $('#filter-sanpham').click(function(){
+            $('.filter-div').toggle('blind');
+            $('.sort-div').hide('blind');
+        });
+
+        // show sắp xếp
+        $('#sort-sanpham').click(function(){
+            $('.filter-div').hide('blind');
+            $('.sort-div').toggle('blind');
+        });
+
+        var arrFilterSort = {
+            filter: {},
+            sort: $('[name="sort"]:checked').val(),
+        };
+        // thêm bộ lọc
+        $('[name="filter"]').change(function(){
+            var obj = $(this).data('object');
+
+            if(obj == 'ram'){
+                if($(this).is(':checked')){
+                    if(arrFilterSort.filter.ram == null){
+                        arrFilterSort.filter.ram = [];
+                    }
+
+                    arrFilterSort.filter.ram.push($(this).val());
+                } else {
+                    var i = arrFilterSort.filter.ram.indexOf($(this).val());
+                    arrFilterSort.filter.ram.splice(i, 1);
+                    if(arrFilterSort.filter.ram.length == 0){
+                        delete arrFilterSort.filter.ram;
+                    }
+                }
+            } else if(obj == 'capacity'){
+                if($(this).is(':checked')){
+                    if(arrFilterSort.filter.capacity == null){
+                        arrFilterSort.filter.capacity = [];
+                    }
+
+                    arrFilterSort.filter.capacity.push($(this).val());
+                } else {
+                    var i = arrFilterSort.filter.capacity.indexOf($(this).val());
+                    arrFilterSort.filter.capacity.splice(i, 1);
+                    if(arrFilterSort.filter.capacity.length == 0){
+                        delete arrFilterSort.filter.capacity;
+                    }
+                }
+            } else {
+                if($(this).is(':checked')){
+                    if(arrFilterSort.filter.status == null){
+                        arrFilterSort.filter.status = [];
+                    }
+
+                    arrFilterSort.filter.status.push($(this).val());
+                } else {
+                    var i = arrFilterSort.filter.status.indexOf($(this).val());
+                    arrFilterSort.filter.status.splice(i, 1);
+                    if(arrFilterSort.filter.status.length == 0){
+                        delete arrFilterSort.filter.status;
+                    }
+                }
+            }
+            filterSort();
+        });
+
+        // chọn sắp xếp
+        $('[name="sort"]').change(function(){
+            var sort = $(this).val();
+
+            arrFilterSort.sort = sort;
+            filterSort()
+        });
+
+        // thay đổi chọn hình ảnh
+        $('#sanpham_image_from').change(function(){
+            // hình từ mẫu sản phẩm
+            if($(this).val() == 'model'){
+                removeRequried($('.image-from-model'));
+                removeRequried($('#sanpham_review_image'));
+                $('.image-from-model').show();
+                $('.new-image').hide();
+            }
+            // chọn hình mới
+            else {
+                removeRequried($('.image-from-model'));
+                removeRequried($('#sanpham_review_image'));
+                $('.image-from-model').hide();
+                $('.new-image').show();
+            }
+        });
+
+        function bindSanPham(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/sanpham/ajax-get-sanpham',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    var product = data.product;
+                    var specifications = data.specifications;
+
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+                    $('select').attr('disabled', bool);
+
+                    // gán dữ liệu cho modal
+                    $('#sanpham_name').val(product.tensp);
+                    $('#sanpham_model').val(product.id_msp);
+                    $('#sanpham_color').val(product.mausac);
+                    $('#sanpham_ram').val(product.ram);
+                    $('#sanpham_capacity').val(product.dungluong);
+                    $('#sanpham_price').val(product.gia);
+                    $('#sanpham_promotion').val(product.id_km);
+                    $('#sanpham_specifications').val(product.cauhinh);
+                    if(product.trangthaimausp || bool){
+                        $('#sanpham_status').show();
+                        $('label[for="sanpham_status"]').show();
+                    } else {
+                        $('#sanpham_status').hide();
+                        $('label[for="sanpham_status"]').hide();
+                    }
+                    
+                    $(`#sanpham_status option[value="${product.trangthai}"]`).prop('selected', true);
+                    $('#sanpham_status_model').val(product.trangthaimausp);
+                    $('#sanpham_review_image').attr('src', `images/phone/${product.hinhanh}`);
+                    $('.image-from-model').hide();
+                    $('.new-image').show();
+                    $('#sanpham_image_from option[value="new"]').prop('selected', true);
+
+                    // xem chi tiết
+                    if(bool){
+                        $('#sanpham_choose_image').hide();
+                        $('#sanpham_image_from').hide();
+                        $('#action-btn').hide();$('#action-btn').hide();
+                    }
+                    // chỉnh sửa
+                    else {
+                        $('#sanpham_choose_image').show();
+                        $('#sanpham_image_from').show();
+                        $('#action-btn').show()
+                    }
+
+                    // các màu sắc khác
+                    if(data.lst_color.length != 1){
+                        var html = '';
+                        var type = bool == true ? 'readonly' : 'edit';
+
+                        $.each(data.lst_color, (i, val) => {
+                            html +=
+                                `<img data-id="${val.id}" data-type="${type}" class="product-color" src="images/phone/${val.hinhanh}">`
+                        }).join('')
+
+                        owl.trigger('replace.owl.carousel', html).trigger('refresh.owl.carousel');
+
+                        $('#product-color-carousel').parent().show();
+
+                        data.lst_color.length <= 4 ? $('#prev-next-btn').hide() : $('#prev-next-btn').show();
+                        
+                        $('#another-color-label').show();
+                    } else {
+                        $('#product-color-carousel').parent().hide();
+                        $('#another-color-label').hide();
+                    }
+
+                    // file thông số
+                    $('#sanpham_specifications option[value="create"]').hide();
+                    // màn hình
+                    $('#cong_nghe_mh').val(specifications.thong_so_ky_thuat.man_hinh.cong_nghe_mh);
+                    $('#do_phan_giai').val(specifications.thong_so_ky_thuat.man_hinh.do_phan_giai);
+                    $('#ty_le_mh').val(specifications.thong_so_ky_thuat.man_hinh.ty_le_mh);
+                    $('#kinh_cam_ung').val(specifications.thong_so_ky_thuat.man_hinh.kinh_cam_ung);
+
+                    // camera sau
+                    $('#cam_sau_do_phan_giai').val(specifications.thong_so_ky_thuat.camera_sau.do_phan_giai);
+                    var str = '';
+                    if(specifications.thong_so_ky_thuat.camera_sau.quay_phim[0].chat_luong != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.camera_sau.quay_phim.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.camera_sau.quay_phim[i].chat_luong;
+                            if(i == specifications.thong_so_ky_thuat.camera_sau.quay_phim.length - 1){
+                                str += obj
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#cam_sau_quay_phim').val(str);
+                    $('#cam_sau_den_flash').val(specifications.thong_so_ky_thuat.camera_sau.den_flash);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.camera_sau.tinh_nang[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.camera_sau.tinh_nang.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.camera_sau.tinh_nang[i].name;
+                            if(i == specifications.thong_so_ky_thuat.camera_sau.tinh_nang.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#cam_sau_tinh_nang').val(str);
+
+                    // camera trước
+                    $('#cam_truoc_do_phan_giai').val(specifications.thong_so_ky_thuat.camera_truoc.do_phan_giai);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.camera_truoc.tinh_nang[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.camera_truoc.tinh_nang.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.camera_truoc.tinh_nang[i].name;
+                            if(i == specifications.thong_so_ky_thuat.camera_truoc.tinh_nang.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#cam_truoc_tinh_nang').val(str);
+
+                    // HDH & CPU
+                    $('#HDH').val(specifications.thong_so_ky_thuat.HDH_CPU.HDH);
+                    $('#CPU').val(specifications.thong_so_ky_thuat.HDH_CPU.CPU);
+                    $('#CPU_speed').val(specifications.thong_so_ky_thuat.HDH_CPU.CPU_speed);
+                    $('#GPU').val(specifications.thong_so_ky_thuat.HDH_CPU.GPU);
+
+                    // lưu trữ
+                    $('#RAM').val(specifications.thong_so_ky_thuat.luu_tru.RAM);
+                    $('#bo_nho_trong').val(specifications.thong_so_ky_thuat.luu_tru.bo_nho_trong);
+                    $('#bo_nho_con_lai').val(specifications.thong_so_ky_thuat.luu_tru.bo_nho_con_lai);
+                    $('#the_nho').val(specifications.thong_so_ky_thuat.luu_tru.the_nho);
+
+                    // kết nối
+                    $('#mang_mobile').val(specifications.thong_so_ky_thuat.ket_noi.mang_mobile);
+                    $('#SIM').val(specifications.thong_so_ky_thuat.ket_noi.SIM);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.ket_noi.wifi[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.wifi.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.ket_noi.wifi[i].name;
+                            if(i == specifications.thong_so_ky_thuat.ket_noi.wifi.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#wifi').val(str);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.ket_noi.GPS[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.GPS.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.ket_noi.GPS[i].name;
+                            if(i == specifications.thong_so_ky_thuat.ket_noi.GPS.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#GPS').val(str);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.ket_noi.bluetooth[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.bluetooth.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.ket_noi.bluetooth[i].name;
+                            if(i == specifications.thong_so_ky_thuat.ket_noi.bluetooth.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#bluetooth').val(str);
+                    $('#cong_sac').val(specifications.thong_so_ky_thuat.ket_noi.cong_sac);
+                    $('#jack_tai_nghe').val(specifications.thong_so_ky_thuat.ket_noi.jack_tai_nghe);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac[i].name;
+                            if(i == specifications.thong_so_ky_thuat.ket_noi.ket_noi_khac.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#ket_noi_khac').val(str);
+
+                    // thiết kế trọng lượng
+                    $('#thiet_ke').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.thiet_ke);
+                    $('#chat_lieu').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.chat_lieu);
+                    $('#kich_thuoc').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.kich_thuoc);
+                    $('#khoi_luong').val(specifications.thong_so_ky_thuat.thiet_ke_trong_luong.khoi_luong);
+
+                    // pin
+                    $('#loai').val(specifications.thong_so_ky_thuat.pin.loai);
+                    $('#dung_luong').val(specifications.thong_so_ky_thuat.pin.dung_luong);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.pin.cong_nghe[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.pin.cong_nghe.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.pin.cong_nghe[i].name;
+                            if(i == specifications.thong_so_ky_thuat.pin.cong_nghe.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#cong_nghe').val(str);
+
+                    // tiện ích
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.tien_ich.bao_mat[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.bao_mat.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.tien_ich.bao_mat[i].name;
+                            if(i == specifications.thong_so_ky_thuat.tien_ich.bao_mat.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#bao_mat').val(str);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac[i].name;
+                            if(i == specifications.thong_so_ky_thuat.tien_ich.tinh_nang_khac.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#tinh_nang_khac').val(str);
+                    $('#ghi_am').val(specifications.thong_so_ky_thuat.tien_ich.ghi_am);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.tien_ich.xem_phim[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.xem_phim.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.tien_ich.xem_phim[i].name;
+                            if(i == specifications.thong_so_ky_thuat.tien_ich.xem_phim.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#xem_phim').val(str);
+                    str = '';
+                    if(specifications.thong_so_ky_thuat.tien_ich.nghe_nhac[0].name != null){
+                        for(var i = 0; i < specifications.thong_so_ky_thuat.tien_ich.nghe_nhac.length; i++){
+                            var obj = specifications.thong_so_ky_thuat.tien_ich.nghe_nhac[i].name;
+                            if(i == specifications.thong_so_ky_thuat.tien_ich.nghe_nhac.length - 1){
+                                str += obj    
+                            } else {
+                                str += obj + '\n';
+                            }
+                        }
+                    }
+                    $('#nghe_nhac').val(str);
+
+                    // thông tin khác
+                    var thoidiemramat;
+                    if(specifications.thong_tin_khac.thoi_diem_ra_mat != null){
+                        var temp = specifications.thong_tin_khac.thoi_diem_ra_mat.split('/');
+                        thoidiemramat = `${temp[1]}-${temp[0]}`;
+                    } else {
+                        thoidiemramat = '';
+                    }
+                    
+                    $('#thoi_diem_ra_mat').val(thoidiemramat);
+
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
+                }
+            });
+        }
 
         // bẫy lỗi màu sắc
         function validateColor(color) {
@@ -2355,8 +3016,10 @@ $(function() {
                 return false;
             }
 
+            const value = color.val().trim()
+
             // chưa nhập
-            if(color.val() == ''){
+            if(value == ''){
                 color.addClass('required');
                 color.after('<span class="required-text">Nhập màu</span>');
                 $('.modal-body').animate({scrollTop: color.position().top});
@@ -2364,7 +3027,7 @@ $(function() {
             }
 
             // không hợp lệ
-            if(!isNaN(color.val())){
+            if(!isNaN(value)){
                 color.addClass('required');
                 color.after('<span class="required-text">Không hợp lệ</span>');
                 $('.modal-body').animate({scrollTop: color.position().top});
@@ -2436,66 +3099,29 @@ $(function() {
             }
         }
 
-        $('#sanpham_color').keyup(function(){
-            removeRequried($(this));
-        });
-        $('#sanpham_price').keyup(function(){
-            removeRequried($(this));
-        });
-
-        // reset modal
-        $('#modal').on('shown.bs.modal', function(){
-            // chọn sẵn khuyến mãi theo mẫu sản phẩm
-            getModelPromotion();
-            getModelImage();
-            
-            // gán tên sản phẩm
-            var modelName = $('#sanpham_model').find(':selected').text();
-            $('#sanpham_name').val(modelName);
-        })
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#sanpham-form').trigger('reset');
-            $('input, textarea').attr('readonly', false);
-            $('select').attr('disabled', false);
-            removeRequried($('#sanpham_review_image'));
-            removeRequried($('#sanpham_color'));
-            removeRequried($('#sanpham_price'));
-            removeRequried($('.image-from-model'));
-            $('#sanpham_review_image').attr('src', 'images/600x600.png');
-            $('#sanpham_choose_image').show();
-            $('#create-specifications-div').show('blind');
-            $('#sanpham_specifications option[value="create"]').show();
-            $('#action-btn').show();
-            $('#sanpham_model').children().show();
-            $('.image-from-model').show();
-            $('#sanpham_image_from').show();
-            $('.image-from-model').children().remove();
-            $('.new-image').hide();
-            $('#another-color-label').show();
-        });
-
         function getModelPromotion(){
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/sanpham/ajax-get-promotionID-by-modelID',
                 type: 'POST',
                 data: {'id': $('#sanpham_model option:selected').val()},
                 success:function(data){
                     if(data.id_km != null){
-                        $('#sanpham_promotion option[value="'+data.id_km+'"]').prop('selected', true);
+                        $(`#sanpham_promotion option[value="${data.id_km}"]`).prop('selected', true);
                     } else {
                         $('#sanpham_promotion option[value=""]').prop('selected', true);
                     }
                 }
             });
         }
+
         function getModelImage(){
             removeRequried($('.image-from-model'));
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/sanpham/ajax-get-model-image',
                 type: 'POST',
@@ -2507,309 +3133,101 @@ $(function() {
                         elmnt.appendTo($('.image-from-model'));
                     } else {
                         var row = $('<div class="row"></div>');
-                        $.each(data, function(key, val){
-                            var elmnt = $('<div class="col-6 mb-20">'+
-                                                '<div data-name="'+val.hinhanh+'" class="single-image-from-model">'+
-                                                    '<img src="images/phone/'+val.hinhanh+'" alt="">'+
-                                                '</div>'+
-                                            '</div>');
-                            elmnt.appendTo(row);
-                        });
-                        row.appendTo($('.image-from-model'));
+                        let html = '';
+                        $.each(data, (i, val) => {
+                            html +=
+                                `<div class="col-6 mb-20">
+                                    <div data-name="${val.hinhanh}" class="single-image-from-model">
+                                        <img src="images/phone/${val.hinhanh}" alt="">
+                                    </div>
+                                </div>`
+                        }).join('');
+
+                        row.append(html)
+
+                        $('.image-from-model').append(row);
                     }
                 }
             });
         }
 
-        // xóa
-        $('#delete-btn').click(function(){
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/sanpham/' + id,
-                type: 'DELETE',
-                success:function(){
-                    $('.loader').fadeOut();
-                    $('#delete-modal').modal('hide');
-
-                    // ẩn nút xóa
-                    var restoreBtn = $('<div data-id="'+id+'" data-name="'+name+'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>');
-                    $('.delete-btn[data-id="'+id+'"]').replaceWith(restoreBtn);
-
-                    // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Ngừng kinh doanh');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="sanpham-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#sanpham-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
-                }
-            });
-        });
-
-        // phục hồi
-        $('.undelete-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-            restore(id, name);            
-        });
-
         function restore(id, name) {
+            $('.loader').fadeIn();
+
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/sanpham/ajax-restore',
                 type: 'POST',
                 data: {'id': id},
                 success:function(data){
+                    $('.loader').fadeOut();
+
                     if(data == 'false'){
                         showAlertTop('Không thể khôi phục do mẫu sản phẩm đã xóa trước đó.');
                         return;
                     }
                     // hiện nút xóa
-                    var deleteBtn = $('<div data-id="'+id+'" data-name="'+name+'" class="delete-btn"><i class="fas fa-trash"></i></div>');
-                    $('.undelete-btn[data-id="'+id+'"]').replaceWith(deleteBtn);
+                    var deleteBtn = $(`<div data-id="${id}" data-name="${name}" class="delete-btn"><i class="fas fa-trash"></i></div>`);
+                    $(`.undelete-btn[data-id="${id}"]`).replaceWith(deleteBtn);
 
                     // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Kinh doanh');
+                    $(`.trangthai[data-id="${id}"]`).text('Kinh doanh');
 
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="sanpham-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                    showToast('#sanpham-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    $('html, body').animate({scrollTop: tr.position().top});
-                    tr.css({
-                        'background-color': SUCCESS,
-                        'transition': '.5s'
-                    });
+                    // toast + highlight row
+                    toastAndHighlight(EDIT_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
                 }
             });
         }
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // hiển thị modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                $('#modal-title').text('Chỉnh sửa sản phẩm');
-                bindSanPham(id);
-            });
-
-            // modal xem chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                $('#modal-title').text('Chi tiết sản phẩm');
-                bindSanPham(id, true);
-            });
-
-            // modal xóa
-            $('.delete-btn').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa <b>'+name+'?</b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-btn').attr('data-name', name);
-                $('#delete-modal').modal('show');
-            });
-
-            // phục hồi
-            $('.undelete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
-                restore(id, name);            
-            });
-        });
-
-        // tìm kiếm
-        $('#search').keyup(function(){
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                // có lọc || sắp xếp
-                if(Object.keys(arrFilterSort.filter).length != 0 || arrFilterSort.sort != ''){
-                    filterSort();
-                } else {
-                    var keyword = $(this).val().toLocaleLowerCase();
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/sanpham/ajax-search',
-                        type: 'POST',
-                        data: {'keyword': keyword},
-                        success:function(data){
-                            $('#lst_data').children().remove();
-                            $('#lst_data').append(data);
-                            loadMoreFlag = keyword == '' ? false : true;
-                            $('#loadmore').hide();
-                        }
-                    });
-                }
-            }, 300);
-            $('#lst_data').children().remove();
-            $('#loadmore').show();
-        });
-
-        // show bộ lọc
-        $('#filter-sanpham').click(function(){
-            $('.filter-div').toggle('blind');
-            $('.sort-div').hide('blind');
-        });
-
-        // show sắp xếp
-        $('#sort-sanpham').click(function(){
-            $('.filter-div').hide('blind');
-            $('.sort-div').toggle('blind');
-        });
-
-        var arrFilterSort = {
-            filter: {},
-            sort: '',
-        };
-        // thêm bộ lọc
-        $('[name="filter"]').change(function(){
-            var obj = $(this).data('object');
-
-            if(obj == 'ram'){
-                if($(this).is(':checked')){
-                    if(arrFilterSort.filter.ram == null){
-                        arrFilterSort.filter.ram = [];
-                    }
-
-                    arrFilterSort.filter.ram.push($(this).val());
-                } else {
-                    var i = arrFilterSort.filter.ram.indexOf($(this).val());
-                    arrFilterSort.filter.ram.splice(i, 1);
-                    if(arrFilterSort.filter.ram.length == 0){
-                        delete arrFilterSort.filter.ram;
-                    }
-                }
-            } else if(obj == 'capacity'){
-                if($(this).is(':checked')){
-                    if(arrFilterSort.filter.capacity == null){
-                        arrFilterSort.filter.capacity = [];
-                    }
-
-                    arrFilterSort.filter.capacity.push($(this).val());
-                } else {
-                    var i = arrFilterSort.filter.capacity.indexOf($(this).val());
-                    arrFilterSort.filter.capacity.splice(i, 1);
-                    if(arrFilterSort.filter.capacity.length == 0){
-                        delete arrFilterSort.filter.capacity;
-                    }
-                }
-            } else {
-                if($(this).is(':checked')){
-                    if(arrFilterSort.filter.status == null){
-                        arrFilterSort.filter.status = [];
-                    }
-
-                    arrFilterSort.filter.status.push($(this).val());
-                } else {
-                    var i = arrFilterSort.filter.status.indexOf($(this).val());
-                    arrFilterSort.filter.status.splice(i, 1);
-                    if(arrFilterSort.filter.status.length == 0){
-                        delete arrFilterSort.filter.status;
-                    }
-                }
-            }
-            filterSort();
-        });
-
-        // chọn sắp xếp
-        $('[name="sort"]').change(function(){
-            var sort = $(this).val();
-
-            arrFilterSort.sort = sort;
-            filterSort()
-        });
 
         // danh sách kết quả lọc & sắp xếp
         function filterSort() {
             $('#lst_data').children().remove();
             $('#loadmore').show();
+            const keyword = $('#search').val().toLocaleLowerCase()
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/sanpham/ajax-filtersort',
                 type: 'POST',
-                data: {'arrFilterSort': arrFilterSort, 'search': $('#search').val().toLocaleLowerCase()},
+                data: {'arrFilterSort': arrFilterSort, 'search': keyword},
                 success: function(data){
                     $('#lst_data').children().remove();
-                    $('#lst_data').append(data);
-                    if(Object.keys(arrFilterSort.filter).length == 0){
+
+                    const html = renderNewRow(page, data)
+                    $('#lst_data').append(html);
+ 
+                    if(Object.keys(arrFilterSort.filter).length === 0){
+                        if($('#lst_data').attr('data-loadmore') === 'done') {
+                            $('#lst_data').removeAttr('data-loadmore')
+                        }
+
                         $('.filter-badge').hide();
+                        loadMoreFlag = keyword == '' ? false : true
                     } else {
+                        loadMoreFlag = true
                         $('.filter-badge').text(Object.keys(arrFilterSort.filter).length);
                         $('.filter-badge').show();
                     }
-                    if(arrFilterSort.sort != ''){
-                        $('.sort-badge').show();
-                    }
-                    loadMoreFlag = true;
                     $('#loadmore').hide();
+                },
+                error: function() {
+                    $('#loadmore').hide();
+                    showAlertTop(errorMessage)
                 }
             });
         }
-
-        // thay đổi chọn hình ảnh
-        $('#sanpham_image_from').change(function(){
-            // hình từ mẫu sản phẩm
-            if($(this).val() == 'model'){
-                removeRequried($('.image-from-model'));
-                removeRequried($('#sanpham_review_image'));
-                $('.image-from-model').show();
-                $('.new-image').hide();
-            }
-            // chọn hình mới
-            else {
-                removeRequried($('.image-from-model'));
-                removeRequried($('#sanpham_review_image'));
-                $('.image-from-model').hide();
-                $('.new-image').show();
-            }
-        });
     }
     /*=======================================================================================================================
                                                            Nhà cung cấp
     =======================================================================================================================*/
-    else if(url == 'nhacungcap'){
+    else if(page === 'nhacungcap'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -2834,21 +3252,21 @@ $(function() {
         });
 
         // modal xem chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết nhà cung cấp');
             bindNCC(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa nhà cung cấp');
             bindNCC(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
@@ -2857,6 +3275,136 @@ $(function() {
             $('#delete-btn').attr('data-id', id);
             $('#delete-btn').attr('data-name', name);
             $('#delete-modal').modal('show');
+        });
+
+        // thêm|sửa
+        $('#action-ncc-btn').click(function(){
+            // bẫy lỗi
+            var valiName = validateName($('#ncc_name'));
+            var valiAddress = validateAddress($('#ncc_address'));
+            var valitel = validatePhoneNumber($('#ncc_tel'));
+            var valiEmail = validateEmail($('#ncc_email'));
+            var valiImage = validateSupplierImage($('#ncc_image_inp'))
+
+            // bẫy lỗi xong kiểm tra loại
+            if(valiName & valiAddress & valitel & valiEmail && valiImage){
+                $('.loader').fadeIn();
+
+                var data = {
+                    'tenncc': $('#ncc_name').val(),
+                    'anhdaidien': $('#ncc_image_base64').val(),
+                    'diachi': $('#ncc_address').val(),
+                    'sdt': $('#ncc_tel').val(),
+                    'email': $('#ncc_email').val(),
+                    'trangthai': $('#ncc_status').val(),
+                };
+
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/nhacungcap',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+
+                            // đã tồn tại
+                            if(data == 'exists'){
+                                $('.loader').fadeOut();
+                                $('#ncc_name').addClass('required');
+                                $('#ncc_name').after('<span class="required-text">Nhà cung cấp này đã tồn tại</span>');
+                                return;
+                            }
+
+                            $('#ncc-modal').modal('hide');
+
+                            // render vào view
+                            const newRow = renderNewRow(page, data.data);
+                            $('#lst_data').prepend(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage);
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = $(this).attr('data-id');
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/nhacungcap/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#ncc-modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
+                            
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage);
+                        }
+                    });
+                }
+            }
+        });
+
+        // xóa
+        $('#delete-btn').click(function(){
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+
+            $('.loader').fadeIn()
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/nhacungcap/' + id,
+                type: 'DELETE',
+                success:function(){
+                    $('.loader').fadeOut();
+                    $('#delete-modal').modal('hide');
+
+                    // thay nút
+                    var restoreBtn = $(`<div data-id="${id}" data-name="${name}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>`)
+                    $(`.delete-btn[data-id="${id}"]`).replaceWith(restoreBtn);
+
+                    // cập nhật trạng thái
+                    $(`.trangthai[data-id="${id}"]`).text('Ngừng kinh doanh');
+
+                    // toast + highlight row
+                    toastAndHighlight(DELETE_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
+        });
+
+        // khôi phục
+        $(document).on('click', '.undelete-btn', function(){
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
+
+            restore(id, name);
         });
 
         // show dialog chọn hình ảnh
@@ -2877,16 +3425,14 @@ $(function() {
             var fileName = this.files[0].name.split('.');
             var extend = fileName[fileName.length - 1];
 
-            // xem trước hình ảnh
             if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#ncc_review_image').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(this.files[0]);
-                getBase64FromUrl(URL.createObjectURL(this.files[0]), function(dataUrl){
-                    $('#ncc_image_base64').val(dataUrl);
-                });
+                // xem trước hình ảnh
+                $('#ncc_review_image').attr('src', URL.createObjectURL(this.files[0]))
+
+                // image -> base64
+                const urlIMG = URL.createObjectURL(this.files[0])
+                getBase64FromUrl(urlIMG)
+                    .then(dataUrl => $('#ncc_image_base64').val(dataUrl));
             }
             // không phải hình ảnh
             else{
@@ -2896,11 +3442,74 @@ $(function() {
             }
         });
 
+        $('#ncc_name').keyup(function(){
+            removeRequried($(this));
+        });
+        $('#ncc_address').keyup(function(){
+            removeRequried($(this));
+        });
+        $('#ncc_tel').keyup(function(){
+            valiPhonenumberTyping($(this));
+        });
+        $('#ncc_email').keyup(function(){
+            removeRequried($(this));
+        })
+
+        // tìm kiếm
+        $('#search').keyup(function(){
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                var keyword = $(this).val().toLocaleLowerCase();
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/nhacungcap/ajax-search',
+                        type: 'POST',
+                        data: {'keyword': keyword},
+                        success:function(data){
+                            const lst_data = $('#lst_data')
+
+                            if(lst_data.attr('data-loadmore') === 'done') {
+                                lst_data.removeAttr('data-loadmore')
+                            }
+
+                            lst_data.children().remove();
+
+                            const html = renderNewRow(page, data)
+                            lst_data.append(html);
+
+                            loadMoreFlag = keyword == '' ? false : true;
+                            $('#loadmore').hide();
+                        },
+                        error: function() {
+                            $('#loadmore').hide();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+            },300);
+            $('#lst_data').children().remove();
+            $('#loadmore').show();
+        });
+
+        // reset modal
+        $('#ncc-modal').on('hidden.bs.modal', function(){
+            $('#ncc-form').trigger('reset');
+            $('input, textarea').attr('readonly', false);
+            $('select').attr('disabled', false);
+            $('.required').removeClass('required')
+            $('.required-text').remove()
+            $('#ncc_choose_image').show();
+            $('#ncc_review_image').attr('src', 'images/320x320.png');
+            $('#ncc_image_base64').val('');
+            $('#action-ncc-btn').show();
+        });
+
         function bindNCC(id, bool = false) {
             // lấy dòng theo id gán vào modal
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: '/admin/nhacungcap/ajax-get-ncc',
                 type: 'POST',
@@ -2920,8 +3529,13 @@ $(function() {
                     $('label[for="ncc_status"]').show();
                     $('#ncc_status').show();
 
-                    bool == true ? $('#ncc_choose_image').hide() : $('#ncc_choose_image').show();
-                    
+                    if(bool) {
+                        $('#ncc_choose_image').hide()
+                        $('#action-ncc-btn').hide()
+                    } else {
+                        $('#ncc_choose_image').show()
+                        $('#action-ncc-btn').show()
+                    }
 
                     // thiết lập nút gửi là cập nhật
                     $('#action-ncc-btn').attr('data-type', 'edit');
@@ -2930,130 +3544,13 @@ $(function() {
 
                     // hiển thị modal
                     $('#ncc-modal').modal('show');
+                },
+                error: function () {
+                    $('.loader').fadeOut()
+                    showAlertTop(errorMessage)
                 }
             });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-ncc-btn').show() : $('#action-ncc-btn').hide();
         }
-
-        // thêm|sửa
-        $('#action-ncc-btn').click(function(){
-            // bẫy lỗi
-            var valiName = validateName($('#ncc_name'));
-            var valiAddress = validateAddress($('#ncc_address'));
-            var valitel = validatePhoneNumber($('#ncc_tel'));
-            var valiEmail = validateEmail($('#ncc_email'));
-            var valiImage = validateSupplierImage($('#ncc_image_inp'))
-
-            // bẫy lỗi xong kiểm tra loại
-            if(valiName & valiAddress & valitel & valiEmail && valiImage){
-                $('.loader').show();
-
-                var data = {
-                    'tenncc': $('#ncc_name').val(),
-                    'anhdaidien': $('#ncc_image_base64').val(),
-                    'diachi': $('#ncc_address').val(),
-                    'sdt': $('#ncc_tel').val(),
-                    'email': $('#ncc_email').val(),
-                    'trangthai': $('#ncc_status').val(),
-                };
-
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/nhacungcap',
-                        type: 'POST',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-
-                            // đã tồn tại
-                            if(data == 'exists'){
-                                $('.loader').fadeOut();
-                                $('#ncc_name').addClass('required');
-                                $('#ncc_name').after('<span class="required-text">Nhà cung cấp này đã tồn tại</span>');
-                                return;
-                            }
-
-                            $('#ncc-modal').modal('hide');
-
-                            // render vào view
-                            $('#lst_data').prepend(data.html);
-
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="ncc-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#ncc-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-                // chỉnh sửa
-                else {
-                    var id = $(this).attr('data-id');
-
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/nhacungcap/' + id,
-                        type: 'PUT',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#ncc-modal').modal('hide');
-
-                            // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data); 
-                            
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="ncc-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#ncc-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-            }
-        });
 
         // bẫy lỗi hình ảnh
         function validateSupplierImage(image) {
@@ -3073,227 +3570,72 @@ $(function() {
             return true;
         }
 
-        $('#ncc_name').keyup(function(){
-            removeRequried($(this));
-        });
-        $('#ncc_address').keyup(function(){
-            removeRequried($(this));
-        });
-        $('#ncc_tel').keyup(function(){
-            valiPhonenumberTyping($(this));
-        });
-        $('#ncc_email').keyup(function(){
-            removeRequried($(this));
-        })
-
-        // reset modal
-        $('#ncc-modal').on('hidden.bs.modal', function(){
-            $('#ncc-form').trigger('reset');
-            $('input, textarea').attr('readonly', false);
-            $('select').attr('disabled', false);
-            removeRequried($('#ncc_name'));
-            removeRequried($('#ncc_review_image'));
-            removeRequried($('#ncc_address'));
-            removeRequried($('#ncc_tel'));
-            removeRequried($('#ncc_email'));
-            $('#ncc_choose_image').show();
-            $('#ncc_review_image').attr('src', 'images/320x320.png');
-            $('#ncc_image_base64').val('');
-            $('#action-ncc-btn').show();
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal xem chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết nhà cung cấp');
-                bindNCC(id, true);
-            });
-
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa nhà cung cấp');
-                bindNCC(id);
-            });
-
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa nhà cung cấp <b>'+name+'?</b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-btn').attr('data-name', name);
-                $('#delete-modal').modal('show');
-            });
-
-            // khôi phục
-            $('.undelete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
-
-                restore(id, name);
-            });
-        });
-
-        // xóa
-        $('#delete-btn').click(function(){
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/nhacungcap/' + id,
-                type: 'DELETE',
-                success:function(){
-                    $('.loader').fadeOut();
-                    $('#delete-modal').modal('hide');
-
-                    // thay nút
-                    var restoreBtn = $('<div data-id="'+id+'" data-name="'+name+'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>')
-                    $('.delete-btn[data-id="'+id+'"]').replaceWith(restoreBtn);
-
-                    // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Ngừng kinh doanh');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="ncc-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#ncc-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
-                }
-            });
-        });
-
-        // khôi phục
-        $('.undelete-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-
-            restore(id, name);
-        });
-
         function restore(id, name) {
+            $('.loader').fadeIn();
+
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/nhacungcap/ajax-restore',
                 type: 'POST',
                 data: {'id': id},
                 success:function(){
+                    $('.loader').fadeOut();
+
                     // thay nút
-                    var deleteBtn = $('<div data-id="'+id+'" data-name="'+name+'" class="delete-btn"><i class="fas fa-trash"></i></div>')
-                    $('.undelete-btn[data-id="'+id+'"]').replaceWith(deleteBtn);
+                    var deleteBtn = $(`<div data-id="${id}" data-name="${name}" class="delete-btn"><i class="fas fa-trash"></i></div>'`)
+                    $(`.undelete-btn[data-id="${id}"]`).replaceWith(deleteBtn);
 
                     // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Hoạt động');
+                    $(`.trangthai[data-id="${id}"]`).text('Hoạt động');
 
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="ncc-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                    showToast('#ncc-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': SUCCESS,
-                        'transition': '.5s'
-                    });
+                    // toast + highlight row
+                    toastAndHighlight(EDIT_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
                 }
             });
         }
-
-        // tìm kiếm
-        $('#search').keyup(function(){
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                var keyword = $(this).val().toLocaleLowerCase();
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/nhacungcap/ajax-search',
-                        type: 'POST',
-                        data: {'keyword': keyword},
-                        success:function(data){
-                            $('#lst_data').children().remove();
-                            $('#lst_data').append(data);
-                            loadMoreFlag = true;
-                            $('#loadmore').hide();
-                        }
-                    });
-            },300);
-            $('#lst_data').children().remove();
-            $('#loadmore').show();
-        });
     }
     /*=======================================================================================================================
                                                            Slideshow msp
     =======================================================================================================================*/
-    else if(url == 'slideshow-msp'){
+    else if(page === 'slideshow-msp'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
 
         var idx = 1;
-        var arrayBase64 = [];
         var arrayDelete = [];
 
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
+            // lấy danh sách mẫu sp chưa có hình ảnh
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/slideshow-msp/ajax-get-model-havenot-slideshow',
                 type: 'POST',
                 data: {'data': ''},
                 success:function(data){
                     if(data.length == 0){
-                        if($('#toast').children().length){
-                            $('#toast').children().remove();
-                        }
-                        $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">Tất cả mẫu sản phẩm đã có hình ảnh</span>');
-                        showToast('#slideshow-msp-toast');
+                        showToast('Tất cả mẫu sản phẩm đã có hình ảnh', TOAST_SUCCESS_TYPE);
                     } else {
                         // gán dữ liệu cho modal
                         $('#modal-title').text('Tạo mới slideshow mẫu sản phẩm');
                         $('#model').children().remove();
-                        for(var i = 0; i < data.length; i++){
-                            var option = $('<option value="'+data[i].id+'">'+data[i].tenmau+'</option>');
-                            option.appendTo($('#model'));
-                        }
+
+                        let options = ''
+                        $.each(data, (i, val) => {
+                            options +=
+                                `<option value="${val.id}">${val.tenmau}</option>`
+                        }).join('')
+                        
+                        $('#model').append(options)
 
                         // thiết lập nút gửi là thêm mới
                         $('#action-btn').attr('data-type', 'create');
@@ -3302,26 +3644,29 @@ $(function() {
                         // hiển thị modal
                         $('#modal').modal('show');
                     }
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
                 }
             });
         });
 
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết slideshow mẫu sản phẩm');
             bindSlideshowMSP(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa slideshow mẫu sản phẩm');
             bindSlideshowMSP(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
@@ -3330,6 +3675,78 @@ $(function() {
             $('#delete-btn').attr('data-id', id);
             $('#delete-btn').attr('data-name', name);
             $('#delete-modal').modal('show');
+        });
+
+        // thêm|sửa
+        $('#action-btn').click(function(){
+            addOrUpdate($(this))
+        });
+
+        // xóa
+        $('#delete-btn').click(function(){
+            var id = $(this).attr('data-id');
+
+            $('.loader').fadeIn();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/slideshow-msp/' + id,
+                type: 'DELETE',
+                success:function(){
+                    $('.loader').fadeOut();
+                    $('#delete-modal').modal('hide');
+
+                    // ẩn nút xóa
+                    $(`.delete-btn[data-id="${id}"]`).remove();
+
+                    // cập nhật số lượng hình
+                    $(`.qty-image[data-id="${id}"]`).text('0 Hình');
+
+                    // toast + highlight row
+                    toastAndHighlight(DELETE_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
+        });
+
+        // tìm kiếm
+        $('#search').keyup(function(){
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                var keyword = $(this).val().toLocaleLowerCase();
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
+                    },
+                    url: 'admin/slideshow-msp/ajax-search',
+                    type: 'POST',
+                    data: {'keyword': keyword},
+                    success: function(data){
+                        const lst_data = $('#lst_data')
+
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
+                        const html = renderNewRow(page, data)
+                        lst_data.append(html);
+
+                        loadMoreFlag = keyword == '' ? false : true;
+                        $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
+                    }
+                });
+            }, 300);
+            $('#lst_data').children().remove();
+            $('#loadmore').show();
         });
 
         // show dialog chọn hình ảnh
@@ -3353,6 +3770,8 @@ $(function() {
             // tổng số hình hiện tại
             var qty = $('.image-preview-div > .row').children().length;
 
+            let imageElement = ''
+
             for(var i = 0; i < length; i++){
                 if(qty >= 20){
                     showAlertTop('Hình ảnh upload tối đa là 20');
@@ -3366,14 +3785,14 @@ $(function() {
                 // kiểm tra có phải là hình ảnh không
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
                     // tạo hình
-                    var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-lg-3 mb-20">'+
-                                        '<div class="image-preview">'+
-                                            '<div class="overlay-image-preview"></div>'+
-                                            '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
-                                            '<img data-id="'+idx+'" class="image_preview_img" src="'+URL.createObjectURL(this.files[i])+'" alt="">'+
-                                        '</div>'+
-                                    '</div>');
-                    elmnt.appendTo($('.image-preview-div > .row'));
+                    imageElement += 
+                        `<div id="image-${idx}" data-id="${idx}" class="col-lg-3 mb-20">
+                            <div class="image-preview">
+                                <div class="overlay-image-preview"></div>
+                                <div data-id="${idx}" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>
+                                <img data-id="${idx}" class="image_preview_img" src="${URL.createObjectURL(this.files[i])}" alt="">
+                            </div>
+                        </div>`
                 }
                 // không phải hình ảnh
                 else{
@@ -3384,33 +3803,56 @@ $(function() {
                 qty++;
             }
 
-            $('#qty-image').text('('+qty+')');
+            $('.image-preview-div > .row').append(imageElement);
+            $('#qty-image').text(`(${qty})`);
         });
 
-        $('.image-preview-div').bind('DOMSubtreeModified', function(){
-            // xóa hình
-            $('.delete-image-preview').off('click').click(function(){
-                var id = $(this).data('id');
-                var image = $('#image-' + id);
-                if(image.attr('data-name') != null){
-                    arrayDelete.push(image.attr('data-name'));
-                }
-                image.remove();
-                var qty = $('.image-preview-div > .row').children().length;
-                if(qty == 0){
-                    $('#qty-image').hide();
-                    $('#image_inp').val('');
-                } else {
-                    $('#qty-image').text('('+qty+')');
-                }
-            });
+        // xóa hình
+        $(document).on('click', '.delete-image-preview', function(){
+            var id = $(this).data('id');
+            var image = $('#image-' + id);
+
+            if(image.attr('data-name')){
+                arrayDelete.push(image.attr('data-name'));
+            }
+
+            image.remove();
+
+            var qty = $('.image-preview-div > .row').children().length;
+
+            if(qty == 0){
+                $('#qty-image').hide();
+                $('#image_inp').val('');
+            } else {
+                $('#qty-image').text(`(${qty})`);
+            }
+        });
+
+        $('#model').change(function(){
+            var id = $(this).val();
+            bindSlideshowMSP(id);
+        });
+
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('select').attr('disabled', false);
+            $('#model').children().remove();
+            $('.image-preview-div > .row').children().remove();
+            $('.required').removeClass('required')
+            $('.required-text').remove()
+            $('#choose_image').show();
+            $('#action-btn').show();
+            idx = 1;
+            arrayDelete = [];
+            $('#qty-image').text('');
         });
 
         function bindSlideshowMSP(id, bool = false) {
             // lấy dòng theo id gán vào modal
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/slideshow-msp/ajax-get-slideshow-msp',
                 type: 'POST',
@@ -3423,39 +3865,23 @@ $(function() {
                     var lst_slide = data.lst_slide;
                     var lst_model = data.lst_model;
 
-                    // gán dữ liệu cho modal
-                    setTimeout(() => {
-                        // gán hình ảnh
-                        $('.image-preview-div > .row').children().remove();
-                        for(var i = 0; i < lst_slide.length; i++){
-                            var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" data-name="'+lst_slide[i].hinhanh+'" class="col-lg-3 mb-20">'+
-                                            '<div class="image-preview">'+
-                                                '<div class="overlay-image-preview"></div>'+
-                                                '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
-                                                '<img data-id="'+idx+'" class="image_preview_img" src="images/phone/slideshow/'+lst_slide[i].hinhanh+'" alt="">'+
-                                            '</div>'+
-                                        '</div>');
-                            elmnt.appendTo($('.image-preview-div > .row'));
+                    const urlSlide = 'images/phone/slideshow/'
 
-                            idx++;
-                        }
+                    // gán hình ảnh + gán mẫu sp
+                    Promise.all([renderImage(lst_slide, urlSlide), assignModel(lst_model, id)])
+                        .catch(() => showAlertTop(errorMessage))                
 
-                        // gán mẫu sp
-                        $('#model').children().remove();
-                        for(var i = 0; i < lst_model.length; i++){
-                            var option = $('<option value="'+lst_model[i].id+'">'+lst_model[i].tenmau+'</option>');
-                            option.appendTo($('#model'));
-                        }
+                    if(bool) {
+                        $('.overlay-image-preview').remove();
+                        $('.delete-image-preview').remove();
+                        $('#action-btn').hide();
+                        $('#choose_image').hide();
+                    } else {
+                        $('#action-btn').show();
+                        $('#choose_image').show();
+                    }
 
-                        $('#model option[value="'+id+'"]').prop('selected', true);
-
-                        if(bool == true){
-                            $('.overlay-image-preview').remove();
-                            $('.delete-image-preview').remove();
-                        }
-                    }, 500);
-
-                    $('#qty-image').text('('+lst_slide.length+')');
+                    $('#qty-image').text(`(${lst_slide.length})`);
 
                     // thiết lập nút gửi là cập nhật
                     $('#action-btn').attr('data-type', 'edit');
@@ -3464,148 +3890,10 @@ $(function() {
 
                     // hiển thị modal
                     $('#modal').modal('show');
-                }
+                },
+                error: function() { showAlertTop(errorMessage) }
             });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-            bool == false ? $('#choose_image').show() : $('#choose_image').hide();
         }
-
-        $('#model').change(function(){
-            var id = $(this).val();
-            bindSlideshowMSP(id);
-        });
-
-        // thêm|sửa
-        $('#action-btn').click(function(){
-            // bẫy lỗi
-            var valiImage = validateSlideshowImage()
-
-            // bẫy lỗi xong kiểm tra loại
-            if(valiImage){
-                $('.loader').show();
-
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    setTimeout(() => {
-                        var data = {
-                            'id_msp': $('#model').val(),
-                            'image_slideshow': arrayBase64,
-                        };
-
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: 'admin/slideshow-msp',
-                            type: 'POST',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-
-                                // render vào view
-                                $('#lst_data').children().remove();
-                                $('#lst_data').append(data.html);
-
-                                // toast
-                                if($('#toast').children().length){
-                                    $('#toast').children().remove();
-                                }
-                                $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                                showToast('#slideshow-msp-toast');
-
-                                // đánh dấu dòng được thêm/chỉnh sửa
-                                var tr = $('tr[data-id="'+data.id+'"]'); 
-                                setTimeout(() => {
-                                    setTimeout(() => {
-                                        tr.removeAttr('style');    
-                                    }, 1000);
-                                    tr.css({
-                                        'background-color': 'white',
-                                    });    
-                                }, 3000);
-                                $('html, body').animate({scrollTop: tr.position().top});
-                                tr.css({
-                                    'background-color': SUCCESS,
-                                    'transition': '.5s'
-                                });
-                            }
-                        });
-                    }, 1000);
-
-                    // hình => base64
-                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
-                        var id = $($('.image-preview-div > .row').children()[i]).attr('data-id');
-                        getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
-                            arrayBase64.push(dataUrl);
-                        });    
-                    }
-                }
-                // chỉnh sửa
-                else {
-                    setTimeout(() => {
-                        var id = $(this).attr('data-id');
-
-                        var data = {
-                            'lst_slideshow': arrayBase64,
-                            'lst_delete': arrayDelete,
-                        };
-                        
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: 'admin/slideshow-msp/' + id,
-                            type: 'PUT',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-
-                                // thay thế
-                                $('tr[data-id="'+id+'"]').replaceWith(data); 
-                                
-                                // toast
-                                if($('#toast').children().length){
-                                    $('#toast').children().remove();
-                                }
-                                $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                                showToast('#slideshow-msp-toast');
-
-                                // đánh dấu dòng được thêm/chỉnh sửa
-                                var tr = $('tr[data-id="'+id+'"]'); 
-                                setTimeout(() => {
-                                    setTimeout(() => {
-                                        tr.removeAttr('style');    
-                                    }, 1000);
-                                    tr.css({
-                                        'background-color': 'white',
-                                    });    
-                                }, 3000);
-                                $('html, body').animate({scrollTop: tr.position().top});
-                                tr.css({
-                                    'background-color': SUCCESS,
-                                    'transition': '.5s'
-                                });
-                            }
-                        });
-                    }, 1000);
-
-                    // hình => base64
-                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
-                        var image = $($('.image-preview-div > .row').children()[i]);
-                        if(image.attr('data-name') == null){
-                            var id = image.attr('data-id');
-                            getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
-                                arrayBase64.push(dataUrl);
-                            });    
-                        }
-                    }
-                }
-            }
-        });
 
         // bẫy lỗi hình ảnh
         function validateSlideshowImage() {
@@ -3626,47 +3914,170 @@ $(function() {
             return true;
         }
 
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('select').attr('disabled', false);
-            $('#model').children().remove();
-            removeRequried($('.image-preview-div'));
-            $('.image-preview-div > .row').children().remove();
-            $('#choose_image').show();
-            $('#action-btn').show();
-            idx = 1;
-            arrayBase64 = [];
-            arrayDelete = [];
-            $('#qty-image').text('');
+        async function addOrUpdate(button) {
+            // bẫy lỗi
+            var valiImage = validateSlideshowImage()
+
+            // bẫy lỗi xong kiểm tra loại
+            if(valiImage){
+                $('.loader').fadeIn();
+                
+                const type = button.attr('data-type')
+                let arrayBase64 = []
+
+                await pushBase64ToArray(type)
+                        .then(base64 => arrayBase64 = base64)
+
+                // thêm mới
+                if(type === 'create'){
+                    var data = {
+                        'id_msp': $('#model').val(),
+                        'lst_base64_slideshow': arrayBase64,
+                    };
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/slideshow-msp',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // render vào view
+                            $('#lst_data').children().remove();
+                            const html = renderNewRow(page, data.data)
+                            $('#lst_data').append(html);
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+
+                            const tr = $(`tr[data-id="${data.id}"]`); 
+                            $('html, body').animate({scrollTop: tr.position().top});
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = button.attr('data-id');
+
+                    var data = {
+                        'lst_base64_slideshow': arrayBase64,
+                        'lst_delete': arrayDelete,
+                    };
+                    
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/slideshow-msp/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+            }
+        }
+    }
+    /*=======================================================================================================================
+                                                           Hình ảnh
+    =======================================================================================================================*/
+    else if(page === 'hinhanh'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
+        var idx = 1;
+        var arrayDelete = [];
+
+        // modal tạo mới
+        $('.create-btn').off('click').click(function(){
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/hinhanh/ajax-get-model-havenot-image',
+                type: 'POST',
+                data: {'data': ''},
+                success:function(data){
+                    if(data.length == 0){
+                        showToast('Tất cả mẫu sản phẩm đã có hình ảnh', TOAST_SUCCESS_TYPE);
+                    } else {
+                        // gán dữ liệu cho modal
+                        $('#modal-title').text('Tạo mới hình ảnh mẫu sản phẩm');
+                        $('#model').children().remove();
+
+                        let options = ''
+                        $.each(data, (i, val) => {
+                            options +=
+                                `<option value="${val.id}">${val.tenmau}</option>`
+                        })
+
+                        $('#model').append(options)
+
+                        // thiết lập nút gửi là thêm mới
+                        $('#action-btn').attr('data-type', 'create');
+                        $('#action-btn').text('Thêm');
+
+                        // hiển thị modal
+                        $('#modal').modal('show');
+                    }
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
+                }
+            });
         });
 
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết slideshow mẫu sản phẩm');
-                bindSlideshowMSP(id, true);
-            });
+        // modal chi tiết
+        $(document).on('click', '.info-btn', function(){
+            var id = $(this).data('id');
+            $('#modal-title').text('Chi tiết hình ảnh mẫu sản phẩm');
+            bindHinhAnh(id, true);
+        });
 
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa slideshow mẫu sản phẩm');
-                bindSlideshowMSP(id);
-            });
+        // modal chỉnh sửa
+        $(document).on('click', '.edit-btn', function(){
+            var id = $(this).data('id');
+            $('#modal-title').text('Chỉnh sửa hình ảnh mẫu sản phẩm');
+            bindHinhAnh(id);
+        });
 
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
+        // modal xóa
+        $(document).on('click', '.delete-btn', function(){
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-name');
 
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa slideshow <b>'+name+'?</b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-btn').attr('data-name', name);
-                $('#delete-modal').modal('show');
-            });
+            // gán dữ liệu cho modal xóa
+            $('#delete-content').html('Xóa hình ảnh <b>'+name+'?</b>');
+            $('#delete-btn').attr('data-id', id);
+            $('#delete-btn').attr('data-name', name);
+            $('#delete-modal').modal('show');
+        });
+
+        // thêm|sửa
+        $('#action-btn').click(function(){
+            addOrUpdate($(this))
         });
 
         // xóa
@@ -3675,42 +4086,26 @@ $(function() {
 
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
-                url: 'admin/slideshow-msp/' + id,
+                url: 'admin/hinhanh/' + id,
                 type: 'DELETE',
                 success:function(){
                     $('.loader').fadeOut();
                     $('#delete-modal').modal('hide');
 
                     // ẩn nút xóa
-                    $('.delete-btn[data-id="'+id+'"]').remove();
+                    $(`.delete-btn[data-id="${id}"]`).remove();
 
                     // cập nhật số lượng hình
-                    $('.qty-image[data-id="'+id+'"]').text('0 Hình');
+                    $(`.qty-image[data-id="${id}"]`).text('0 Hình');
 
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    $('html, body').animate({scrollTop: tr.position().top});
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
+                    // toast + highlight row
+                    toastAndHighlight(DELETE_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
                 }
             });
         });
@@ -3722,94 +4117,32 @@ $(function() {
                 var keyword = $(this).val().toLocaleLowerCase();
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"').attr('content')
                     },
-                    url: 'admin/slideshow-msp/ajax-search',
+                    url: 'admin/hinhanh/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success: function(data){
-                        $('#lst_data').append(data);
+                        const lst_data = $('#lst_data')
+
+                        const html = renderNewRow(page, data)
+                        lst_data.append(html);
+
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
                         loadMoreFlag = keyword == '' ? false : true;
                         $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
                     }
                 });
             }, 300);
             $('#lst_data').children().remove();
             $('#loadmore').show();
-        });
-    }
-    /*=======================================================================================================================
-                                                           Hình ảnh
-    =======================================================================================================================*/
-    else if(url == 'hinhanh'){
-        if(navigation == 'reload' || navigation == 'back_forward'){
-            loadMoreFlag = true;
-        }
-
-        var idx = 1;
-        var arrayBase64 = [];
-        var arrayDelete = [];
-
-        // modal tạo mới
-        $('.create-btn').off('click').click(function(){
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/hinhanh/ajax-get-model-havenot-image',
-                type: 'POST',
-                data: {'data': ''},
-                success:function(data){
-                    if(data.length == 0){
-                        if($('#toast').children().length){
-                            $('#toast').children().remove();
-                        }
-                        $('#toast').append('<span id="hinhanh-toast" class="alert-toast-right alert-toast-right-success">Tất cả mẫu sản phẩm đã có hình ảnh</span>');
-                        showToast('#hinhanh-toast');
-                    } else {
-                        // gán dữ liệu cho modal
-                        $('#modal-title').text('Tạo mới hình ảnh mẫu sản phẩm');
-                        $('#model').children().remove();
-                        for(var i = 0; i < data.length; i++){
-                            var option = $('<option value="'+data[i].id+'">'+data[i].tenmau+'</option>');
-                            option.appendTo($('#model'));
-                        }
-
-                        // thiết lập nút gửi là thêm mới
-                        $('#action-btn').attr('data-type', 'create');
-                        $('#action-btn').text('Thêm');
-
-                        // hiển thị modal
-                        $('#modal').modal('show');
-                    }
-                }
-            });
-        });
-
-        // modal chi tiết
-        $('.info-btn').off('click').click(function(){
-            var id = $(this).data('id');
-            $('#modal-title').text('Chi tiết hình ảnh mẫu sản phẩm');
-            bindHinhAnh(id, true);
-        });
-
-        // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
-            var id = $(this).data('id');
-            $('#modal-title').text('Chỉnh sửa hình ảnh mẫu sản phẩm');
-            bindHinhAnh(id);
-        });
-
-        // modal xóa
-        $('.delete-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-name');
-
-            // gán dữ liệu cho modal xóa
-            $('#delete-content').html('Xóa hình ảnh <b>'+name+'?</b>');
-            $('#delete-btn').attr('data-id', id);
-            $('#delete-btn').attr('data-name', name);
-            $('#delete-modal').modal('show');
         });
 
         // show dialog chọn hình ảnh
@@ -3832,6 +4165,7 @@ $(function() {
 
             // tổng số hình hiện tại
             var qty = $('.image-preview-div > .row').children().length;
+            let imageElement = ''
 
             for(var i = 0; i < length; i++){
                 if(qty >= 20){
@@ -3846,14 +4180,14 @@ $(function() {
                 // kiểm tra có phải là hình ảnh không
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
                     // tạo hình
-                    var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" class="col-3 mb-20">'+
-                                        '<div class="image-preview">'+
-                                            '<div class="overlay-image-preview"></div>'+
-                                            '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
-                                            '<img data-id="'+idx+'" class="image_preview_img" src="'+URL.createObjectURL(this.files[i])+'" alt="">'+
-                                        '</div>'+
-                                    '</div>');
-                    elmnt.appendTo($('.image-preview-div > .row'));
+                    imageElement += 
+                        `<div id="image-${idx}" data-id="${idx}" class="col-lg-3 mb-20">
+                            <div class="image-preview">
+                                <div class="overlay-image-preview"></div>
+                                <div data-id="${idx}" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>
+                                <img data-id="${idx}" class="image_preview_img" src="${URL.createObjectURL(this.files[i])}" alt="">
+                            </div>
+                        </div>`
                 }
                 // không phải hình ảnh
                 else{
@@ -3864,33 +4198,55 @@ $(function() {
                 qty++;
             }
 
-            $('#qty-image').text('('+qty+')');
+            $('.image-preview-div > .row').append(imageElement)
+            $('#qty-image').text(`(${qty})`);
         });
 
-        $('.image-preview-div').bind('DOMSubtreeModified', function(){  
-            // xóa hình
-            $('.delete-image-preview').off('click').click(function(){
-                var id = $(this).data('id');
-                var imageDelete = $('#image-' + id);
-                if(imageDelete.attr('data-name') != null){
-                    arrayDelete.push(imageDelete.attr('data-name'));
-                }
-                imageDelete.remove();
-                var qty = $('.image-preview-div > .row').children().length;
-                if(qty == 0){
-                    $('#qty-image').hide();
-                    $('#image_inp').val('');
-                } else {
-                    $('#qty-image').text('('+qty+')');
-                }
-            });
+        // xóa hình
+        $(document).on('click', '.delete-image-preview', function(){
+            var id = $(this).data('id');
+            var imageDelete = $('#image-' + id);
+
+            if(imageDelete.attr('data-name') != null){
+                arrayDelete.push(imageDelete.attr('data-name'));
+            }
+            imageDelete.remove();
+
+            var qty = $('.image-preview-div > .row').children().length;
+
+            if(qty == 0){
+                $('#qty-image').hide();
+                $('#image_inp').val('');
+            } else {
+                $('#qty-image').text(`(${qty})`);
+            }
+        });
+
+        $('#model').change(function(){
+            var id = $(this).val();
+            bindHinhAnh(id);
+        });
+
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('select').attr('disabled', false);
+            $('.image-preview-div > .row').children().remove();
+            $('.required').removeClass('required')
+            $('.required-text').remove()
+            $('#choose_image').show();
+            $('#action-btn').show();
+            idx = 1;
+            arrayDelete = [];
+            $('#qty-image').text('');
+            $('#image_inp').val('');
         });
 
         function bindHinhAnh(id, bool = false) {
             // lấy dòng theo id gán vào modal
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: '/admin/hinhanh/ajax-get-hinhanh',
                 type: 'POST',
@@ -3903,39 +4259,23 @@ $(function() {
                     var lst_image = data.lst_image;
                     var lst_model = data.lst_model;
 
-                    // gán dữ liệu cho modal
-                    setTimeout(() => {
-                        // gán hình ảnh
-                        $('.image-preview-div > .row').children().remove();
-                        for(var i = 0; i < lst_image.length; i++){
-                            var elmnt = $('<div id="image-'+idx+'" data-id="'+idx+'" data-name="'+lst_image[i].hinhanh+'" class="col-lg-3 mb-20">'+
-                                            '<div class="image-preview">'+
-                                                '<div class="overlay-image-preview"></div>'+
-                                                '<div data-id="'+idx+'" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>'+
-                                                '<img data-id="'+idx+'" class="image_preview_img" src="images/phone/'+lst_image[i].hinhanh+'" alt="">'+
-                                            '</div>'+
-                                        '</div>');
-                            elmnt.appendTo($('.image-preview-div > .row'));
+                    const urlImage = 'images/phone/' 
 
-                            idx++;
-                        }
+                    // gán hình ảnh + gán mẫu sp
+                    Promise.all([renderImage(lst_image, urlImage), assignModel(lst_model, id)])
+                        .catch(() => showAlertTop(errorMessage))
 
-                        // gán mẫu sp
-                        $('#model').children().remove();
-                        for(var i = 0; i < lst_model.length; i++){
-                            var option = $('<option value="'+lst_model[i].id+'">'+lst_model[i].tenmau+'</option>');
-                            option.appendTo($('#model'));
-                        }
+                    if(bool) {
+                        $('.overlay-image-preview').remove();
+                        $('.delete-image-preview').remove();
+                        $('#action-btn').hide();
+                        $('#choose_image').hide();
+                    } else {
+                        $('#action-btn').show()
+                        $('#choose_image').show()
+                    }
 
-                        $('#model option[value="'+id+'"]').prop('selected', true);
-
-                        if(bool == true){
-                            $('.overlay-image-preview').remove();
-                            $('.delete-image-preview').remove();
-                        }
-                    }, 500);
-
-                    $('#qty-image').text('('+lst_image.length+')');
+                    $('#qty-image').text(`(${lst_image.length})`);
 
                     // thiết lập nút gửi là cập nhật
                     $('#action-btn').attr('data-type', 'edit');
@@ -3944,150 +4284,10 @@ $(function() {
 
                     // hiển thị modal
                     $('#modal').modal('show');
-                }
+                },
+                error: function() { showAlertTop(errorMessage) }
             });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-            bool == false ? $('#choose_image').show() : $('#choose_image').hide();
         }
-
-        $('#model').change(function(){
-            var id = $(this).val();
-            bindHinhAnh(id);
-        });
-
-        // thêm|sửa
-        $('#action-btn').click(function(){
-            // bẫy lỗi
-            var valiImage = validateImage();
-
-            if(valiImage){
-                $('.loader').show();
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    setTimeout(() => {
-                        var data = {
-                            'id_msp': $('#model').val(),
-                            'lst_base64': arrayBase64,
-                        };
-    
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: 'admin/hinhanh',
-                            type: 'POST',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-    
-                                // render vào view
-                                $('#lst_data').children().remove();
-                                $('#lst_data').append(data.html);
-    
-                                // xóa option
-                                $('#model option[value="'+data.id+'"]').remove();
-    
-                                // toast
-                                if($('#toast').children().length){
-                                    $('#toast').children().remove();
-                                }
-                                $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                                showToast('#slideshow-msp-toast');
-    
-                                // đánh dấu dòng được thêm/chỉnh sửa
-                                var tr = $('tr[data-id="'+data.id+'"]'); 
-                                setTimeout(() => {
-                                    setTimeout(() => {
-                                        tr.removeAttr('style');    
-                                    }, 1000);
-                                    tr.css({
-                                        'background-color': 'white',
-                                    });    
-                                }, 3000);
-                                $('html, body').animate({scrollTop: tr.position().top});
-                                tr.css({
-                                    'background-color': SUCCESS,
-                                    'transition': '.5s'
-                                });
-                            }
-                        });
-                    }, 1000);
-                    // hình => base64
-                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
-                        var id = $($('.image-preview-div > .row').children()[i]).attr('data-id');
-                        getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
-                            arrayBase64.push(dataUrl);
-                        });    
-                    }
-                }
-                // chỉnh sửa
-                else {
-                    setTimeout(() => {
-                        var id = $(this).attr('data-id');
-
-                        var data = {
-                            'lst_base64': arrayBase64,
-                            'lst_delete': arrayDelete,
-                        };
-    
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            url: 'admin/hinhanh/' + id,
-                            type: 'PUT',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-    
-                                // thay thế
-                                $('tr[data-id="'+id+'"]').replaceWith(data); 
-                                
-                                // toast
-                                if($('#toast').children().length){
-                                    $('#toast').children().remove();
-                                }
-                                $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                                showToast('#slideshow-msp-toast');
-    
-                                // đánh dấu dòng được thêm/chỉnh sửa
-                                var tr = $('tr[data-id="'+id+'"]'); 
-                                setTimeout(() => {
-                                    setTimeout(() => {
-                                        tr.removeAttr('style');    
-                                    }, 1000);
-                                    tr.css({
-                                        'background-color': 'white',
-                                    });    
-                                }, 3000);
-                                $('html, body').animate({scrollTop: tr.position().top});
-                                tr.css({
-                                    'background-color': SUCCESS,
-                                    'transition': '.5s'
-                                });
-                            }
-                        });
-                    }, 1000);
-                    
-
-                    // hình => base64
-                    for(var i = 0; i < $('.image-preview-div > .row').children().length; i++){
-                        var image = $($('.image-preview-div > .row').children()[i]);
-                        // chỉ thêm hình mới`
-                        if(image.attr('data-name') == null){
-                            var id = image.attr('data-id');
-                            getBase64FromUrl($('.image_preview_img[data-id="'+id+'"]').attr('src'), function(dataUrl){
-                                arrayBase64.push(dataUrl);
-                            });
-                        }
-                    }
-                }
-            }
-        });
 
         // bẫy lỗi hình ảnh
         function validateImage() {
@@ -4108,47 +4308,203 @@ $(function() {
             return true;
         }
 
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('select').attr('disabled', false);
-            removeRequried($('.image-preview-div'));
-            $('.image-preview-div > .row').children().remove();
-            $('#choose_image').show();
-            $('#action-btn').show();
-            idx = 1;
-            arrayBase64 = [];
-            arrayDelete = [];
-            $('#qty-image').text('');
-            $('#image_inp').val('');
+        async function addOrUpdate(button) {
+            // bẫy lỗi
+            var valiImage = validateImage();
+
+            if(valiImage){
+                $('.loader').fadeIn();
+
+                const type = button.attr('data-type')
+                let arrayBase64 = []
+
+                await pushBase64ToArray(type)
+                        .then(base64 => arrayBase64 = base64)
+
+                // thêm mới
+                if(type === 'create'){
+                    var data = {
+                        'id_msp': $('#model').val(),
+                        'lst_base64': arrayBase64,
+                    };
+                    
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/hinhanh',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // render vào view
+                            $('#lst_data').children().remove();
+                            const html = renderNewRow(page, data.data)
+                            $('#lst_data').append(html);
+
+                            // xóa option
+                            $('#model option[value="'+data.id+'"]').remove();
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = $(button).attr('data-id');
+
+                    var data = {
+                        'lst_base64': arrayBase64,
+                        'lst_delete': arrayDelete,
+                    };
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/hinhanh/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+            }
+        }
+    }
+    /*=======================================================================================================================
+                                                           Kho
+    =======================================================================================================================*/
+    else if(page === 'kho'){
+        if(navigation == 'reload' || navigation == 'back_forward'){
+            loadMoreFlag = true;
+        }
+
+        // modal tạo mới
+        $('.create-btn').off('click').click(function(){
+            var id_cn = $('#branch').val();
+
+            changeBranch(id_cn)
+                .then(() => {
+                    // gán dữ liệu cho modal
+                    $('#modal-title').text('Thêm vào kho');
+
+                    // thiết lập nút gửi là thêm mới
+                    $('#action-btn').attr('data-type', 'create');
+                    $('#action-btn').text('Thêm');
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                })
+                .catch(() => showAlertTop(errorMessage))
         });
 
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết hình ảnh mẫu sản phẩm');
-                bindHinhAnh(id, true);
-            });
+        // modal chỉnh sửa
+        $(document).on('click', '.edit-btn', function(){
+            var id = $(this).data('id');
+            $('#modal-title').text('Chỉnh sửa kho');
+            bindKho(id);
+        });
 
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết hình ảnh mẫu sản phẩm');
-                bindHinhAnh(id);
-            });
+        // modal xóa
+        $(document).on('click', '.delete-btn', function(){
+            var id = $(this).attr('data-id');
+            var name = $(this).attr('data-branch');
 
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
+            // gán dữ liệu cho modal xóa
+            $('#delete-content').html('Xóa sản phẩm này khỏi kho tại chi nhánh <b>'+name+'?<b></b>');
+            $('#delete-btn').attr('data-id', id);
+            $('#delete-modal').modal('show');
+        });
 
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa hình ảnh <b>'+name+'?</b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-btn').attr('data-name', name);
-                $('#delete-modal').modal('show');
-            });
+        // thêm|sửa
+        $('#action-btn').click(function(){
+            // bẫy lỗi
+            var valiQtyInStock = validateQtyInStock($('#qty_in_stock'));
+
+            // bẫy lỗi xong kiểm tra loại
+            if(valiQtyInStock){
+                $('.loader').fadeIn();
+
+                var data = {
+                    'id_cn': $('#branch').val(),
+                    'id_sp': $('#product_id_inp').val(),
+                    'slton': $('#qty_in_stock').val(),
+                };
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/kho',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // render vào view đầu danh sách
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = $(this).attr('data-id');
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/kho/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
+                            
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+            }
         });
 
         // xóa
@@ -4157,141 +4513,33 @@ $(function() {
 
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
-                url: 'admin/hinhanh/' + id,
+                url: 'admin/kho/' + id,
                 type: 'DELETE',
                 success:function(){
                     $('.loader').fadeOut();
                     $('#delete-modal').modal('hide');
 
-                    // ẩn nút xóa
-                    $('.delete-btn[data-id="'+id+'"]').remove();
-
-                    // cập nhật số lượng hình
-                    $('.qty-image[data-id="'+id+'"]').text('0 Hình');
+                    // xóa dòng
+                    $(`tr[data-id="${id}"]`).remove(); 
 
                     // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    $('html, body').animate({scrollTop: tr.position().top});
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
+                    showToast(DELETE_MESSAGE, TOAST_DELETE_TYPE);
                 }
             });
         });
-
-        // tìm kiếm
-        $('#search').keyup(function(){
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                var keyword = $(this).val().toLocaleLowerCase();
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"').attr('content')
-                    },
-                    url: 'admin/hinhanh/ajax-search',
-                    type: 'POST',
-                    data: {'keyword': keyword},
-                    success: function(data){
-                        $('#lst_data').append(data);
-                        loadMoreFlag = keyword == '' ? false : true;
-                        $('#loadmore').hide();
-                    }
-                });
-            }, 300);
-            $('#lst_data').children().remove();
-            $('#loadmore').show();
-        });
-    }
-    /*=======================================================================================================================
-                                                           Kho
-    =======================================================================================================================*/
-    else if(url == 'kho'){
-        if(navigation == 'reload' || navigation == 'back_forward'){
-            loadMoreFlag = true;
-        }
 
         // thay đổi chi nhánh thêm|sửa kho
         $('#branch').change(function(){
             var id_cn = $(this).val();
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/kho/ajax-get-product-isnot-in-stock',
-                type: 'POST',
-                data: {'id_cn': id_cn},
-                success:function(data){
-                    $('#product').children().remove();
-                    $('#list-product').children().remove();
 
-                    // kho tại chi nhánh đã có sản phẩm
-                    if(data.length == 0){
-                        var elmnt = $('<div class="p-10">Tất cả sản phẩm đã được thêm vào kho.</div>');
-                        elmnt.appendTo($('#product'));
-                        $('#action-btn').hide();
-                    } else {
-                        renderProductOption(data, id_cn);
-
-                        $('#action-btn').show();
-                    }
-                }
-            });
+            changeBranch(id_cn)
+                .then(() => {
+                    $('#action-btn').show();
+                })
+                .catch(() => showAlertTop(errorMessage))
         });
-
-        function renderProductOption(product, id_cn) {
-            var elmnt = $('<img src="images/phone/'+product[0].hinhanh+'" alt="product image" width="70px">'+
-                            '<div class="ml-10 fz-14">'+
-                                '<div class="d-flex align-items-center fw-600">'+
-                                    product[0].tensp+
-                                    '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'+
-                                    product[0].mausac+
-                                '</div>'+
-                                '<div>Ram: '+product[0].ram+'</div>'+
-                                '<div>Dung lượng: '+product[0].dungluong+'</div>'+
-                            '</div>');
-
-            elmnt.appendTo($('#product'));
-
-            // input id
-            $('#product_id_inp').val(product[0].id);
-
-            for(var i = 0; i < product.length; i++){
-                var option = $('<div data-id="'+product[i].id+'" data-name="'+product[i].tensp+'" data-branch="'+id_cn+'" class="product-option select-single-option">'+
-                                    '<div class="d-flex">'+
-                                        '<img src="images/phone/'+product[i].hinhanh+'" alt="product image" width="70px">'+
-                                        '<div class="ml-10 fz-14">'+
-                                            '<div class="d-flex align-items-center fw-600">'+
-                                                product[i].tensp+
-                                                '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'+
-                                                product[i].mausac+
-                                            '</div>'+
-                                            '<div>Ram: '+product[i].ram+'</div>'+
-                                            '<div>Dung lượng: '+product[i].dungluong+'</div>'+
-                                        '</div>'+
-                                    '</div>'+
-                                '</div>');
-
-                option.appendTo($('#list-product'));
-            }
-        }
 
         // show options sản phẩm
         $('#product-selected').click(function(){
@@ -4322,339 +4570,33 @@ $(function() {
         });
 
         // chọn sản phẩm thêm|sửa kho
-        $('#list-product').bind('DOMSubtreeModified', function(){
-            $('.product-option').off('click').click(function(){
-                var id_sp = $(this).data('id');
-                var id_cn = $(this).data('branch');
+        $(document).on('click', '.product-option', function(){
+            var id_sp = $(this).data('id');
+            var id_cn = $(this).data('branch');
 
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: 'admin/kho/ajax-get-product-by-id',
-                    type: 'POST',
-                    data: {'id_sp': id_sp, 'id_cn': id_cn},
-                    success:function(data){
-                        // input id
-                        $('#product_id_inp').val(id_sp);
-                        $('#product').children().remove();
-                        $('#product').append(data.html);
-                        $('#product-box').hide('blind', 250);
-
-                        if(data.warehouse != null){
-                            $('#action-btn').attr('data-id', data.warehouse.id);
-                            $('#qty_in_stock').val(data.warehouse.slton);
-                        }
-                    }
-                });
-            });
-        });
-
-        // modal tạo mới
-        $('.create-btn').off('click').click(function(){
-            var id_cn = $('#branch').val();
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
-                url: 'admin/kho/ajax-get-product-isnot-in-stock',
+                url: 'admin/kho/ajax-get-product-by-id',
                 type: 'POST',
-                data: {'id_cn': id_cn},
+                data: {'id_sp': id_sp, 'id_cn': id_cn},
                 success:function(data){
-                    if(data == 'false'){
-                        if($('#toast').children().length){
-                            $('#toast').children().remove();
-                        }
-                        $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">Tất cả sản phẩm đã được nhập vào kho</span>');
-                        showToast('#alert-toast');
-                    } else {
-                        // gán sản phẩm
-                        // kho tại chi nhánh đã nhập tất cả sản phẩm
-                        if(data.length == 0){
-                            var elmnt = $('<div class="p-10">Tất cả sản phẩm đã được thêm vào kho tại chi nhánh.</div>');
-                            elmnt.appendTo($('#product'));
-                            $('#action-btn').hide();
-                        } else {
-                            renderProductOption(data, id_cn);
-                        }
-                        // gán dữ liệu cho modal
-                        $('#modal-title').text('Thêm vào kho');
+                    $('#product').children().remove();
+                    renderProductOption(data.product, id_cn)
 
-                        // thiết lập nút gửi là thêm mới
-                        $('#action-btn').attr('data-type', 'create');
-                        $('#action-btn').text('Thêm');
+                    $('#product-box').hide('blind', 250);
 
-                        // hiển thị modal
-                        $('#modal').modal('show');
+                    if(data.warehouse != null) {
+                        $('#action-btn').attr('data-id', data.warehouse.id);
+                        $('#qty_in_stock').val(data.warehouse.slton);
                     }
                 }
             });
         });
 
-        // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
-            var id = $(this).data('id');
-            $('#modal-title').text('Chỉnh sửa kho');
-            bindKho(id);
-        });
-
-        // modal xóa
-        $('.delete-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            var name = $(this).attr('data-branch');
-
-            // gán dữ liệu cho modal xóa
-            $('#delete-content').html('Xóa sản phẩm này khỏi kho tại chi nhánh <b>'+name+'?<b></b>');
-            $('#delete-btn').attr('data-id', id);
-            $('#delete-modal').modal('show');
-        });
-
-        // xóa
-        $('#delete-btn').click(function(){
-            var id = $(this).attr('data-id');
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/kho/' + id,
-                type: 'DELETE',
-                success:function(){
-                    $('.loader').fadeOut();
-                    $('#delete-modal').modal('hide');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // xóa dòng
-                    $('tr[data-id="'+id+'"]').remove(); 
-                }
-            });
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa kho');
-                bindKho(id);
-            });
-
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-branch');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa sản phẩm này khỏi kho tại chi nhánh <b>'+name+'?<b></b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-modal').modal('show');
-            });
-        });
-
-        function bindKho(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/kho/ajax-get-kho',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // thiết lập quyền
-                    $('input, textarea').attr('readonly', bool);
-                    $('select').attr('disabled', !bool);
-
-                    // gán dữ liệu cho modal
-                    var id_cn = data.chinhanh.id;
-
-                    $('#branch option[value="'+data.chinhanh.id+'"]').prop('selected', true);
-                    $('#qty_in_stock').val(data.slton);
-
-                    // sản phẩm đang xem
-                    setTimeout(() => {
-                        renderProductOption(data.sanpham, id_cn);
-                        var id_sp = data.sanpham[0].id;
-                        
-                        // các sản phẩm khác
-                        for(var i = 0; i < data.lst_product.length; i++){
-                            var product = data.lst_product[i][0];
-                            if(product.id != id_sp){
-                                var option = $('<div data-id="'+product.id+'" data-name="'+product.tensp+'" data-branch="'+id_cn+'" class="product-option select-single-option">'+
-                                                    '<div class="d-flex">'+
-                                                        '<img src="images/phone/'+product.hinhanh+'" alt="product image" width="70px">'+
-                                                        '<div class="ml-10 fz-14">'+
-                                                            '<div class="d-flex align-items-center fw-600">'+
-                                                                product.tensp+
-                                                                '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'+
-                                                                product.mausac+
-                                                            '</div>'+
-                                                            '<div>Ram: '+product.ram+'</div>'+
-                                                            '<div>Dung lượng: '+product.dungluong+'</div>'+
-                                                        '</div>'+
-                                                    '</div>'+
-                                                '</div>');
-    
-                                option.appendTo($('#list-product'));
-                            }
-                        }
-                    }, 200);
-                
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
-
-        // thêm|sửa
-        $('#action-btn').click(function(){
-            // bẫy lỗi
-            var valiQtyInStock = validateQtyInStock($('#qty_in_stock'));
-
-            // bẫy lỗi xong kiểm tra loại
-            if(valiQtyInStock){
-                $('.loader').show();
-
-                var data = {
-                    'id_cn': $('#branch').val(),
-                    'id_sp': $('#product_id_inp').val(),
-                    'slton': $('#qty_in_stock').val(),
-                };
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/kho',
-                        type: 'POST',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#modal').modal('hide');
-                            // render vào view đầu danh sách
-                            $('#lst_data').prepend(data.html);
-
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#alert-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                            
-                        }
-                    });
-                }
-                // chỉnh sửa
-                else {
-                    var id = $(this).attr('data-id');
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/kho/' + id,
-                        type: 'PUT',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#modal').modal('hide');
-
-                            // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data.html); 
-                            
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#slideshow-msp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-            }
-        });
-
-        // bẫy lỗi số lượng
-        function validateQtyInStock(qty) {
-            if(qty.hasClass('required')){
-                return false;
-            }
-
-            // chưa nhập
-            if(qty.val() == ''){
-                qty.addClass('required');
-                qty.after('<span class="required-text">Vui lòng nhập số lượng</span>');
-                return false;
-            }
-
-            // số lượng không hợp lệ
-            if(qty.val() > 100){
-                qty.addClass('required');
-                qty.after('<span class="required-text">Số lượng tối đa là 100</span>');
-                return false;
-            }
-
-            return true;
-        }
-
-        $('#qty_in_stock').keyup(function(){
+        $('#qty_in_stock').change(function(){
             removeRequried($(this));
-        });
-
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('select').attr('disabled', false);
-            $('input, textarea').attr('readonly', false);
-            $('#action-btn').show();
-            $('#product').children().remove();
-            $('#list-product').children().remove();
-            $('#product-box').hide();
         });
 
         // tìm kiếm
@@ -4662,21 +4604,33 @@ $(function() {
             clearTimeout(timer);
             timer = setTimeout(() => {
                 if(arrFilter.length != 0){
-                    filter();
+                    return filter()
                 } else {
-                    var keyword = $(this).val().toLocaleLowerCase();
+                    const keyword = $(this).val().toLocaleLowerCase();
+
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/kho/ajax-search',
                         type: 'POST',
                         data: {'keyword': keyword},
                         success: function(data){
-                            $('#lst_data').children().remove();
-                            $('#lst_data').append(data);
+                            const lst_data = $('#lst_data')
+
+                            const searchResult = renderNewRow(page, data)
+                            lst_data.append(searchResult);
+
+                            if(lst_data.attr('data-loadmore') === 'done') {
+                                lst_data.removeAttr('data-loadmore')
+                            }
+
                             loadMoreFlag = keyword == '' ? false : true;
                             $('#loadmore').hide();
+                        },
+                        error: function() {
+                            $('#loadmore').hide();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
@@ -4691,7 +4645,7 @@ $(function() {
         });
 
         var arrFilter = [];
-        // danh sách kết quả lọc
+        // thêm|hủy lọc
         $('[name="filter"]').change(function(){
             if($(this).is(':checked')){
                 arrFilter.push($(this).val())
@@ -4703,33 +4657,202 @@ $(function() {
             filter();
         });
 
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('select').attr('disabled', false);
+            $('input, textarea').attr('readonly', false);
+            $('#product').children().remove();
+            $('#list-product').children().remove();
+            $('#product-box').hide();
+        });
+
+        function renderProductOption(productList, id_cn, selectedProduct = false) {
+            // sản phẩm đang chọn
+            let selected = ''
+
+            // không có sản phẩm đang chọn
+            if(!selectedProduct) {
+                selected =
+                    `<img src="images/phone/${productList[0].hinhanh}" alt="product image" width="70px">
+                    <div class="ml-10 fz-14">
+                        <div class="d-flex align-items-center fw-600">
+                            ${productList[0].tensp}<i class="fas fa-circle ml-5 mr-5 fz-5"></i>${productList[0].mausac}
+                        </div>
+                        <div>Ram: ${productList[0].ram}</div>
+                        <div>Dung lượng: ${productList[0].dungluong}</div>
+                    </div>`
+
+                    $('#product_id_inp').val(productList[0].id);
+            } else {
+                selected =
+                    `<img src="images/phone/${selectedProduct.hinhanh}" alt="product image" width="70px">
+                    <div class="ml-10 fz-14">
+                        <div class="d-flex align-items-center fw-600">
+                            ${selectedProduct.tensp}<i class="fas fa-circle ml-5 mr-5 fz-5"></i>${selectedProduct.mausac}
+                        </div>
+                        <div>Ram: ${selectedProduct.ram}</div>
+                        <div>Dung lượng: ${selectedProduct.dungluong}</div>
+                    </div>`
+
+                $('#product_id_inp').val(selectedProduct.id);
+            }
+
+            $('#product').append(selected)
+
+            // danh sách sản phẩm
+            const products = productList.map(val => {
+                return (
+                    `<div data-id="${val.id}" data-name="${val.tensp}" data-branch="${id_cn}" class="product-option select-single-option">
+                        <div class="d-flex">
+                            <img src="images/phone/${val.hinhanh}" alt="product image" width="70px">
+                            <div class="ml-10 fz-14">
+                                <div class="d-flex align-items-center fw-600">
+                                    ${val.tensp}<i class="fas fa-circle ml-5 mr-5 fz-5"></i>${val.mausac}
+                                </div>
+                                <div>Ram: ${val.ram}</div>
+                                <div>Dung lượng: ${val.dungluong}</div>
+                            </div>
+                        </div>
+                    </div>`
+                )
+            }).join('')
+
+            $('#list-product').append(products)
+        }
+
+        function bindKho(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/kho/ajax-get-kho',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+                    $('select').attr('disabled', !bool);
+
+                    // gán dữ liệu cho modal
+                    var id_cn = data.chinhanh.id;
+
+                    $(`#branch option[value="${data.chinhanh.id}"]`).prop('selected', true);
+                    $('#qty_in_stock').val(data.slton);
+
+                    renderProductOption(data.lst_product, id_cn, data.selected_product);
+                
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
+                }
+            });            
+        }
+
+        // bẫy lỗi số lượng
+        function validateQtyInStock(qty) {
+            if(qty.hasClass('required')){
+                return false;
+            }
+
+            const value = qty.val()
+
+            // chưa nhập
+            if(value == ''){
+                qty.addClass('required');
+                qty.after('<span class="required-text">Vui lòng nhập số lượng</span>');
+                return false;
+            }
+
+            // số lượng không hợp lệ
+            if(value < 0) {
+                qty.addClass('required');
+                qty.after('<span class="required-text">Số lượng không hợp lệ</span>');
+                return false;
+            } else if(value > 100) {
+                qty.addClass('required');
+                qty.after('<span class="required-text">Số lượng tối đa là 100</span>');
+                return false;
+            }
+
+            return true;
+        }
+
         function filter() {
             $('#lst_data').children().remove();
             $('#loadmore').show();
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/kho/ajax-filter',
                 type: 'POST',
                 data: {'arrFilter': arrFilter, 'keyword': $('#search').val().toLocaleLowerCase()},
                 success: function(data){
-                    $('#lst_data').children().remove();
-                    $('#lst_data').append(data);
-                    if(arrFilter.length == 0){
-                        loadMoreFlag = false;
+                    const lst_data = $('#lst_data')
+
+                    const result = renderNewRow(page, data)
+                    lst_data.append(result);
+
+                    if(arrFilter.length === 0) {
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
+                        loadMoreFlag = false
                     } else {
-                        loadMoreFlag = true;
+                        loadmoreFlag = true
                     }
+
                     $('#loadmore').hide();
+                },
+                error: function() {
+                    $('#loadmore').hide();
+                    showAlertTop(errorMessage)
                 }
             });
+        }
+
+        function changeBranch(id_cn) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
+                    },
+                    url: 'admin/kho/ajax-get-product-isnot-in-stock',
+                    type: 'POST',
+                    data: {'id_cn': id_cn},
+                    success:function(data){
+                        $('#product').children().remove();
+                        $('#list-product').children().remove();
+    
+                        // kho tại chi nhánh đã có sản phẩm
+                        if(data.length == 0) {
+                            var elmnt = $('<div class="p-10">Tất cả sản phẩm đã được thêm vào kho.</div>');
+                            elmnt.appendTo($('#product'));
+                            $('#action-btn').hide();
+                        } else {
+                            renderProductOption(data, id_cn);    
+                        }
+                        resolve()
+
+                    }, error: function() { reject() }
+                });
+            })
         }
     }
     /*=======================================================================================================================
                                                            Chi nhánh
     =======================================================================================================================*/
-    else if(url == 'chinhanh'){
+    else if(page === 'chinhanh'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -4750,21 +4873,21 @@ $(function() {
         });
 
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết chi nhánh');
             bindChiNhanh(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa chi nhánh');
             bindChiNhanh(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
 
             // gán dữ liệu cho modal xóa
@@ -4772,40 +4895,6 @@ $(function() {
             $('#delete-btn').attr('data-id', id);
             $('#delete-modal').modal('show');
         });
-
-        function bindChiNhanh(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/chinhanh/ajax-get-chinhanh',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // thiết lập quyền
-                    $('input, textarea').attr('readonly', bool);
-                    $('select').attr('disabled', bool);
-
-                    // gán dữ liệu cho modal
-                    $('#address').val(data.diachi);
-                    $('#tel').val(data.sdt);
-                    $('#province option[value="'+data.id_tt+'"]').prop('selected', true);
-                    $('#status option[value="'+data.trangthai+'"]').prop('selected', true);
-
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
 
         // thêm|sửa
         $('#action-btn').click(function(){
@@ -4815,10 +4904,10 @@ $(function() {
 
             // bẫy lỗi xong kiểm tra loại
             if(valiAddress && valiTel){
-                $('.loader').show();
+                $('.loader').fadeIn();
 
                 var data = {
-                    'diachi': $('#address').val(),
+                    'diachi': $('#address').val().trim(),
                     'sdt': $('#tel').val(),
                     'id_tt': $('#province').val(),
                     'trangthai': $('#status').val(),
@@ -4827,7 +4916,7 @@ $(function() {
                 if($(this).attr('data-type') == 'create'){
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/chinhanh',
                         type: 'POST',
@@ -4837,30 +4926,15 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // thêm vào đầu danh sách
-                            $('#lst_data').prepend(data.html);
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
 
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#alert-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
@@ -4870,7 +4944,7 @@ $(function() {
 
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/chinhanh/' + id,
                         type: 'PUT',
@@ -4880,30 +4954,11 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data.html); 
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
                             
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#slideshow-msp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
                         }
                     });
                 }
@@ -4922,55 +4977,21 @@ $(function() {
             $('#form').trigger('reset');
             $('select').attr('disabled', false);
             $('input, textarea').attr('readonly', false);
-            removeRequried($('#address'));;
-            removeRequried($('#tel'));
+            $('.required').removeClass('required')
+            $('.required-text').remove()
             $('#status').show();
             $('label[for="status"]').show();
-            $('#action-btn').show();
-            idx = 1;
-            arrayBase64 = [];
-            $('#qty-image').text('');
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết chi nhánh');
-                bindChiNhanh(id, true);
-            });
-
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa chi nhánh');
-                bindChiNhanh(id);
-            });
-
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa chi nhánh?</b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-modal').modal('show');
-            });
-
-            // phục hồi
-            $('.undelete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                restore(id);
-            });
         });
 
         // xóa
         $('#delete-btn').click(function(){
             var id = $(this).attr('data-id');
 
+            $('.loader').fadeIn();
+
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/chinhanh/' + id,
                 type: 'DELETE',
@@ -4979,85 +5000,27 @@ $(function() {
                     $('#delete-modal').modal('hide');
 
                     // thay nút
-                    var restoreBtn = $('<div data-id="'+id+'" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>')
-                    $('.delete-btn[data-id="'+id+'"]').replaceWith(restoreBtn);
+                    var restoreBtn = $(`<div data-id="${id}" class="undelete-btn"><i class="fas fa-trash-undo"></i></div>`)
+                    $(`.delete-btn[data-id="${id}"]`).replaceWith(restoreBtn);
 
                     // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Ngừng hoạt động');
+                    $(`.trangthai[data-id="${id}"]`).text('Ngừng hoạt động');
 
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    $('html, body').animate({scrollTop: tr.position().top});
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
+                    // toast + highlight row
+                    toastAndHighlight(DELETE_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
                 }
             });
         });
 
         // phục hồi
-        $('.undelete-btn').off('click').click(function(){
+        $(document).on('click', '.undelete-btn', function(){
             var id = $(this).attr('data-id');
             restore(id);
         });
-
-        function restore(id) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/chinhanh/ajax-restore',
-                type: 'POST',
-                data: {'id': id},
-                success: function(){
-                    // thay nút
-                    var deleteBtn = $('<div data-id="'+id+'" class="delete-btn"><i class="fas fa-trash"></i></div>')
-                    $('.undelete-btn[data-id="'+id+'"]').replaceWith(deleteBtn);
-
-                    // cập nhật trạng thái
-                    $('.trangthai[data-id="'+id+'"]').text('Hoạt động');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    $('html, body').animate({scrollTop: tr.position().top});
-                    tr.css({
-                        'background-color': SUCCESS,
-                        'transition': '.5s'
-                    });
-                }
-            })
-        }
 
         // tìm kiếm
         $('#search').keyup(function(){
@@ -5066,27 +5029,102 @@ $(function() {
                 var keyword = $(this).val().toLocaleLowerCase();
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
                     },
                     url: 'admin/chinhanh/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success: function(data){
-                        $('#lst_data').children().remove();
-                        $('#lst_data').append(data);
-                        loadMoreFlag = true;
+                        const lst_data = $('#lst_data')
+
+                        const searchResult = renderNewRow(page, data)
+                        lst_data.append(searchResult);
+
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
+                        loadMoreFlag = keyword == '' ? false : true;
                         $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage);
                     }
                 });
             }, 300);
             $('#lst_data').children().remove();
             $('#loadmore').show();
         });
+
+        function bindChiNhanh(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/chinhanh/ajax-get-chinhanh',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+                    $('select').attr('disabled', bool);
+
+                    // gán dữ liệu cho modal
+                    $('#address').val(data.diachi);
+                    $('#tel').val(data.sdt);
+                    $(`#province option[value="${data.id_tt}"]`).prop('selected', true);
+                    $(`#status option[value="${data.trangthai}"]`).prop('selected', true);
+
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // ẩn/hiện nút thêm (cập nhật);
+                    bool == false ? $('#action-btn').show() : $('#action-btn').hide();
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                }, error: function() { showAlertTop(errorMessage) }
+            });
+        }
+
+        function restore(id) {
+            $('.loader').fadeIn();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/chinhanh/ajax-restore',
+                type: 'POST',
+                data: {'id': id},
+                success: function(){
+                    $('.loader').fadeOut();
+
+                    // thay nút
+                    var deleteBtn = $(`<div data-id="${id}" class="delete-btn"><i class="fas fa-trash"></i></div>`)
+                    $(`.undelete-btn[data-id="${id}"]`).replaceWith(deleteBtn);
+
+                    // cập nhật trạng thái
+                    $(`.trangthai[data-id="${id}"]`).text('Hoạt động');
+
+                    // toast + highlight row
+                    toastAndHighlight(EDIT_MESSAGE, id)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            })
+        }
     }
     /*=======================================================================================================================
                                                            Tỉnh thành
     =======================================================================================================================*/
-    else if(url == 'tinhthanh'){
+    else if(page === 'tinhthanh'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -5105,14 +5143,14 @@ $(function() {
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa tỉnh thành');
             bindTinhThanh(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
             var name = $(this).attr('data-name');
 
@@ -5122,84 +5160,6 @@ $(function() {
             $('#delete-modal').modal('show');
         });
 
-        // xóa
-        $('#delete-btn').click(function(){
-            var id = $(this).attr('data-id');
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/tinhthanh/' + id,
-                type: 'DELETE',
-                success:function(){
-                    $('.loader').fadeOut();
-                    $('#delete-modal').modal('hide');
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // xóa dòng
-                    $('tr[data-id="'+id+'"]').remove(); 
-                }
-            });
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa tỉnh thành');
-                bindTinhThanh(id);
-            });
-
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                var name = $(this).attr('data-name');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Xóa <b>'+name+'?<b></b>');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-modal').modal('show');
-            });
-        });
-
-        function bindTinhThanh(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/tinhthanh/ajax-get-tinhthanh',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // thiết lập quyền
-                    $('input, textarea').attr('readonly', bool);
-                    $('select').attr('disabled', !bool);
-
-                    // gán dữ liệu cho modal
-                    $('#name').val(data.tentt);
-                
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
-
         // thêm|sửa
         $('#action-btn').click(function(){
             // bẫy lỗi
@@ -5207,16 +5167,16 @@ $(function() {
 
             // bẫy lỗi xong kiểm tra loại
             if(valiName){
-                $('.loader').show();
+                $('.loader').fadeIn();
 
                 var data = {
-                    'tentt': capitalize($('#name').val())
+                    'tentt': capitalize($('#name').val().trim())
                 };
                 // thêm mới
                 if($(this).attr('data-type') == 'create'){
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/tinhthanh',
                         type: 'POST',
@@ -5233,30 +5193,15 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // thêm vào đầu danh sách
-                            $('#lst_data').prepend(data.html);
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
 
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#alert-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
@@ -5265,7 +5210,7 @@ $(function() {
                     var id = $(this).attr('data-id');
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/tinhthanh/' + id,
                         type: 'PUT',
@@ -5283,45 +5228,49 @@ $(function() {
                             $('#modal').modal('hide');
 
                             // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data.html); 
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
                             
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#slideshow-msp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
                         }
                     });
                 }
             }
         });
 
-        $('#name').keyup(function(){
-            removeRequried($(this));
-        });
+        // xóa
+        $('#delete-btn').click(function(){
+            var id = $(this).attr('data-id');
 
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('input, textarea').attr('readonly', false);
-            $('#action-btn').show();
+            $('.loader').fadeIn();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/tinhthanh/' + id,
+                type: 'DELETE',
+                success:function(){
+                    $('.loader').fadeOut();
+                    $('#delete-modal').modal('hide');
+
+                    // xóa dòng
+                    $(`tr[data-id="${id}"]`).remove(); 
+
+                    // toast
+                    showToast(DELETE_MESSAGE, TOAST_DELETE_TYPE);
+
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
         });
 
         // tìm kiếm
@@ -5331,27 +5280,80 @@ $(function() {
                 var keyword = $(this).val().toLocaleLowerCase();
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
                     },
                     url: 'admin/tinhthanh/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success: function(data){
-                        $('#lst_data').children().remove();
-                        $('#lst_data').append(data);
-                        loadMoreFlag = true;
+                        const lst_data = $('#lst_data')
+
+                        const searchResult = renderNewRow(page, data)
+                        lst_data.append(searchResult);
+
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
+                        loadMoreFlag = keyword == '' ? false : true;
                         $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
                     }
                 });
             }, 300);
             $('#lst_data').children().remove();
             $('#loadmore').show();
         });
+
+        $('#name').keyup(function(){
+            removeRequried($(this));
+        });
+
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('input').attr('readonly', false);
+        });
+
+        function bindTinhThanh(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/tinhthanh/ajax-get-tinhthanh',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+                    $('select').attr('disabled', !bool);
+
+                    // gán dữ liệu cho modal
+                    $('#name').val(data.tentt);
+                
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // ẩn/hiện nút thêm (cập nhật);
+                    bool == false ? $('#action-btn').show() : $('#action-btn').hide();
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() { showAlertTop(errorMessage) }
+            });
+        }
     }
     /*=======================================================================================================================
                                                            Voucher
     =======================================================================================================================*/
-    else if(url == 'voucher'){
+    else if(page === 'voucher'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -5370,21 +5372,21 @@ $(function() {
         });
 
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết voucher');
             bindVoucher(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa voucher');
             bindVoucher(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
 
             // gán dữ liệu cho modal xóa
@@ -5393,13 +5395,109 @@ $(function() {
             $('#delete-modal').modal('show');
         });
 
+        // thêm|sửa
+        $('#action-btn').click(function(){
+            // bẫy lỗi
+            var valiCode = validateCode($('#code'));
+            var valiDiscount = validateDiscount($('#discount'));
+            var valiQty = validateQty($('#qty'));
+            var valiContent = validateVoucherContent($('#content'));
+            var valiStart = validateDateStart($('#start'));
+            var valiEnd = validateDateEnd($('#end'), $('#start'));
+
+            // bẫy lỗi xong kiểm tra loại
+            if(valiCode && valiDiscount && valiQty && valiContent && valiStart && valiEnd){
+                $('.loader').fadeIn();
+
+                var data = {
+                    'code': $('#code').val(),
+                    'noidung': $('#content').val(),
+                    'chietkhau': ($('#discount').val()/100),
+                    'dieukien': $('#condition').val(),
+                    'ngaybatdau': $('#start').val(),
+                    'ngayketthuc': $('#end').val(),
+                    'sl': $('#qty').val(),
+                };
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/voucher',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+
+                            // voucher đã tồn tại
+                            if(data == 'exists'){
+                                $('#code').addClass('required');
+                                $('#code').after('<span class="required-text">Voucher này đã tồn tại</span>');
+                                return;
+                            }
+                            $('#modal').modal('hide');
+
+                            // thêm vào đầu danh sách
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage);
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = $(this).attr('data-id');
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/voucher/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+
+                            // tỉnh thành đã tồn tại
+                            if(data == 'exists'){
+                                $('#code').addClass('required');
+                                $('#code').after('<span class="required-text">Voucher này đã tồn tại</span>');
+                                return;
+                            }
+                            
+                            $('#modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
+                            
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+            }
+        });
+
         // xóa
         $('#delete-btn').click(function(){
             var id = $(this).attr('data-id');
 
+            $('.loader').fadeIn();
+
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/voucher/' + id,
                 type: 'DELETE',
@@ -5408,49 +5506,100 @@ $(function() {
                     $('#delete-modal').modal('hide');
 
                     // xóa dòng
-                    $('tr[data-id="'+id+'"]').remove();
+                    $(`tr[data-id="${id}"]`).remove();
 
                     // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
+                    showToast(DELETE_MESSAGE, TOAST_DELETE_TYPE);
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTOp(errorMessage)
                 }
             });
         });
 
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết voucher');
-                bindVoucher(id, true);
-            });
+        // tìm kiếm
+        $('#search').keyup(function(){
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                var keyword = $(this).val().toLocaleLowerCase();
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
+                    },
+                    url: 'admin/voucher/ajax-search',
+                    type: 'POST',
+                    data: {'keyword': keyword},
+                    success: function(data){
+                        const lst_data = $('#lst_data')
 
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa voucher');
-                bindVoucher(id);
-            });
+                        const searchResult = renderNewRow(page, data)
+                        lst_data.append(searchResult);
 
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
 
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').text('Xóa voucher này ?');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-modal').modal('show');
-            });
+                        loadMoreFlag = keyword == '' ? false : true;
+                        $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
+                    }
+                });
+            }, 300);
+            $('#lst_data').children().remove();
+            $('#loadmore').show();
+        });
+
+        $('#code').keyup(function(){
+            removeRequried($(this));
+            var upper = $(this).val().toUpperCase();
+            $(this).val(upper);
+        });
+
+        $('#discount').change(function(){
+            removeRequried($(this));
+        });
+
+        $('#condition').change(function(){
+            removeRequried($(this));
+        });
+
+        $('#qty').change(function(){
+            removeRequried($(this));
+        });
+
+        $('#content').keyup(function(){
+            removeRequried($(this));
+        });
+
+        $('#start').change(function(){
+            removeRequried($(this));
+        });
+
+        $('#end').change(function(){
+            removeRequried($(this));
+        });
+
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('input, textarea').attr('readonly', false);
+            $('select').attr('disabled', false);
+            $('.required').removeClass('required')
+            $('.required-text').remove();
+            $('#status').show();
+            $('label[for="status"]').show();
+            $('#action-btn').show();
         });
 
         function bindVoucher(id, bool = false) {
             // lấy dòng theo id gán vào modal
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: '/admin/voucher/ajax-get-voucher',
                 type: 'POST',
@@ -5474,138 +5623,15 @@ $(function() {
                     $('#action-btn').text('Cập nhật');
                     $('#action-btn').attr('data-id', id);
 
+                    // ẩn/hiện nút thêm (cập nhật);
+                    bool == false ? $('#action-btn').show() : $('#action-btn').hide();
+
                     // hiển thị modal
                     $('#modal').modal('show');
-                }
+                },
+                error: function() { showAlertTop(errorMessage) }
             });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
         }
-
-        // thêm|sửa
-        $('#action-btn').click(function(){
-            // bẫy lỗi
-            var valiCode = validateCode($('#code'));
-            var valiDiscount = validateDiscount($('#discount'));
-            var valiQty = validateQty($('#qty'));
-            var valiContent = validateVoucherContent($('#content'));
-            var valiStart = validateDateStart($('#start'));
-            var valiEnd = validateDateEnd($('#end'), $('#start'));
-
-            // bẫy lỗi xong kiểm tra loại
-            if(valiCode && valiDiscount && valiQty && valiContent && valiStart && valiEnd){
-                $('.loader').show();
-
-                var data = {
-                    'code': $('#code').val(),
-                    'noidung': $('#content').val(),
-                    'chietkhau': ($('#discount').val()/100),
-                    'dieukien': $('#condition').val(),
-                    'ngaybatdau': $('#start').val(),
-                    'ngayketthuc': $('#end').val(),
-                    'sl': $('#qty').val(),
-                };
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/voucher',
-                        type: 'POST',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-
-                            // voucher đã tồn tại
-                            if(data == 'exists'){
-                                $('#code').addClass('required');
-                                $('#code').after('<span class="required-text">Voucher này đã tồn tại</span>');
-                                return;
-                            }
-                            $('#modal').modal('hide');
-
-                            // thêm vào đầu danh sách
-                            $('#lst_data').prepend(data.html);
-
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#alert-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-                // chỉnh sửa
-                else {
-                    var id = $(this).attr('data-id');
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/voucher/' + id,
-                        type: 'PUT',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-
-                            // tỉnh thành đã tồn tại
-                            if(data == 'exists'){
-                                $('#code').addClass('required');
-                                $('#code').after('<span class="required-text">Voucher này đã tồn tại</span>');
-                                return;
-                            }
-                            
-                            $('#modal').modal('hide');
-
-                            // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data); 
-                            
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#slideshow-msp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-            }
-        });
 
         // bẫy lỗi code
         function validateCode(code) {
@@ -5614,7 +5640,7 @@ $(function() {
             }
 
             // chưa nhập
-            if(code.val() == ''){
+            if(code.val().trim() == ''){
                 code.addClass('required');
                 code.after('<span class="required-text">Vui lòng nhập Code</span>');
                 return false;
@@ -5636,6 +5662,13 @@ $(function() {
                 return false;
             }
 
+            // giới hạn
+            if(qty.val() > 10000) {
+                qty.addClass('required');
+                qty.after('<span class="required-text">Số lượng tối đa là 10000</span>');
+                return false;
+            }
+
             return true;
         }
 
@@ -5646,7 +5679,7 @@ $(function() {
             }
 
             // chưa nhập
-            if(content.val() == ''){
+            if(content.val().trim() == ''){
                 content.addClass('required');
                 content.after('<span class="required-text">Vui lòng nhập nội dung</span>');
                 return false;
@@ -5654,275 +5687,81 @@ $(function() {
 
             return true;
         }
-
-        $('#code').keyup(function(){
-            removeRequried($(this));
-            var upper = $(this).val().toUpperCase();
-            $(this).val(upper);
-        });
-
-        $('#discount').keyup(function(){
-            removeRequried($(this));
-        });
-
-        $('#condition').keyup(function(){
-            removeRequried($(this));
-        });
-
-        $('#qty').keyup(function(){
-            removeRequried($(this));
-        });
-
-        $('#content').keyup(function(){
-            removeRequried($(this));
-        });
-
-        $('#start').change(function(){
-            removeRequried($(this));
-        });
-
-        $('#end').change(function(){
-            removeRequried($(this));
-        });
-
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('input, textarea').attr('readonly', false);
-            $('select').attr('disabled', false);
-            removeRequried($('#code'));
-            removeRequried($('#discount'));
-            removeRequried($('#condition'));
-            removeRequried($('#qty'));
-            removeRequried($('#content'));
-            removeRequried($('#start'));
-            removeRequried($('#end'));
-            $('#status').show();
-            $('label[for="status"]').show();
-            $('#action-btn').show();
-        });
-
-        // tìm kiếm
-        $('#search').keyup(function(){
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                var keyword = $(this).val().toLocaleLowerCase();
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    url: 'admin/voucher/ajax-search',
-                    type: 'POST',
-                    data: {'keyword': keyword},
-                    success: function(data){
-                        $('#lst_data').children().remove();
-                        $('#lst_data').append(data);
-                        loadMoreFlag = keyword == '' ? false : true;
-                        $('#loadmore').hide();
-                    }
-                });
-            }, 300);
-            $('#lst_data').children().remove();
-            $('#loadmore').show();
-        });
     }
     /*=======================================================================================================================
                                                            Đơn hàng
     =======================================================================================================================*/
-    else if(url == 'donhang'){
+    else if(page === 'donhang'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
 
-        // xác nhận đơn hàng
-        $('.confirm-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            orderConfirmatino(id);
-        });
-
-        function orderConfirmatino(id) {
-            $('.loader').show();
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/donhang/ajax-order-confirmation',
-                type: 'POST',
-                data: {'id': id},
-                success: function(){
-                    $('.loader').fadeOut();
-
-                    // cập nhật trạng thái
-                    $('.trangthaidonhang[data-id="'+id+'"]').text('Đã xác nhận');
-
-                    // chuyển thành nút thành công
-                    var successBtn = $('<div data-id="'+id+'" class="success-btn"><i class="fas fa-box-check"></i></div>');
-                    $('.confirm-btn[data-id="'+id+'"]').replaceWith(successBtn);
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">Đã xác nhận đơn hàng</span>');
-                    showToast('#alert-toast');
-
-                    // đánh dấu dòng
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': SUCCESS,
-                        'transition': '.5s'
-                    });
-                }
-            })
-        }
-
-        // đơn hàng thành công
-        $('.success-btn').off('click').click(function(){
-            var id = $(this).attr('data-id');
-            successfulOrder(id);
-        });
-
-        function successfulOrder(id) {
-            $('.loader').show();
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/donhang/ajax-successful-order',
-                type: 'POST',
-                data: {'id': id}, 
-                success:function(){
-                    $('.loader').fadeOut();
-                    // cập nhật trạng thái
-                    $('.trangthaidonhang[data-id="'+id+'"]').text('Thành công');
-
-                    // ẩn nút thành công
-                    $('.success-btn[data-id="'+id+'"]').remove();
-
-                    // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
-
-                    // đánh dấu dòng
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    tr.css({
-                        'background-color': SUCCESS,
-                        'transition': '.5s'
-                    });
-                }
-            });
-        }
-
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết đơn hàng #'+id);
             bindOrder(id, true);
         });
 
-        function bindOrder(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: '/admin/donhang/ajax-get-donhang',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // gán dữ liệu cho modal
-                    $('.modal-body[id="order-modal"]').prepend(data);
-                
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
-
         // modal hủy đơn hàng
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
 
             // gán dữ liệu cho modal xóa
-            $('#delete-content').html('Hủy đơn hàng <b>#'+id+'</b>?');
+            $('#delete-content').html(`Hủy đơn hàng <b>#${id}</b>?`);
             $('#delete-btn').attr('data-id', id);
             $('#delete-btn').text('Hủy');
             $('.cancel-btn[data-bs-dismiss="modal"]').text('Đóng');
             $('#delete-modal').modal('show');
         });
 
-        // hủy đơn hàng
-        $('#delete-btn').click(function(){
+        // xác nhận đơn hàng
+        $(document).on('click', '.confirm-btn', function(){
             var id = $(this).attr('data-id');
+            orderConfirmation(id);
+        });
+
+        // đơn hàng thành công
+        $(document).on('click', '.success-btn', function(){
+            var id = $(this).attr('data-id');
+            successfulOrder(id);
+        });
+
+        // hủy đơn hàng
+        $(document).on('click', '#delete-btn', function(){
+            var id = $(this).attr('data-id');
+
+            $('.loader').fadeIn()
 
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/donhang/' + id,
                 type: 'DELETE',
                 success: function(){
+                    $('.loader').fadeOut()
                     $('#delete-modal').modal('hide');
                     
                     // cập nhật trạng thái
-                    $('.trangthaidonhang[data-id="'+id+'"]').text('Đã hủy');
+                    $(`.trangthaidonhang[data-id="${id}"]`).text('Đã hủy');
 
                     // ẩn nút xóa
-                    $('.delete-btn[data-id="'+id+'"]').remove();
+                    $(`.delete-btn[data-id="${id}"]`).remove();
 
                     // ẩn nút xác nhận & thành công
-                    $('.confirm-btn[data-id="'+id+'"]').remove();
-                    $('.success-btn[data-id="'+id+'"]').remove();
+                    $(`.confirm-btn[data-id="${id}"]`).remove();
+                    $(`.success-btn[data-id="${id}"]`).remove();
 
                     // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-danger">Đã hủy đơn hàng</span>');
-                    showToast('#alert-toast');
+                    showToast('Đã hủy đơn hàng', TOAST_DELETE_TYPE);
                     
                     // đánh dấu dòng được thêm/chỉnh sửa
-                    var tr = $('tr[data-id="'+id+'"]'); 
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            tr.removeAttr('style');    
-                        }, 1000);
-                        tr.css({
-                            'background-color': 'white',
-                        });    
-                    }, 3000);
-                    $('html, body').animate({scrollTop: tr.position().top});
-                    tr.css({
-                        'background-color': DANGER,
-                        'transition': '.5s'
-                    });
+                    highlightRow(id, DANGER)
+                },
+                error: function() {
+                    $('.loader').fadeOut()
+                    showAlertTop(errorMessage)
                 }
             })
         });
@@ -5932,7 +5771,6 @@ $(function() {
                 var height = $('#receiveMethod').height();
                 $('#paymentMethod').css('height', height);
             }, 200);
-            
         });
 
         // reset modal
@@ -5940,69 +5778,53 @@ $(function() {
             $('.modal-body[id="order-modal"]').children()[0].remove();
         });
 
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết đơn hàng #'+id);
-                bindOrder(id, true);
-            });
-            // xác nhận đơn hàng
-            $('.confirm-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                orderConfirmatino(id);
-            });
-
-            // thành công
-            $('.success-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-                successfulOrder(id);
-            });
-
-            // modal hủy đơn hàng
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').html('Hủy đơn hàng <b>#'+id+'</b>?');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-btn').text('Hủy');
-                $('.cancel-btn[data-bs-dismiss="modal"]').text('Đóng');
-                $('#delete-modal').modal('show');
-            });
-        });
-
         // tìm kiếm
         $('#search').keyup(function(){
             clearTimeout(timer);
             timer = setTimeout(() => {
-                if(Object.keys(arrFilterSort.filter).length != 0 || Object.keys(arrFilterSort.sort) != ''){
-                    filterSort();
+                if(Object.keys(arrFilterSort.filter).length != 0){
+                    return filterSort()
                 } else {
-                    var keyword = $(this).val().toLocaleLowerCase();
+                    const keyword = $(this).val().toLocaleLowerCase();
                     $.ajax({
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/donhang/ajax-search',
                         type: 'POST',
                         data: {'keyword': keyword},
                         success: function(data){
-                            $('#lst_data').children().remove();
-                            $('#lst_data').append(data);
-                            loadMoreFlag = true;
+                            const lst_data = $('#lst_data')
+
+                            const searchResult = renderNewRow(page, data)
+                            lst_data.append(searchResult);
+
+                            if(lst_data.attr('data-loadmore') === 'done') {
+                                lst_data.removeAttr('data-loadmore')
+                            }
+
+                            loadMoreFlag = keyword == '' ? false : true
+
                             $('#loadmore').hide();
-                        } 
+                        },
+                        error: function() {
+                            $('#loadmore').hide();
+                            showAlertTop(errorMessage)
+                        }
                     });
                 }
             }, 300);
             $('#lst_data').children().remove();
             $('#loadmore').show();
         });
+        $('#search').focus(function() {
+            $('.filter-div').hide('blind');
+            $('.sort-div').hide('blind');
+        })
 
         var arrFilterSort = {
             filter: {},
-            sort: '',
+            sort: $('[name="sort"]:checked').val(),
         };
         // show lọc
         $('#filter-donhang').click(function(){
@@ -6070,47 +5892,421 @@ $(function() {
             filterSort();
         });
 
+        // hiển thị chi tiết voucher
+        $('.modal-body[id="order-modal"]').bind('DOMSubtreeModified', function() {
+            $('.promotion-info-icon').mouseover(function(){
+                const id = $(this).data('id');
+                
+                showInfoVoucher(id , $(this));
+            }).mouseleave(function(){
+                const id = $(this).data('id');
+        
+                hideInfoVoucher(id);
+            })
+        })
+
+        function orderConfirmation(id) {
+            $('.loader').fadeIn();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/donhang/ajax-order-confirmation',
+                type: 'POST',
+                data: {'id': id},
+                success: function(){
+                    $('.loader').fadeOut();
+
+                    // cập nhật trạng thái
+                    $(`.trangthaidonhang[data-id="${id}"]`).text('Đã xác nhận');
+
+                    // chuyển thành nút thành công
+                    var successBtn = $(`<div data-id="${id}" class="success-btn"><i class="fas fa-box-check"></i></div>`);
+                    $(`.confirm-btn[data-id="${id}"]`).replaceWith(successBtn);
+
+                    // toast
+                    showToast('Đã xác nhận đơn hàng', TOAST_SUCCESS_TYPE);
+
+                    // đánh dấu dòng
+                    highlightRow(id, SUCCESS);
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            })
+        }
+
+        function successfulOrder(id) {
+            $('.loader').fadeIn();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/donhang/ajax-successful-order',
+                type: 'POST',
+                data: {'id': id}, 
+                success:function(){
+                    $('.loader').fadeOut();
+
+                    // cập nhật trạng thái
+                    $(`.trangthaidonhang[data-id="${id}"]`).text('Thành công');
+
+                    // ẩn nút thành công
+                    $(`.success-btn[data-id="${id}"]`).remove();
+
+                    // ẩn nút hủy đơn hàng
+                    $(`.delete-btn[data-id="${id}"]`).remove()
+
+                    // toast
+                    showToast('Đơn hàng thành công', TOAST_SUCCESS_TYPE);
+
+                    // đánh dấu dòng
+                    highlightRow(id, SUCCESS)
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
+                }
+            });
+        }
+
+        function bindOrder(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: '/admin/donhang/ajax-get-donhang',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // gán dữ liệu cho modal
+                    const order = renderOrder(data)
+                    $('.modal-body[id="order-modal"]').prepend(order);
+                
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // ẩn/hiện nút thêm (cập nhật);
+                    bool == false ? $('#action-btn').show() : $('#action-btn').hide();
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() { showAlertTop(errorMessage) }
+            });
+        }
+
         // danh sách kết quả lọc & sắp xếp
         function filterSort(){
             $('#lst_data').children().remove();
             $('#loadmore').show();
-            var keyword = $('#search').val().toLocaleLowerCase();
+            const keyword = $('#search').val().toLocaleLowerCase();
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/donhang/ajax-filter-sort',
                 type: 'POST',
                 data: {'arrFilterSort': arrFilterSort, 'keyword': keyword},
                 success: function(data){
-                    $('#lst_data').children().remove();
-                    $('#lst_data').append(data);
-                    loadMoreFlag = true;
+                    const lst_data = $('#lst_data')
+
+                    const result = renderNewRow(page, data)
+                    lst_data.append(result);
 
                     if(Object.keys(arrFilterSort.filter).length == 0){
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore');
+                        }
+                        loadMoreFlag = keyword == '' ? false : true
                         $('.filter-badge').hide();    
                     } else {
+                        loadMoreFlag = true
                         $('.filter-badge').text(Object.keys(arrFilterSort.filter).length);
                         $('.filter-badge').show();
                     }
-                    if(arrFilterSort.sort != ''){
-                        $('.sort-badge').show();
-                    }
                     $('#loadmore').hide();
+                },
+                error: function() {
+                    $('#loadmore').hide();
+                    showAlertTop(errorMessage)
                 }
             })
+        }
+
+        function renderOrder(order) {
+            // thông tin đơn hàng
+            let orderInfo =
+                `<div class="row mb-40">
+                    <div class="col-lg-6">
+                        <div class="d-flex align-items-end mb-5">
+                            <div>Trạng thái đơn hàng:</div>
+                            ${order.trangthaidonhang != 'Đã hủy' ?
+                                `<div class="ml-10 fz-20 fw-600 success-color">${order.trangthaidonhang}</div>`
+                                :
+                                `<div class="ml-10 fz-20 fw-600 warning-color">${order.trangthaidonhang}</div>`
+                            }
+                        </div>
+                        <div class="d-flex">
+                            <div>Ngày mua:</div>
+                            <div class="ml-10 fw-600">${order.thoigian}</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="d-flex justify-content-end">
+                            <div class="account-badge">
+                                <img src="${order.taikhoan.htdn == 'nomal' ? `images/user/${order.taikhoan.anhdaidien}` : order.taikhoan.anhdaidien}" width="40px" class="circle-img">
+                                <div class="ml-10 mr-10 black">${order.taikhoan.hoten}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-50">
+                    <div class="col-lg-6">
+                        ${order.hinhthuc == 'Giao hàng tận nơi' ?
+                            `<div class="mb-5 fw-600">Thông tin giao hàng</div>
+                            <div id="receiveMethod">
+                                <div class="d-flex flex-column box-shadow p-20">
+                                    <div class="fw-600 text-uppercase mb-5">${order.taikhoan_diachi.hoten}</div>
+                                    <div class="d-flex fz-14 mb-5">
+                                        <div class="gray-1">Địa chỉ:</div>
+                                        <div class="ml-5 black">${order.taikhoan_diachi.diachi}, ${order.taikhoan_diachi.phuongxa}, ${order.taikhoan_diachi.quanhuyen}, ${order.taikhoan_diachi.tinhthanh}</div>
+                                    </div>
+                                    <div class="d-flex fz-14">
+                                        <div class="gray-1">SĐT:</div>
+                                        <div class="ml-5 black">${order.taikhoan_diachi.sdt}</div>
+                                    </div>
+                                </div>
+                            </div>`
+                            : 
+                            `<div class="mb-5 fw-600">Nhận tại cửa hàng</div>
+                            <div id="receiveMethod">
+                                <div class="d-flex flex-column box-shadow p-20">
+                                    <div class="d-flex fz-14 mb-5">
+                                        <div class="gray-1">Địa chỉ:</div>
+                                        <div class="ml-5 black">${order.chinhanh.diachi}</div>
+                                    </div>
+                                    <div class="d-flex fz-14">
+                                        <div class="gray-1">SĐT:</div>
+                                        <div class="ml-5 black">${order.chinhanh.sdt}</div>
+                                    </div>
+                                </div>
+                            </div>`
+                        }
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="mb-5 fw-600">Phương thức thanh toán</div>
+                        <div id="paymentMethod">
+                            <div class="box-shadow p-20 h-100 black">${order.pttt}</div>
+                        </div>
+                    </div>
+                </div>`
+
+            // tạm tính
+            let provisional = 0
+            order.ctdh.map(val => {
+                return provisional += val.pivot.thanhtien
+            })
+
+            // danh sách sản phẩm
+            let productList = order.ctdh.map((product) => {
+                return (
+                    `<tr>
+                        <td class="vertical-center">
+                            <div class="d-flex pt-10 pb-10">
+                                <img src="images/phone/${product.hinhanh}" alt="" width="100px">
+                                <div class="ml-5">
+                                    <div class="fw-600">${product.tensp}</div>
+                                    <div>Ram: ${product.ram}</div>
+                                    <div>Dung lượng: ${product.dungluong}</div>
+                                    <div>Màu sắc: ${product.mausac}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">
+                                ${numberWithDot(product.gia)}<sup>đ</sup>
+                            </div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${product.pivot.sl}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${product.pivot.giamgia ? `-${product.pivot.giamgia*100}%` : '0'}</div>
+                        </td>
+                        <td class="vertical-center">
+                            <div class="pt-10 pb-10">${numberWithDot(product.pivot.thanhtien)}<sup>đ</sup></div>
+                        </td>
+                    </tr>`
+                )
+            })
+
+            // voucher
+            let voucher = ''
+            if(order.id_vc) {
+                voucher =
+                    `<tr>
+                        <td colspan="5" class="p-0">
+                            <div class="d-flex">
+                                <div class="w-20 bg-gray-4 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-ticket-alt mr-10"></i>Mã giảm giá
+                                </div>
+                                
+                                <div class="w-25 p-10">
+                                    <div class='account-voucher'>
+                                        <div class='voucher-left-small'>
+                                            <div class='voucher-left-small-content'>-${order.voucher.chietkhau*100}%</div>
+                                        </div>
+                                        <div class='voucher-right-small'>
+                                            <b>${order.voucher.code}</b>
+                                            <div data-id="${order.voucher.id}" class="relative promotion-info-icon">
+                                                <i class="fal fa-info-circle main-color-text fz-20"></i>
+                                                <div data-id="${order.voucher.id}" class='voucher-content'>
+                                                    <table class='table'>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class='w-40'>Mã</td>
+                                                                <td><b>${order.voucher.code}</b></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class='w-40'>Nội dung</td>
+                                                                <td>${order.voucher.noidung}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2" class='w-40'>
+                                                                    <div class='d-flex flex-column'>
+                                                                        <span>Điều kiện:</span>
+                                                                        ${order.voucher.dieukien != 0 ?
+                                                                            `<ul class="mt-10">
+                                                                                <li>Áp dụng cho đơn hàng từ ${numberWithDot(order.voucher.dieukien)}<sup>đ</sup></li>
+                                                                            </ul>` : ''
+                                                                        }
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class='w-40'>Hạn sử dụng</td>
+                                                                <td>${order.voucher.ngayketthuc}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>`
+            }
+                
+            let orderProduct =
+                `<div class="row">
+                    <div class="col-lg-12">
+                        <table class="table box-shadow">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Giảm giá</th>
+                                    <th>Tạm tính</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${productList}
+                                ${order.id_vc ? voucher : ''}
+                                <tr>
+                                    <td class="vertical-center">
+                                        <div class="pt-20 pb-20 pl-10">
+                                            <div class="d-flex justify-content-between mb-10">
+                                                <div>Tạm tính:</div>
+                                                <div>${numberWithDot(provisional)}<sup>đ</sup></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-10">
+                                                <div>Mã giảm giá:</div>
+                                                <div class="main-color-text">${order.id_vc ? `-${order.voucher.chietkhau*100}%` : '0'}</div>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <div>Tổng tiền:</div>
+                                                <div class="fz-20 fw-600 red">${numberWithDot(order.tongtien)}<sup>đ</sup></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td colspan="4"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`
+            
+            const html = `<div>${orderInfo + orderProduct}</div>`
+
+            return html
+        }
+
+        function showInfoVoucher(id, element){
+            let infoVoucher = $('.voucher-content[data-id="'+id+'"]');
+    
+            if(!infoVoucher.is(':visible')){
+                // vị trí icon
+                const position = element.offset();
+                // chiều cao màn hình
+                const windowHeight = $(window).height();
+                // cuộn màn hình
+                const scrollTop = $(window).scrollTop();
+    
+                const number = 20;
+                const top = position.top + number - scrollTop;
+                const left = position.left + number;
+        
+                // độ kích thước info voucher
+                const infoVoucherWidth = infoVoucher.outerWidth();
+                const infoVoucherHeight = infoVoucher.outerHeight();
+        
+                // chiều cao khi show info voucher
+                const shownInfoVoucherHeight = top +  infoVoucherHeight;
+        
+                // hiển thị info voucher nằm trong trang
+                if(windowHeight > shownInfoVoucherHeight){
+                    infoVoucher.css({
+                        'top': top,
+                        'left': left - infoVoucherWidth,
+                    })
+                } else {
+                    infoVoucher.css({
+                        'top': top - infoVoucherHeight - number,
+                        'left': left - infoVoucherWidth,
+                    })
+                }
+        
+                infoVoucher.show()
+            }
+        }
+    
+        function hideInfoVoucher(id){
+            let infoVoucher = $('.voucher-content[data-id="'+id+'"]');
+    
+            infoVoucher.hide()
+    
+            infoVoucher.removeAttr('style')
         }
     }
     /*=======================================================================================================================
                                                            Bảo hành
     =======================================================================================================================*/
-    else if(url == 'baohanh'){
+    else if(page === 'baohanh'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
 
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết bảo hành');
             bindBaoHanh(id);
@@ -6120,14 +6316,14 @@ $(function() {
             // lấy dòng theo id gán vào modal
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: '/admin/baohanh/ajax-get-baohanh',
                 type: 'POST',
                 data: {'id': id},
                 success:function(data){
                     // gán dữ liệu cho modal
-                    $('#product-img').attr('src', 'images/phone/' + data.sanpham.hinhanh);
+                    $('#product-img').attr('src', `images/phone/${data.sanpham.hinhanh}`);
                     $('#product-name').text(data.sanpham.tensp);
                     $('#product-ram').text(data.sanpham.ram);
                     $('#product-capacity').text(data.sanpham.dungluong);
@@ -6140,7 +6336,7 @@ $(function() {
                     if(data.trangthai == 1){
                         $('#warranty-status').text('Trong bảo hành');
                         $('#warranty-status').removeClass('warning-color').addClass('success-color');
-                    } else if(data.trangthai == 'no'){
+                    } else if(data.trangthai === 'no'){
                         $('#warranty-status').text('Không bảo hành');
                         $('#warranty-status').removeClass('success-color').addClass('warning-color');
                         $('#warranty').parent().parent().hide();
@@ -6156,18 +6352,12 @@ $(function() {
 
                     // hiển thị modal
                     $('#modal').modal('show');
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
                 }
             });
         }
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết bảo hành');
-                bindBaoHanh(id);
-            });
-        });
 
         // tìm kiếm
         $('#search').keyup(function(){
@@ -6176,16 +6366,27 @@ $(function() {
                 var keyword = $(this).val().toLocaleLowerCase();
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
                     },
                     url: 'admin/baohanh/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success: function(data){
-                        $('#lst_data').children().remove();
-                        $('#lst_data').append(data);
+                        const lst_data = $('#lst_data')
+
+                        const searchResult = renderNewRow(page, data)
+                        lst_data.append(searchResult);
+
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
                         loadMoreFlag = keyword == '' ? false : true;
                         $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
                     }
                 });
             }, 300);
@@ -6196,7 +6397,7 @@ $(function() {
     /*=======================================================================================================================
                                                            Slideshow
     =======================================================================================================================*/
-    else if(url == 'slideshow'){
+    else if(page === 'slideshow'){
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             // gán dữ liệu cho modal
@@ -6211,21 +6412,21 @@ $(function() {
         });
 
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết Slideshow');
             bindSlideshow(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa Slideshow');
             bindSlideshow(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
 
             // gán dữ liệu cho modal xóa
@@ -6234,13 +6435,80 @@ $(function() {
             $('#delete-modal').modal('show');
         });
 
+        // thêm|sửa
+        $('#action-btn').click(function(){
+            // bẫy lỗi
+            var valiLink = validateLink($('#link'));
+            var valiImage = validateImageSlideshow($('#image_inp'));
+
+            // bẫy lỗi xong kiểm tra loại
+            if(valiLink && valiImage){
+                $('.loader').fadeIn();
+
+                var data = {
+                    'link': $('#link').val().trim(),
+                    'hinhanh': $('#base64').val(),
+                };
+
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/slideshow',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thêm vào đầu danh sách
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = $(this).attr('data-id');
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/slideshow/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
+                            
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        }
+                    });
+                }
+            }
+        });
+
         // xóa
         $('#delete-btn').click(function(){
             var id = $(this).attr('data-id');
 
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/slideshow/' + id,
                 type: 'DELETE',
@@ -6249,23 +6517,73 @@ $(function() {
                     $('#delete-modal').modal('hide');
 
                     // xóa dòng
-                    $('tr[data-id="'+id+'"]').remove();
+                    $(`tr[data-id="${id}"]`).remove();
 
                     // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
+                    showToast(DELETE_MESSAGE, TOAST_DELETE_TYPE);
+                },
+                error: function() {
+                    $('.loader').fadeOut();
+                    showAlertTop(errorMessage)
                 }
             });
+        });
+
+        // dialog chọn hình
+        $('#choose_image').click(function(){
+            $('#image_inp').click();
+        });
+
+        // chọn hình
+        $('#image_inp').change(function(){
+            if($(this).val() == ''){
+                return;
+            }
+
+            removeRequried($('#image-preview'));
+
+            // kiểm tra file hình
+            var fileName = this.files[0].name.split('.');
+            var extend = fileName[fileName.length - 1];
+
+            // kiểm tra có phải là hình ảnh không
+            if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                const imgURL = URL.createObjectURL(this.files[0])
+                $('#image-preview').attr('src', imgURL);
+                // url image => base64
+                getBase64FromUrl(imgURL)
+                    .then(base64 => $('#base64').val(base64))
+            }
+            // không phải hình ảnh
+            else{
+                showAlertTop('Bạn chỉ có thể upload hình ảnh');
+                $(this).val('');
+                $('#image-preview').attr('src', 'images/700x400.png');
+            }
+        });
+
+        $('#link').keyup(function(){
+            removeRequried($(this));
+        });
+
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('input').attr('readonly', false);
+            $('.required').removeClass('required')
+            $('.required-text').remove()
+            $('#image-preview').attr('src', 'images/700x400.png');
+            $('#base64').val('');
+            $('#image_inp').val('');
+            $('#choose_image').show();
+            $('#action-btn').show();
         });
 
         function bindSlideshow(id, bool = false) {
             // lấy dòng theo id gán vào modal
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/slideshow/ajax-get-slideshow',
                 type: 'POST',
@@ -6292,139 +6610,6 @@ $(function() {
             // ẩn/hiện nút thêm (cập nhật);
             bool == false ? $('#action-btn').show() : $('#action-btn').hide();
         }
-
-        // dialog chọn hình
-        $('#choose_image').click(function(){
-            $('#image_inp').click();
-        });
-
-        // chọn hình
-        $('#image_inp').change(function(){
-            if($(this).val() == ''){
-                return;
-            }
-
-            removeRequried($('#image-preview'));
-
-            // kiểm tra file hình
-            var fileName = this.files[0].name.split('.');
-            var extend = fileName[fileName.length - 1];
-
-            // kiểm tra có phải là hình ảnh không
-            if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
-                $('#image-preview').attr('src', URL.createObjectURL(this.files[0]));
-                // url image => base64
-                getBase64FromUrl(URL.createObjectURL(this.files[0]), function(base64){
-                    $('#base64').val(base64);
-                });
-            }
-            // không phải hình ảnh
-            else{
-                showAlertTop('Bạn chỉ có thể upload hình ảnh');
-                $(this).val('');
-                $('#image-preview').attr('src', 'images/700x400.png');
-            }
-        });
-
-        // thêm|sửa
-        $('#action-btn').click(function(){
-            // bẫy lỗi
-            var valiLink = validateLink($('#link'));
-            var valiImage = validateImageSlideshow($('#image_inp'));
-
-            // bẫy lỗi xong kiểm tra loại
-            if(valiLink && valiImage){
-                $('.loader').show();
-
-                var data = {
-                    'link': $('#link').val(),
-                    'hinhanh': $('#base64').val(),
-                };
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/slideshow',
-                        type: 'POST',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#modal').modal('hide');
-
-                            // thêm vào cuối danh sách
-                            $('#lst_data').append(data.html);
-
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#alert-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-                // chỉnh sửa
-                else {
-                    var id = $(this).attr('data-id');
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/slideshow/' + id,
-                        type: 'PUT',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#modal').modal('hide');
-
-                            // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data); 
-                            
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#slideshow-msp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-            }
-        });
 
         // bẫy lỗi link
         function validateLink(link) {
@@ -6457,54 +6642,11 @@ $(function() {
 
             return true;
         }
-
-        $('#link').keyup(function(){
-            removeRequried($(this));
-        });
-
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('input').attr('readonly', false);
-            removeRequried($('#link'));
-            removeRequried($('#image-preview'));
-            $('#image-preview').attr('src', 'images/700x400.png');
-            $('#base64').val('');
-            $('#image_inp').val('');
-            $('#choose_image').show();
-            $('#action-btn').show();
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết Slideshow');
-                bindSlideshow(id, true);
-            });
-
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa Slideshow');
-                bindSlideshow(id);
-            });
-
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').text('Xóa slide này ?');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-modal').modal('show');
-            });
-        });
     }
     /*=======================================================================================================================
                                                            Banner
     =======================================================================================================================*/
-    else if(url == 'banner'){
+    else if(page === 'banner'){
         // modal tạo mới
         $('.create-btn').off('click').click(function(){
             // gán dữ liệu cho modal
@@ -6519,21 +6661,21 @@ $(function() {
         });
 
         // modal chi tiết
-        $('.info-btn').off('click').click(function(){
+        $(document).on('click', '.info-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chi tiết Banner');
             bindBanner(id, true);
         });
 
         // modal chỉnh sửa
-        $('.edit-btn').off('click').click(function(){
+        $(document).on('click', '.edit-btn', function(){
             var id = $(this).data('id');
             $('#modal-title').text('Chỉnh sửa Banner');
             bindBanner(id);
         });
 
         // modal xóa
-        $('.delete-btn').off('click').click(function(){
+        $(document).on('click', '.delete-btn', function(){
             var id = $(this).attr('data-id');
 
             // gán dữ liệu cho modal xóa
@@ -6542,13 +6684,81 @@ $(function() {
             $('#delete-modal').modal('show');
         });
 
+        // thêm|sửa
+        $('#action-btn').click(function(){
+            // bẫy lỗi
+            var valiLink = validateLink($('#link'));
+            var valiImage = validateImageBanner($('#image_inp'));
+
+            // bẫy lỗi xong kiểm tra loại
+            if(valiLink && valiImage){
+                $('.loader').fadeIn();
+
+                var data = {
+                    'link': $('#link').val(),
+                    'hinhanh': $('#base64').val(),
+                };
+                // thêm mới
+                if($(this).attr('data-type') == 'create'){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/banner',
+                        type: 'POST',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thêm vào đầu danh sách
+                            const newRow = renderNewRow(page, data.data)
+                            $('#lst_data').prepend(newRow);
+
+                            // toast + highlight row
+                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                        },
+                        error: function() {
+                            $('.loader').fadeOut();
+                            showAlertTop(errorMessage)
+                        }
+                    });
+                }
+                // chỉnh sửa
+                else {
+                    var id = $(this).attr('data-id');
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/banner/' + id,
+                        type: 'PUT',
+                        data: data,
+                        success:function(data){
+                            $('.loader').fadeOut();
+                            $('#modal').modal('hide');
+
+                            // thay thế
+                            const newRow = renderNewRow(page, data)
+                            $(`tr[data-id="${id}"]`).replaceWith(newRow); 
+                            
+                            // toast + highlight row
+                            toastAndHighlight(EDIT_MESSAGE, id)
+                        }
+                    });
+                }
+            }
+        });
+
         // xóa
         $('#delete-btn').click(function(){
+            $('.loader').fadeIn()
+
             var id = $(this).attr('data-id');
 
             $.ajax({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
                 url: 'admin/banner/' + id,
                 type: 'DELETE',
@@ -6557,49 +6767,17 @@ $(function() {
                     $('#delete-modal').modal('hide');
 
                     // xóa dòng
-                    $('tr[data-id="'+id+'"]').remove();
+                    $(`tr[data-id="${id}"]`).remove();
 
                     // toast
-                    if($('#toast').children().length){
-                        $('#toast').children().remove();
-                    }
-                    $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-danger">'+DELETE_MESSAGE+'</span>');
-                    showToast('#slideshow-msp-toast');
+                    showToast(DELETE_MESSAGE, TOAST_DELETE_TYPE);
+                },
+                error: function() {
+                    $('.loader').fadeOut()
+                    showAlertTop(errorMessage)
                 }
             });
         });
-
-        function bindBanner(id, bool = false) {
-            // lấy dòng theo id gán vào modal
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: 'admin/banner/ajax-get-banner',
-                type: 'POST',
-                data: {'id': id},
-                success:function(data){
-                    // thiết lập quyền
-                    $('input, textarea').attr('readonly', bool);
-
-                    // gán dữ liệu cho modal
-                    $('#link').val(data.link);
-                    $('#image-preview').attr('src', 'images/banner/' + data.hinhanh);
-                    bool == true ? $('#choose_image').hide() : $('#choose_image').show();
-                
-                    // thiết lập nút gửi là cập nhật
-                    $('#action-btn').attr('data-type', 'edit');
-                    $('#action-btn').text('Cập nhật');
-                    $('#action-btn').attr('data-id', id);
-
-                    // hiển thị modal
-                    $('#modal').modal('show');
-                }
-            });
-
-            // ẩn/hiện nút thêm (cập nhật);
-            bool == false ? $('#action-btn').show() : $('#action-btn').hide();
-        }
 
         // dialog chọn hình
         $('#choose_image').click(function(){
@@ -6620,11 +6798,11 @@ $(function() {
 
             // kiểm tra có phải là hình ảnh không
             if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
-                $('#image-preview').attr('src', URL.createObjectURL(this.files[0]));
+                const imgURL = URL.createObjectURL(this.files[0])
+                $('#image-preview').attr('src', imgURL);
                 // url image => base64
-                getBase64FromUrl(URL.createObjectURL(this.files[0]), function(base64){
-                    $('#base64').val(base64);
-                });
+                getBase64FromUrl(imgURL)
+                    .then(base64 => $('#base64').val(base64))
             }
             // không phải hình ảnh
             else{
@@ -6634,105 +6812,61 @@ $(function() {
             }
         });
 
-        // thêm|sửa
-        $('#action-btn').click(function(){
-            // bẫy lỗi
-            var valiLink = validateLink($('#link'));
-            var valiImage = validateImageBanner($('#image_inp'));
-
-            // bẫy lỗi xong kiểm tra loại
-            if(valiLink && valiImage){
-                $('.loader').show();
-
-                var data = {
-                    'link': $('#link').val(),
-                    'hinhanh': $('#base64').val(),
-                };
-                // thêm mới
-                if($(this).attr('data-type') == 'create'){
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/banner',
-                        type: 'POST',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#modal').modal('hide');
-
-                            // thêm vào cuối danh sách
-                            $('#lst_data').append(data.html);
-
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="alert-toast" class="alert-toast-right alert-toast-right-success">'+CREATE_MESSAGE+'</span>');
-                            showToast('#alert-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+data.id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-                // chỉnh sửa
-                else {
-                    var id = $(this).attr('data-id');
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: 'admin/banner/' + id,
-                        type: 'PUT',
-                        data: data,
-                        success:function(data){
-                            $('.loader').fadeOut();
-                            $('#modal').modal('hide');
-
-                            // thay thế
-                            $('tr[data-id="'+id+'"]').replaceWith(data); 
-                            
-                            // toast
-                            if($('#toast').children().length){
-                                $('#toast').children().remove();
-                            }
-                            $('#toast').append('<span id="slideshow-msp-toast" class="alert-toast-right alert-toast-right-success">'+EDIT_MESSAGE+'</span>');
-                            showToast('#slideshow-msp-toast');
-
-                            // đánh dấu dòng được thêm/chỉnh sửa
-                            var tr = $('tr[data-id="'+id+'"]'); 
-                            setTimeout(() => {
-                                setTimeout(() => {
-                                    tr.removeAttr('style');    
-                                }, 1000);
-                                tr.css({
-                                    'background-color': 'white',
-                                });    
-                            }, 3000);
-                            $('html, body').animate({scrollTop: tr.position().top});
-                            tr.css({
-                                'background-color': SUCCESS,
-                                'transition': '.5s'
-                            });
-                        }
-                    });
-                }
-            }
+        $('#link').keyup(function(){
+            removeRequried($(this));
         });
+
+        // reset modal
+        $('#modal').on('hidden.bs.modal', function(){
+            $('#form').trigger('reset');
+            $('input').attr('readonly', false);
+            $('.required').removeClass('required')
+            $('.required-text').remove()
+            $('#image-preview').attr('src', 'images/700x400.png');
+            $('#base64').val('');
+            $('#image_inp').val('');
+            $('#choose_image').show();
+            $('#action-btn').show();
+        });
+
+        function bindBanner(id, bool = false) {
+            // lấy dòng theo id gán vào modal
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'admin/banner/ajax-get-banner',
+                type: 'POST',
+                data: {'id': id},
+                success:function(data){
+                    // thiết lập quyền
+                    $('input, textarea').attr('readonly', bool);
+
+                    // gán dữ liệu cho modal
+                    $('#link').val(data.link);
+                    $('#image-preview').attr('src', `images/banner/${data.hinhanh}`);
+
+                    if(bool) {
+                        $('#choose_image').hide();
+                        $('#action-btn').hide();
+                    } else {
+                        $('#choose_image').show();
+                        $('#action-btn').show();
+                    }
+                
+                    // thiết lập nút gửi là cập nhật
+                    $('#action-btn').attr('data-type', 'edit');
+                    $('#action-btn').text('Cập nhật');
+                    $('#action-btn').attr('data-id', id);
+
+                    // hiển thị modal
+                    $('#modal').modal('show');
+                },
+                error: function() {
+                    showAlertTop(errorMessage)
+                }
+            });
+        }
 
         // bẫy lỗi link
         function validateLink(link) {
@@ -6765,54 +6899,11 @@ $(function() {
 
             return true;
         }
-
-        $('#link').keyup(function(){
-            removeRequried($(this));
-        });
-
-        // reset modal
-        $('#modal').on('hidden.bs.modal', function(){
-            $('#form').trigger('reset');
-            $('input').attr('readonly', false);
-            removeRequried($('#link'));
-            removeRequried($('#image-preview'));
-            $('#image-preview').attr('src', 'images/700x400.png');
-            $('#base64').val('');
-            $('#image_inp').val('');
-            $('#choose_image').show();
-            $('#action-btn').show();
-        });
-
-        $('#lst_data').bind('DOMSubtreeModified', function(){
-            // modal chi tiết
-            $('.info-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chi tiết Banner');
-                bindBanner(id, true);
-            });
-
-            // modal chỉnh sửa
-            $('.edit-btn').off('click').click(function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa Banner');
-                bindBanner(id);
-            });
-
-            // modal xóa
-            $('.delete-btn').off('click').click(function(){
-                var id = $(this).attr('data-id');
-
-                // gán dữ liệu cho modal xóa
-                $('#delete-content').text('Xóa banner này ?');
-                $('#delete-btn').attr('data-id', id);
-                $('#delete-modal').modal('show');
-            });
-        });
     }
     /*=======================================================================================================================
                                                            IMEI
     =======================================================================================================================*/
-    else if(url == 'imei'){
+    else if(page === 'imei'){
         if(navigation == 'reload' || navigation == 'back_forward'){
             loadMoreFlag = true;
         }
@@ -6824,16 +6915,26 @@ $(function() {
                 var keyword = $(this).val().toLocaleLowerCase();
                 $.ajax({
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': X_CSRF_TOKEN
                     },
                     url: 'admin/imei/ajax-search',
                     type: 'POST',
                     data: {'keyword': keyword},
                     success: function(data){
-                        $('#lst_data').attr('data-loadmore', '');
-                        $('#lst_data').children().remove();
-                        $('#lst_data').append(data);
+                        const lst_data = $('#lst_data')
+
+                        const searchResut = renderNewRow(page, data)
+                        lst_data.append(searchResut);
+
+                        if(lst_data.attr('data-loadmore') === 'done') {
+                            lst_data.removeAttr('data-loadmore')
+                        }
+
                         $('#loadmore').hide();
+                    },
+                    error: function() {
+                        $('#loadmore').hide();
+                        showAlertTop(errorMessage)
                     }
                 })
             }, 500);

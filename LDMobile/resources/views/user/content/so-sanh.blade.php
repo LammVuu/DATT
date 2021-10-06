@@ -1120,14 +1120,14 @@
                     <tr class='border'>
                         <td></td>
                         <td>
-                            <div data-id="{{$currentProduct['sanpham']['id']}}"class="compare-buy-now main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
+                            <div data-id="{{$currentProduct['sanpham']['id']}}"class="compare-add-card main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                         </td>
                         <td>
-                            <div data-id="{{$compareProduct['sanpham']['id']}}"class="compare-buy-now main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
+                            <div data-id="{{$compareProduct['sanpham']['id']}}"class="compare-add-card main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                         </td>
                         @if (!empty($third))
                             <td>
-                                <div data-id="{{$thirdProduct['sanpham']['id']}}"class="compare-buy-now main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
+                                <div data-id="{{$thirdProduct['sanpham']['id']}}"class="compare-add-card main-btn w-100 fw-600 p-10"><i class="fas fa-cart-plus mr-10"></i>Thêm vào giỏ hàng</div>
                             </td>
                         @else
                             <td class="thirdProduct"></td>

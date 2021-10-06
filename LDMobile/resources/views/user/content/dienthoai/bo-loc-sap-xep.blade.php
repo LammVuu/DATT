@@ -12,20 +12,24 @@
             {{-- sắp xếp --}}
             <div class="relative">
                 <span id='btn-show-sort'><i class="fal fa-sort mr-5"></i>Sắp xếp</span>
-                <div class="sort-badge"></div>
+                <div class="sort-badge" style="display: block"></div>
                 <div class="shop-sort-box border">
                     <div class="d-flex justify-content-center">
                         <div class='d-flex flex-column'>
                             <div class="mb-3">
-                                <input type="radio" name='sort' id='high-to-low'>
+                                <input type="radio" name='sort' id='default' value="default" checked>
+                                <label for="default">Mặc định</label>
+                            </div>
+                            <div class="mb-3">
+                                <input type="radio" name='sort' id='high-to-low' value="high-to-low">
                                 <label for="high-to-low">Giá cao đến thấp</label>
                             </div>
                             <div class="mb-3">
-                                <input type="radio" name='sort' id='low-to-high'>
+                                <input type="radio" name='sort' id='low-to-high' value="low-to-high">
                                 <label for="low-to-high">Giá thấp đến cao</label>
                             </div>
                             <div>
-                                <input type="radio" name='sort' id='sale-off-percent'>
+                                <input type="radio" name='sort' id='sale-off-percent' value="sale-off-percent">
                                 <label for="sale-off-percent">% giảm</label>
                             </div>
                         </div>
@@ -48,7 +52,7 @@
                 <div class="filter-title">Hãng</div>
                 <div class="d-flex align-items-center flex-wrap">
                     @foreach ($lst_brand as $key)
-                        <div type="button" name="filter-item" id="brand_{{ $key['brand'] }}" data-data="brand_{{ $key['brand'] }}" class="filter-item brand filter-brand">{{ $key['brand'] }}</div>
+                        <div type="button" name="filter-item" data-type="brand" data-keyword="{{ $key['brand'] }}" class="filter-item brand">{{ $key['brand'] }}</div>
                     @endforeach
                 </div><hr>
 
@@ -57,19 +61,19 @@
                     <div class="col-md-6">
                         <div class="filter-title">Giá</div>
                         <div class="d-flex align-items-center flex-wrap">
-                            <div id="price_2" type="button" name="filter-item" data-data="price_2" class="filter-item">Dưới 2 triệu</div>
-                            <div id="price_3-4" type="button" name="filter-item" data-data="price_3-4" class="filter-item">Từ 3 - 4 triệu</div>
-                            <div id="price_4-7" type="button" name="filter-item" data-data="price_4-7" class="filter-item">Từ 4 - 7 triệu</div>
-                            <div id="price_7-13" type="button" name="filter-item" data-data="price_7-13" class="filter-item">Từ 7 - 13 triệu</div>
-                            <div id="price_13-20" type="button" name="filter-item" data-data="price_13-20" class="filter-item">Từ 13 - 20 triệu</div>
-                            <div id="price_20" type="button" name="filter-item" data-data="price_20" class="filter-item">Trên 20 triệu</div>
+                            <div type="button" name="filter-item" data-type="price" data-keyword="2" class="filter-item">Dưới 2 triệu</div>
+                            <div type="button" name="filter-item" data-type="price" data-keyword="3-4" class="filter-item">Từ 3 - 4 triệu</div>
+                            <div type="button" name="filter-item" data-type="price" data-keyword="4-7" class="filter-item">Từ 4 - 7 triệu</div>
+                            <div type="button" name="filter-item" data-type="price" data-keyword="7-13" class="filter-item">Từ 7 - 13 triệu</div>
+                            <div type="button" name="filter-item" data-type="price" data-keyword="13-20" class="filter-item">Từ 13 - 20 triệu</div>
+                            <div type="button" name="filter-item" data-type="price" data-keyword="20" class="filter-item">Trên 20 triệu</div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="filter-title">Hệ điều hành</div>
                         <div class="d-flex align-items-center flex-wrap">
-                            <div id="os_Android" type="button" name="filter-item" data-data="os_Android" class="filter-item">Android</div>
-                            <div id="os_iOS" type="button" name="filter-item" data-data="os_iOS" class="filter-item">iOS</div>
+                            <div type="button" name="filter-item" data-type="os" data-keyword="Android" class="filter-item">Android</div>
+                            <div type="button" name="filter-item" data-type="os" data-keyword="iOS" class="filter-item">iOS</div>
                         </div>
                     </div>
                 </div><hr>
@@ -80,7 +84,7 @@
                         <div class="filter-title">Ram</div>
                         <div class="d-flex align-items-center flex-wrap">
                             @foreach ($lst_ram as $key)
-                            <div id="ram_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" type="button" name="filter-item" data-data="ram_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" class="filter-item">{{ $key }}</div>
+                                <div type="button" name="filter-item" data-type="ram" data-keyword="{{$key}}" class="filter-item">{{$key}}</div>
                             @endforeach
                         </div>
                     </div>
@@ -88,7 +92,7 @@
                         <div class="filter-title">Dung lượng</div>
                         <div class="d-flex align-items-center flex-wrap">
                             @foreach ($lst_capacity as $key)
-                            <div id="capacity_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" type="button" name="filter-item" data-data="capacity_{{ explode(' ', $key)[0].explode(' ', $key)[1] }}" class="filter-item">{{ $key }}</div>
+                            <div type="button" name="filter-item" data-type="capacity" data-keyword="{{$key}}" class="filter-item">{{$key}}</div>
                             @endforeach
                         </div>
                     </div>

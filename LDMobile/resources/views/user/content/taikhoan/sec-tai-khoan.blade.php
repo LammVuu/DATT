@@ -25,7 +25,7 @@
                     </div>
                     <div id="change-info-div" class="none-dp mt-10">
                         <div class="mb-5">
-                            <input type="text" name="new_fullname_inp" placeholder="Họ và tên">
+                            <input type="text" name="new_fullname_inp" maxlength="100" placeholder="Họ và tên">
                         </div>
                         <div class="d-flex justify-content-end">
                             <div type="button" id="change-fullname-btn" class="main-color-text">Cập nhật</div>

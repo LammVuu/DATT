@@ -135,50 +135,7 @@
                                     </div>
                                     
                                     <div class="w-30 p-10">
-                                        <div class='account-voucher'>
-                                            {{-- số phần trăm giảm --}}
-                                            <div class='voucher-left-small w-20 p-30'>
-                                                <div class='voucher-left-small-content fz-18'>-{{$voucher->chietkhau*100}}%</div>
-                                            </div>
-                                            {{-- nội dung --}}
-                                            <div class='voucher-right-small w-80 d-flex align-items-center justify-content-between p-10'>
-                                                {{-- icon xem chi tiết --}}
-                                                <b>{{$voucher->code}}</b>
-                                                <div class="relative promotion-info-icon">
-                                                    <i class="fal fa-info-circle main-color-text fz-20"></i>
-                                                    <div class='voucher-content box-shadow p-20 '>
-                                                        <table class='table'>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td class='w-40'>Mã</td>
-                                                                    <td><b>{{$voucher->code}}</b></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class='w-40'>Nội dung</td>
-                                                                    <td>{{$voucher->noidung}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="2" class='w-40'>
-                                                                        <div class='d-flex flex-column'>
-                                                                            <span>Điều kiện:</span>
-                                                                            @if ($voucher->dieukien != 0)
-                                                                                <ul class='mt-10'>
-                                                                                    <li>Áp dụng cho đơn hàng từ {{number_format($voucher->dieukien, 0, '', '.')}}<sup>đ</sup></li>
-                                                                                </ul>
-                                                                            @endif
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class='w-40'>Hạn sử dụng</td>
-                                                                    <td>{{$voucher->ngayketthuc}}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        @include("user.content.components.voucher.nomal-small-voucher")
                                     </div>
                                 </div>
                             </td>

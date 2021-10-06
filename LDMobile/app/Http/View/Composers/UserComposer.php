@@ -15,12 +15,14 @@ use App\Models\CHINHANH;
 use App\Models\TAIKHOAN_DIACHI;
 use App\Models\THONGBAO;
 use App\Models\DONHANG_DIACHI;
+use App\Models\TAIKHOAN_VOUCHER;
 
 class UserComposer
 {
     public function __construct()
     {
         $this->IndexController = new IndexController;
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
 
     public function compose(View $view)
@@ -126,19 +128,28 @@ class UserComposer
     // lấy voucher của tài khoản
     public function getVoucher($id_tk)
     {
-        if(count(TAIKHOAN::find($id_tk)->taikhoan_voucher) == 0){
+        if(count(TAIKHOAN_VOUCHER::where('id_tk', $id_tk)->get()) === 0){
             return [];
         }
-        
-        $lst_voucher = [];
-        $i = 0;
 
-        foreach(TAIKHOAN::find($id_tk)->taikhoan_voucher as $key){
-            $lst_voucher[$i] = VOUCHER::find($key->pivot->id_vc);
-            $lst_voucher[$i]->sl_voucher = $key->pivot->sl;
-            $i++;
+        $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', $id_tk)->get();
+
+        foreach($userVoucher as $i => $key){
+            $voucher = VOUCHER::find($key->id_vc);
+            $userVoucher[$i]->voucher = $voucher;
+
+            // ngày kết thúc
+            $end = strtotime(str_replace('/', '-', $voucher->ngayketthuc));
+            // ngày hiện tại
+            $current = strtotime(date('d-m-Y'));
+
+            if($end < $current){
+                $userVoucher[$i]->trangthai = false;
+            } else {
+                $userVoucher[$i]->trangthai = true;
+            }
         }
 
-        return $lst_voucher;
+        return $userVoucher;
     }
 }

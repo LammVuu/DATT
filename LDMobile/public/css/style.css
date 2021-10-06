@@ -1963,6 +1963,8 @@ hr{
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateY(40px);
+  transition: 1s;
 }
 
 /*========================================================================================================================
@@ -1976,7 +1978,8 @@ hr{
   z-index: 2000;
   width: auto;
   font-size: 16px;
-  background-color: #2c3138;
+  /* background-color: #2c3138; */
+  background-color: var(--main);
   opacity: 0.9;
   color: white;
   border-radius: 5px;
@@ -1989,7 +1992,7 @@ hr{
 .alert-toast-2{
   cursor: default;
   position: fixed;
-  left: 20px; bottom: 20px;
+  right: 20px; bottom: 20px;
   z-index: 2000;
   width: auto;
   font-size: 16px;
@@ -2052,6 +2055,14 @@ hr{
 }
 
 .alert-toast-right-success{
+  background-color: #20c997;
+}
+
+.alert-toast-danger{
+  background-color: #dc3545;
+}
+
+.alert-toast-success{
   background-color: #20c997;
 }
 
@@ -2321,11 +2332,11 @@ hr{
   cursor: pointer;
   padding: 7px 12px;
   background-color: white;
+  color: black;
 }
 
 .select-single-option:hover{
   background-color: #f8f8f8;
-  color: black;
 }
 
 select:focus{
@@ -2519,6 +2530,36 @@ input:focus{
 }
 [type="checkbox"]:checked + label::after {
   opacity: 1;
+}
+
+.cus-checkbox{
+  --size: 20px;
+  cursor: pointer;
+  width: var(--size); height: var(--size);
+  background-color: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+}
+
+.cus-checkbox-checked{
+  position: relative;
+  background-color: var(--main);
+  border: 1px solid var(--main);
+}
+
+.cus-checkbox-checked::after{
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0px;
+  z-index: 1;
+  width: 7px;
+  height: 14px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 /*========================================================================================================================
@@ -3665,13 +3706,14 @@ a.head-item:hover{
 }
 
 .voucher-content{
-  position: absolute;
-  right: 0; top: 100%;
+  position: fixed;
   width: 400px;
   height: auto;
+  padding: 20px;
   background-color: white;
   display: none;
   z-index: 100;
+  box-shadow: 0 0 20px rgba(0,0,0,0.10);
 }
 
 /*==================================================
@@ -3686,6 +3728,8 @@ a.head-item:hover{
   border-bottom: 2px solid var(--main);
   border-left: 2px solid var(--main);
   position: relative;
+  width: 20%;
+  padding: 30px;
 }
 
 .voucher-left-small::before{
@@ -3719,6 +3763,7 @@ a.head-item:hover{
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  font-size: 18px;
 }
 
 .voucher-right-small{
@@ -3729,6 +3774,11 @@ a.head-item:hover{
   border-bottom: 2px solid var(--main);
   /* box-shadow: 2px 2px 4px 4px rgba(0, 0, 0, 0.16); */
   position: relative;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
 }
 
 .voucher-right-small::before{
@@ -3755,6 +3805,36 @@ a.head-item:hover{
 /*==================================================
                      disable voucher
 ===================================================*/
+
+.delete-voucher-btn{
+  cursor: pointer;
+  position: relative;
+  background-color: var(--checkout);
+  padding: 10px 15px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.delete-voucher-btn::after{
+  content: 'Xóa';
+  position: absolute;
+  left: -10px; top: 100%; right: -10px;
+  margin-top: 10px;
+  text-align: center;
+  color: #fff;
+  background-color: #000;
+  opacity: 0.7;
+  border-radius: 5px;
+  padding: 5px 10px;
+  display: none;
+}
+
+.delete-voucher-btn:hover::after{
+  display: block;
+}
 
 .dis-voucher-left{
   background-color: white;
@@ -3843,24 +3923,32 @@ a.head-item:hover{
   cursor: default;
 }
 
-.dis-promotion-info-icon:hover .voucher-content{
+/* .dis-promotion-info-icon:hover .voucher-content{
   display: block;
-}
+} */
 
 /*===================================================
 =====================================================*/
+
+.voucher-right-content{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding: 10px 10px 10px 20px;
+}
 
 .promotion-info-icon{
   color: var(--main);
 }
 
-.promotion-info-icon:hover .voucher-content{
+/* .promotion-info-icon:hover .voucher-content{
   display: block;
-}
+} */
 
 /*========================================================================================================================
                                                     Account address                                                           
-/*========================================================================================================================*/
+==========================================================================================================================*/
 
 .btn-new-address{
   width: 100%;
@@ -4169,7 +4257,7 @@ a.head-item:hover{
   flex-direction: column;
 }
 
-.choose-color-item-check-qty-in-stock{
+.check-qty-in-stock-item{
   width: 10%;
   padding: 5px;
   margin: 0 10px 10px 0;
@@ -4183,22 +4271,28 @@ a.head-item:hover{
 }
 
 @media screen and (max-width: 992px) and (min-width: 576px) {
-  .choose-color-item-check-qty-in-stock{
+  .check-qty-in-stock-item{
     width: 20%;
   }
 }
 @media screen and (max-width: 576px){
-  .choose-color-item-check-qty-in-stock{
+  .check-qty-in-stock-item{
     width: 22.5%;
   }
 }
 
-.choose-color-item:hover, .choose-color-item-check-qty-in-stock:hover{
+.choose-color-item:hover, .check-qty-in-stock-item:hover{
   border: 2px solid var(--main);
 }
 
 .choose-color-selected{
   border: 2px solid var(--main);
+}
+
+.see-store{
+  padding: 10px 20px;
+  background-color: #e2f5ff;
+  color: var(--main);
 }
 
 /*========================================================================================================================
@@ -4569,84 +4663,148 @@ a.head-item:hover{
   box-shadow: 0 0 0 4px var(--main);
 }
 
-.see-review-image{
+.see-review-image-card{
   position: fixed;
-  left: 50%; top: 50%;
-  width: 90%; height: 90%;
-  margin: -23% 0 0 -45%;
-  background-color: white;
+  left: 0; top: 0; right: 0; bottom: 0;
   z-index: 111;
-  border-radius: 30px;
-  padding: 30px;
+  width: 100%; height: 100%;
   display: none;
 }
-@media screen and (max-width: 1296px) and (min-width: 1200px) {
-  .see-review-image{
-    margin: -27.5% 0 0 -45%;
-  }
+
+.see-review-image{
+  --width: 40px;
+  --height: 40px;
+  position: absolute;
+  left: var(--width); top: var(--height); right: var(--width); bottom: var(--height);
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-@media screen and (max-width: 1200px) and (min-width: 992px) {
-  .see-review-image{
-    margin: -29.5% 0 0 -45%;
-  }
-}
-
-@media screen and (max-width: 992px) and (min-width: 768px) {
-  .see-review-image{
-    margin: -35.5% 0 0 -45%;
-  }
-}
-
-@media screen and (max-width: 768px) and (min-width: 576px){
-  .see-review-image{
-    margin: -45% 0 0 -45%;
-  }
-}
-
-@media screen and (max-width: 576px){
-  .see-review-image{
-    margin: -55% 0 0 -45%;
-  }
+.review-image-header{
+  display: flex;
+  justify-content: flex-end;
 }
 
 .close-see-review-image{
   cursor: pointer;
-  position: absolute;
-  top: 20px; right: 20px;
   background-color: white;
   padding: 10px 15px;
-  border-radius: 30px;
+  border-radius: 20px;
   font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.16);
 }
 
+.review-image-body{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 #review-image-main{
-  height: 500px;
-  width: auto;
+  height: 450px;
 }
 
 .prev-see-review-image, .next-see-review-image{
+  --size: 70px;
   cursor: pointer;
-  position: absolute;
-  width: 70px; height: 70px;
+  width: var(--size); height: var(--size);
   background-color: white;
   border-radius: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.16);
+  font-size: 30px;
 }
 
-.prev-see-review-image{
-  left: 50px;
+.review-image-footer{
+  border-top: 1px solid #dcdcdc;
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 
-.next-see-review-image{
-  right: 50px;
+@media screen and (max-width: 1200px) and (min-width: 992px) {
+  #review-image-main{
+    height: 400px;
+  }
+}
+
+@media screen and (max-width: 992px) and (min-width: 768px) {
+  .see-review-image{
+    --width: 40px;
+    --height: 80px;
+  }
+
+  #review-image-main{
+    height: 290px;
+  }
+
+  .prev-see-review-image, .next-see-review-image{
+    --size: 50px;
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 576px){
+  .see-review-image{
+    --width: 20px;
+    --height: 120px;
+  }
+
+  .close-see-review-image{
+    padding: 5px 10px;
+  }
+
+  #review-image-main{
+    height: 200px;
+  }
+
+  .prev-see-review-image, .next-see-review-image{
+    --size: 40px;
+    font-size: 15px;
+  }
+
+  .review-image-body{
+    margin-bottom: 10px;
+  }
+
+  .review-image-footer{
+    padding-top: 10px;
+  }
+
+  #another-review-image > .img-evaluate{
+    width: 80px; height: 80px;
+  }
+}
+
+@media screen and (max-width: 576px){
+  .see-review-image{
+    --width: 40px;
+    --height: 160px;
+    padding: 10px;
+  }
+
+  .close-see-review-image{
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+
+  #review-image-main{
+    height: 75%;
+  }
+
+  .prev-see-review-image, .next-see-review-image{
+    --size: 35px;
+    font-size: 15px;
+  }
+
+  #another-review-image > .img-evaluate{
+    width: 60px; height: 60px;
+  }
 }
 
 .like-comment{
@@ -4977,6 +5135,12 @@ a.head-item:hover{
   overflow: auto;
 }
 
+.out-of-stock {
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--red);
+}
+
 /*========================================================================================================================
                                                       Checkout                                                           
 /*========================================================================================================================*/
@@ -5031,8 +5195,7 @@ a.head-item:hover{
 
 .list-branch{
   border: 1px solid #dcdcdc;
-  margin-top: 10px;
-  max-height: 400px;
+  max-height: 200px;
   overflow: auto;
   display: none;
 }
@@ -5058,9 +5221,12 @@ a.head-item:hover{
 }
 
 .info-qty-in-stock{
+  position: relative;
+  background-color: #fff;
   overflow: auto;
   padding: 10px;
   max-height: 300px;
+  display: none;
 }
 
 /*========================================================================================================================
@@ -5395,9 +5561,7 @@ a.head-item:hover{
 .content{
   margin-top: 70px;
   margin-left: 70px;
-  transition: .25s;
-  overflow-y: auto;
-  overflow-x: hidden;
+  height: inherit;
 }
 
 .content-header{
@@ -5656,11 +5820,11 @@ a.head-item:hover{
 .confirm-btn{
   position: relative;
   padding: 15px 17px;
-  background-color: #20c997;
+  background-color: var(--yellow);
 }
 
 .confirm-btn:hover{
-	background-color: #1db487;
+	background-color: var(--yellow);
 }
 
 .confirm-btn::after{
@@ -5761,13 +5925,6 @@ a.head-item:hover{
   border: 1px solid #dcdcdc;
   box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.16);
   display: none;
-}
-
-.single-branch{
-  cursor: pointer;
-  background-color: #fff;
-  padding: 7px 14px;
-  border-bottom: 1px solid #dcdcdc;
 }
 
 .account-badge{

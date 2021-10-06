@@ -34,49 +34,11 @@ class MauSanPhamController extends Controller
         return view($this->admin."mau-san-pham")->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = MAUSP::find($id);
-        $supplierName = NHACUNGCAP::find($data->id_ncc)->tenncc;
-        
-        $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->tenmau.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$supplierName.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.($data->baohanh ? $data->baohanh : 'Không có').'</div>
-                        </td>
-                        <td class="vertical-center w-30">
-                            <div class="pt-10 pb-10">'.$data->diachibaohanh.'</div>
-                        </td>
-                        <td class="vertical-center w-15">
-                            <div class="pt-10 pb-10">'.($data->trangthai == '1' ? 'Kinh doanh' : 'Ngừng kinh doanh').'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($data->trangthai == 1 ?
-                                '<div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>'
-                                :
-                                '').'
-                            </div>
-                        </td>
-                    </tr>';
-        return $html;
-    }
-
     public function store(Request $request)
     {
         if($request->ajax()){
             // kiểm tra trùng tên
-            if(MAUSP::where('tenmau', 'like',  '%'.$request->tenmau.'%')->first()){
+            if(MAUSP::where('tenmau', $request->tenmau)->first()){
                 return 'invalid name';
             }
             
@@ -90,12 +52,11 @@ class MauSanPhamController extends Controller
             ];
 
             $create = MAUSP::create($data);
+            $create->supplierName = NHACUNGCAP::find($create->id_ncc)->tenncc;
 
-            $html = $this->bindElement($create->id);
-            
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create]
             ];
         }
     }
@@ -115,9 +76,10 @@ class MauSanPhamController extends Controller
             MAUSP::where('id', $id)->update($data);
             SANPHAM::where('id_msp', $id)->update(['trangthai' => $data['trangthai']]);
 
-            $html = $this->bindElement($id);
+            $newRow = MAUSP::find($id);
+            $newRow->supplierName = NHACUNGCAP::find($newRow->id_ncc)->tenncc;
             
-            return $html;
+            return [$newRow];
         }
     }
 
@@ -146,25 +108,27 @@ class MauSanPhamController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(MAUSP::limit(10)->get() as $key){
-                    $html .= $this->bindElement($key->id);
+                $data = MAUSP::limit(10)->get();
+                foreach($data as $key){
+                    $key->supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
                 }
 
-                return $html;
+                return $data;
             }
 
             foreach(MAUSP::all() as $key){
                 $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
-                $data = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.($key->baohanh ? $key->baohanh : 'Không có').$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
-                if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                $string = strtolower($this->IndexController->unaccent($key->id.$key->tenmau.$supplierName.($key->baohanh ? $key->baohanh : 'Không có').$key->diachibaohanh.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
+                if(str_contains($string, $keyword)){
+                    $key->supplierName = $supplierName;
+                    array_push($lst_result, $key);
                 }
             }
 
-            return $html;
+            return $lst_result;
         }
     }
 
@@ -176,7 +140,6 @@ class MauSanPhamController extends Controller
             $lst_temp = [];
             $lst_result = [];
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
 
             // có danh sách tìm kiếm
             if($keyword){
@@ -187,16 +150,21 @@ class MauSanPhamController extends Controller
             if(empty($arrFilter)){
                 // không có tìm kiếm
                 if(empty($lst_search)){
-                    foreach(MAUSP::limit(10)->get() as $key){
-                        $html .= $this->bindElement($key->id);   
+                    $data = MAUSP::limit(10)->get();
+                    foreach($data as $key){
+                        $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
+                        $key->supplierName = $supplierName;
                     }
+
+                    return $data;
                 } else {
                     foreach($lst_search as $key){
-                        $html .= $this->bindElement($key->id);   
+                        $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
+                        $key->supplierName = $supplierName;
                     }
-                }
 
-                return $html;
+                    return $lst_search;
+                }
             }
 
             // tiêu chí lọc đầu tiên trên danh sách tìm kiếm
@@ -239,10 +207,11 @@ class MauSanPhamController extends Controller
             // chỉ có 1 tiêu chí
             if(count($arrFilter) == 1){
                 foreach($lst_temp as $key){
-                    $html .= $this->bindElement($key->id);
+                    $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
+                    $key->supplierName = $supplierName;
                 }
 
-                return $html;
+                return $lst_temp;
             }
 
             // tiếp tục lọc các tiêu chí còn lại
@@ -269,10 +238,11 @@ class MauSanPhamController extends Controller
 
             // render danh sách kết quả
             foreach($lst_result as $key){
-                $html .= $this->bindElement($key->id);   
+                $supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
+                $key->supplierName = $supplierName;
             }
 
-            return $html;
+            return $lst_result;
         }
     }
     

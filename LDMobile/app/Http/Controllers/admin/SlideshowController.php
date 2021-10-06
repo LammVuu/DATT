@@ -35,33 +35,6 @@ class SlideshowController extends Controller
         return view($this->admin."slideshow")->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = SLIDESHOW::find($id);
-        $html = '<tr data-id="'.$id.'">
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$id.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->link.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">
-                            <img src="images/slideshow/'.$data->hinhanh.'" alt="" width="300px">
-                        </div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-10">
-                        <div class="d-flex justify-content-start">
-                            <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                            <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                            <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                        </div>
-                    </td>
-                </tr>';
-        return $html;
-    }
-
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -85,11 +58,9 @@ class SlideshowController extends Controller
 
             $create = SLIDESHOW::create($data);
 
-            $html = $this->bindElement($create->id);
-
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create],
             ];
         }
     }
@@ -127,9 +98,9 @@ class SlideshowController extends Controller
 
             SLIDESHOW::where('id', $id)->update($data);
 
-            $html = $this->bindElement($id);
+            $newRow = SLIDESHOW::find($id);
 
-            return $html;
+            return [$newRow];
         }
     }
 

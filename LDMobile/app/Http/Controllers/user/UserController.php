@@ -489,6 +489,11 @@ class UserController extends Controller
     {
         if($request->ajax()){
             $id = $request->id;
+
+            $response = [
+                'status' => 'success',
+                'voucher' => null
+            ];
     
             if(session('user')){
                 if(count(TAIKHOAN::find(session('user')->id)->giohang) == 0){
@@ -497,156 +502,183 @@ class UserController extends Controller
     
                 if(session('voucher')){
                     Session::forget('voucher');
-                    return 'Đã hủy áp dụng mã giảm giá';
+
+                    $response['status'] = 'cancel';
+                } else {
+                    $voucher = VOUCHER::find($id);
+
+                    session(['voucher' => $voucher]);
+                    $response['voucher'] = $voucher;
                 }
-    
-                session(['voucher' => VOUCHER::find($id)]);
-                return 'Đã áp dụng mã giảm giá';
+
+                return $response;
             }
         }
     }
 
     public function DeleteObject(Request $request)
     {
-        if($request->object == 'address'){
-            TAIKHOAN_DIACHI::destroy($request->id);
-            return back()->with('toast_message', 'Xóa địa chỉ thành công');
-        } 
-        elseif($request->object == 'item-cart'){
-            GIOHANG::destroy($request->id);
-            return back()->with('toast_message', 'Đã xóa sản phẩm');
-        } 
-        elseif($request->object == 'all-cart'){
-            GIOHANG::where('id_tk', session('user')->id)->delete();
-            // xóa session voucher
-            if(session('voucher')){
-                $request->session()->forget('voucher');
-            }
-            return back()->with('toast_message', 'Đã xóa giỏ hàng');
-        }
-        // Hủy đơn hàng
-        elseif($request->object == 'order'){
-            // cập nhật trạng thái đơn hàng: Đã hủy
-            DONHANG::where('id', $request->id)->update(['trangthaidonhang' => 'Đã hủy']);
-
-            // hoàn lại số lượng kho
-            $order = DONHANG::find($request->id);
-            foreach(CTDH::where('id_dh', $request->id)->get() as $detail){
-                // kho tại chi nhánh
-                if($order->id_cn){
-                    // số lượng sp trong kho hiện tại
-                    $qtyInStock = KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
-                    // số lượng sản phẩm mua
-                    $qtyBuy = $detail->sl;
-                    // trả lại số lượng kho
-                    $qtyInStock += $qtyBuy;
-                    // cập nhật kho
-                    KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+        switch($request->object) {
+            case 'address':
+                TAIKHOAN_DIACHI::destroy($request->id);
+                return back()->with('toast_message', 'Xóa địa chỉ thành công');
+                break;
+            case 'item-cart':
+                GIOHANG::destroy($request->id);
+                if(count(GIOHANG::all()) === 0) {
+                    GIOHANG::truncate();
                 }
-                // kho theo khu vực người đặt
-                else {
-                    // tỉnh thành của người dùng
-                    $userProvince = DONHANG_DIACHI::find($order->id_dh_dc)->tinhthanh;
 
-                    // tỉnh thành thuộc bắc || nam
-                    $file = file_get_contents('TinhThanh.json');
-                    $lst_province = json_decode($file, true);
-                    $province = [];
-                    foreach($lst_province as $key){
-                        if($key['Name'] == $userProvince){
-                            $province = $key;
-                            break;
-                        }
-                    }
-
-                    // chi nhánh tại Hà Nội
-                    if($province['ID'] < 48){
-                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
-                    }
-                    // chi nhánh tại Hồ Chí Minh
-                    else {
-                        $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hồ Chí Minh')->first()->id)->first();
-                    }
-
-                    // số lượng sp trong kho tại chi nhánh
-                    $qtyInStock = KHO::where('id_cn', $branch->id)->where('id_sp', $detail->id_sp)->first()->slton;
-                    // số lượng sản phẩm mua
-                    $qtyBuy = $detail->sl;
-                    // trả lại số lượng kho
-                    $qtyInStock += $qtyBuy;
-                    // cập nhật kho
-                    KHO::where('id_cn', $branch->id)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+                // xóa voucher đang áp dụng khi giỏ hàng rỗng
+                if(!GIOHANG::where('id_tk', session('user')->id)->count() && session('voucher')){
+                    $request->session()->forget('voucher');
                 }
-            }
 
-            // khôi phục voucher đã áp dụng
-            if($order->id_vc){
-                $id_vc = DONHANG::find($request->id)->id_vc;
-                $userVoucher = TAIKHOAN_VOUCHER::where('id_vc', $id_vc)->where('id_tk', session('user')->id)->first();
-                if(!$userVoucher){
-                    TAIKHOAN_VOUCHER::create([
-                        'id_tk' => session('user')->id,
-                        'id_vc' => $id_vc,
-                    ]);
-                } else {
-                    $qty = $userVoucher->sl;
-                    $userVoucher->sl = ++$qty;
-                    $userVoucher->save();
+                return back()->with('toast_message', 'Đã xóa sản phẩm');
+                break;
+            case 'all-cart':
+                GIOHANG::where('id_tk', session('user')->id)->delete();
+                if(count(GIOHANG::all()) === 0) {
+                    GIOHANG::truncate();
                 }
+                // xóa session voucher
+                if(session('voucher')){
+                    $request->session()->forget('voucher');
+                }
+                return back()->with('toast_message', 'Đã xóa giỏ hàng');
+                break;
+            case 'order':
+                // cập nhật trạng thái đơn hàng: Đã hủy
+                DONHANG::where('id', $request->id)->update(['trangthaidonhang' => 'Đã hủy']);
+
+                $order = DONHANG::find($request->id);
+                $id_tk = $order->id_tk;
+
+                // hoàn lại số lượng kho
+                $this->refundOfInventory($order->id);
+
+                // khôi phục voucher đã áp dụng
+                if($order->id_vc){
+                    $id_vc = DONHANG::find($request->id)->id_vc;
+                    $this->restoreTheAppliedVoucher($id_vc, $id_tk);
+                }
+
+                return back()->with('toast_message', 'Đã hủy đơn hàng');
+                break;
+            case 'evaluate':
+                $id_dg = $request->id;
+
+                $evaluate = DANHGIASP::find($id_dg);
+
+                // xóa hình đánh giá trong thư mục và db
+                foreach(CTDG::where('id_dg', $id_dg)->get() as $key){
+                    unlink('images/evaluate/' . $key['hinhanh']);
+                    CTDG::destroy($key['id']);
+                }
+
+                // xóa phản hồi
+                PHANHOI::where('id_dg', $id_dg)->delete();
+
+                // xóa lượt thích
+                LUOTTHICH::where('id_dg', $id_dg)->delete();
                 
-                // cập nhật số lượng voucher
-                $voucher = VOUCHER::find($userVoucher->id_vc);
-                $qty = $voucher->sl;
-                $voucher->sl = ++$qty;
-                $voucher->save();
-            }
+                // kiểm tra các dòng thuộc cùng 1 đánh giá
+                $lst_id = $this->IndexController->getListIdByCapacity(DANHGIASP::find($id_dg)->id_sp);
+                
+                $lst_id_dg = [];
 
-            return back()->with('toast_message', 'Đã hủy đơn hàng');
-        }
-        // xóa đánh giá
-        elseif($request->object == 'evaluate'){
-            $id_dg = $request->id;
-
-            $evaluate = DANHGIASP::find($id_dg);
-
-            // xóa hình đánh giá trong thư mục và db
-            foreach(CTDG::where('id_dg', $id_dg)->get() as $key){
-                unlink('images/evaluate/' . $key['hinhanh']);
-                CTDG::destroy($key['id']);
-            }
-
-            // xóa phản hồi
-            PHANHOI::where('id_dg', $id_dg)->delete();
-
-            // xóa lượt thích
-            LUOTTHICH::where('id_dg', $id_dg)->delete();
-            
-            // kiểm tra các dòng thuộc cùng 1 đánh giá
-            $lst_id = $this->IndexController->getListIdByCapacity(DANHGIASP::find($id_dg)->id_sp);
-            
-            $lst_id_dg = [];
-
-            // danh sách đánh giá trong khoảng của id_sp và cùng thuộc 1 đánh giá
-            foreach(DANHGIASP::whereBetween('id_sp', [$lst_id[0], $lst_id[count($lst_id) - 1]])->get() as $key){
-                if($evaluate->id_tk == $key['id_tk'] && $evaluate->noidung == $key['noidung'] && $evaluate->thoigian == $key['thoigian']){
-                    array_push($lst_id_dg, $key['id']);
+                // danh sách đánh giá trong khoảng của id_sp và cùng thuộc 1 đánh giá
+                foreach(DANHGIASP::whereBetween('id_sp', [$lst_id[0], $lst_id[count($lst_id) - 1]])->get() as $key){
+                    if($evaluate->id_tk == $key['id_tk'] && $evaluate->noidung == $key['noidung'] && $evaluate->thoigian == $key['thoigian']){
+                        array_push($lst_id_dg, $key['id']);
+                    }
                 }
-            }
 
-            // xóa các dòng thuộc 1 đánh giá
-            if(!empty($lst_id_dg)){
-                foreach($lst_id_dg as $key){
-                    DANHGIASP::destroy($key);
+                // xóa các dòng thuộc 1 đánh giá
+                if(!empty($lst_id_dg)){
+                    foreach($lst_id_dg as $key){
+                        DANHGIASP::destroy($key);
+                    }
+                } else {
+                    DANHGIASP::destroy($id_dg);
                 }
-            } else {
-                DANHGIASP::destroy($id_dg);
-            }
 
-            return back()->with('toast_message', 'Đã xóa đánh giá');
-
+                return back()->with('toast_message', 'Đã xóa đánh giá');
+                break;
         }
 
         return back();
+    }
+
+    // hoàn lại số lượng kho
+    public function refundOfInventory($id_dh)
+    {
+        $order = DONHANG::find($id_dh);
+
+        foreach(CTDH::where('id_dh', $id_dh)->get() as $detail){
+            // kho tại chi nhánh
+            if($order->id_cn){
+                // số lượng sp trong kho hiện tại
+                $qtyInStock = KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
+                // số lượng sản phẩm mua
+                $qtyBuy = $detail->sl;
+                // trả lại số lượng kho
+                $qtyInStock += $qtyBuy;
+                // cập nhật kho
+                KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+            }
+            // kho theo khu vực người đặt
+            else {
+                // tỉnh thành của người dùng
+                $userProvince = DONHANG_DIACHI::find($order->id_dh_dc)->tinhthanh;
+
+                // tỉnh thành thuộc bắc || nam
+                $file = file_get_contents('TinhThanh.json');
+                $lst_province = json_decode($file, true);
+                $province = [];
+                foreach($lst_province as $key){
+                    if($key['Name'] == $userProvince){
+                        $province = $key;
+                        break;
+                    }
+                }
+
+                // chi nhánh tại Hà Nội
+                if($province['ID'] < 48){
+                    $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
+                }
+                // chi nhánh tại Hồ Chí Minh
+                else {
+                    $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hồ Chí Minh')->first()->id)->first();
+                }
+
+                // số lượng sp trong kho tại chi nhánh
+                $qtyInStock = KHO::where('id_cn', $branch->id)->where('id_sp', $detail->id_sp)->first()->slton;
+                // số lượng sản phẩm mua
+                $qtyBuy = $detail->sl;
+                // trả lại số lượng kho
+                $qtyInStock += $qtyBuy;
+                // cập nhật kho
+                KHO::where('id_cn', $branch->id)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
+            }
+        }
+    }
+
+    // khôi phục voucher đã sử dụng
+    public function restoreTheAppliedVoucher($id_vc, $id_tk)
+    {
+        $userVoucher = TAIKHOAN_VOUCHER::where('id_vc', $id_vc)->where('id_tk', $id_tk)->first();
+        if(!$userVoucher){
+            TAIKHOAN_VOUCHER::create([
+                'id_tk' => $id_tk,
+                'id_vc' => $id_vc,
+                'sl' => 1
+            ]);
+        } else {
+            $qty = $userVoucher->sl;
+            $userVoucher->sl = ++$qty;
+            $userVoucher->save();
+        }
     }
 
     /*============================================================================================================
@@ -722,8 +754,6 @@ class UserController extends Controller
             $update = TAIKHOAN::where('id', session('user')->id)->update(['hoten' => $request->hoten]);
             
             $this->IndexController->userSessionUpdate();
-
-            return $request->hoten;
         }
     }
 
@@ -814,130 +844,36 @@ class UserController extends Controller
     public function CheckVoucherConditions(Request $request)
     {
         if($request->ajax()){
-            $html = '';
-            foreach(TAIKHOAN::find(session('user')->id)->taikhoan_voucher as $key){
-                $voucher = VOUCHER::find($key->pivot->id_vc);
-                if($request->cartTotal >= $voucher->dieukien){
-                    $html .= '
-                                <div class="col-lg-8 col-md-10 col-12 mx-auto pb-30">
-                                    <div class="account-voucher">
-                                        <div class="voucher-left w-20 p-70">'.
-                                            ($key->pivot->sl != 1 ? '
-                                            <div class="voucher-qty">'.$key->pivot->sl.'x</div>' : '').'
-                                            <div class="voucher-left-content fz-40">-'.$voucher->chietkhau*100 .'%</div>
-                                        </div>
-                                        <div class="voucher-right w-80">
-                                            <div class="d-flex flex-column justify-content-between h-100 pt-10 pr-10 pb-10 pl-20">
-                                                <div class="d-flex justify-content-end">
-                                                    <div class="relative promotion-info-icon">
-                                                        <i class="fal fa-info-circle fz-20"></i>
-                                                        <div class="voucher-content box-shadow p-20 ">
-                                                            <table class="table">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td class="w-40">Mã</td>
-                                                                        <td><b>'.$voucher->code.'</b></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="w-40">Nội dung</td>
-                                                                        <td>'.$voucher->noidung.'</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td colspan="2" class="w-40">
-                                                                            <div class="d-flex flex-column">
-                                                                                <span>Điều kiện</span>';
-                                                                                if($voucher->dieukien != 0){
-                                                                    $html .='   <ul class="mt-10">
-                                                                                    <li>Áp dụng cho đơn hàng từ '.number_format($key->dieukien, 0, '', '.').'<sup>đ</sup></li>
-                                                                                </ul>';
-                                                                                }
-                                                                $html .='    </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="w-40">Hạn sử dụng</td>
-                                                                        <td>'.$voucher->ngayketthuc.'</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-fill">
-                                                    <span>'.$voucher->noidung.'</span>
-                                                </div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span class="d-flex align-items-end">HSD: '.$voucher->ngayketthuc.'</span>
-                                                    <div data-id="'.$key->id.'" class="apply-voucher-btn main-btn p-10">Áp dụng</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                    ';
-                } else {
-                    $html .= '
-                                <div class="col-lg-8 col-md-10 col-12 mx-auto pb-30">
-                                    <div class="account-voucher">
-                                        <div class="dis-voucher-left w-20 p-70">'.
-                                            ($key->pivot->sl != 1 ? '
-                                                <div class="voucher-qty">'.$key->pivot->sl.'x</div>' : '').'
-                                            <div class="dis-voucher-left-content fz-40">-'.$voucher->chietkhau*100 .'%</div>
-                                        </div>
-                                        <div class="dis-voucher-right w-80">
-                                            <div class="d-flex flex-column justify-content-between h-100 pt-10 pr-10 pb-10 pl-20">
-                                                <div class="d-flex justify-content-end">
-                                                    <div class="relative dis-promotion-info-icon">
-                                                        <i class="fal fa-info-circle fz-20"></i>
-                                                        <div class="voucher-content box-shadow p-20 ">
-                                                            <table class="table">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td class="w-40">Mã</td>
-                                                                        <td><b>'.$voucher->code.'</b></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="w-40">Nội dung</td>
-                                                                        <td>'.$voucher->noidung.'</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td colspan="2" class="w-40">
-                                                                            <div class="d-flex flex-column">
-                                                                                <span>Điều kiện</span>';
-                                                                                if($voucher->dieukien != 0){
-                                                                    $html .='   <ul class="mt-10">
-                                                                                    <li>Áp dụng cho đơn hàng từ '.number_format($key->dieukien, 0, '', '.').'<sup>đ</sup></li>
-                                                                                </ul>';
-                                                                                }
-                                                                $html .='    </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="w-40">Hạn sử dụng</td>
-                                                                        <td>'.$voucher->ngayketthuc.'</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-fill">
-                                                    <span>'.$voucher->noidung.'</span>
-                                                </div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span class="d-flex align-items-end">HSD: '.$voucher->ngayketthuc.'</span>
+            $cartTotal = $request->cartTotal;
+            $lst_voucher = [];
 
-                                                    <div class="dis-condition-tag">Chưa thỏa điều kiện</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                    ';
+            $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->get();
+
+            if(!empty($userVoucher)){
+                foreach($userVoucher as $key) {
+                    $voucher = VOUCHER::find($key->id_vc);
+    
+                    // ngày hết hạn
+                    $end = strtotime(str_replace('/', '-', $voucher->ngayketthuc));
+                    // ngày hiện h
+                    $current = strtotime(date('d-m-Y'));
+    
+                    // voucher còn HSD
+                    if($end >= $current){
+                        if($request->cartTotal >= $voucher->dieukien){
+                            $voucher->status = 'satisfied';
+                            $voucher->sl = $key->sl;
+                        } else {
+                            $voucher->status = 'unsatisfied';
+                            $voucher->sl = $key->sl;
+                        }
+    
+                        array_push($lst_voucher, $voucher);
+                    }
                 }
             }
 
-            return $html;
+            return $lst_voucher;
         }
     }
 
@@ -970,6 +906,7 @@ class UserController extends Controller
                     'thoigian' => date('d/m/Y H:i:s'),
                     'soluotthich' => 0,
                     'danhgia' => $request->evaluateStarRating,
+                    'chinhsua' => 0
                 ];
 
                 $create = DANHGIASP::create($data);
@@ -978,13 +915,17 @@ class UserController extends Controller
             // đánh giá cho nhiều sản phẩm
             else {
                 $time = date('d/m/Y H:i:s');
+                $id_tk = session('user')->id;
+
+                // lấy id_dg đầu tiên cho trường hợp có ảnh đính kèm
                 $data = [
-                    'id_tk' => session('user')->id,
+                    'id_tk' => $id_tk,
                     'id_sp' => $lst_id[0],
                     'noidung' => $request->evaluateContent,
                     'thoigian' =>$time,
                     'soluotthich' => 0,
                     'danhgia' => $request->evaluateStarRating,
+                    'chinhsua' => 0
                 ];
 
                 $create = DANHGIASP::create($data);
@@ -993,13 +934,13 @@ class UserController extends Controller
 
                 for($i = 1; $i < count($lst_id); $i++){
                     $data = [
-                        'id_tk' => session('user')->id,
+                        'id_tk' => $id_tk,
                         'id_sp' => $lst_id[$i],
                         'noidung' => $request->evaluateContent,
                         'thoigian' =>$time,
                         'soluotthich' => 0,
                         'danhgia' => $request->evaluateStarRating,
-                        'trangthai' => 1,
+                        'chinhsua' => 0
                     ];
 
                     DANHGIASP::create($data);
@@ -1012,14 +953,18 @@ class UserController extends Controller
                     // tạo thư mục lưu hình
                     mkdir('images/evaluate', 0777, true);
                 }
-                foreach($request->evaluateImage as $idx => $key){
-                    $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                    $data = base64_decode($base64);
-
-                    $imageName = time().$idx.'.jpg';
-                    $urlImage = 'images/evaluate/'.$imageName;
-                    // thêm hình
-                    file_put_contents($urlImage, $data);
+                foreach($request->evaluateImage as $idx => $image){
+                    // định dạng hình
+                    $imageFormat = $this->IndexController->getImageFormat($image);
+                    if($imageFormat == 'png'){
+                        $base64 = str_replace('data:image/png;base64,', '', $image);
+                        $imageName = time().$idx.'.png';
+                    } else {
+                        $base64 = str_replace('data:image/jpeg;base64,', '', $image);
+                        $imageName = time().$idx.'.jpg';
+                    }
+                    // lưu hình
+                    $this->IndexController->saveImage('images/evaluate/'.$imageName, $base64);
 
                     CTDG::create([
                         'id_dg' => $id_dg,
@@ -1055,6 +1000,7 @@ class UserController extends Controller
                         'noidung' => $request->evaluateContent,
                         'thoigian' => date('d/m/Y H:i:s'),
                         'danhgia' => $request->evaluateStarRating,
+                        'chinhsua' => 1
                     ];
 
                     DANHGIASP::where('id', $key)->update($data);
@@ -1064,6 +1010,7 @@ class UserController extends Controller
                     'noidung' => $request->evaluateContent,
                     'thoigian' => date('d/m/Y H:i:s'),
                     'danhgia' => $request->evaluateStarRating,
+                    'chinhsua' => 1
                 ];
 
                 DANHGIASP::where('id', $request->id_dg)->update($data);
@@ -1077,14 +1024,18 @@ class UserController extends Controller
 
             // cập nhật hình mới
             if(!empty($request->evaluateImage)){
-                foreach($request->evaluateImage as $idx => $key){
-                    $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                    $data = base64_decode($base64);
-    
-                    $imageName = time().$idx.'.jpg';
-                    $urlImage = 'images/evaluate/'.$imageName;
-                    // thêm hình
-                    file_put_contents($urlImage, $data);
+                foreach($request->evaluateImage as $idx => $image){
+                    // định dạng hình
+                    $imageFormat = $this->IndexController->getImageFormat($image);
+                    if($imageFormat == 'png'){
+                        $base64 = str_replace('data:image/png;base64,', '', $image);
+                        $imageName = time().$idx.'.png';
+                    } else {
+                        $base64 = str_replace('data:image/jpeg;base64,', '', $image);
+                        $imageName = time().$idx.'.jpg';
+                    }
+                    // lưu hình
+                    $this->IndexController->saveImage('images/evaluate/'.$imageName, $base64);
     
                     CTDG::create([
                         'id_dg' => $request->id_dg,
@@ -1122,27 +1073,15 @@ class UserController extends Controller
                 $notification = [
                     'user' => $user,
                     'type' => 'reply',
-                    'notification' => '',
+                    'data' => [
+                        'userReply' => $userReply,
+                        'avtURL' => $userReply->htdn == 'nomal' ? 'images/user/'.$userReply->anhdaidien : $userReply->anhdaidien,
+                        'link' => route('user/chi-tiet', ['name' => $product['tensp_url'], 'danhgia' => $request->id_dg])
+                    ]
                 ];
                 //PUSH NOTI TO APP 
                 if(!empty($user->device_token))
                 (new PushNotificationController)->sendPush($user->device_token, "Phản hồi", $userReply->hoten." đã trả lời đánh giá của bạn ");
-
-                $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
-                                                    <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="alert-toast-icon">
-                                                            <img src="'.(session('user')->htdn == 'nomal' ? 'images/user/'.$userReply->anhdaidien : $userReply->anhdaidien).'" class="circle-img">
-                                                        </div>
-                                                        <div class="alert-toast-2-content">
-                                                            <div class="mb-10"><b>'.$userReply->hoten.'</b> đã trả lời đánh giá của bạn. <a href="'.route('user/chi-tiet', ['name' => $product['tensp_url'], 'danhgia' => $request->id_dg]).'">Chi tiết</a></div>
-                                                            <div class="d-flex justify-content-end align-items-center mr-5">
-                                                                <div class="dot-green mr-5"></div>
-                                                                <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                <div>';
 
                 event(new sendNotification($notification));
             }
@@ -1180,42 +1119,74 @@ class UserController extends Controller
                     break;
             }
 
-            $html = '';
-            foreach($data as $key){
-                $html .= '<div id="noti-'.$key->id.'" class="single-noti '.($key->trangthaithongbao == 0 ? 'account-noti-wait' : 'account-noti-checked').' box-shadow mb-20">
-                            <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
-                                <div class="d-flex align-items-center">
-                                    <div>';
-                                        if ($key->tieude == 'Đơn đã tiếp nhận'){
-                                            $html .= '<i class="fas fa-file-alt fz-28 info-color"></i>';
-                                        } elseif ($key->tieude == 'Đơn đã xác nhận'){
-                                            $html .= '<i class="fas fa-file-check fz-28 success-color"></i>';
-                                        } elseif ($key->tieude == 'Giao hàng thành công'){
-                                            $html .='<i class="fas fa-box-check fz-28 success-color"></i>';
-                                        } elseif ($key->tieude == 'Mã giảm giá'){
-                                            $html .= '<i class="fas fa-badge-percent fz-28 yellow"></i>';
-                                        } elseif ($key->tieude == 'Phản hồi'){
-                                            $html .= '<i class="fas fa-reply fz-28 purple"></i>';
-                                        } $html .='
-                                    </div>
-                                    <div class="fw-600 fz-18 ml-10">'.$key->tieude.'</div>
-                                </div>
-                                <div class="d-flex align-items-end">'.
-                                    ($key->trangthaithongbao == 0 ? '
-                                    <div type="button" class="noti-btn-read main-color-text mr-10" data-id="'.$key->id.'">Đánh dấu đã đọc</div>' : '').'
-                                    <div type="button" class="noti-btn-delete red" data-id="'.$key->id.'">xóa</div>
-                                </div>
-                            </div>
-                            <div class="d-flex pt-20 pb-20 pl-10 pr-10">
-                                <div id="noti-content-' . $key['id'] .'">
-                                    <div>'.$key['noidung'].'</div>
-                                    <div class="mt-10 fz-14">'.$key->thoigian.'</div>
-                                </div>
-                            </div>
-                        </div>';
+            return $data;
+        }
+    }
+
+    public function AjaxDeleteExpiredVoucher(Request $request){
+        if($request->ajax()){
+            TAIKHOAN_VOUCHER::destroy($request->id);
+        }
+    }
+
+    public function AjaxRemoveVoucher(Request $request){
+        if($request->ajax()){
+            Session::forget('voucher');
+            return 'Đã hủy mã giảm giá do chưa thỏa điều kiện';
+        }
+    }
+
+    public function AjaxIsAppliedVoucher(Request $request)
+    {
+        if($request->ajax()) {
+            return session('voucher') ? true : false;
+        }
+    }
+
+    public function AjaxIsExpiredVoucher(Request $request){
+        if($request->ajax()){
+            $id = session('voucher')->id;
+            $voucher = VOUCHER::find($id);
+
+            // ngày kết thúc
+            $end = strtotime(str_replace('/', '-', $voucher->ngayketthuc));
+            // ngày hiện tại
+            $current = strtotime(date('d-m-Y'));
+            // voucher hết HSD
+            if($end < $current){
+                $request->session()->forget('voucher');
+                return true;
             }
 
-            return $html;
+            return false;
+        }
+    }
+
+    public function AjaxCheckSatisfiedVoucher(Request $request) {
+        if($request->ajax()) {
+            $response = [
+                'status' => true
+            ];
+
+            $total = 0;
+            $id_tk = session('user')->id;
+
+            // lấy tổng tiền giỏ hàng thanh toán
+            foreach($request->idList as $id_sp) {
+                $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+
+                if($qtyInStock > 0) {
+                    $product = $this->IndexController->getProductById($id_sp);
+                    $price = $product['giakhuyenmai'];
+                    $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
+                    $total += $price * $qtyInCart;
+                }
+            }
+
+            // điều kiện voucher
+            $condition = session('voucher')->dieukien;
+
+            return $total >= $condition;
         }
     }
 }

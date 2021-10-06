@@ -75,40 +75,40 @@ class CartController extends Controller
             return redirect('/');
         }
 
-        // giỏ hàng của người dùng
-        $cart = $this->IndexController->getCart(session('user')->id);
+        // // giỏ hàng của người dùng
+        // $cart = $this->IndexController->getCart(session('user')->id);
 
-        // có sản phẩm không thể thanh toán hay không
-        $checkoutFlag = true;
+        // // có sản phẩm không thể thanh toán hay không
+        // $checkoutFlag = true;
 
-        foreach($cart['cart'] as $key){
-            $id_sp = $key['sanpham']['id'];
-            // sl của sp trong giỏ hàng
-            $qtyCart = $key['sl'];
-            // slton của sản phẩm trong kho
-            $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
-            // nếu sp hết hàng
-            if(!$qtyInStock){
-                // xóa hàng đợi
-                HANGDOI::where('id_tk', session('user')->id)->delete();
-                return redirect()->route('user/thongbao')->with('message', $this->nofiticationContent);
-            }
-            // nếu sl của sp trong giỏ hàng > slton trong kho => không đủ hàng
-            elseif($qtyCart > $qtyInStock){
-                $checkoutFlag = false;
-                // cập nhật sl của sp trong giỏ hàng = slton hiện tại
-                GIOHANG::where('id', $key['id'])->update(['sl' => $qtyInStock]);
-            }
-        }
+        // foreach($cart['cart'] as $key){
+        //     $id_sp = $key['sanpham']['id'];
+        //     // sl của sp trong giỏ hàng
+        //     $qtyCart = $key['sl'];
+        //     // slton của sản phẩm trong kho
+        //     $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+        //     // nếu sp hết hàng
+        //     if(!$qtyInStock){
+        //         // xóa hàng đợi
+        //         HANGDOI::where('id_tk', session('user')->id)->delete();
+        //         return redirect()->route('user/thongbao')->with('message', $this->nofiticationContent);
+        //     }
+        //     // nếu sl của sp trong giỏ hàng > slton trong kho => không đủ hàng
+        //     elseif($qtyCart > $qtyInStock){
+        //         $checkoutFlag = false;
+        //         // cập nhật sl của sp trong giỏ hàng = slton hiện tại
+        //         GIOHANG::where('id', $key['id'])->update(['sl' => $qtyInStock]);
+        //     }
+        // }
 
-        if(!$checkoutFlag){
-            // xóa hàng đợi
-            HANGDOI::where('id_tk', session('user')->id)->delete();
+        // if(!$checkoutFlag){
+        //     // xóa hàng đợi
+        //     HANGDOI::where('id_tk', session('user')->id)->delete();
             
-            // quay về trang giỏ hàng và thông báo
-            $message = 'Số lượng tồn kho của một số sản phẩm không đủ để thanh toán.';
-            return redirect('/giohang')->with('alert_top', $message);
-        }
+        //     // quay về trang giỏ hàng và thông báo
+        //     $message = 'Số lượng tồn kho của một số sản phẩm không đủ để thanh toán.';
+        //     return redirect('/giohang')->with('alert_top', $message);
+        // }
 
         $json_file = file_get_contents('TinhThanh.json');
         $tinhThanh = json_decode($json_file, true);
@@ -124,9 +124,8 @@ class CartController extends Controller
             'defaultAdr' => $this->IndexController->getAddressDefault(session('user')->id),
             'lstTinhThanh' => $tinhThanh,
             'lstQuanHuyen' => $lstQuanHuyen,
-            'lstKhuVuc' => TINHTHANH::all(),
-            'lstChiNhanh' => CHINHANH::all(),
-            'cartRequired' => count(TAIKHOAN::find(session('user')->id)->giohang) == 0 ? true : false,
+            'lstArea' => TINHTHANH::all(),
+            'lstBranch' => CHINHANH::all(),
         ];
         
         return view($this->user."thanh-toan")->with($data);
@@ -156,15 +155,29 @@ class CartController extends Controller
 
     public function Checkout(Request $request)
     {
-        // giỏ hàng của người dùng
-        $cart = $this->IndexController->getCart(session('user')->id);
+        // $requestData = [
+        //     'paymentMethod' => $request->paymentMethod,
+        //     'receciveMethod' => $request->receivingMethod,
+        //     'id_tk_dc' => $request->id_tk_dc,
+        //     'id_cn' => $request->id_cn,
+        //     'cartTotal' => $request->cartTotal,
+        //     'id_vc' => $request->id_vc,
+        //     'id_sp_list' => $request->id_sp_list,
+        // ];
+        // $this->IndexController->print($requestData); die;
+
+        // danh sách id_sp thanh toán
+        $idList = explode(',', $request->id_sp_list);
         
         /*kiểm tra slton kho của sản phẩm. nếu 1 trong những sp trong giỏ hàng hết hàng
         thì trả về lỗi. ngược lại tiến hành thanh toán*/
         $checkout = true;
-        foreach($cart['cart'] as $key){
-            $qtyInStock = KHO::where('id_sp', $key['sanpham']['id'])->sum('slton');
-            if($qtyInStock == 0 || $qtyInStock < $key['sl']){
+        foreach($idList as $id_sp){
+            $qtyInCart = GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $id_sp)->first()->sl;
+            // slton kho của sp
+            $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+
+            if($qtyInStock === 0 || $qtyInStock < $qtyInCart){
                 $checkout = false;
             }
         }
@@ -223,14 +236,17 @@ class CartController extends Controller
                 // tạo đơn hàng
                 $create = DONHANG::create($order);
 
-                foreach($cart['cart'] as $key){
+                foreach($idList as $id_sp){
+                    $product = $this->IndexController->getProductById($id_sp);
+                    $qtyInCart = GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $id_sp)->first()->sl;
+
                     $detail = [
                         'id_dh' => $create->id,
-                        'id_sp' => $key['sanpham']['id'],
-                        'gia' => $key['sanpham']['gia'],
-                        'sl' => $key['sl'],
-                        'giamgia' => $key['sanpham']['khuyenmai'] ? $key['sanpham']['khuyenmai'] : null,
-                        'thanhtien' => $key['thanhtien'],
+                        'id_sp' => $product['id'],
+                        'gia' => $product['gia'],
+                        'sl' => $qtyInCart,
+                        'giamgia' => $product['khuyenmai'] ? $product['khuyenmai'] : null,
+                        'thanhtien' => $product['giakhuyenmai'] * $qtyInCart,
                     ];
 
                     CTDH::create($detail);
@@ -309,8 +325,10 @@ class CartController extends Controller
                     'trangthaithongbao' => 0,
                 ]);
 
-                // xóa giỏ hàng
-                GIOHANG::where('id_tk', session('user')->id)->delete();
+                // xóa sản phẩm đã thanh toán trong giỏ hàng
+                foreach($idList as $id_sp) {
+                    GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $id_sp)->delete();
+                }
 
                 // xóa voucher đã áp dụng
                 if($request->id_vc){
@@ -322,12 +340,6 @@ class CartController extends Controller
                         $userVoucher->sl = --$qty;
                         $userVoucher->save();
                     }
-
-                    // giảm số lượng voucher
-                    $voucher = VOUCHER::find($userVoucher->id_vc);
-                    $qty = $voucher->sl;
-                    $voucher->sl = --$qty;
-                    $voucher->save();
                 }
 
                 // xóa voucher trong session
@@ -477,6 +489,13 @@ class CartController extends Controller
     public function AjaxAddCart(Request $request)
     {
         if($request->ajax()){
+            // chưa đăng nhập
+            if(!session('user')){
+                return [
+                    'status' => 'login required'
+                ];
+            }
+            
             $data = [
                 'id_tk' => session('user')->id,
                 'id_sp' => $request->id_sp,
@@ -487,7 +506,7 @@ class CartController extends Controller
             if(count(TAIKHOAN::find(session('user')->id)->giohang) == 0){
                 GIOHANG::create($data);
                 return [
-                    'status' => 'success',
+                    'status' => 'new one',
                 ];
             } 
             // kiểm tra cập nhật số lượng hoặc tạo mới
@@ -504,20 +523,15 @@ class CartController extends Controller
                         $qtyInStock = KHO::where('id_sp', $request->id_sp)->select(DB::raw('sum(slton) as slton'))->first()->slton;
 
                         // so sánh số lượng tồn với số lượng trong giỏ hàng
-                        // mua quá số lượng || slg mua tối đa là 2
-                        if($sl > $qtyInStock){
-                            return ['status' => 'only one'];
-                        } elseif($sl > 2){
-                            return [
-                                'status' => 'already have',
-                            ];
+                        // mua quá số lượng || slg mua tối đa là 5
+                        if($sl > $qtyInStock || $sl > 5){
+                            return;
                         }
 
                         // cập nhật số lượng sp trong giỏ hàng
                         GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->update(['sl' => $sl]);
-
                         return [
-                            'status' => 'success',
+                            'status' => 'update'
                         ];
                     }
                 }
@@ -525,39 +539,7 @@ class CartController extends Controller
                 // thêm sản phẩm mới vào giỏ hàng
                 GIOHANG::create($data);
                 return [
-                    'status' => 'success',
-                ];
-            }
-        }
-
-        return false;
-    }
-
-    public function AjaxBuyNow(Request $request)
-    {
-        if($request->ajax()){
-            // chưa đăng nhập
-            if(!session('user')){
-                return [
-                    'status' => 'login required'
-                ];
-            }
-            // đã có sản phẩm trong giỏ hàng thì sang trang giỏ hàng
-            elseif(GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $request->id_sp)->first()){
-                return [
-                    'status' => 'redirect cart'
-                ];
-            }
-            // thêm sản phẩm vào giỏ hàng
-            else {
-                GIOHANG::create([
-                    'id_tk' => session('user')->id,
-                    'id_sp' => $request->id_sp,
-                    'sl' => 1,
-                ]);
-
-                return [
-                    'status' => 'redirect cart'
+                    'status' => 'new one',
                 ];
             }
         }
@@ -567,9 +549,9 @@ class CartController extends Controller
     {
         if($request->ajax()){
             $data = [
+                'status' => '',
                 'newQty' => '',
                 'newPrice' => '',
-                'provisional' => 0,
             ];
 
             $cart = GIOHANG::where('id', $request->id)->first();
@@ -579,13 +561,16 @@ class CartController extends Controller
             // tăng số lượng
             if($request->type == 'plus'){
                 // kiểm tra số lượng tồn kho
-                $qtyInStock = KHO::where('id_sp', $cart->id_sp)->groupBy('id_sp')->select(DB::raw('sum(slton) as slton'))->first();
-                if($qtyInStock->slton != 1){
+                $qtyInStock = KHO::where('id_sp', $cart->id_sp)->select(DB::raw('sum(slton) as slton'))->first()->slton;
+
+                if($qty < $qtyInStock) {
                     GIOHANG::where('id', $request->id)->update(['sl' => ++$qty]);
                 }
-                // chỉ còn 1 sản phẩm
+                // slton < sl trong giỏ hàng
                 else {
-                    return 'only one';
+                    $data['status'] = 'not enough';
+                    $data['qtyInStock'] = $qtyInStock;
+                    return $data;
                 }
             } 
             // giảm số lượng
@@ -597,14 +582,66 @@ class CartController extends Controller
             $data['newQty'] = $qty;
             $data['newPrice'] = intval($this->IndexController->getProductById($cart->id_sp)['giakhuyenmai'] * $qty);
 
-            // tạm tính
-            foreach(TAIKHOAN::find(session('user')->id)->giohang as $key){
-                $data['provisional'] += intval($key->pivot->sl * $this->IndexController->getProductById($key->pivot->id_sp)['giakhuyenmai']);
+            return $data;
+        }
+    }
+
+    public function AjaxGetCartByIdProductList(Request $request)
+    {
+        if($request->ajax()) {
+            $idList = $request->idList;
+            $id_tk = session('user')->id;
+            $data = [
+                'productList' => [],
+                'voucher' => session('voucher') ? $data['voucher'] = session('voucher') : null,
+                'total' => 0,
+            ];
+
+            foreach($idList as $id_sp) {
+                $product = $this->IndexController->getProductById($id_sp);
+                // sl của sp trong giỏ hàng
+                $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
+                // thành tiền của 1 sp
+                $totalOfProduct = $product['giakhuyenmai'] * $qtyInCart;
+                // tổng Tiền
+                $data['total'] += $totalOfProduct;
+
+                $product['sl'] = $qtyInCart;
+                $product['thanhtien'] = $totalOfProduct;
+
+                array_push($data['productList'], $product);
             }
 
             return $data;
         }
+    }
 
-        return false;
+    public function AjaxGetProvisionalOrder(Request $request)
+    {
+        if($request->ajax()) {
+            $response = [
+                'provisional' => 0,
+                'voucher' => session('voucher') ? session('voucher') : null
+            ];
+
+            if(empty($request->idList)) {
+                return $response;
+            }
+            
+            $id_tk = session('user')->id;
+
+            foreach($request->idList as $id_sp) {
+                $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+
+                if($qtyInStock > 0) {
+                    $product = $this->IndexController->getProductById($id_sp);
+                    $price = $product['giakhuyenmai'];
+                    $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
+                    $response['provisional'] += $price * $qtyInCart;
+                }
+            }
+
+            return $response;
+        }
     }
 }

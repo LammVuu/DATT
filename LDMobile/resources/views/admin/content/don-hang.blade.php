@@ -73,7 +73,7 @@
             <div class="sort-badge"></div>
             <div class="sort-div">
                 <div class="mb-5">
-                    <input type="radio" name="sort" id="date-desc" value="date-desc">
+                    <input type="radio" name="sort" id="date-desc" value="date-desc" checked>
                     <label for="date-desc">Thời gian mới nhất</label>
                 </div>
                 <div class="mb-5">

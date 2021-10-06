@@ -53,32 +53,6 @@ class HinhAnhController extends Controller
         return view($this->admin."hinh-anh")->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = MAUSP::find($id);
-        $imageQty = count(HINHANH::where('id_msp', $id)->get());
-        $html = '<tr data-id="'.$data->id.'">
-                    <td class="vertical-center w-50">
-                        <div class="pt-10 pb-10">'.$data->tenmau.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div data-id="'.$data->id.'" class="qty-image pt-10 pb-10">'.$imageQty.' Hình</div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-10">
-                        <div class="d-flex justify-content-start">
-                            <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                            <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                            ($imageQty != 0 ? 
-                            '<div data-id="'.$data->id.'" data-name="'.$data->tenmau.'" class="delete-btn"><i class="fas fa-trash"></i></div>'
-                            :
-                            '').'
-                        </div>
-                    </td>
-                </tr>';
-        return $html;
-    }
-
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -105,14 +79,15 @@ class HinhAnhController extends Controller
                 HINHANH::create($data);
             }
 
-            $html = '';
-            foreach(MAUSP::all() as $key){
-                $html .= $this->bindElement($key->id);
+            $models = MAUSP::all();
+            foreach($models as $model){
+                $imageQty = count(HINHANH::where('id_msp', $model->id)->get());
+                $model->imageQty = $imageQty;
             }   
 
             return [
                 'id' => $model->id,
-                'html' => $html,
+                'data' => $models,
             ];
         }
     }
@@ -154,8 +129,10 @@ class HinhAnhController extends Controller
                 }
             }
 
-            $html = $this->bindElement($id);
-            return $html;
+            $imageQty = count(HINHANH::where('id_msp', $id)->get());
+            $model->imageQty = $imageQty;
+
+            return [$model];
         }
     }
 
@@ -199,24 +176,27 @@ class HinhAnhController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(MAUSP::limit(10)->get() as $key){
-                    $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
-                    $html .= $this->bindElement($key->id);
+                $models = MAUSP::limit(10)->get();
+                foreach($models as $model){
+                    $imageQty = count(HINHANH::where('id_msp', $model->id)->get());
+                    $model->imageQty = $imageQty;
                 }
-                return $html;
+                return $models;
             }
 
             foreach(MAUSP::all() as $key){
                 $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
-                $data = strtolower($this->IndexController->unaccent($key->tenmau.$imageQty.' Hình'));
-                if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);  
+                $string = strtolower($this->IndexController->unaccent($key->tenmau.$imageQty.' Hình'));
+                if(str_contains($string, $keyword)){
+                    $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
+                    $key->imageQty = $imageQty;
+                    array_push($lst_result, $key);
                 }
             }
-            return $html;
+            return $lst_result;
         }
     }
 }

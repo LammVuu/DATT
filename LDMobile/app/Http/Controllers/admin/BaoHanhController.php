@@ -33,32 +33,6 @@ class BaoHanhController extends Controller
         return view($this->admin."bao-hanh")->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = BAOHANH::find($id);
-        $html = '<tr data-id="'.$id.'">
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$id.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->imei.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->ngaymua.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->ngayketthuc.'</div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-5">
-                        <div class="d-flex justify-content-start">
-                            <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                        </div>
-                    </td>
-                </tr>';
-        return $html;
-    }
-
     public function AjaxGetBaoHanh(Request $request)
     {
         if($request->ajax()){
@@ -96,22 +70,20 @@ class BaoHanhController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(BAOHANH::limit(10)->get() as $key){
-                    $html .= $this->bindElement($key->id);
-                }
-                return $html;
+                $lst_warranty = BAOHANH::limit(10)->get();
+                return $lst_warranty;
             }
 
             foreach(BAOHANH::all() as $key){
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->imei.$key->ngaymua.$key->ngayketthuc));
                 if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                    array_push($lst_result, $key);
                 }
             }
-            return $html;
+            return $lst_result;
         }
     }
 }

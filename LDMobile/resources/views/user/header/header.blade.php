@@ -1,4 +1,6 @@
 
+<div class='backdrop'></div>
+
 <div class="head-bg">
     <div class="container-fluid">
         <div class="d-flex align-items-center">
@@ -89,13 +91,12 @@
                     </div>
                 </div>     
 
-                <div id='show-offcanvas' aria-expanded="false"><i class="fas fa-bars white fz-30"></i></div>
+                <div id='show-offcanvas' expanded="false"><i class="fas fa-bars white fz-30"></i></div>
             </div>
         </div>
     </div>
 </div>
 
-<div class='backdrop'></div>
 <div class="head-offcanvas-box">
     {{-- nút đóng  --}}
     <div class='d-flex justify-content-end p-10'><div id='btn-close-offcanvas'><i class="fas fa-times fz-30 gray-1"></i></div></div>

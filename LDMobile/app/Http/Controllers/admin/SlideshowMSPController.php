@@ -55,39 +55,13 @@ class SlideshowMSPController extends Controller
 
         return view($this->admin.'slideshow-msp')->with($data);
     }
-
-    public function bindElement($id)
-    {
-        $data = MAUSP::find($id);
-        $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $id)->get());
-        $html = '<tr data-id="'.$id.'">
-                    <td class="vertical-center w-50">
-                        <div class="pt-10 pb-10">'.$data->tenmau.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div data-id="'.$data->id.'" class="qty-image pt-10 pb-10">'.$slideQty.' hình </div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-10">
-                        <div class="d-flex justify-content-start">
-                            <div data-id="'.$data->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                            <div data-id="'.$data->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                            ($slideQty != 0 ? '
-                            <div data-id="'.$data->id.'" data-name="'.$data->tenmau.'" class="delete-btn">
-                                <i class="fas fa-trash"></i>
-                            </div>' : '').'
-                        </div>
-                    </td>
-                </tr>';
-        return $html;
-    }
     
     public function store(Request $request)
     {
         if($request->ajax()){
             $model = MAUSP::find($request->id_msp);
 
-            foreach($request->image_slideshow as $i => $key){
+            foreach($request->lst_base64_slideshow as $i => $key){
                 // định dạng hình
                 $imageFormat = $this->IndexController->getImageFormat($key);
                 if($imageFormat == 'png'){
@@ -108,14 +82,15 @@ class SlideshowMSPController extends Controller
                 SLIDESHOW_CTMSP::create($data);
             }
 
-            $html = '';
-            foreach(MAUSP::all() as $key){
-                $html .= $this->bindElement($key->id);
+            $models = MAUSP::all();
+            foreach($models as $val) {
+                $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $val->id)->get());
+                $val->slideQty = $slideQty;
             }
-            
+
             return [
                 'id' => $model->id,
-                'html' => $html,
+                'data' => $models
             ];
         }
     }
@@ -135,8 +110,8 @@ class SlideshowMSPController extends Controller
             }
 
             // cập nhật hình mới
-            if($request->lst_slideshow){
-                foreach($request->lst_slideshow as $i => $key){
+            if($request->lst_base64_slideshow){
+                foreach($request->lst_base64_slideshow as $i => $key){
                     // định dạng hình
                     $imageFormat = $this->IndexController->getImageFormat($key);
                     if($imageFormat == 'png'){
@@ -158,8 +133,10 @@ class SlideshowMSPController extends Controller
                 }
             }
 
-            $html = $this->bindElement($id);
-            return $html;
+            $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $id)->get());
+            $model->slideQty = $slideQty;
+
+            return [$model];
         }
     }
 
@@ -203,64 +180,29 @@ class SlideshowMSPController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(MAUSP::limit(10)->get() as $key){
+                $models = MAUSP::limit(10)->get();
+                foreach($models as $key){
                     $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $key->id)->get());
-
-                    $html .= '<tr data-id="'.$key->id.'">
-                        <td class="vertical-center w-50">
-                            <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                        </td>
-                        <td class="vertical-center">
-                        <div data-id="'.$key->id.'" class="qty-image pt-10 pb-10">'.$slideQty.' hình </div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($slideQty != 0 ? '
-                                <div data-id="'.$key->id.'" data-name="'.$key->tenmau.'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>' : '').'
-                                
-                            </div>
-                        </td>
-                    </tr>';
+                    $key->slideQty = $slideQty;
                 }
 
-                return $html;
+                return $models;
             }
 
             foreach(MAUSP::all() as $key){
                 $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $key->id)->get());
                 $data = strtolower($this->IndexController->unaccent($key->tenmau.$slideQty.' Hình'));
                 if(str_contains($data, $keyword)){
-                    $html .= '<tr data-id="'.$key->id.'">
-                        <td class="vertical-center w-50">
-                            <div class="pt-10 pb-10">'.$key->tenmau.'</div>
-                        </td>
-                        <td class="vertical-center">
-                        <div data-id="'.$key->id.'" class="qty-image pt-10 pb-10">'.$slideQty.' hình </div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$key->id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$key->id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($slideQty != 0 ? '
-                                <div data-id="'.$key->id.'" data-name="'.$key->tenmau.'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>' : '').'
-                            </div>
-                        </td>
-                    </tr>';
+                    $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $key->id)->get());
+                    $key->slideQty = $slideQty;
+                    array_push($lst_result, $key);
                 }
             }
 
-            return $html;
+            return $lst_result;
         }
     }
 }

@@ -78,11 +78,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
     Route::post("ajax-add-delete-favorite", [UserController::class, "AjaxAddDeleteFavorite"]);
 
-    Route::post("ajax-check-qty-in-stock", [IndexController::class, "AjaxCheckQtyInStock"]);
-
     Route::post("ajax-add-cart", [CartController::class, "AjaxAddCart"]);
-
-    Route::post("ajax-buy-now", [CartController::class, "AjaxBuyNow"]);
 
     Route::post("ajax-update-cart", [CartController::class, "AjaxUpdateCart"]);
 
@@ -113,6 +109,14 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
     route::post("ajax-remove-queue", [IndexController::class, "AjaxRemoveQueue"]);
 
     Route::post("ajax-bind-address", [IndexController::class, "AjaxBindAddress"]);
+
+    Route::post("ajax-get-cart-by-id-sp-list", [CartController::class, "AjaxGetCartByIdProductList"]);
+
+    Route::post("ajax-get-provisional-order", [CartController::class, "AjaxGetProvisionalOrder"]);
+
+    Route::post("ajax-get-branch-list", [IndexController::class, "AjaxGetBranchList"]);
+
+    Route::post("ajax-get-branch-with-qty-in-stock", [IndexController::class, "AjaxGetBranchWithQtyInStock"]);
 
     Route::middleware("CheckLogin")->group(function(){
         /*=======================================================================================================
@@ -198,6 +202,16 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
         Route::post("ajax-update-queue-status", [IndexController::class, "AjaxUpdateQueueStatus"]);
         
         Route::post("ajax-recover-queue", [IndexController::class, "AjaxRecoverQueue"]);
+
+        Route::post("ajax-delete-expired-voucher", [UserController::class, "AjaxDeleteExpiredVoucher"]);
+
+        Route::get("ajax-remove-voucher", [UserController::class, "AjaxRemoveVoucher"]);
+
+        Route::get("ajax-is-applied-voucher", [UserController::class, "AjaxIsAppliedVoucher"]);
+
+        Route::get("ajax-is-expired-voucher", [UserController::class, "AjaxIsExpiredVoucher"]);
+
+        Route::post("ajax-check-satisfied-voucher", [UserController::class, "AjaxCheckSatisfiedVoucher"]);
     });
 });
 

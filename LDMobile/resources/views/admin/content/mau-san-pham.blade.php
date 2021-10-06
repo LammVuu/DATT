@@ -9,7 +9,7 @@
         {{-- create button --}}
         <div type="button" class="create-btn"><i class="fas fa-plus"></i></div>
 
-        {{-- filter & sort --}}
+        {{-- filter --}}
         <div class="d-flex align-items-center">
             {{-- search --}}
             <div class='relative mr-10'>
@@ -99,6 +99,7 @@
             @endforeach
         </tbody>
     </table>
+    
     <div id="loadmore" class="text-center"><div class="spinner-border loadmore" role="status"></div></div>
 </div>
 
@@ -111,57 +112,58 @@
                 <div id="modal-title" class="fw-600 fz-22"></div>
             </div>
             <div class="modal-body p-40" style="overflow-x: hidden">
-                {{-- tên mẫu & nhà cung cấp --}}
-                <div class="row mb-3">
-                    <div class="col-lg-6">
-                        <label for="mausp_name" class="mb-5 fw-600">Tên mẫu sản phẩm</label>
-                        <input type="text" id="mausp_name" placeholder="Nhập tên mẫu sản phẩm">
-                    </div>
-                    <div class="col-lg-6">
-                        <label for="mausp_supplier" class="mb-5 fw-600">Nhà cung cấp</label>
-                        <select id="mausp_supplier">
-                            @foreach ($lst_supplier as $key)
-                                <option value="{{$key->id}}">{{$key->tenncc}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                {{-- youtube & bảo hành & địa chỉ bảo hành & trạng thái --}}
-                <div class="row mb-3">
-                    <div class="col-lg-6">
-                        <label for="mausp_youtube" class="mb-5 fw-600">Youtube ID</label>
-                        <input type="text" id="mausp_youtube" placeholder="VD: afi59b3ngusb">
-                        <div class="mt-5">
-                            <iframe id="youtube_iframe" height="200" class="w-100 none-dp" allowfullscreen src=""></iframe>
+                <form id="mausp-form">
+                    {{-- tên mẫu & nhà cung cấp --}}
+                    <div class="row mb-3">
+                        <div class="col-lg-6">
+                            <label for="mausp_name" class="mb-5 fw-600">Tên mẫu sản phẩm</label>
+                            <input type="text" id="mausp_name" placeholder="Nhập tên mẫu sản phẩm">
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label for="mausp_warranty" class="mb-5 fw-600">Bảo hành</label>
-                            <select id="mausp_warranty">
-                                <option value="" selected>Không bảo hành</option>
-                                <option value="12 Tháng">12 Tháng</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mausp_warranty_address" class="mb-5 fw-600">Địa chỉ bảo hành</label>
-                            <textarea id="mausp_warranty_address" rows="2" placeholder="Nhập địa chỉ bảo hành"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mausp_status" class="mb-5 fw-600">Trạng thái</label>
-                            <select id="mausp_status">
-                                <option value="1" selected>Kinh doanh</option>
-                                <option value="0">Ngừng kinh doanh</option>
+                        <div class="col-lg-6">
+                            <label for="mausp_supplier" class="mb-5 fw-600">Nhà cung cấp</label>
+                            <select id="mausp_supplier">
+                                @foreach ($lst_supplier as $key)
+                                    <option value="{{$key->id}}">{{$key->tenncc}}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
-                </div>
-                
-                <div class="d-flex justify-content-end mt-50">
-                    <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
-                    <div id="action-btn" class="main-btn ml-10"></div>
-                </div>
+                    {{-- youtube & bảo hành & địa chỉ bảo hành & trạng thái --}}
+                    <div class="row mb-3">
+                        <div class="col-lg-6">
+                            <label for="mausp_youtube" class="mb-5 fw-600">Youtube ID</label>
+                            <input type="text" id="mausp_youtube" placeholder="VD: afi59b3ngusb">
+                            <div class="mt-5">
+                                <iframe id="youtube_iframe" height="200" class="w-100 none-dp" allowfullscreen src=""></iframe>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="mausp_warranty" class="mb-5 fw-600">Bảo hành</label>
+                                <select id="mausp_warranty">
+                                    <option value="" selected>Không bảo hành</option>
+                                    <option value="12 Tháng">12 Tháng</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="mausp_warranty_address" class="mb-5 fw-600">Địa chỉ bảo hành</label>
+                                <textarea id="mausp_warranty_address" rows="2" placeholder="Nhập địa chỉ bảo hành"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="mausp_status" class="mb-5 fw-600">Trạng thái</label>
+                                <select id="mausp_status">
+                                    <option value="1" selected>Kinh doanh</option>
+                                    <option value="0">Ngừng kinh doanh</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-50">
+                        <div class="checkout-btn" data-bs-dismiss="modal">Đóng</div>
+                        <div id="action-btn" class="main-btn ml-10"></div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

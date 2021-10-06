@@ -24,28 +24,6 @@ class TinhThanhController extends Controller
         return view($this->admin.'tinh-thanh')->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = TINHTHANH::find($id);
-
-        $html = '<tr data-id="'.$id.'">
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$id.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->tentt.'</div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-10">
-                        <div class="d-flex justify-content-start">
-                            <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                            <div data-id="'.$id.'" data-name="'.$data->tentt.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                        </div>
-                    </td>
-                </tr>';
-        return $html;
-    }
-
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -59,11 +37,10 @@ class TinhThanhController extends Controller
             }
 
             $create = TINHTHANH::create($data);
-            $html = $this->bindElement($create->id);
             
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create]
             ];
         }
     }
@@ -82,12 +59,9 @@ class TinhThanhController extends Controller
 
             TINHTHANH::where('id', $id)->update($data);
 
-            $html = $this->bindElement($id);
+            $newRow = TINHTHANH::find($id);
 
-            return [
-                'id' => $id,
-                'html' => $html,
-            ];
+            return [$newRow];
         }
     }
 
@@ -107,24 +81,22 @@ class TinhThanhController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(TINHTHANH::all() as $key){
-                    $html .= $this->bindElement($key->id);
-                }
+                $lst_city = TINHTHANH::limit(10)->get();
 
-                return $html;
+                return $lst_city;
             }
 
             foreach(TINHTHANH::all() as $key){
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->tentt));
                 if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                    array_push($lst_result, $key);
                 }
             }
 
-            return $html;
+            return $lst_result;
         }
     }
 }

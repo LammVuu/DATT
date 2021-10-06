@@ -19,7 +19,8 @@ class DANHGIASP extends Model
         'noidung',
         'thoigian',
         'soluotthich',
-        'danhgia'
+        'danhgia',
+        'chinhsua'
     ];
 
     public $timestamps = false;

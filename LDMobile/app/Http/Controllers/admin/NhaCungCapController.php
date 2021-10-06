@@ -34,48 +34,6 @@ class NhaCungCapController extends Controller
         return view($this->admin."nha-cung-cap")->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = NHACUNGCAP::find($id);
-        $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->tenncc.'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="pt-10 pb-10">
-                                <img src="images/logo/'.$data->anhdaidien.'" alt="">
-                            </div>
-                        </td>
-                        <td class="vertical-center w-25">
-                            <div class="pt-10 pb-10">'.$data->diachi.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->sdt.'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div class="pt-10 pb-10">'.$data->email.'</div>
-                        </td>
-                        <td class="vertical-center w-10">
-                            <div data-id="'.$id.'" class="trangthai pt-10 pb-10">Hoạt động</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-5">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>'.
-                                ($data->trangthai == 1 ?
-                                '<div data-id="'.$id.'" data-name="'.$data->tenncc.'" class="delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </div>' : '').'
-                            </div>
-                        </td>
-                    </tr>';
-        return $html;
-    }
-
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -114,11 +72,9 @@ class NhaCungCapController extends Controller
 
             $create = NHACUNGCAP::create($data);
 
-            $html = $this->bindElement($create->id);
-
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create],
             ];
         }
     }
@@ -169,9 +125,9 @@ class NhaCungCapController extends Controller
                 SANPHAM::where('id_msp', $key['id'])->update(['trangthai' => $data['trangthai']]);
             }
 
-            $html = $this->bindElement($id);
+            $newRow = NHACUNGCAP::find($id);
 
-            return $html;
+            return [$newRow];
         }
     }
 
@@ -218,24 +174,20 @@ class NhaCungCapController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(NHACUNGCAP::all() as $key){
-                    $html .= $this->bindElement($key->id);
-                }
-
-                return $html;
+                return NHACUNGCAP::limit(10)->get();
             }
 
             foreach(NHACUNGCAP::all() as $key){
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->tenncc.$key->diachi.$key->sdt.$key->email.($key->trangthai == 1 ? 'Kinh doanh' : 'Ngừng kinh doanh')));
                 if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                    array_push($lst_result, $key);
                 }
             }
 
-            return $html;
+            return $lst_result;
         }
     }
 }

@@ -12,9 +12,13 @@
         <div class='row'>
             @if ($data['cart']['qty'] != 0)
                 <div class="fz-26 fw-600 mb-20">Giỏ hàng</div>
+                <i class="mb-10">* Số lượng mua tối đa là 5</i>
                 <div class="col-lg-9 col-12">
                     <div class="header-cart">
-                        <div class="w-40">Sản phẩm ({{$data['cart']['qty']}})</div>
+                        <div class="w-5">
+                            <div data-id="all" class="select-item-cart cus-checkbox cus-checkbox-checked"></div>
+                        </div>
+                        <div class="w-35">Chọn tất cả ({{$data['cart']['qty']}} sản phẩm)</div>
                         <div class="w-25">Giá</div>
                         <div class="w-15">Số lượng</div>
                         <div class="w-15">Thành tiền</div>
@@ -24,53 +28,57 @@
                     {{-- danh sách sản phẩm --}}
                     <div id="lst-cart-item" class="box-shadow mb-50">
                         @foreach ($data['cart']['cart'] as $key)
-                        <div data-id="{{$key['sanpham']['id']}}" class="d-flex align-items-center p-10 border-bottom">
-                            {{-- sản phẩm --}}
-                            <div class="w-40 d-flex">
-                                <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="w-30">
-                                <div class="ml-5">
-                                    <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url'], 'mausac' => $key['sanpham']['mausac_url']])}}" class="black fw-600 mb-10">{{$key['sanpham']['tensp']}}</a>
-                                    <div class="fz-14">Dung lượng: {{$key['sanpham']['dungluong']}}</div>
-                                    <div class="fz-14">Màu sắc: {{$key['sanpham']['mausac']}}</div>
+                            <div data-id="{{$key['sanpham']['id']}}" class="d-flex align-items-center p-10 border-bottom">
+                                {{-- custom checkbox --}}
+                                <div class="w-5">
+                                    <div data-id="{{$key['sanpham']['id']}}" class="select-item-cart cus-checkbox cus-checkbox-checked"></div>
                                 </div>
-                            </div>
-                            {{-- giá --}}
-                            <div class="w-25 d-flex align-items-center">
-                                <div class="ml-10">
-                                    <div class="fw-600">{{ number_format($key['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
-                                    {{-- hết hạn khuyến mãi --}}
-                                    @if ($key['sanpham']['khuyenmai'] != 0)
-                                    <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>    
-                                    @endif
+                                {{-- sản phẩm --}}
+                                <div class="w-35 d-flex">
+                                    <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="w-30">
+                                    <div class="ml-5">
+                                        <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url'], 'mausac' => $key['sanpham']['mausac_url']])}}" class="black fw-600 mb-10">{{$key['sanpham']['tensp']}}</a>
+                                        <div class="fz-14">Dung lượng: {{$key['sanpham']['dungluong']}}</div>
+                                        <div class="fz-14">Màu sắc: {{$key['sanpham']['mausac']}}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            @if($key['hethang'])
-                                <div class="w-30">
-                                    <div class="out-of-stock fw-600 fz-20 red">TẠM HẾT HÀNG</div>
+                                {{-- giá --}}
+                                <div class="w-25 d-flex align-items-center">
+                                    <div class="ml-10">
+                                        <div class="fw-600">{{ number_format($key['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
+                                        {{-- hết hạn khuyến mãi --}}
+                                        @if ($key['sanpham']['khuyenmai'] != 0)
+                                            <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>    
+                                        @endif
+                                    </div>
                                 </div>
-                            @else
-                                {{-- số lượng --}}
-                                <div class="w-15 d-flex">
-                                    @if (!$key['hethang'])
-                                        <div class='cart-qty-input'>
-                                            <button type='button' data-id="cart_{{$key['id']}}" class='update-qty minus'><i class="fas fa-minus"></i></button>
-                                            <b id="qty_{{$key['id']}}">{{$key['sl']}}</b>
-                                            <button type='button' data-id="cart_{{$key['id']}}" class='update-qty plus'><i class="fas fa-plus"></i></button>
-                                        </div>
-                                    @endif
+                                @if($key['hethang'])
+                                    <div class="w-30">
+                                        <div data-id="{{$key['sanpham']['id']}}" class="out-of-stock">TẠM HẾT HÀNG</div>
+                                    </div>
+                                @else
+                                    {{-- số lượng --}}
+                                    <div class="w-15 d-flex">
+                                        @if (!$key['hethang'])
+                                            <div class='cart-qty-input'>
+                                                <button type='button' data-id="{{$key['id']}}" data-component="cart" class='update-qty minus'><i class="fas fa-minus"></i></button>
+                                                <b data-id="{{$key['id']}}" class="qty-item">{{$key['sl']}}</b>
+                                                <button type='button' data-id="{{$key['id']}}" data-component="cart" class='update-qty plus'><i class="fas fa-plus"></i></button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    {{-- thành tiền --}}
+                                    <div class="w-15">
+                                        @if (!$key['hethang'])
+                                            <div data-id="{{$key['id']}}" class="provisional_item red fw-600">{{ number_format($key['thanhtien'], 0, '', '.') }}<sup>đ</sup></div>
+                                        @endif
+                                    </div>
+                                @endif
+                                {{-- xóa --}}
+                                <div class="w-5">
+                                    <div type="button" data-id="{{$key['id']}}" data-type="item" class="remove-cart-item fz-18"><i class="fal fa-trash-alt"></i></div>
                                 </div>
-                                {{-- thành tiền --}}
-                                <div class="w-15">
-                                    @if (!$key['hethang'])
-                                        <div id="provisional_{{$key['id']}}" class="red fw-600">{{ number_format($key['thanhtien'], 0, '', '.') }}<sup>đ</sup></div>
-                                    @endif
-                                </div>
-                            @endif
-                            {{-- xóa --}}
-                            <div class="w-5">
-                                <div type="button" data-id="{{$key['id']}}" data-type="item" class="remove-cart-item fz-18"><i class="fal fa-trash-alt"></i></div>
-                            </div>
-                        </div>    
+                            </div>    
                         @endforeach
                     </div>
                 </div>
@@ -79,81 +87,32 @@
                     <div class="p-20 box-shadow mb-20">
                         <div class="fw-600 mb-20">Mã khuyến mãi</div>
                         
-                        {{-- đã áp dụng mã khuyên mãi --}}
-                        @if (session('voucher'))
-                            <?php $voucher = session('voucher') ?>
-                            <div class="d-flex justify-content-center align-items-center">
+                        <div id="cart-voucher">
+                            {{-- đã áp dụng mã khuyên mãi --}}
+                            @if (session('voucher'))
+                                <?php $voucher = session('voucher') ?>
                                 {{-- mã --}}
-                                <div class='account-voucher'>
-                                    {{-- số phần trăm giảm --}}
-                                    <div class='voucher-left-small w-20 p-30'>
-                                        <div class='voucher-left-small-content fz-18'>-{{$voucher->chietkhau*100}}%</div>
-                                    </div>
-                                    {{-- nội dung --}}
-                                    <div class='voucher-right-small w-80 d-flex align-items-center justify-content-between p-10'>
-                                        {{-- icon xem chi tiết --}}
-                                        <b class="fz-14">{{$voucher->code}}</b>
-                                        <div class="d-flex align-items-center">
-                                            <div class="relative promotion-info-icon mr-10">
-                                                <i class="fal fa-info-circle main-color-text fz-20"></i>
-                                                <div class='voucher-content box-shadow p-20'>
-                                                    <table class='table'>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td class='w-40'>Mã</td>
-                                                                <td><b>{{$voucher->code}}</b></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="w-40">Nội dung</td>
-                                                                <td>{{$voucher->noidung}}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan="2" class='w-40'>
-                                                                    <div class='d-flex flex-column'>
-                                                                        <span>Điều kiện</span>
-                                                                        @if ($voucher->dieukien != 0)
-                                                                        <ul class='mt-10'>
-                                                                            <li>Áp dụng cho đơn hàng từ {{number_format($voucher->dieukien, 0, '', '.')}}<sup>đ</sup></li>
-                                                                        </ul>
-                                                                        @endif
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class='w-40'>Hạn sử dụng</td>
-                                                                <td>{{$voucher->ngayketthuc}}</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            <div data-id="{{$voucher->id}}" class="apply-voucher-btn main-btn" style="padding: 5px">Bỏ chọn</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {{-- chưa áp dụng mã giảm giá --}}
-                        @else
-                            <span class="pointer-cs main-color-text" data-bs-toggle="modal" data-bs-target="#modal-promotion">
-                                <i class="fas fa-ticket-alt mr-10"></i>Chọn Mã khuyến mãi
-                            </span>
-                        @endif
+                                @include("user.content.components.voucher.apply-small-voucher")
+                            {{-- chưa áp dụng mã giảm giá --}}
+                            @else
+                                @include("user.content.components.voucher.choose-voucher-button")
+                            @endif
+                        </div>
                     </div>
 
                     {{-- tính tiền --}}
                     <div class="box-shadow mb-20">
                         <div class="p-20 border-bottom">
                             {{-- tạm tính --}}
-                            <div class="d-flex justify-content-between">
+                            <div id="provisional-text" class="d-flex justify-content-between">
                                 <div class="gray-1">Tạm tính</div>
-                                <div id="provisional" data-provisional="{{$data['cart']['total']}}"
-                                    class="black">{{ number_format($data['cart']['total'], 0, '', '.') }}<sup>đ</sup></div>
+                                <div id="provisional" class="black"></div>
                             </div>
                             {{-- mã giảm giá --}}
                             @if (session('voucher'))
-                                <div class="d-flex justify-content-between mt-20">
+                                <div id="voucher-discount-text" class="d-flex justify-content-between mt-20">
                                     <div class="gray-1">Mã giảm giá</div>
-                                    <div id="voucher" data-voucher="{{session('voucher')->chietkhau}}" class="main-color-text">-{{session('voucher')->chietkhau*100}}%</div>
+                                    <div id="voucher" class="main-color-text">-{{session('voucher')->chietkhau*100}}%</div>
                                 </div>
                             @endif
                         </div>
@@ -162,7 +121,7 @@
                         <div class="p-20">
                             <div class="d-flex justify-content-between">
                                 <div class="gray-1">Tổng tiền</div>
-                                <span data-voucher="{{session('voucher') ? "1" : "0"}}" id="total" class="red fz-20 fw-600"></span>
+                                <span id="total" class="red fz-20 fw-600"></span>
                             </div>
                         </div>
                     </div>
@@ -187,6 +146,24 @@
         </div>
     </div>
 </section>
+
+{{-- modal hỏi bỏ qua sản phẩm đã hết hàng --}}
+<div class="modal fade" id="skip-product-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="btn-close" data-bs-dismiss="modal"></div>
+                <div class="p-80">
+                    <div class="mb-40 fz-18 text-center">Giỏ hàng của bạn có sản phẩm đã hết hàng. Bạn có muốn bỏ qua sản phẩm đó và thanh toán các sản phẩm còn lại không?</div>
+                    <div class="d-flex justify-content-between">
+                        <div class="cancel-btn w-49" data-bs-dismiss="modal">Đóng</div>
+                        <div id="skip-product-btn" class="main-btn w-49">OK</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{-- modal chọn khuyến mãi --}}
 @include("user.content.modal.voucher-modal")

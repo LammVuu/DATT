@@ -53,45 +53,6 @@ class KhoController extends Controller
         return view($this->admin.'kho')->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = KHO::find($id);
-        $branch = CHINHANH::find($data->id_cn);
-        $product = SANPHAM::find($data->id_sp);
-
-        $html = '<tr data-id="'.$id.'">
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$id.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$branch->diachi.'</div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="d-flex pt-10 pb-10">
-                                <img src="images/phone/'.$product->hinhanh.'" alt="" width="80px">
-                                <div class="ml-5 fz-14">
-                                    <div class="d-flex align-items-center fw-600">'.
-                                        $product->tensp. '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.$product->mausac.'
-                                    </div>
-                                    <div>Ram: '.$product->ram.'</div>
-                                    <div>Dung lượng: '.$product->dungluong.'</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="vertical-center">
-                            <div class="pt-10 pb-10">'.$data->slton.' Chiếc</div>
-                        </td>
-                        {{-- nút --}}
-                        <td class="vertical-center w-10">
-                            <div class="d-flex justify-content-start">
-                                <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                <div data-id="'.$id.'" data-branch="'.$branch->diachi.'" class="delete-btn"><i class="fas fa-trash"></i></div>    
-                            </div>
-                        </td>
-                    </tr>';
-        return $html;
-    }
-
     public function createIMEI($id_ncc)
     {
         $rand = strval(mt_rand(1, 9999999));
@@ -148,13 +109,15 @@ class KhoController extends Controller
                 ]);
             }
 
-            $branch = CHINHANH::find($data['id_cn']);
             $product = SANPHAM::find($data['id_sp']);
-            $html = $this->bindElement($create->id);
+            $branchAddress = CHINHANH::find($data['id_cn'])->diachi;
+
+            $create->product = $product;
+            $create->branchAddress = $branchAddress;
 
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create]
             ];
         }
     }
@@ -198,15 +161,15 @@ class KhoController extends Controller
 
             KHO::where('id', $id)->update($data);
 
-            $branch = CHINHANH::find($data['id_cn']);
+            $newRow = KHO::find($id);
+
             $product = SANPHAM::find($data['id_sp']);
+            $branchAddress = CHINHANH::find($data['id_cn'])->diachi;
 
-            $html = $this->bindElement($id);
+            $newRow->product = $product;
+            $newRow->branchAddress = $branchAddress;
 
-            return [
-                'id' => $id,
-                'html' => $html,
-            ];
+            return [$newRow];
         }
     }
 
@@ -218,18 +181,18 @@ class KhoController extends Controller
     public function AjaxGetKho(Request $request)
     {
         if($request->ajax()){
-            $result = KHO::find($request->id);
+            $warehouse = KHO::find($request->id);
 
-            $result->chinhanh = CHINHANH::find($result->id_cn);
-            $result->sanpham = SANPHAM::where('id', $result->id_sp)->get();
+            $warehouse->chinhanh = CHINHANH::find($warehouse->id_cn);
+            $warehouse->selected_product = SANPHAM::where('id', $warehouse->id_sp)->first();
 
             $lst_product = [];
-            foreach(KHO::where('id_cn', $result->id_cn)->get() as $key){
-                array_push($lst_product, SANPHAM::where('id', $key['id_sp'])->get());
+            foreach(KHO::where('id_cn', $warehouse->id_cn)->get() as $key){
+                array_push($lst_product, SANPHAM::where('id', $key['id_sp'])->first());
             }
-            $result->lst_product = $lst_product;
+            $warehouse->lst_product = $lst_product;
 
-            return $result;
+            return $warehouse;
         }
     }
 
@@ -270,22 +233,13 @@ class KhoController extends Controller
     public function AjaxGetProductById(Request $request)
     {
         if($request->ajax()){
+            $warehouse = KHO::where('id_cn', $request->id_cn)->where('id_sp', $request->id_sp)->first();
+
             $product = SANPHAM::find($request->id_sp);
 
-            $html = '<img src="images/phone/'.$product->hinhanh.'" alt="product image" width="70px">
-                        <div class="ml-10 fz-14">
-                            <div class="d-flex align-items-center fw-600">'.
-                                $product->tensp.
-                                '<i class="fas fa-circle ml-5 mr-5 fz-5"></i>'.
-                                $product->mausac.
-                            '</div>
-                            <div>Ram: '.$product->ram.'</div>
-                            <div>Dung lượng: '.$product->dungluong.'</div>
-                        </div>';
-
             return [
-                'warehouse' => KHO::where('id_cn', $request->id_cn)->where('id_sp', $request->id_sp)->first(),
-                'html' => $html,
+                'warehouse' => $warehouse,
+                'product' => [$product]
             ];
         }
     }
@@ -294,28 +248,36 @@ class KhoController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(KHO::limit(10)->get() as $key){
-                    $address = CHINHANH::find($key->id_cn)->diachi;
-                    $product = SANPHAM::find($key->id_sp);
+                $warehouses = KHO::limit(10)->get();
+                foreach($warehouses as $warehouse){
+                    $product = SANPHAM::find($warehouse->id_sp);
+                    $branchAddress = CHINHANH::find($warehouse->id_cn)->diachi;
 
-                    $html .= $this->bindElement($key->id);
+                    $warehouse->product = $product;
+                    $warehouse->branchAddress = $branchAddress;
                 }
-                return $html;
+
+                return $warehouses;
             }
 
             foreach(KHO::all() as $key){
                 $address = $this->IndexController->unaccent(CHINHANH::find($key->id_cn)->diachi);
                 $product = SANPHAM::find($key->id_sp);
     
-                $data = strtolower($this->IndexController->unaccent($key->id.$address.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$key->slton. ' Chiếc'));
-                if(strpos($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                $string = strtolower($this->IndexController->unaccent($key->id.$address.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$key->slton. ' Chiếc'));
+                if(strpos($string, $keyword)){
+                    $branchAddress = CHINHANH::find($key->id_cn)->diachi;
+
+                    $key->product = $product;
+                    $key->branchAddress = $branchAddress;
+                    array_push($lst_result, $key);
                 }
             }
-            return $html;
+
+            return $lst_result;
         }
     }
 
@@ -323,7 +285,6 @@ class KhoController extends Controller
     {
         if($request->ajax()){
             $arrFilter = $request->arrFilter;
-            $lst_temp = [];
             $lst_result = [];
             $lst_search = [];
             $html = '';
@@ -339,23 +300,26 @@ class KhoController extends Controller
                 // có danh sách tìm kiếm
                 if(!empty($lst_search)){
                     foreach($lst_search as $key){
-                        $address = CHINHANH::find($key->id_cn)->diachi;
+                        $branchAddress = CHINHANH::find($key->id_cn)->diachi;
                         $product = SANPHAM::find($key->id_sp);
 
-                        $html .= $this->bindElement($key->id);
+                        $key->product = $product;
+                        $key->branchAddress = $branchAddress;
                     }
 
-                    return $html;
+                    return $lst_search;
                 }
                 else {
-                    foreach(KHO::limit(10)->get() as $key){
-                        $address = CHINHANH::find($key->id_cn)->diachi;
+                    $warehouses = KHO::limit(10)->get();
+                    foreach($warehouses as $key){
+                        $branchAddress = CHINHANH::find($key->id_cn)->diachi;
                         $product = SANPHAM::find($key->id_sp);
 
-                        $html .= $this->bindElement($key->id);
+                        $key->product = $product;
+                        $key->branchAddress = $branchAddress;
                     }
 
-                    return $html;
+                    return $warehouses;
                 }
             }
 
@@ -364,7 +328,7 @@ class KhoController extends Controller
                 foreach($arrFilter as $filter){
                     foreach($lst_search as $key){
                         if($key->id_cn == $filter){
-                            array_push($lst_temp, $key);
+                            array_push($lst_result, $key);
                         }
                     }
                 }
@@ -374,22 +338,21 @@ class KhoController extends Controller
                 foreach($arrFilter as $filter){
                     foreach(KHO::all() as $key){
                         if($key->id_cn == $filter){
-                            array_push($lst_temp, $key);
+                            array_push($lst_result, $key);
                         }
                     }
                 }
             }
 
-            $lst_result = $lst_temp;
-
             foreach($lst_result as $key){
-                $address = CHINHANH::find($key->id_cn)->diachi;
+                $branchAddress = CHINHANH::find($key->id_cn)->diachi;
                 $product = SANPHAM::find($key->id_sp);
 
-                $html .= $this->bindElement($key->id);
+                $key->product = $product;
+                $key->branchAddress = $branchAddress;
             }
 
-            return $html;
+            return $lst_result;
         }
     }
 

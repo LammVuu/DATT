@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\user\IndexController;
+use App\Http\Controllers\user\UserController;
 use Illuminate\Http\Request;
 use App\Events\sendNotification;
 
@@ -24,6 +25,7 @@ use App\Models\KHO;
 use App\Models\TINHTHANH;
 use App\Models\DONHANG_DIACHI;
 use App\Http\Controllers\PushNotificationController;
+
 class DonHangController extends Controller
 {
     /**
@@ -36,6 +38,7 @@ class DonHangController extends Controller
     {
         $this->admin='admin/content/';
         $this->IndexController = new IndexController;
+        $this->UserController = new UserController;
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
 
@@ -53,52 +56,6 @@ class DonHangController extends Controller
         return view($this->admin."don-hang")->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = DONHANG::find($id);
-        $fullname = TAIKHOAN::find($data->id_tk)->hoten;
-        $html = '<tr data-id="'.$id.'">
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$id.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->thoigian.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$fullname.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->pttt.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->hinhthuc.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.number_format($data->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                    </td>
-                    <td class="vertical-center">
-                        <div data-id="'.$id.'" class="trangthaidonhang pt-10 pb-10">'.$data->trangthaidonhang.'</div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-5">
-                        <div class="d-flex justify-content-start">'.
-                        ($data->trangthaidonhang != 'Thành công' && $data->trangthaidonhang != 'Đã hủy' ?
-                                ($data->trangthaidonhang == 'Đã tiếp nhận' ? '
-                                    <div data-id="'.$id.'" class="confirm-btn">
-                                        <i class="fas fa-file-check"></i>
-                                    </div>' :'
-                                    <div data-id="'.$id.'" class="success-btn">
-                                        <i class="fas fa-box-check"></i>
-                                    </div>' ) : '') .'
-                                <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>'.
-                        ($data->trangthaidonhang != 'Đã hủy' && $data->trangthaidonhang != 'Thành công' ? '
-                            <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>' : '').'
-                        </div>
-                    </td>
-                </tr>';
-
-        return $html;
-    }
 
     public function AjaxGetDonHang(Request $request)
     {
@@ -108,11 +65,8 @@ class DonHangController extends Controller
 
             // chi tiết đơn hàng
             $order->ctdh = DONHANG::find($request->id)->ctdh;
-            // tạm tính
-            $order->ctdh->tamtinh = 0;
             foreach($order->ctdh as $i => $key){
                 $order->ctdh[$i]->sanpham = SANPHAM::find($key->pivot->id_sp);
-                $order->ctdh->tamtinh += $key->pivot->thanhtien;
             }
 
             // tài khoản
@@ -134,191 +88,7 @@ class DonHangController extends Controller
                 $order->voucher = VOUCHER::find($order->id_vc);
             }
 
-            $html = '<div>
-                        <div class="row mb-40">
-                            <div class="col-lg-6">
-                                <div class="d-flex align-items-end mb-5">
-                                    <div>Trạng thái đơn hàng:</div>'.(
-                                    $order->trangthaidonhang != 'Đã hủy' ?
-                                    '<div class="ml-10 fz-20 fw-600 success-color">'.$order->trangthaidonhang.'</div>' :
-                                    '<div class="ml-10 fz-20 fw-600 warning-color">'.$order->trangthaidonhang.'</div>').'
-                                </div>
-                                <div class="d-flex">
-                                    <div>Ngày mua:</div>
-                                    <div class="ml-10 fw-600">'.$order->thoigian.'</div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="d-flex justify-content-end">
-                                    <div class="account-badge">
-                                        <img src="'.($order->taikhoan->htdn == 'nomal' ? 'images/user/'.$order->taikhoan->anhdaidien : $order->taikhoan->anhdaidien).'" width="40px" class="circle-img">
-                                        <div class="ml-10 mr-10 black">'.$order->taikhoan->hoten.'</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mb-50">
-                            <div class="col-lg-6">'.(
-                                $order->hinhthuc == 'Giao hàng tận nơi' ? '
-                                <div class="mb-5 fw-600">Thông tin giao hàng</div>
-                                <div id="receiveMethod">
-                                    <div class="d-flex flex-column box-shadow p-20">
-                                        <div class="fw-600 text-uppercase mb-5">'.$order->taikhoan_diachi->hoten.'</div>
-                                        <div class="d-flex fz-14 mb-5">
-                                            <div class="gray-1">Địa chỉ:</div>
-                                            <div class="ml-5 black">'.$order->taikhoan_diachi->diachi.', '.$order->taikhoan_diachi->phuongxa.', '.$order->taikhoan_diachi->quanhuyen.', '.$order->taikhoan_diachi->tinhthanh.'</div>
-                                        </div>
-                                        <div class="d-flex fz-14">
-                                            <div class="gray-1">SĐT:</div>
-                                            <div class="ml-5 black">'.$order->taikhoan_diachi->sdt.'</div>
-                                        </div>
-                                    </div>
-                                </div>' : '
-                                <div class="mb-5 fw-600">Nhận tại cửa hàng</div>
-                                <div id="receiveMethod">
-                                    <div class="d-flex flex-column box-shadow p-20">
-                                        <div class="d-flex fz-14 mb-5">
-                                            <div class="gray-1">Địa chỉ:</div>
-                                            <div class="ml-5 black">'.$order->chinhanh->diachi.'</div>
-                                        </div>
-                                        <div class="d-flex fz-14">
-                                            <div class="gray-1">SĐT:</div>
-                                            <div class="ml-5 black">'.$order->chinhanh->sdt.'</div>
-                                        </div>
-                                    </div>
-                                </div>').'
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-5 fw-600">Phương thức thanh toán</div>
-                                <div id="paymentMethod">
-                                    <div class="box-shadow p-20 h-100 black">'.$order->pttt.'</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <table class="table box-shadow">
-                                    <thead>
-                                        <tr>
-                                            <th>Sản phẩm</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Giảm giá</th>
-                                            <th>Tạm tính</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>';
-                                    foreach($order->ctdh as $key){
-                                        $html .= '
-                                        <tr>
-                                            <td class="vertical-center">
-                                                <div class="d-flex pt-10 pb-10">
-                                                    <img src="images/phone/'.$key->sanpham->hinhanh.'" alt="" width="100px">
-                                                    <div class="ml-5">
-                                                        <div class="fw-600">'.$key->sanpham->tensp.'</div>
-                                                        <div>Ram: '.$key->sanpham->ram.'</div>
-                                                        <div>Dung lượng: '.$key->sanpham->dungluong.'</div>
-                                                        <div>Màu sắc: '.$key->sanpham->mausac.'</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">
-                                                    '.number_format($key->sanpham->gia, 0, '', '.').'<sup>đ</sup>
-                                                </div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.$key->pivot->sl.'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.($key->pivot->giamgia ? '-'.$key->pivot->giamgia*100 .'%' : '0').'</div>
-                                            </td>
-                                            <td class="vertical-center">
-                                                <div class="pt-10 pb-10">'.number_format($key->pivot->thanhtien, 0, '', '.').'<sup>đ</sup></div>
-                                            </td>
-                                        </tr>';
-                                    }
-                                    if($order->id_vc){
-                                        $html .= '
-                                        <tr>
-                                            <td colspan="5" class="p-0">
-                                                <div class="d-flex">
-                                                    <div class="w-20 bg-gray-4 d-flex align-items-center justify-content-center">
-                                                        <i class="fas fa-ticket-alt mr-10"></i>Mã giảm giá
-                                                    </div>
-                                                    
-                                                    <div class="w-30 p-10">
-                                                        <div class="account-voucher">
-                                                            <div class="voucher-left-small w-20 p-30">
-                                                                <div class="voucher-left-small-content fz-18">-'.$order->voucher->chietkhau*100 .'%</div>
-                                                            </div>
-                                                            <div class="voucher-right-small w-80 d-flex align-items-center justify-content-between p-10">
-                                                                <b>'.$order->voucher->code.'</b>
-                                                                <div class="relative promotion-info-icon">
-                                                                    <i class="fal fa-info-circle main-color-text fz-20"></i>
-                                                                    <div class="voucher-content box-shadow p-20">
-                                                                        <table class="table">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td class="w-40">Mã</td>
-                                                                                    <td><b>'.$order->voucher->code.'</b></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="w-40">Nội dung</td>
-                                                                                    <td>'.$order->voucher->noidung.'</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td colspan="2" class="w-40">
-                                                                                        <div class="d-flex flex-column">
-                                                                                            <span>Điều kiện:</span>'.(
-                                                                                            $order->voucher->dieukien != 0 ? '
-                                                                                                <ul class="mt-10">
-                                                                                                    <li>Áp dụng cho đơn hàng từ '.number_format($order->voucher->dieukien, 0, '', '.').'<sup>đ</sup></li>
-                                                                                                </ul>' : '').'
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="w-40">Hạn sử dụng</td>
-                                                                                    <td>'.$order->voucher->ngayketthuc.'</td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>';
-                                    }
-                                    $html .= '
-                                        <tr>
-                                            <td class="vertical-center">
-                                                <div class="pt-20 pb-20 pl-10">
-                                                    <div class="d-flex justify-content-between mb-10">
-                                                        <div>Tạm tính:</div>
-                                                        <div>'.number_format($order->ctdh->tamtinh, 0, '', '.').'<sup>đ</sup></div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between mb-10">
-                                                        <div>Mã giảm giá:</div>
-                                                        <div class="main-color-text">'.($order->id_vc ? '-'.$order->voucher->chietkhau*100 .'%' : '0').'</div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>Tổng tiền:</div>
-                                                        <div class="fz-20 fw-600 red">'.number_format($order->tongtien, 0, '', '.').'<sup>đ</sup></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>';
-
-            return $html;
+            return $order;
         }
     }
 
@@ -327,51 +97,24 @@ class DonHangController extends Controller
         // hủy đơn hàng
         DONHANG::where('id', $id)->update(['trangthaidonhang' => 'Đã hủy']);
 
-        $order = DONHANG::where('id', $id)->first();
+        $order = DONHANG::find($id);
+        $id_tk = $order->id_tk;
 
-        // hoàn lại voucher
+        // khôi phục voucher đã áp dụng
         if($order->id_vc){
-            TAIKHOAN_VOUCHER::create([
-                'id_vc' => $order->id_vc,
-                'id_tk' => $order->id_tk,
-            ]);
+            $this->UserController->restoreTheAppliedVoucher($order->id_vc, $id_tk);
         }
 
         // hoàn lại số lượng kho
-        foreach(CTDH::where('id_dh', $id)->get() as $detail){
-            // kho tại chi nhánh
-            if($order->id_cn){
-                // số lượng sp trong kho hiện tại
-                $qtyInStock = KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
-                // số lượng sản phẩm mua
-                $qtyBuy = $detail->sl;
-                // trả lại số lượng kho
-                $qtyInStock += $qtyBuy;
-                // cập nhật kho
-                KHO::where('id_cn', $order->id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
-            }
-            // kho theo khu vực người đặt
-            else {
-                // tỉnh thành của người dùng
-                $province = TAIKHOAN_DIACHI::find($order->id_tk_dc)->tinhthanh;
-                // id_cn theo tỉnh thành
-                $id_cn = CHINHANH::where('id_tt', TINHTHANH::where('tentt', $province)->first()->id)->first()->id;
-                // số lượng sp trong kho tại chi nhánh
-                $qtyInStock = KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->first()->slton;
-                // số lượng sản phẩm mua
-                $qtyBuy = $detail->sl;
-                // trả lại số lượng kho
-                $qtyInStock += $qtyBuy;
-                // cập nhật kho
-                KHO::where('id_cn', $id_cn)->where('id_sp', $detail->id_sp)->update(['slton' => $qtyInStock]);
-            }
-        }
+        $this->UserController->refundOfInventory($id);
+
         //push notication to app
         $user = TAIKHOAN::find($order->id_tk);
         if(!empty($user->device_token))
         (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id ."của bạn đã bị hủy");
     }
 
+    // xác nhận đơn hàng
     public function AjaxOrderConfirmation(Request $request)
     {
         if($request->ajax()){
@@ -392,31 +135,19 @@ class DonHangController extends Controller
                 'user' => TAIKHOAN::find($order->id_tk),
                 'type' => 'order',
                 'orderStatus' => 'confirmed',
-                'notification' => '',
+                'id_dh' => $order->id,
             ];
+            
+            event(new sendNotification($notification));
+
             //push notication to app
             $user = TAIKHOAN::find($order->id_tk);
             if(!empty($user->device_token))
             (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id." đã được xác nhận");
-            
-            $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
-                                                <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
-                                                    <div class="alert-toast-2-content">
-                                                        <div class="mb-10">Đã xác nhận đơn hàng <b>#'.$order->id.'</b> của bạn.</div>
-                                                        <div class="d-flex justify-content-end align-items-center mr-5">
-                                                            <div class="dot-green mr-5"></div>
-                                                            <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <div>';
-
-            event(new sendNotification($notification));
         }
     }
 
+    // đơn hàng thành công
     public function AjaxSuccessfulOrder(Request $request)
     {
         if($request->ajax()){
@@ -507,30 +238,15 @@ class DonHangController extends Controller
                 'user' => TAIKHOAN::find($order->id_tk),
                 'type' => 'order',
                 'orderStatus' => 'success',
-                'notification' => '',
+                'id_dh' => $order->id,
             ];
+
+            event(new sendNotification($notification));
+
             //push notication to app
             $user = TAIKHOAN::find($order->id_tk);
             if(!empty($user->device_token))
             (new PushNotificationController)->sendPush($user->device_token, "Đơn hàng", "Đơn hàng #". $request->id ." đã giao thành công. Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá...");
-            
-            $notification['notification'] = '<div id="alert-toast" class="alert-toast-2">
-                                                <span class="close-toast-btn"><i class="fal fa-times-circle"></i></span>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="alert-toast-icon white fz-36"><i class="fas fa-truck"></i></div>
-                                                    <div class="alert-toast-2-content">
-                                                        <div class="mb-10" style="max-width: 350px">
-                                                            Đơn hàng <b>#'.$order->id.'</b> đã được giao thành công. Cảm ơn bạn đã mua hàng tại LDMobile, chúng tôi xin gửi tặng bạn mã giảm giá... <a href="taikhoan/thongbao">Chi tiết</a>
-                                                        </div>
-                                                        <div class="d-flex justify-content-end align-items-center mr-5">
-                                                            <div class="dot-green mr-5"></div>
-                                                            <div class="fst-italic fw-lighter fz-12">Bây giờ</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <div>';
-
-            event(new sendNotification($notification));
         }
     }
 
@@ -538,23 +254,28 @@ class DonHangController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(DONHANG::orderBy('id', 'desc')->limit(10)->get() as $key){
-                    $html .= $this->bindElement($key->id);
+                $lst_order = DONHANG::orderBy('id', 'desc')->limit(10)->get();
+                foreach($lst_order as $key){
+                    $fullname = TAIKHOAN::find($key->id_tk)->hoten;
+                    $key->fullname = $fullname;
                 }
-                return $html;
+
+                return $lst_order;
             }
 
             foreach(DONHANG::orderBy('id', 'desc')->get() as $key){
                 $fullname = TAIKHOAN::find($key->id_tk)->hoten;
                 $data = strtolower($this->IndexController->unaccent($key->id.$key->thoigian.$fullname.$key->pttt.$key->hinhthuc.$key->tongtien.$key->trangthaidonhang));
                 if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                    $key->fullname = $fullname;
+                    array_push($lst_result, $key);
                 }
             }
-            return $html;
+
+            return $lst_result;
         }
     }
 
@@ -579,7 +300,7 @@ class DonHangController extends Controller
 
                 // Không có tìm kiếm
                 if(empty($lst_search)){
-                    if($sort == '' || $sort == 'date-desc'){
+                    if($sort == 'date-desc'){
                         foreach(DONHANG::orderBy('id', 'desc')->limit(10)->get() as $key){
                             array_push($lst_result, $key);
                         }
@@ -598,8 +319,10 @@ class DonHangController extends Controller
                     }
 
                     foreach($lst_result as $key){
-                        $html .= $this->bindElement($key->id);
+                        $key->fullname = TAIKHOAN::find($key->id_tk)->hoten;
                     }
+
+                    return $lst_result;
                 } else {
                     if($sort == '' || $sort == 'date-desc'){
                         $lst_result = $this->sortDate($lst_search, 'desc');
@@ -612,11 +335,11 @@ class DonHangController extends Controller
                     }
 
                     foreach($lst_result as $key){
-                        $html .= $this->bindElement($key->id);
+                        $key->fullname = TAIKHOAN::find($key->id_tk)->hoten;
                     }
                 }
 
-                return $html;
+                return $lst_result;
             }
 
             $arrFilter = $arrFilterSort['filter'];
@@ -678,29 +401,23 @@ class DonHangController extends Controller
 
             // chỉ có 1 tiêu chí lọc
             if(count($arrFilter) == 1){
-                // Không có sắp xếp
-                if(!$arrFilterSort['sort']){
-                    foreach($lst_temp as $key){
-                        $html .= $this->bindElement($key->id);
-                    }
-                } else {
-                    $sort = $arrFilterSort['sort'];
-                    if($sort == 'date-desc'){
-                        $lst_result = $this->sortDate($lst_temp, 'desc');
-                    } elseif($sort == 'date-asc'){
-                        $lst_result = $this->sortDate($lst_temp);
-                    } elseif($sort == 'total-asc'){
-                        $lst_result = $this->sortTotal($lst_temp);
-                    } elseif($sort == 'total-desc'){
-                        $lst_result = $this->sortTotal($lst_temp, 'desc');
-                    }
-
-                    foreach($lst_result as $key){
-                        $html .= $this->bindElement($key->id);
-                    }
+                $sort = $arrFilterSort['sort'];
+                
+                if($sort == 'date-desc'){
+                    $lst_result = $this->sortDate($lst_temp, 'desc');
+                } elseif($sort == 'date-asc'){
+                    $lst_result = $this->sortDate($lst_temp);
+                } elseif($sort == 'total-asc'){
+                    $lst_result = $this->sortTotal($lst_temp);
+                } elseif($sort == 'total-desc'){
+                    $lst_result = $this->sortTotal($lst_temp, 'desc');
                 }
 
-                return $html;
+                foreach($lst_result as $key){
+                    $key->fullname = TAIKHOAN::find($key->id_tk)->hoten;
+                }
+
+                return $lst_result;
             }
 
             // tiếp tục lọc các tiêu chí khác
@@ -742,31 +459,23 @@ class DonHangController extends Controller
             // lấy danh sách kết quả cuối cùng
             $lst_result = $lst_result[count($lst_result) - 1];
 
-            // không có sắp xếp
-            if(!$arrFilterSort['sort']){
-                foreach($lst_result as $key){
-                    $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                    $html .= $this->bindElement($key->id);
-                }
-            } else {
-                $sort = $arrFilterSort['sort'];
-                if($sort == 'date-desc'){
-                    $lst_result = $this->sortDate($lst_temp, 'desc');
-                } elseif($sort == 'date-asc'){
-                    $lst_result = $this->sortDate($lst_temp);
-                } elseif($sort == 'total-asc'){
-                    $lst_result = $this->sortTotal($lst_temp);
-                } elseif($sort == 'total-desc'){
-                    $lst_result = $this->sortTotal($lst_temp, 'desc');
-                }
+            $sort = $arrFilterSort['sort'];
 
-                foreach($lst_result as $key){
-                    $fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                    $html .= $this->bindElement($key->id);
-                }
+            if($sort == 'date-desc'){
+                $lst_result = $this->sortDate($lst_temp, 'desc');
+            } elseif($sort == 'date-asc'){
+                $lst_result = $this->sortDate($lst_temp);
+            } elseif($sort == 'total-asc'){
+                $lst_result = $this->sortTotal($lst_temp);
+            } elseif($sort == 'total-desc'){
+                $lst_result = $this->sortTotal($lst_temp, 'desc');
             }
 
-            return $html;
+            foreach($lst_result as $key){
+                $key->fullname = TAIKHOAN::find($key->id_tk)->hoten;
+            }
+
+            return $lst_result;
         }
     }
 

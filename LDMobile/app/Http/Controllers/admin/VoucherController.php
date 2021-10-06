@@ -35,49 +35,6 @@ class VoucherController extends Controller
         return view($this->admin.'voucher')->with($data);
     }
 
-    public function bindElement($id)
-    {
-        $data = VOUCHER::find($id);
-
-        // trạng thái
-        $dateEnd = strtotime(str_replace('/', '-', $data->ngayketthuc));
-        $currentDate = strtotime(date('d-m-Y'));
-        $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
-
-        $html = '<tr data-id="'.$id.'">
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$id.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->code.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->chietkhau*100 .'%</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->ngaybatdau.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->ngayketthuc.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$data->sl.'</div>
-                    </td>
-                    <td class="vertical-center">
-                        <div class="pt-10 pb-10">'.$status.'</div>
-                    </td>
-                    {{-- nút --}}
-                    <td class="vertical-center w-10">
-                        <div class="d-flex justify-content-start">
-                            <div data-id="'.$id.'" class="info-btn"><i class="fas fa-info"></i></div>
-                            <div data-id="'.$id.'" class="edit-btn"><i class="fas fa-pen"></i></div>
-                            <div data-id="'.$id.'" class="delete-btn"><i class="fas fa-trash"></i></div>
-                        </div>
-                    </td>
-                </tr>';
-        return $html;
-    }
-
     public function store(Request $request)
     {
         if($request->ajax()){
@@ -97,11 +54,16 @@ class VoucherController extends Controller
 
             $create = VOUCHER::create($data);
 
-            $html = $this->bindElement($create->id);
+            // trạng thái
+            $dateEnd = strtotime(str_replace('/', '-', $create->ngayketthuc));
+            $currentDate = strtotime(date('d-m-Y'));
+            $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
+
+            $create->status = $status;
 
             return [
                 'id' => $create->id,
-                'html' => $html,
+                'data' => [$create]
             ];
         }
     }
@@ -130,9 +92,16 @@ class VoucherController extends Controller
     
             VOUCHER::where('id', $id)->update($data);
 
-            $html = $this->bindElement($id);
+            $newRow = VOUCHER::find($id);
+
+            // trạng thái
+            $dateEnd = strtotime(str_replace('/', '-', $newRow->ngayketthuc));
+            $currentDate = strtotime(date('d-m-Y'));
+            $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
+
+            $newRow->status = $status;
     
-            return $html;
+            return [$newRow];
         }
     }
 
@@ -159,13 +128,20 @@ class VoucherController extends Controller
     {
         if($request->ajax()){
             $keyword = $this->IndexController->unaccent($request->keyword);
-            $html = '';
+            $lst_result = [];
 
             if($keyword == ''){
-                foreach(VOUCHER::limit(10)->get() as $key){
-                    $html .= $this->bindElement($key->id);
+                $lst_voucher = VOUCHER::limit(10)->get();
+                foreach($lst_voucher as $key){
+                    // trạng thái
+                    $dateEnd = strtotime(str_replace('/', '-', $key->ngayketthuc));
+                    $currentDate = strtotime(date('d-m-Y'));
+                    $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
+
+                    $key->status = $status;
                 }
-                return $html;
+
+                return $lst_voucher;
             }
 
             foreach(VOUCHER::all() as $key){
@@ -173,12 +149,13 @@ class VoucherController extends Controller
                 $currentDate = strtotime(date('d-m-Y'));
                 $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
 
-                $data = strtolower($this->IndexController->unaccent($key->id.$key->code.$key->chietkhau*100 .'%'.$key->ngaybatdau.$key->ngayketthuc.$key->sl.$status));
-                if(str_contains($data, $keyword)){
-                    $html .= $this->bindElement($key->id);
+                $string = strtolower($this->IndexController->unaccent($key->id.$key->code.$key->chietkhau*100 .'%'.$key->ngaybatdau.$key->ngayketthuc.$key->sl.$status));
+                if(str_contains($string, $keyword)){
+                    $key->status = $status;
+                    array_push($lst_result, $key);
                 }
             }
-            return $html;
+            return $lst_result;
         }
     }
 }
