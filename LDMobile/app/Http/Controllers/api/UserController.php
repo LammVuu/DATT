@@ -93,14 +93,14 @@ class UserController extends Controller
            
         if(Auth::attempt($login)){
             $user = $request->user();
-            if($user->htdn =="normal"){
-                $user->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
-            }
             $user->device_token =  request('device_token');
             $tokenResult = $user->createToken('LD Mobile');
             $token = $tokenResult->token;
             $token->save();
             $user->save();
+            if($user->htdn =="normal"){
+                $user->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
+            }
             return response()->json([
                 'status' => true,
                 'code'  => 200,

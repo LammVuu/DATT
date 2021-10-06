@@ -727,18 +727,18 @@ class SanPhamController extends Controller
             foreach($listReply as $reply){
                 $user = TAIKHOAN::find($reply->id_tk);
                 if($user->htdn =="normal"){
-                    $reply->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
+                    $reply->anhdaidien = $user->anhdaidien;
                 }else $reply->anhdaidien = $user->anhdaidien;
                 $reply->hoten = $user->hoten;
             }
             $comment->dsPhanHoi = $listReply;
             $comment->soluottraloi = $totalReply;
             $comment->thoigian = Carbon::createFromFormat('d/m/Y H:i:s',$comment->thoigian)->format('d/m/Y H:i');
-            $user = TAIKHOAN::find($comment->id_tk);
-            if($user->htdn =="normal"){
-                $comment->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
-            }else $comment->anhdaidien = $user->anhdaidien;
-            $comment->hoten = $user->hoten;
+            $usercomment = TAIKHOAN::find($comment->id_tk);
+            if($usercomment->htdn =="normal"){
+                $comment->anhdaidien = Helper::$URL."user/".$usercomment->anhdaidien;
+            }else $comment->anhdaidien = $usercomment->anhdaidien;
+            $comment->hoten = $usercomment->hoten;
             $product =  SANPHAM::find($comment->id_sp);
             $comment->mausac = $product->mausac;
             $comment->dungluong =  $product->dungluong;
@@ -810,6 +810,7 @@ class SanPhamController extends Controller
             $comment->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
             $comment->soluotthich = 0;
             $comment->danhgia = request('danhgia');
+            $comment->chinhsua = false;
             $comment->save();
             if($check==true){
                 $idFirst = $comment->id;
@@ -831,6 +832,7 @@ class SanPhamController extends Controller
         $comment->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
         $comment->id_tk = request('id_tk');
         $comment->danhgia = request('danhgia');
+        $comment->chinhsua = true;
         $comment->update();
         return response()->json([
                 'status' => true,

@@ -322,7 +322,7 @@ class CartController extends Controller
             $notification = new THONGBAO();
             $notification->id_tk = $id;
             $notification->tieude = "Đơn đã tiếp nhận";
-            $notification->noidung = "Đã tiếp nhận đơn hàng số #".$order->id;
+            $notification->noidung = "Đã tiếp nhận đơn hàng số <b>#".$order->id."</b>";
             $notification->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
             $notification->trangthaithongbao = 0;
             $notification->save();
