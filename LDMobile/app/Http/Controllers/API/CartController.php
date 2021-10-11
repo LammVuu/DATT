@@ -71,7 +71,7 @@ class CartController extends Controller
                 $cart = new GIOHANG;
                 $cart->id_tk = $req->id_user;
                 $cart->id_sp = $product->id;
-                $cart->sl=1;
+                $cart->sl= $req->qty;
                 // $GioHang->TongGia=0;
                 // $GioHang->TongTien=0;
                 // $GioHang->TrangThai=1;
@@ -83,7 +83,7 @@ class CartController extends Controller
                     'data' =>null
                 ]);
         }else{ 
-            if($cart[0]->sl==2){
+            if($cart[0]->sl==5){
                 return response()->json([
                     'status' => false,
                     'message' => 'Số lượng được mua đã giới hạn',
@@ -91,7 +91,14 @@ class CartController extends Controller
                 ]);
             }
             $updateQtyProductInCart = GIOHANG::find($cart[0]->id);
-            $updateQtyProductInCart->sl++;
+            $updateQtyProductInCart->sl = $updateQtyProductInCart->sl + $req->qty;
+            if($updateQtyProductInCart->sl > 5){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Bạn chỉ được mua tối đa 5 sản phẩm! ',
+                    'data' =>null
+                ]);
+            }
             $updateQtyProductInCart->update();
             return response()->json([
                 'status' => true,
@@ -352,6 +359,86 @@ class CartController extends Controller
         ]);
     
     }
+    public function checkQtyInWareHouse(Request $request){
+        $image = str_replace(Helper::$URL.'phone/','',$request->hinhanh);
+        $product = SANPHAM::where('hinhanh', $image)->where('dungluong', $request->dungluong)->get();
+        $qty = 0;
+        $products = KHO::where('id_sp', $product[0]->id)->get();
+        foreach($products  as $product){
+            $qty +=  $product->slton;
+        }
+        if($qty <=5){
+            return response()->json([
+                'status' => true,
+                'message' => 'Chỉ còn '.$qty.' sản phẩm',
+                'data' => $qty
+            ]);
+        }  
+        return response()->json([
+            'status' => true,
+            'message' => '',
+            'data' => null,
+        ]);
+    }
+
+    public function checkQtyByColorStorage(Request $request, $id){
+        $listID = array();
+        $listResult = array();
+        $price = 0;
+        // $listProduct = SANPHAM::where('id_msp', $id)->get();
+        if($request->color){
+            $image = str_replace(Helper::$URL.'phone/','',$request->color);
+            $listProduct = SANPHAM::where('id_msp', $id)->where('hinhanh',$image)->get();
+            foreach($listProduct as $product){
+                array_push($listID,  $product->id);
+            }
+            foreach($listID as $id){
+                $qty = 0;
+                $products = KHO::where('id_sp', $id)->get();
+                foreach($products  as $product){
+                    $qty +=  $product->slton;
+                }
+                $product = SANPHAM::find($id);
+                $product->hinhanh = Helper::$URL.'phone/'.$product->hinhanh;
+                if($qty == 0){
+                    array_push($listResult, $product);
+                }
+            }
+            
+        }else{
+            $listProduct = SANPHAM::where('id_msp', $id)->where('dungluong', $request->storage)->get();
+            foreach($listProduct as $product){
+                array_push($listID,  $product->id);
+            }
+            foreach($listID as $id){
+                $qty = 0;
+                $products = KHO::where('id_sp', $id)->get();
+                foreach($products  as $product){
+                    $qty +=  $product->slton;
+                }
+                $product = SANPHAM::find($id);
+                $product->hinhanh = Helper::$URL.'phone/'.$product->hinhanh;
+                if($qty == 0){
+                    array_push($listResult, $product);
+                }
+                if(!empty($product->id_km)){
+                    $product->discount = KHUYENMAI::find($product->id_km)->chietkhau;
+                }else  $product->discount = 0 ;
+                $price = $product->gia-($product->gia*$product->discount);
+            }
+        }
+       
+        return response()->json([
+            'status' => true,
+            'message' => '',
+            'data' =>  ([
+                "list"=> $listResult,
+                "priceOfProduct"=> $price,
+            ])
+        ]);          
+        
+    }
+
     public function getProvinceStore(){
         $listProvince = TINHTHANH::all();
         return response()->json([
@@ -735,7 +822,9 @@ class CartController extends Controller
             $product->avatar = Helper::$URL."phone/".$pro->hinhanh;
             $product->color = $pro->mausac;
             $product->storage = $pro->dungluong;
-            $product->discount = KHUYENMAI::find($pro->id_km)->chietkhau;
+            if(!empty($pro->id_km)){
+                $product->discount = KHUYENMAI::find($pro->id_km)->chietkhau;
+            }else  $product->discount = 0 ;
             $product->price = $pro->gia-($pro->gia*$product->discount);
             $product->priceRoot =  $pro->gia;
             $product->isAvailable = true;

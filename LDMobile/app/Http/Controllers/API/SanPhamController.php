@@ -706,6 +706,24 @@ class SanPhamController extends Controller
         ]);
     }
 
+    public function getInfoProductByColorAndStorage(Request $request){
+        $image = str_replace(Helper::$URL.'phone/','',$request->hinhanh);
+        $pro = SANPHAM::where('hinhanh', $image)->where('dungluong', $request->dungluong)->get();
+        if(!empty($pro)){
+            $product = SANPHAM::find($pro[0]->id);
+            $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
+            if(!empty(KHUYENMAI::find($product->giamgia)->chietkhau)){
+                $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+             }else $product->giamgia = 0;
+           return response()->json([
+            'status' => 'true',
+            'message' => '',
+            'data' => $product
+            ]);
+        }
+        
+    }
+
     public function getComment($id, Request $request){
         $content = "";
         $temp = 0;

@@ -41,6 +41,7 @@ Route::group(['namespace' => 'API','middleware' => ['throttle:500,1', 'auth:api'
     Route::post('update-image-old-comment/{id}','SanPhamController@updateImageOldComment');
     Route::post('upload-image-comment/{id}','SanPhamController@uploadImageComment');
     Route::post('list-product-comment','SanPhamController@getInfoProductByListID');
+    Route::get('info-product','SanPhamController@getInfoProductByColorAndStorage');
     Route::post('comment','SanPhamController@postComment');
     Route::post('reply','SanPhamController@postReply');
     Route::post('like/{id}', 'SanPhamController@postLike');
@@ -53,6 +54,8 @@ Route::group(['namespace' => 'API','middleware' => ['throttle:500,1', 'auth:api'
     Route::get('my-cart/{id}','CartController@getMyCart');
     Route::get('total-product-in-cart/{id}','CartController@getTotalProductInCart');
     Route::post('add-to-cart','CartController@addToCart');
+    Route::get('check-qty-product-in-warehouse','CartController@checkQtyInWareHouse');
+    Route::get('check-qty-product-by-color-storage/{id}','CartController@checkQtyByColorStorage');
     Route::put('update-cart/{id}','CartController@updateCart');
     Route::delete('delete-product-in-cart/{id}','CartController@deleteProductInCart');
     Route::get('my-voucher/{id}', 'CartController@getMyVoucher');
