@@ -66,7 +66,7 @@
                 @endforeach
             </div>
         @else
-            <div class="p-70 box-shadow d-flex justify-content-center">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div>
+            <div class="p-70 box-shadow d-flex justify-content-center flex-wrap">Bạn chưa có sản phẩm nào. <a href="dienthoai" class="ml-5">Xem sản phẩm</a></div>
         @endif
     </div>
 </div>

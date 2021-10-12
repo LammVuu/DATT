@@ -1,6 +1,6 @@
 {{-- modal thêm|sửa địa chỉ --}}
 <div class="modal fade" id="address-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-body">
                 <div class="col-md-8 mx-auto pt-50 pb-50">
@@ -13,14 +13,14 @@
                         {{-- id --}}
                         <input type="hidden" name="tk_dc_id">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-12">
                                 <div class="mb-3">
                                     <label class="fw-600 mb-5">Họ và Tên</label>
                                     <input type="text" name="adr_fullname_inp">
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-12">
                                 <div class="mb-3">
                                     <label class="fw-600 mb-5">Số điện thoại nhận hàng</label>
                                     <input type="text" name="adr_tel_inp" maxlength="10">

@@ -134,26 +134,18 @@ class IndexController extends Controller
 
     public function TimKiemDienThoai()
     {
-        if (!parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY)){
+        $queryParams = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+        
+        if (!$queryParams){
             return back();
         }
 
-        $param = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-        $keyword = substr($param, 8);
+        $keyword = substr($queryParams, 8);
         $keyword = str_replace('-', ' ', $keyword);
 
-        $lst_product = [];
-
-        // danh sách sản phẩm theo tên được tìm kiếm
-        foreach($this->getAllProductByCapacity() as $key){
-            if(str_contains(strtolower($key['tensp']), $keyword)){
-                array_push($lst_product, $key);
-            }
-        }
-        
         $data = [
             'keyword' => $keyword,
-            'lst_product' => $lst_product,
+            'lst_product' => $this->searchPhone($keyword),
         ];
 
         return view($this->user.'tim-kiem')->with($data);
@@ -374,7 +366,7 @@ class IndexController extends Controller
         $haveNotEvaluated = [];
 
         // đã có mua hàng hay chưa
-        $bought = false;
+        $hasBought = false;
 
         // đã đăng nhập
         if(session('user')){
@@ -458,7 +450,7 @@ class IndexController extends Controller
             'lst_similarPro' => $lst_similarPro,
             'lst_area' => $lst_area,
             'haveNotEvaluated' => $haveNotEvaluated,
-            'bought' => $bought,
+            'hasBought' => $hasBought,
         ];
 
         return view($this->user."chi-tiet-dien-thoai")->with($data);
@@ -654,6 +646,20 @@ class IndexController extends Controller
                                                     ajax                                                            
     ============================================================================================================*/
 
+    public function AjaxGetUserFullname(Request $request) {
+        if($request->ajax()) {
+            $response = [
+                'fullname' => null
+            ];
+
+            if(session('user')) {
+                $response['fullname'] = session('user')->hoten;
+            }
+
+            return $response;
+        }
+    }
+
     public function AjaxForgetLoginStatusSession(Request $request)
     {
         if($request->ajax()){
@@ -667,37 +673,43 @@ class IndexController extends Controller
     public function AjaxSearchPhone(Request $request)
     {
         if($request->ajax()){
-            $keyword = $this->unaccent($request->str);
+            $keyword = $request->str;
 
             $lst_product = [
-                'phone' => [],
+                'phone' => $this->searchPhone($keyword),
                 'url_phone' => 'images/phone/',
             ];
 
-            $allProducts = SANPHAM::all();
-            foreach($allProducts as $product){
-                $discountText = '';
-                $discount = 0;
-                $discountPrice = $product->gia;
-
-                if($product->id_km) {
-                    $discount = KHUYENMAI::find($product->id_km)->chietkhau;
-                    $discountText = ($discount * 100) . '%';
-                    $discountPrice = $product->gia - ($product->gia * $discount);
-                }
-
-
-                $string = strtolower($this->unaccent($product->tensp.$product->mausac.$product->ram.
-                    $product->dungluong.$product->gia.$discountPrice.$discountText));
-                if(str_contains($string, $keyword)){
-                    $productByCapacity = $this->getProductById($product->id);
-
-                    array_push($lst_product['phone'], $productByCapacity);
-                }
-            }
-
             return $lst_product;
         }
+    }
+
+    public function searchPhone($keyword) {
+        $productList = [];
+
+        $allProducts = SANPHAM::all();
+        foreach($allProducts as $product){
+            $discountText = '';
+            $discount = 0;
+            $discountPrice = $product->gia;
+
+            if($product->id_km) {
+                $discount = KHUYENMAI::find($product->id_km)->chietkhau;
+                $discountText = ($discount * 100) . '%';
+                $discountPrice = $product->gia - ($product->gia * $discount);
+            }
+
+
+            $string = strtolower($this->unaccent($product->tensp.$product->mausac.$product->ram.
+                $product->dungluong.$product->gia.$discountPrice.$discountText));
+            if(str_contains($string, $keyword)){
+                $productByCapacity = $this->getProductById($product->id);
+
+                array_push($productList, $productByCapacity);
+            }
+        }
+
+        return $productList;
     }
 
     // lọc sản phẩm
@@ -1001,10 +1013,11 @@ class IndexController extends Controller
     public function AjaxChooseColor(Request $request)
     {
         if($request->ajax()){
-            // chưa đăng nhập
+            // chưa đăng nhập và ở trang điện thoại
             if(!session('user') && !$request->page){
                 return false;
             }
+
             $product = $this->getProductById($request->id_sp);
 
             $lst_color = [
@@ -1016,17 +1029,16 @@ class IndexController extends Controller
                 'url_phone' => 'images/phone/',
             ];
 
-            $i = 0;
+            $products = SANPHAM::where('id_msp', $product['id_msp'])->get();
+            foreach($products as $key){
+                $qtyInStock = KHO::where('id_sp', $key->id)->sum('slton');
 
-            foreach(SANPHAM::where('id_msp', $product['id_msp'])->get() as $key){
-                if($key->dungluong == $product['dungluong'] && $key->ram == $product['ram'] && $key->trangthai == 1){
-                    $lst_color['mausac'][$i] = [
+                if($qtyInStock > 0 && $key->dungluong == $product['dungluong'] && $key->ram == $product['ram'] && $key->trangthai == 1){
+                    array_push($lst_color['mausac'], [
                         'id' => $key['id'],
                         'mausac' => $key['mausac'],
                         'hinhanh' => $key['hinhanh'],
-                    ];
-
-                    $i++;
+                    ]);
                 }
             }
 
@@ -1151,7 +1163,7 @@ class IndexController extends Controller
                     $product->ngayketthuc = $warranty->ngayketthuc;
     
                     // trạng thái bảo hành
-                    $product->trangthaibaohanh = strtotime(str_replace('/', '-', $product['ngayketthuc'])) >= time() ? 'true' : 'false';
+                    $product->trangthaibaohanh = strtotime(str_replace('/', '-', $product['ngayketthuc'])) >= time() ? true : false;
                 }
 
                 return [
@@ -2251,23 +2263,21 @@ class IndexController extends Controller
     }
 
     // lấy ngẫu nhiên điện thoại tương tự trong tầm giá
-    public function getProductByPriceRange($id_sp, $qty = 5)
+    public function getProductByPriceRange($id_sp)
     {
-        $id_msp = SANPHAM::find($id_sp)->mausp->id;
+        $phone = SANPHAM::find($id_sp);
 
-        $phone = SANPHAM::where('id', $id_sp)->first();
+        $id_msp = $phone->id_msp;
 
         // danh sách mẫu sp theo dung lượng không trùng với mẫu đang xem
         $lst_modelByCap = [];
-        $i = 0;
         foreach(MAUSP::all() as $model){
             if($model->id != $id_msp){
                 if(SANPHAM::where('id_msp', $model->id)->first()){
                     $phoneByCapacity = $this->getProductByCapacity($model->id);
     
                     foreach($phoneByCapacity as $key){
-                        $lst_modelByCap[$i] = $key;
-                        $i++;
+                        array_push($lst_modelByCap, $key);
                     }
                 }
             }
@@ -2276,14 +2286,12 @@ class IndexController extends Controller
 
         // danh sách sản phẩm trong tầm giá:  1tr < giá sp < 1tr
         $lst_product = [];
-        $i = 0;
         $higher = $phone->gia + 1000000;
         $lower = $phone->gia - 1000000;
         
-        foreach($lst_modelByCap as $phone){
-            if($phone['gia'] >= $lower && $phone['gia'] <= $higher){
-                $lst_product[$i] = $phone;
-                $i++;
+        foreach($lst_modelByCap as $model){
+            if($model['gia'] >= $lower && $model['gia'] <= $higher){
+                array_push($lst_product, $model);
             }
         }
 

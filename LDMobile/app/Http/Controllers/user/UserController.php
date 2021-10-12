@@ -173,6 +173,14 @@ class UserController extends Controller
                     Auth::login($exists, true);
                     session(['user' => $exists]);
                     Cookie::queue('acccount_social_id', $exists->id, 60*24*30*12);
+
+                    // quay về url trước đó
+                    $prev_url = session('prev_url');
+                    if($prev_url){
+                        Session::forget('prev_url');
+                        return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
+                    }
+
                     return redirect('/')->with('toast_message', 'Đăng nhập thành công');
                 }
 
@@ -194,6 +202,14 @@ class UserController extends Controller
                 Auth::login($newUser, true);
                 session(['user' => $newUser]);
                 Cookie::queue('acccount_social_id', 'facebook_'.$newUser->id, 60*24*30*12);
+
+                // quay về url trước đó
+                $prev_url = session('prev_url');
+                if($prev_url){
+                    Session::forget('prev_url');
+                    return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
+                }
+
                 return redirect('/')->with('toast_message', 'Đăng nhập thành công');
             }
         } catch(Exception $e){
@@ -221,6 +237,14 @@ class UserController extends Controller
                     Auth::login($exists, true);
                     session(['user' => $exists]);
                     Cookie::queue('acccount_social_id', $exists->id, 60*24*30*12);
+
+                    // quay về url trước đó
+                    $prev_url = session('prev_url');
+                    if($prev_url){
+                        Session::forget('prev_url');
+                        return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
+                    }
+
                     return redirect('/')->with('toast_message', 'Đăng nhập thành công');
                 }
 
@@ -243,6 +267,13 @@ class UserController extends Controller
             Session::regenerate();
             session(['user' => $newUser]);
             Cookie::queue('acccount_social_id', $newUser->id, 60*24*30*12);
+
+            // quay về url trước đó
+            $prev_url = session('prev_url');
+            if($prev_url){
+                Session::forget('prev_url');
+                return redirect($prev_url)->with('toast_message', 'Đăng nhập thành công');
+            }
     
             return redirect('/')->with('toast_message', 'Đăng nhập thành công');
         } catch (Exception $e) {
@@ -259,11 +290,9 @@ class UserController extends Controller
         Auth::logout();
         if(session('user')->htdn != 'nomal'){
             TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
-        }
-        
-        if(session('user')->htdn != 'nomal'){
             Cookie::queue(Cookie::forget('acccount_social_id'));
         }
+        
         Session::flush();
         Session::put('visitor', '1');
         Session::flash('toast_message', 'Đã đăng xuất');

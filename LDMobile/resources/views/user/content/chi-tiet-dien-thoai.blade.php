@@ -313,11 +313,11 @@
                                 <div class="d-flex justify-content-center">
                                     <div>
                                         <div class='d-flex flex-column fz-14'>
-                                            <span class="red fw-600">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
+                                            <span class="red fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                                             {{-- khuyến mãi hết hạn --}}
                                             @if($key['khuyenmai'] != 0)
                                                 <div>
-                                                    <span class='text-strike'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                                                    <span class='text-strike'>{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                                                     <span class='pl-5 pr-5'>|</span>
                                                     <span class='red'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                                 </div>
@@ -381,11 +381,11 @@
                                     <div class="d-flex justify-content-center">
                                         <div>
                                             <div class='d-flex flex-column fz-14'>
-                                                <span class="red fw-600">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
+                                                <span class="red fw-600">{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
                                                 {{-- khuyến mãi hết hạn --}}
                                                 @if($key['khuyenmai'] != 0)
                                                     <div>
-                                                        <span class='text-strike'>{{ number_format($key['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></span>
+                                                        <span class='text-strike'>{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                                                         <span class='pl-5 pr-5'>|</span>
                                                         <span class='red'>{{ '-'.($key['khuyenmai']*100).'%' }}</span>
                                                     </div>
@@ -477,7 +477,7 @@
                         {{-- chưa mua hàng --}}
                         @if (empty($haveNotEvaluated))
                             {{-- chưa mua sản phẩm này --}}
-                            @if (!$bought)
+                            @if (!$hasBought)
                                 <div class='d-flex justify-content-center w-100 p-40'>
                                     <div class='gray-1 mr-10'>Nhanh tay sở hữu sản phẩm.</div>
                                     <div type="button" data-id="{{$phone['id']}}" class='buy-now main-color-text'>Mua ngay</div>

@@ -31,7 +31,7 @@
         <div class='mt-50'>
             <div class='row'>
                 @if ($order['order']->hinhthuc == 'Giao hàng tận nơi')
-                    <div class='col-lg-6'>
+                    <div class='col-lg-6 mb-20'>
                         <div class='fw-600 pb-10'>Địa chỉ người nhận</div>
                         <div id="HTNH-div">
                             <div class='box-shadow p-20'>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 @else
-                    <div class='col-lg-6'>
+                    <div class='col-lg-6 mb-20'>
                         <div class='fw-600 pb-10'>Nhận tại cửa hàng</div>
                         <div id="HTNH-div">
                             <div class='box-shadow p-20'>
@@ -85,7 +85,7 @@
         </div>
 
         {{-- danh sách sản phẩm --}}
-        <div class='mt-50 box-shadow'>
+        <div class='mt-30 box-shadow'>
             <table class='table'>
                 <thead>
                     <tr>

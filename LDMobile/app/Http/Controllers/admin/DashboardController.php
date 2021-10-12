@@ -121,217 +121,222 @@ class DashboardController extends Controller
         if($request->ajax()){
             $page = $request->page;
             $row = $request->row;
-            $html = '';
+            $data = null;
 
-            if($page == 'mausanpham'){
-                $data = MAUSP::offset($row)->limit(10)->get();
+            switch($page) {
+                case 'mausanpham':
+                    $data = MAUSP::offset($row)->limit(10)->get();
 
-                if(count($data) == 0){
-                    return 'done';
-                }
-
-                foreach($data as $i => $key){
-                    $data[$i]->supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
-                }
-
-                return $data;
-            } elseif($page == 'khuyenmai'){
-                $data = KHUYENMAI::offset($row)->limit(10)->get();
-
-                if(count($data) == 0){
-                    return 'done';
-                }
-
-                foreach($data as $i => $key){
-                    // trạng thái
-                    $status = strtotime(str_replace('/', '-', $key->ngayketthuc)) >= strtotime(date('d-m-Y')) ? 'Hoạt động' : 'Hết hạn';
-                    $data[$i]->status = $status;
-                }
-
-                return $data;
-            } elseif($page == 'sanpham'){
-                $sort = $request->sort;
-
-                if($sort == 'id-asc'){
-                    $data = SANPHAM::offset($row)->limit(10)->get();
-                } elseif($sort == 'id-desc'){
-                    $data = SANPHAM::orderBy('id', 'desc')->offset($row)->limit(10)->get();
-                } elseif($sort == 'price-asc'){
-                    $data = SANPHAM::orderBy('gia')->offset($row)->limit(10)->get();
-                } elseif($sort == 'price-desc'){
-                    $data = SANPHAM::orderBy('gia', 'desc')->offset($row)->limit(10)->get();
-                }
-
-                if(count($data) == 0){
-                    return 'done';
-                }
-
-                foreach($data as $i => $key){
-                    if($key->id_km){
-                        $promotion = KHUYENMAI::find($key->id_km)->chietkhau*100 .'%';
-                    } else {
-                        $promotion = 'Không có';
+                    if(count($data) == 0){
+                        return 'done';
                     }
 
-                    $data[$i]->promotion = $promotion;
-                }
+                    foreach($data as $i => $key){
+                        $data[$i]->supplierName = NHACUNGCAP::find($key->id_ncc)->tenncc;
+                    }
 
-                return $data;
-            } elseif($page == 'nhacungcap'){
-                $data = NHACUNGCAP::offset($row)->limit(10)->get();
+                    break;
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                case 'khuyenmai':
+                    $data = KHUYENMAI::offset($row)->limit(10)->get();
 
-                return $data;
-            } elseif($page == 'slideshow-msp'){
-                $data = MAUSP::offset($row)->limit(10)->get();
+                    if(count($data) == 0){
+                        return 'done';
+                    }
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                    foreach($data as $i => $key){
+                        // trạng thái
+                        $status = strtotime(str_replace('/', '-', $key->ngayketthuc)) >= strtotime(date('d-m-Y')) ? 'Hoạt động' : 'Hết hạn';
+                        $data[$i]->status = $status;
+                    }
 
-                foreach($data as $i => $key){
-                    $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $key->id)->get());
-                    $data[$i]->slideQty = $slideQty;
-                }
+                    break;
+                case 'sanpham':
+                    $sort = $request->sort;
 
-                return $data;
-            } elseif($page == 'hinhanh'){
-                $data = MAUSP::offset($row)->limit(10)->get();
+                    if($sort == 'id-asc'){
+                        $data = SANPHAM::offset($row)->limit(10)->get();
+                    } elseif($sort == 'id-desc'){
+                        $data = SANPHAM::orderBy('id', 'desc')->offset($row)->limit(10)->get();
+                    } elseif($sort == 'price-asc'){
+                        $data = SANPHAM::orderBy('gia')->offset($row)->limit(10)->get();
+                    } elseif($sort == 'price-desc'){
+                        $data = SANPHAM::orderBy('gia', 'desc')->offset($row)->limit(10)->get();
+                    }
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                    if(count($data) == 0){
+                        return 'done';
+                    }
 
-                foreach($data as $i => $key){
-                    $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
-                    $data[$i]->imageQty = $imageQty;
-                }
+                    foreach($data as $i => $key){
+                        if($key->id_km){
+                            $promotion = KHUYENMAI::find($key->id_km)->chietkhau*100 .'%';
+                        } else {
+                            $promotion = 'Không có';
+                        }
 
-                return $data;
-            } elseif($page == 'kho'){
-                $data = KHO::offset($row)->limit(10)->get();
+                        $data[$i]->promotion = $promotion;
+                    }
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                    break;
+                case 'nhacungcap':
+                    $data = NHACUNGCAP::offset($row)->limit(10)->get();
 
-                foreach($data as $i => $key){
-                    $product = SANPHAM::find($key->id_sp);
-                    $branchAddress = CHINHANH::find($key->id_cn)->diachi;
-                    $data[$i]->product = $product;
-                    $data[$i]->branchAddress = $branchAddress;
-                }
+                    if(count($data) == 0){
+                        return 'done';
+                    }
 
-                return $data;
-            } elseif($page == 'chinhanh'){
-                $data = CHINHANH::offset($row)->limit(10)->get();
+                    break;
+                case 'slideshow-msp':
+                    $data = MAUSP::offset($row)->limit(10)->get();
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                    if(count($data) == 0){
+                        return 'done';
+                    }
 
-                foreach($data as $i => $key) {
-                    $cityName = TINHTHANH::find($key->id_tt)->tentt;
-                    $data[$i]->cityName = $cityName;
-                }
+                    foreach($data as $i => $key){
+                        $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $key->id)->get());
+                        $data[$i]->slideQty = $slideQty;
+                    }
 
-                return $data;
-            } elseif($page == 'tinhthanh'){
-                $data = TINHTHANH::offset($row)->limit(10)->get();
+                    break;
+                case 'hinhanh':
+                    $data = MAUSP::offset($row)->limit(10)->get();
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                    if(count($data) == 0){
+                        return 'done';
+                    }
 
-                return $data;
-            } elseif($page == 'voucher'){
-                $data = VOUCHER::offset($row)->limit(10)->get();
+                    foreach($data as $i => $key){
+                        $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
+                        $data[$i]->imageQty = $imageQty;
+                    }
 
-                if(count($data) == 0){
-                    return 'done';
-                }
+                    break;
+                case 'kho':
+                    $data = KHO::offset($row)->limit(10)->get();
 
-                foreach($data as $i => $key){
-                    $dateEnd = strtotime(str_replace('/', '-', $key->ngayketthuc));
-                    $currentDate = strtotime(date('d-m-Y'));
-                    $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
+                    if(count($data) == 0){
+                        return 'done';
+                    }
 
-                    $data[$i]->status = $status;
-                }
-
-                return $data;
-            } elseif($page == 'donhang'){
-                $sort = $request->sort;
-
-                if($sort == 'date-desc'){
-                    $data = DONHANG::orderBy('id', 'desc')->offset($row)->limit(10)->get();
-                } elseif($sort == 'date-asc'){
-                    $data = DONHANG::orderBy('id')->offset($row)->limit(10)->get();
-                } elseif($sort == 'total-asc'){
-                    $data = DONHANG::orderBy('tongtien')->offset($row)->limit(10)->get();
-                } elseif($sort == 'total-desc'){
-                    $data = DONHANG::orderBy('tongtien', 'desc')->offset($row)->limit(10)->get();
-                }
-
-                if(count($data) == 0){
-                    return 'done';
-                }
-
-                foreach($data as $i => $key){
-                    $data[$i]->fullname = TAIKHOAN::find($key->id_tk)->hoten;
-                }
-
-                return $data;
-            } elseif($page == 'baohanh'){
-                $data = BAOHANH::offset($row)->limit(10)->get();
-
-                if(count($data) == 0){
-                    return 'done';
-                }
-
-                return $data;
-            } elseif($page == 'imei'){
-                if(!$request->keyword){
-                    $data = IMEI::offset($row)->limit(10)->get();
-                } else {
-                    $data = [];
-                    $keyword = $this->IndexController->unaccent($request->keyword);
-                    $count = 0;
-                    $i = 0;
-                    foreach(IMEI::all() as $key){
+                    foreach($data as $i => $key){
                         $product = SANPHAM::find($key->id_sp);
-                        $str = strtolower($this->IndexController->unaccent($key->id.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$key->imei.($key->trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt')));
-                        if(str_contains($str, $keyword)){
-                            // bỏ qua số dòng đã cuộn
-                            if($i != $row){
-                                $i++;
-                                continue;
-                            } else {
-                                // lấy tiếp tục 10 bản ghi
-                                if($count == 10){
-                                    break;
+                        $branchAddress = CHINHANH::find($key->id_cn)->diachi;
+                        $data[$i]->product = $product;
+                        $data[$i]->branchAddress = $branchAddress;
+                    }
+
+                    break;
+                case 'chinhanh':
+                    $data = CHINHANH::offset($row)->limit(10)->get();
+
+                    if(count($data) == 0){
+                        return 'done';
+                    }
+
+                    foreach($data as $i => $key) {
+                        $cityName = TINHTHANH::find($key->id_tt)->tentt;
+                        $data[$i]->cityName = $cityName;
+                    }
+
+                    break;
+                case 'tinhthanh':
+                    $data = TINHTHANH::offset($row)->limit(10)->get();
+
+                    if(count($data) == 0){
+                        return 'done';
+                    }
+
+                    break;
+                case 'voucher':
+                    $data = VOUCHER::offset($row)->limit(10)->get();
+
+                    if(count($data) == 0){
+                        return 'done';
+                    }
+
+                    foreach($data as $i => $key){
+                        $dateEnd = strtotime(str_replace('/', '-', $key->ngayketthuc));
+                        $currentDate = strtotime(date('d-m-Y'));
+                        $status = $dateEnd >= $currentDate ? 'Hoạt động' : 'Hết hạn';
+
+                        $data[$i]->status = $status;
+                    }
+
+                    break;
+                case 'donhang':
+                    $sort = $request->sort;
+
+                    if($sort == 'date-desc'){
+                        $data = DONHANG::orderBy('id', 'desc')->offset($row)->limit(10)->get();
+                    } elseif($sort == 'date-asc'){
+                        $data = DONHANG::orderBy('id')->offset($row)->limit(10)->get();
+                    } elseif($sort == 'total-asc'){
+                        $data = DONHANG::orderBy('tongtien')->offset($row)->limit(10)->get();
+                    } elseif($sort == 'total-desc'){
+                        $data = DONHANG::orderBy('tongtien', 'desc')->offset($row)->limit(10)->get();
+                    }
+
+                    if(count($data) == 0){
+                        return 'done';
+                    }
+
+                    foreach($data as $i => $key){
+                        $data[$i]->fullname = TAIKHOAN::find($key->id_tk)->hoten;
+                    }
+
+                    break;
+
+                case 'baohanh':
+                    $data = BAOHANH::offset($row)->limit(10)->get();
+
+                    if(count($data) == 0){
+                        return 'done';
+                    }
+
+                    break;
+                case 'imei':
+                    if(!$request->keyword){
+                        $data = IMEI::offset($row)->limit(10)->get();
+                    } else {
+                        $data = [];
+                        $keyword = $this->IndexController->unaccent($request->keyword);
+                        $count = 0;
+                        $i = 0;
+                        foreach(IMEI::all() as $key){
+                            $product = SANPHAM::find($key->id_sp);
+                            $str = strtolower($this->IndexController->unaccent($key->id.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$key->imei.($key->trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt')));
+                            if(str_contains($str, $keyword)){
+                                // bỏ qua số dòng đã cuộn
+                                if($i != $row){
+                                    $i++;
+                                    continue;
+                                } else {
+                                    // lấy tiếp tục 10 bản ghi
+                                    if($count == 10){
+                                        break;
+                                    }
+                                    array_push($data, $key);
+                                    $count++;
                                 }
-                                array_push($data, $key);
-                                $count++;
                             }
                         }
                     }
-                }
+    
+                    if(count($data) == 0){
+                        return 'done';
+                    }
+    
+                    foreach($data as $i => $key){
+                        $product = SANPHAM::find($key->id_sp);
+                        $data[$i]->product = $product;
+                    }
 
-                if(count($data) == 0){
-                    return 'done';
-                }
-
-                foreach($data as $i => $key){
-                    $product = SANPHAM::find($key->id_sp);
-                    $data[$i]->product = $product;
-                }
-
-                return $data;
+                    break;
             }
+
+            return $data;
         }
     }
 

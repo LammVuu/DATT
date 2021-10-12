@@ -520,12 +520,15 @@ class CartController extends Controller
                         $sl += $request->sl;
 
                         // số lượng tồn kho hiện tại
-                        $qtyInStock = KHO::where('id_sp', $request->id_sp)->select(DB::raw('sum(slton) as slton'))->first()->slton;
+                        $qtyInStock = KHO::where('id_sp', $request->id_sp)->sum('slton');
 
                         // so sánh số lượng tồn với số lượng trong giỏ hàng
                         // mua quá số lượng || slg mua tối đa là 5
                         if($sl > $qtyInStock || $sl > 5){
-                            return;
+                            return [
+                                'status' => 'already have',
+                                'qtyInStock' => $qtyInStock
+                            ];
                         }
 
                         // cập nhật số lượng sp trong giỏ hàng

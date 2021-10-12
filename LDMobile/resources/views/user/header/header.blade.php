@@ -104,10 +104,10 @@
     <div class='row'>
         <div class='col-lg-10 col-12'>
             <div class='d-flex flex-column justify-content-center p-20'>
-                <img src="images/logo/LDMobile-logo.png" class='head-offcanvas-img'><hr>
+                <a href="{{route('user/index')}}"><img src="images/logo/LDMobile-logo.png" class='head-offcanvas-img'></a><hr>
 
                 {{-- tài khoản --}}
-                 @if (session('user'))
+                @if (session('user'))
                     <div class="relative">
                         <div class="d-flex justify-content-center">
                             <div class="offcanvas-account">

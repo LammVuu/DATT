@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'AccessTimes' => \App\Http\Middleware\AccessTimes::class,
         'IsAdmin' => \App\Http\Middleware\IsAdmin::class,
         'AdminLogin' => \App\Http\Middleware\AdminLogin::class,
+        'PreventBackHistory' => \App\Http\Middleware\PreventBackHistory::class,
     ];
 }

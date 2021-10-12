@@ -21,7 +21,7 @@ Route::post("signup", [UserController::class, "SignUp"])->name("user/signup");
 
 Route::post("login", [UserController::class, "Login"])->name("user/login");
 
-Route::get("logout", [UserController::class, "LogOut"])->name("user/logout");
+Route::get("logout", [UserController::class, "LogOut"])->name("user/logout")->middleware("PreventBackHistory");
 
 Route::get("khoiphuctaikhoan", [UserController::class, "KhoiPhucTaiKhoan"])->name("user/khoi-phuc-tai-khoan");
 
@@ -34,7 +34,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
                                                                 Page
     =========================================================================================================*/
     
-    Route::get("dangnhap", [UserController::class, "DangNhap"])->name("user/dang-nhap");
+    Route::get("dangnhap", [UserController::class, "DangNhap"])->name("user/dang-nhap")->middleware("PreventBackHistory");
     
     Route::get("dangky", [UserController::class, "DangKy"])->name("user/dang-ky");
 
@@ -65,6 +65,8 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
     /*=======================================================================================================
                                                         Ajax
     =========================================================================================================*/
+
+    Route::get("ajax-get-user-fullname", [IndexController::class, "AjaxGetUserFullname"]);
 
     Route::get("ajax-forget-login-status-session", [IndexController::class, "AjaxForgetLoginStatusSession"]);
 
