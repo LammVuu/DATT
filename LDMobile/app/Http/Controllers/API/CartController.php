@@ -53,11 +53,18 @@ class CartController extends Controller
             $product->priceRoot =  $pro->gia;
             $product->isAvailable = true;
             $product->isQtyAvailable = true;
+            $qty = 0;
+            $products = KHO::where('id_sp', $product->id_sp)->get();
+            foreach($products  as $pr){
+                    $qty +=  $pr->slton;
+            }
+            $product->slton = $qty;
+
         }
         return response()->json([
             'status' => true,
             'message' => '',
-    		'data' =>$listProduct
+    		'data' => $listProduct
     	]);
     }
     public function addToCart(Request $req){
@@ -155,11 +162,11 @@ class CartController extends Controller
             $infoVoucher->sl = $voucher->sl;
             array_push($listResult, $infoVoucher);
         }
-        $currentDate = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
+        $currentDate = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y');
      
         foreach($listResult as $voucher){
-            $date1 = Carbon :: createFromFormat ('d/m/Y H:i', $currentDate);
-            $date2 = Carbon :: createFromFormat ('d/m/Y H:i', $voucher->ngayketthuc);
+            $date1 = Carbon :: createFromFormat ('d/m/Y', $currentDate);
+            $date2 = Carbon :: createFromFormat ('d/m/Y', $voucher->ngayketthuc);
            if($date2->gte($date1)){
             $voucher->active = true;
            }else $voucher->active = false;
@@ -702,18 +709,18 @@ class CartController extends Controller
     }
     public function getMyOrder($id, Request $request){
         if($request->state == "all"){
-            $listOrder = DONHANG::where('id_tk', $id)->get();
+            $listOrder = DONHANG::orderBy("id", "desc")->where('id_tk', $id)->get();
         }else if($request->state == "Đã tiếp nhận"){
-            $listOrder = DONHANG::where('trangthaidonhang', 'Đã tiếp nhận')->where('id_tk', $id)->get();
+            $listOrder = DONHANG::orderBy("id", "desc")->where('trangthaidonhang', 'Đã tiếp nhận')->where('id_tk', $id)->get();
         }else if($request->state == "Đã xác nhận"){
-            $listOrder = DONHANG::where('trangthaidonhang', 'Đã xác nhận')->where('id_tk', $id)->get();
+            $listOrder = DONHANG::orderBy("id", "desc")->where('trangthaidonhang', 'Đã xác nhận')->where('id_tk', $id)->get();
         }else if($request->state == "Đang giao hàng"){
-            $listOrder = DONHANG::where('trangthaidonhang', 'Đang giao hàng')->where('id_tk', $id)->get();
+            $listOrder = DONHANG::orderBy("id", "desc")->where('trangthaidonhang', 'Đang giao hàng')->where('id_tk', $id)->get();
         }else if($request->state == "Thành công"){
-            $listOrder = DONHANG::where('trangthaidonhang', 'Thành công')->where('id_tk', $id)->get();
+            $listOrder = DONHANG::orderBy("id", "desc")->where('trangthaidonhang', 'Thành công')->where('id_tk', $id)->get();
         }
         else if($request->state == "Đã hủy"){
-            $listOrder = DONHANG::where('trangthaidonhang', 'Đã hủy')->where('id_tk', $id)->get();
+            $listOrder = DONHANG::orderBy("id", "desc")->where('trangthaidonhang', 'Đã hủy')->where('id_tk', $id)->get();
         }
         
         return response()->json([

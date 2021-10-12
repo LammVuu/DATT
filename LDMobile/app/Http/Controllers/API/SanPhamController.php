@@ -329,6 +329,7 @@ class SanPhamController extends Controller
                 if($count > 0){
                     $pro->like = true;
                 }else  $pro->like = false;
+                
             }
             
             return response()->json([
