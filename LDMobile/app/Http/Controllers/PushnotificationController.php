@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Traits\PushNotificationTrait;
 
-class PushnotificationController extends Controller
+class PushNotificationController extends Controller
 {
 
     use PushNotificationTrait;
