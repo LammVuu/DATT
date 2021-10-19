@@ -21,6 +21,7 @@ use App\Models\IMEI;
 use App\Models\THONGBAO;
 use App\Models\TAIKHOAN;
 use App\Models\SP_YEUTHICH;
+use App\Models\KHO;
 use Carbon\Carbon;
 use App\Classes\Helper;
 class SanPhamController extends Controller
@@ -250,13 +251,14 @@ class SanPhamController extends Controller
         $color = array();
         $storage = array();
         $images = array();
+        $listID = array();
         $productCurrent = SANPHAM::find($id);
         array_push($images,  Helper::$URL."phone/".$productCurrent->hinhanh);
         $cateProduct = MAUSP::find($productCurrent->id_msp);
         $product = SANPHAM::where('id_msp', $cateProduct->id)->get();
         $nhacungcap = NHACUNGCAP::find($cateProduct->id_ncc);
         $nhacungcap->anhdaidien = Helper::$URL."logo/".$nhacungcap->anhdaidien;
-     
+        $checkWarehouse = 0; // Hang sap ve
         $dem = count($product);
         for($i=0;$i<$dem;$i++){
             if($this->checkArray($color, $product[$i]->mausac)){
@@ -268,14 +270,32 @@ class SanPhamController extends Controller
             if($this->checkArray($images,  Helper::$URL."phone/".$product[$i]->hinhanh)){
                 array_push($images,  Helper::$URL."phone/".$product[$i]->hinhanh);
             }
+            //kho
+            array_push($listID,  $product[$i]->id);
+            
         }
-       
+        //kho
+        $warehouses = KHO::whereIn('id_sp', $listID)->get();
+        $count = count($warehouses);
+        if($count > 0){
+            $qty = 0;
+            foreach($warehouses as $warehouse){
+                $qty +=  $warehouse->slton;
+            }
+            $checkWarehouse = 1; //Con hang
+            if($qty == 0){
+                $checkWarehouse = 2; //Tam het hang
+            }   
+        }
+        
         $cateProduct->nhacungcap = $nhacungcap;
         $cateProduct->mausac = $color;
         $cateProduct->dungluong = $storage;
         $cateProduct->dsHinhAnh = $images;
+        $cateProduct->trangthai =  $checkWarehouse;
         $wish = SP_YEUTHICH::where('id_tk', $request->id_tk)->where('id_sp', $id)->get();
         $count = count($wish);
+
         if($count > 0){
             $cateProduct->like = true;
         }else  $cateProduct->like = false;
