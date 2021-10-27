@@ -1,24 +1,19 @@
 <section class="user-bg-color pt-50 pb-70">
-    <div class="container white-bg border p-0">
-        <div class="row">
-            <div class="col-lg-4 col-12">
-                <div class="d-flex align-items-center p-20">
-                    <div class="fz-22 fw-600">ĐIỆN THOẠI NỔI BẬT NHẤT</div>
-                    <div class="relative ml-10">
-                        <div class="fire-animation"><i class="fad fa-fire-alt"></i></div>
-                    </div>
+    <div class="container">
+        <div class="index-featured-header">
+            <div class="index-featured-title">
+                <div class="mr-10">ĐIỆN THOẠI NỔI BẬT NHẤT</div>
+                <div class="relative">
+                    <div class="fire-animation"><i class="fad fa-fire-alt"></i></div>
                 </div>
             </div>
-            <div class="col-lg-8 col-12">
-                <div class="featured-brand">
-                    @foreach ($lst_brand as $key)
-                        <a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="index-brand-tag">{{$key['brand']}}</a>    
-                    @endforeach
-                    <a href="{{route('user/dien-thoai')}}" class="index-brand-tag">Xem tất cả</a>
-                </div>
+            <div class="featured-brand">
+                @foreach ($lst_brand as $key)
+                    <a href="{{route('user/dien-thoai', ['hang' => $key['brand']])}}" class="index-brand-tag">{{$key['brand']}}</a>    
+                @endforeach
+                <a href="{{route('user/dien-thoai')}}" class="index-brand-tag">Xem tất cả</a>
             </div>
         </div>
-        <hr class="m-0">
         
         <div class="d-flex flex-wrap">
             @foreach($lst_featured as $key)
@@ -29,8 +24,14 @@
                         <span class='shop-promotion-text'>{{ '-'.($key['khuyenmai']*100).'%'}}</span>
                     </div>
                 @endif
+
                 {{-- hình ảnh --}}
-                <img src="{{ $url_phone.$key['hinhanh'] }}">
+                <div class="relative">
+                    @if ($key['comingSoon'])
+                        <div class="coming-soon">HÀNG SẮP VỀ</div>
+                    @endif
+                    <img src="{{ $url_phone.$key['hinhanh'] }}">
+                </div>
 
                 {{-- tên sản phẩm --}}
                 <div class='fw-600 black text-center'>{{ $key['tensp'] }}</div>
@@ -42,20 +43,23 @@
                         <span class="text-strike gray-1 ml-10">{{ number_format($key['gia'], 0, '', '.') }}<sup>đ</sup></span>
                         @endif
                     </div>
-                    @if ($key['danhgia']['qty'] != 0)
-                    <div class='d-flex align-items-center pt-10'>
-                        @for ($i = 1; $i <= 5; $i++)
-                            @if($key['danhgia']['star'] >= $i)
-                            <i class="fas fa-star checked"></i>
-                            @else
-                            <i class="fas fa-star uncheck"></i>
-                            @endif
-                        @endfor
-                        <span class='fz-12 ml-10 black'>{{ $key['danhgia']['qty'].' đánh giá' }}</span>
+
+                    <div class='d-flex justify-content-center align-items-center pt-10'>
+                        @if ($key['danhgia']['qty'] != 0)
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if($key['danhgia']['star'] >= $i)
+                                <i class="fas fa-star checked"></i>
+                                @else
+                                <i class="fas fa-star uncheck"></i>
+                                @endif
+                            @endfor
+                            <span class='fz-14 ml-10 black'>{{ $key['danhgia']['qty'].' đánh giá' }}</span>
+                        @else
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fas fa-star uncheck"></i>
+                            @endfor
+                        @endif
                     </div>
-                    @else
-                    <span class='fz-12 ml-10 white'>none</span>
-                    @endif
                 </div>
             </a>  
             @endforeach

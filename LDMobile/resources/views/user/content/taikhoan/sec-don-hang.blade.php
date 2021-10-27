@@ -1,20 +1,16 @@
+<?php
+    $lst_order = $data['lst_order']; 
+?>
+
 <div class='row'>
     <div class='col-md-3'>
         @section("acc-order-active") account-sidebar-active @stop
         @include("user.content.taikhoan.sec-thanh-chuc-nang")
     </div>
     <div class='col-md-9'>
-        @if (count($data['lst_order']['order']) != 0)
+        @if ($lst_order['processing'] || $lst_order['complete'])
             {{-- đơn hàng đang xử lý --}}
-            <?php $processing = false ?>
-            @foreach ($data['lst_order']['order'] as $key)
-                @if ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy')
-                    <?php $processing = true ?>
-                    @break
-                @endif
-            @endforeach
-
-            @if ($processing)
+            @if ($lst_order['processing'])
                 <table class='table box-shadow mb-50'>
                     <thead>
                         <tr>
@@ -26,59 +22,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data['lst_order']['order'] as $key)
-                            @if ($key->trangthaidonhang != 'Thành công' && $key->trangthaidonhang != 'Đã hủy')
-                            <tr>
-                                {{-- mã đơn hàng --}}
-                                <td class='vertical-center'>
-                                    <div class='p-20'>
-                                        <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">{{$key['id']}}</a>
-                                    </div>
-                                </td>
-                                {{-- ngày mua --}}
-                                <td class='vertical-center'>
-                                    <div>{{explode(' ', $key['thoigian'])[0]}}</div>
-                                </td>
-                                {{-- sản phẩm mua --}}
-                                <?php $detail = $data['lst_order']['detail'][$key['id']] ?>
-                                <td class='w-40 vertical-center'>
-                                    <div class='pt-15 pb-15'>
-                                        <div class='d-flex'>
-                                            <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="110px" class="mr-5">
-                                            <div class="d-flex flex-column">
-                                                <div class="fw-600">{{$detail[0]['sanpham']['tensp'].' - '.$detail[0]['sanpham']['mausac']}}</div>
-                                                <div class="fz-14">Dung lượng: {{$detail[0]['sanpham']['dungluong']}}</div>
-                                                <div class="fz-14">Số lượng: {{$detail[0]['sl']}}{{count($detail) > 1 ? ' ... và '.(count($detail) - 1).' sản phẩm khác' : ''}}</div>
-                                                <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">Xem chi tiết</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                {{-- giá  --}}
-                                <td class='vertical-center'>
-                                    <div>{{number_format($key['tongtien'], 0, '', '.')}}<sup>đ</sup></div>
-                                </td>
-                                {{-- trạng thái đơn hàng --}}
-                                <td class='vertical-center'>
-                                    <div>{{$key['trangthaidonhang']}}</div>
-                                </td>
-                            </tr>
-                            @endif
+                        @foreach ($lst_order['processing'] as $key)
+                            <?php $order = $key['order']; $detail = $key['detail'] ?>
+                            @include("user.content.components.donhang.don-hang")
                         @endforeach
                     </tbody>
                 </table>
             @endif
 
             {{-- đơn hàng đã xử lý --}}
-            <?php $done = false ?>
-            @foreach ($data['lst_order']['order'] as $key)
-                @if ($key->trangthaidonhang == 'Thành công' || $key->trangthaidonhang == 'Đã hủy')
-                    <?php $done = true ?>
-                    @break
-                @endif
-            @endforeach
-
-            @if ($done)
+            @if ($lst_order['complete'])
                 <table class='table box-shadow'>
                     <thead>
                         <tr>
@@ -90,45 +43,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data['lst_order']['order'] as $key)
-                            @if ($key->trangthaidonhang == 'Thành công' || $key->trangthaidonhang == 'Đã hủy')
-                                <tr>
-                                    {{-- mã đơn hàng --}}
-                                    <td class='vertical-center'>
-                                        <div class='p-20'>
-                                            <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">{{$key['id']}}</a>
-                                        </div>
-                                    </td>
-                                    {{-- ngày mua --}}
-                                    <td class='vertical-center'>
-                                        <div>{{explode(' ', $key['thoigian'])[0]}}</div>
-                                    </td>
-                                    {{-- sản phẩm mua --}}
-                                    <?php $detail = $data['lst_order']['detail'][$key['id']] ?>
-                                    <td class='w-40 vertical-center'>
-                                        <div class='pt-15 pb-15'>
-                                            <div class='d-flex'>
-                                                <img src="{{$url_phone.$detail[0]['sanpham']['hinhanh']}}" alt="" width="110px" class="mr-5">
-                                                <div class="d-flex flex-column">
-                                                    <div class="fw-600">{{$detail[0]['sanpham']['tensp'].' - '.$detail[0]['sanpham']['mausac']}}</div>
-                                                    <div class="fz-14">Ram: {{$detail[0]['sanpham']['ram']}}</div>
-                                                    <div class="fz-14">Dung lượng: {{$detail[0]['sanpham']['dungluong']}}</div>
-                                                    <div class="fz-14">Số lượng: {{$detail[0]['sl']}}{{count($detail) > 1 ? ' ... và '.count($detail).' sản phẩm khác' : ''}}</div>
-                                                    <a href="{{route('user/tai-khoan-chi-tiet-don-hang', ['id' => $key['id']])}}">Xem chi tiết</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    {{-- giá  --}}
-                                    <td class='vertical-center'>
-                                        <div>{{number_format($key['tongtien'], 0, '', '.')}}<sup>đ</sup></div>
-                                    </td>
-                                    {{-- trạng thái đơn hàng --}}
-                                    <td class='vertical-center'>
-                                        <div>{{$key['trangthaidonhang']}}</div>
-                                    </td>
-                                </tr>
-                            @endif
+                        @foreach ($lst_order['complete'] as $key)
+                            <?php $order = $key['order']; $detail = $key['detail']; ?>
+                            @include("user.content.components.donhang.don-hang")
                         @endforeach
                     </tbody>
                 </table>

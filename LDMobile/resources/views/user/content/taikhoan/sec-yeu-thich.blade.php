@@ -8,14 +8,10 @@
         <div class="account-head-title">
             <div class="fw-600 fz-22">Danh sách yêu thích</div>
             {{-- nút 3 chấm --}}
-            <div class='d-flex justify-content-end fz-24'>
-                <div class='account-btn-option' aria-expanded="false">
-                    <i class="far fa-ellipsis-v"></i>
-                    <div class='account-option-div border font-weight-300 fz-16'>
-                        <div class='d-flex flex-column text-center'>
-                            <div id='fav-btn-delete-all' class='pointer-cs black p-10'>Bỏ thích tất cả</div>
-                        </div>
-                    </div>
+            <div class='account-btn-option'>
+                <i class="far fa-ellipsis-v fz-28"></i>
+                <div class='account-option-div'>
+                    <div id='fav-btn-delete-all' class='account-single-option'>Bỏ thích tất cả</div>
                 </div>
             </div>
         </div>
@@ -27,38 +23,58 @@
                     <div id="favorite-{{$key['id']}}" class="single-favorite box-shadow mb-30">
                         <div class="d-flex justify-content-between">
                             {{-- điện thoại --}}
-                            <div class="favorite-product d-flex p-20">
-                                <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="favorite-img">
-                                <div class='d-flex flex-column'>
-                                    <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}?mausac={{$key['sanpham']['mausac_url']}}" class="fw-600 black mb-5">{{$key['sanpham']['tensp']}}</a>
-                                    @if ($key['sanpham']['danhgia']['qty'] != 0)
-                                        <div class='d-flex mb-5'>
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if($key['sanpham']['danhgia']['star'] >= $i)
-                                                <i class="fas fa-star checked"></i>
-                                                @else
-                                                <i class="fas fa-star uncheck"></i>
-                                                @endif
-                                            @endfor
-                                            <span class='fz-14 ml-10'>{{ $key['sanpham']['danhgia']['qty'] . ' đánh giá'}}</span>
-                                        </div>
+                            <div class="favorite-product">
+                                <div class="relative mr-10">
+                                    @if (!$key['sanpham']['modelStatus'])
+                                        <div class="stop-business-badge"></div>
+                                    @elseif ($key['sanpham']['comingSoon'])
+                                        <div class="coming-soon">HÀNG SẮP VỀ</div>
+                                    @elseif (!$key['sanpham']['inStocks'])
+                                        <div class="out-of-stock-badge"></div>
                                     @endif
-                                    <span>Màu sắc: {{$key['sanpham']['mausac']}}</span>
-                                    <span>Dung Lượng: {{$key['sanpham']['dungluong']}}</span>
+                                    <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="favorite-img">
                                 </div>
-                            </div>
 
-                            {{-- giá & nút xóa --}}
-                            <div class="d-flex">
-                                <div class="favorite-price">
-                                    <div class='d-flex flex-column p-20'>
-                                        <b class='red fz-20'>{{number_format($key['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></b>
+                                <div class='d-flex flex-column justify-content-between'>
+                                    <div class="d-flex flex-column">
+                                        {{-- tên sp --}}
+                                        <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}?mausac={{$key['sanpham']['mausac_url']}}" class="favorite-product-name">
+                                            {{$key['sanpham']['tensp'] . ' - ' . $key['sanpham']['mausac']}}
+    
+                                        </a>
+                                        <div class='d-flex mb-5'>
+                                            @if ($key['sanpham']['danhgia']['qty'] != 0)
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if($key['sanpham']['danhgia']['star'] >= $i)
+                                                    <i class="fas fa-star checked"></i>
+                                                    @else
+                                                    <i class="fas fa-star uncheck"></i>
+                                                    @endif
+                                                @endfor
+                                                <span class='fz-14 ml-10'>{{ $key['sanpham']['danhgia']['qty'] . ' đánh giá'}}</span>
+                                            @else
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <i class="fas fa-star uncheck"></i>
+                                                @endfor
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class='favorite-discount-price'>{{number_format($key['sanpham']['giakhuyenmai'], 0, '', '.')}}<sup>đ</sup></div>
                                         @if ($key['sanpham']['khuyenmai'] != 0)
-                                            <span class='text-strike fz-14'>{{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup></span>
+                                            <div class="favorite-old-price">
+                                                <span class='text-strike mr-10'>
+                                                    {{number_format($key['sanpham']['gia'], 0, '', '.')}}<sup>đ</sup>
+                                                </span>
+                                                <span class="red">-{{$key['sanpham']['khuyenmai']*100}}%</span>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
-                                {{-- nút xóa --}}
+                            </div>
+
+                            {{-- nút xóa --}}
+                            <div class="d-flex">
                                 <div type="button" data-id="{{$key['id']}}" class="fav-btn-delete d-flex align-items-center h-100 p-10"><i class="fal fa-trash-alt fz-24"></i></div>
                             </div>
                         </div>

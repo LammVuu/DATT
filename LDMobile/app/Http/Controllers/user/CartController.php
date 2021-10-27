@@ -634,13 +634,16 @@ class CartController extends Controller
             $id_tk = session('user')->id;
 
             foreach($request->idList as $id_sp) {
-                $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+                $product = $this->IndexController->getProductById($id_sp);
 
-                if($qtyInStock > 0) {
-                    $product = $this->IndexController->getProductById($id_sp);
-                    $price = $product['giakhuyenmai'];
-                    $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
-                    $response['provisional'] += $price * $qtyInCart;
+                if($product['trangthai']) {
+                    $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
+    
+                    if($qtyInStock > 0) {
+                        $price = $product['giakhuyenmai'];
+                        $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
+                        $response['provisional'] += $price * $qtyInCart;
+                    }
                 }
             }
 

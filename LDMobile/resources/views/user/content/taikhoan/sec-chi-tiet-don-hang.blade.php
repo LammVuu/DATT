@@ -103,11 +103,12 @@
                             {{-- sản phẩm --}}
                             <td class='w-40 vertical-center'>
                                 <div class='d-flex flex-row pt-10 pb-10'>
-                                    <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" width="90px" class="mr-5">
-                                    <div class='d-flex flex-column fz-14'>
-                                        <a href='{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}?mausac={{$key['sanpham']['mausac_url']}}' class="black fw-600">{{$key['sanpham']['tensp'] . ' - ' . $key['sanpham']['mausac']}}</a>
-                                        <span>Ram: {{$key['sanpham']['ram']}}</span>
-                                        <span>Dung Lượng: {{$key['sanpham']['dungluong']}}</span>
+                                    <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" width="80px" class="mr-5">
+                                    <div class='d-flex flex-column'>
+                                        <a href='{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url']])}}?mausac={{$key['sanpham']['mausac_url']}}' class="cart-phone-name">
+                                            {{$key['sanpham']['tensp']}}
+                                        </a>
+                                        <span>Màu sắc: {{$key['sanpham']['mausac']}}</span>
                                     </div>
                                 </div>
                             </td>

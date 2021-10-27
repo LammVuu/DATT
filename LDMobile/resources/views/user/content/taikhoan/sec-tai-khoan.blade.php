@@ -1,3 +1,6 @@
+<?php
+$user = session('user');
+?>
 <div class='row'>
     <div class='col-md-3'>
         @section("acc-info-active") account-sidebar-active @stop
@@ -9,19 +12,19 @@
                 <div class="col-lg-4">
                     {{-- avatar --}}
                     <div class='account-avatar-div'>
-                        @if (session('user')->htdn == 'nomal')
+                        @if ($user->htdn == 'nomal')
                         <div class='overlay-avatar'>
                             <input id='change-avt-inp' data-modal='avt' type="file" class="none-dp" accept="image/*">
                             <div id='btn-change-avt' class='account-change-img pointer-cs'>Thay đổi</div>
                         </div>
                         @endif
-                        <img id='avt-img' src="{{ session('user')->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="avatar" class='account-avt-img'>
+                        <img id='avt-img' src="{{ $user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="avatar" class='account-avt-img'>
                     </div>
                     {{-- họ tên --}}
                     <div class="mb-20">
-                        @if (session('user')->htdn == 'nomal')
+                        @if ($user->htdn == 'nomal')
                             <div class="d-flex align-items-center justify-content-center">
-                                <div id="user_fullname" class="text-center fz-24 black">{{session('user')->hoten}}</div>
+                                <div id="user_fullname" class="text-center fz-24 black">{{$user->hoten}}</div>
                                 <div type="button" id='btn-change-info' class="ml-10"><i class="fas fa-user-edit"></i></div>
                             </div>
                             <div id="change-info-div" class="none-dp mt-10">
@@ -33,7 +36,7 @@
                                 </div>
                             </div>
                         @else
-                            <div class="text-center fz-24 black">{{session('user')->hoten}}</div>
+                            <div class="text-center fz-24 black">{{$user->hoten}}</div>
                         @endif
                     </div>
                 </div>
@@ -75,10 +78,10 @@
                         @endif
                     </div>
                     {{-- đổi mật khẩu --}}
-                    @if (session('user')->htdn == 'nomal')
+                    @if ($user->htdn == 'nomal')
                         <div id='btn-change-pw' type="button" data-bs-toggle="modal" data-bs-target="#change-pw-modal" class="d-flex align-items-center main-color-text"><i class="fas fa-key mr-10"></i>Thay đổi mật khẩu</div>
                     @else
-                        <div>Tài khoản liên kết: <b>{{session('user')->htdn}} <i class="fas fa-check-circle success-color ml-5"></i></b></div>
+                        <div>Tài khoản liên kết: <b>{{$user->htdn}} <i class="fas fa-check-circle success-color ml-5"></i></b></div>
                     @endif
             
                 </div>
@@ -163,11 +166,7 @@
                         <div class="mt-a">
                             <div class="d-flex flex-fill align-items-end justify-content-end">
                                 <div class="cancel-btn mr-10" data-bs-dismiss="modal">Hủy</div>
-                                <form id="change-avatar-form" action="{{route('user/ajax-change-avatar')}}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="base64data">
-                                    <div class="crop-img main-btn p-10">Cập nhật</div>
-                                </form>
+                                <div class="crop-img main-btn p-10">Cập nhật</div>
                             </div>
                         </div>
                     </div>

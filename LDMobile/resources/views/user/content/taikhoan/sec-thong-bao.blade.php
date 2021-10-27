@@ -9,15 +9,11 @@
             <div class='fz-22 fw-600'>Thông báo</div>
             
             {{-- nút 3 chấm --}}
-            <div class='d-flex justify-content-end fz-24'>
-                <div class='account-btn-option' aria-expanded="false">
-                    <i class="far fa-ellipsis-v"></i>
-                    <div class='account-option-div border font-weight-300 fz-16'>
-                        <div class='d-flex flex-column text-center'>
-                            <div id='noti-btn-read-all' class='pointer-cs black p-10'>Đánh dấu đọc tất cả</div>
-                            <div id='noti-btn-delete-all' class='pointer-cs black p-10'>Xóa tất cả thông báo</div>
-                        </div>
-                    </div>
+            <div class='account-btn-option'>
+                <i class="far fa-ellipsis-v fz-28"></i>
+                <div class='account-option-div'>
+                    <div id='noti-btn-read-all' class='account-single-option'>Đánh dấu đọc tất cả</div>
+                    <div id='noti-btn-delete-all' class='account-single-option'>Xóa tất cả thông báo</div>
                 </div>
             </div>
         </div>
@@ -51,32 +47,37 @@
                         <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
                             <div class="d-flex align-items-center">
                                 <div>
-                                    @if ($key['tieude'] == 'Đơn đã tiếp nhận')
-                                        <i class="fas fa-file-alt fz-28 info-color"></i>
-                                    @elseif ($key['tieude'] == 'Đơn đã xác nhận')
-                                        <i class="fas fa-file-check fz-28 success-color"></i>
-                                    @elseif ($key['tieude'] == 'Giao hàng thành công')
-                                        <i class="fas fa-box-check fz-28 success-color"></i>
-                                    @elseif ($key['tieude'] == 'Mã giảm giá')
-                                        <i class="fas fa-badge-percent fz-28 yellow"></i>
-                                    @elseif ($key['tieude'] == 'Phản hồi')
-                                        <i class="fas fa-reply fz-28 purple"></i>
-                                    @endif
+                                    @switch($key->tieude)
+                                        @case('Đơn đã tiếp nhận')
+                                            <i class="fas fa-file-alt fz-28 info-color"></i>
+                                            @break
+                                        @case('Đơn đã xác nhận')
+                                            <i class="fas fa-file-check fz-28 success-color"></i>
+                                            @break
+                                        @case('Giao hàng thành công')
+                                            <i class="fas fa-box-check fz-28 success-color"></i>
+                                            @break
+                                        @case('Mã giảm giá')    
+                                            <i class="fas fa-badge-percent fz-28 yellow"></i>
+                                            @break
+                                        @default
+                                            <i class="fas fa-reply fz-28 purple"></i>
+                                    @endswitch
                                 </div>
-                                <div class="fw-600 fz-18 ml-10">{{$key['tieude']}}</div>
+                                <div class="fw-600 fz-18 ml-10">{{$key->tieude}}</div>
                             </div>
                             <div class="d-flex align-items-end">
-                                @if ($key['trangthaithongbao'] == 0)
-                                <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$key['id']}}'>Đánh dấu đã đọc</div>
+                                @if ($key->trangthaithongbao == 0)
+                                    <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$key->id}}'>Đánh dấu đã đọc</div>
                                 @endif
-                                <div type="button" class='noti-btn-delete red' data-id='{{$key['id']}}'>xóa</div>
+                                    <div type="button" class='noti-btn-delete red' data-id='{{$key->id}}'>xóa</div>
                             </div>
                         </div>
                         {{-- nội dung --}}
                         <div class="d-flex pt-20 pb-20 pl-10 pr-10">
-                            <div id={{ 'noti-content-' . $key['id'] }}>
-                                <div>{!! $key['noidung'] !!}</div>
-                                <div class="mt-10 fz-14">{{$key['thoigian']}}</div>
+                            <div id={{ 'noti-content-' . $key->id }}>
+                                <div>{!! $key->noidung !!}</div>
+                                <div class="mt-10 fz-14">{{$key->thoigian}}</div>
                             </div>
                         </div>
                     </div>

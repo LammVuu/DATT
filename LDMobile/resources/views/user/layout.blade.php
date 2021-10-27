@@ -11,7 +11,7 @@
     <div id="fb-customer-chat" class="fb-customerchat">
     </div>
 
-    <script>
+    {{-- <script>
       var chatbox = document.getElementById('fb-customer-chat');
       chatbox.setAttribute("page_id", "157073173138532");
       chatbox.setAttribute("attribution", "biz_inbox");
@@ -30,17 +30,7 @@
         js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
         fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
-    </script>
-
-    {{-- alert top --}}
-    <div class="alert-top">
-        <div class="close-alert-top-icon"><i class="far fa-times-circle"></i></div>
-        <div class="alert-top-title"></div>
-        <div class="alert-top-content"></div>
-        <div class="alert-top-footer">
-            <div class="close-alert-top">OK</div>
-        </div>
-    </div>
+    </script> --}}
     
     {{-- session --}}
     @if (session('toast_message'))

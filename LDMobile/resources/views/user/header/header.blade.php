@@ -70,8 +70,8 @@
                                                 </a>
                                                 <a href="{{route('user/tai-khoan-don-hang')}}" class='head-account-option'>
                                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                                    @if ($data['lst_order']['processing'] != 0)
-                                                        <span class='processing-qty number-badge ml-10'>{{$data['lst_order']['processing']}}</span>
+                                                    @if ($data['lst_order']['processingQty'] != 0)
+                                                        <span class='processing-qty number-badge ml-10'>{{$data['lst_order']['processingQty']}}</span>
                                                     @endif
                                                 </a>
                                                 <a href="{{route('user/logout')}}" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
@@ -128,8 +128,8 @@
                                 </a>
                                 <a href="{{route('user/tai-khoan-don-hang')}}" class="offcanvas-account-single-option">
                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                    @if ($data['lst_order']['processing'] != 0)
-                                        <span class='processing-qty number-badge ml-10'>{{$data['lst_order']['processing']}}</span>
+                                    @if ($data['lst_order']['processingQty'] != 0)
+                                        <span class='processing-qty number-badge ml-10'>{{$data['lst_order']['processingQty']}}</span>
                                     @endif
                                 </a>
                                 <a href="{{route('user/logout')}}" class="offcanvas-account-single-option"><i class="far fa-power-off mr-10"></i>Đăng xuất</a>

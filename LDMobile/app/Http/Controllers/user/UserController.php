@@ -34,6 +34,7 @@ use App\Models\CHINHANH;
 use App\Models\TINHTHANH;
 use App\Models\SANPHAM;
 use App\Models\DONHANG_DIACHI;
+use App\Models\HANGDOI;
 use App\Http\Controllers\PushNotificationController;
 
 class UserController extends Controller
@@ -44,6 +45,12 @@ class UserController extends Controller
         $this->user='user/content/';
         $this->IndexController = new IndexController;
         date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+        // chưa có thư mục lưu hình
+        if(!is_dir('images/evaluate')){
+            // tạo thư mục lưu hình
+            mkdir('images/evaluate', 0777, true);
+        }
     }
     /*============================================================================================================
                                                         Auth
@@ -283,13 +290,26 @@ class UserController extends Controller
 
     public function LogOut(Response $response)
     {
-        if(!session('user')){
+        $user = session('user');
+        // đang không đăng nhập
+        if(!$user){
             return back();
         }
 
+        // nếu đang thanh toán thì xóa hàng đợi
+        $isQueue = HANGDOI::where('id_tk', $user->id)->first();
+        if($isQueue) {
+            $isQueue->delete();
+
+            // làm mới id tăng tự động
+            if(!HANGDOI::count()){
+                HANGDOI::truncate();
+            }
+        }
+
         Auth::logout();
-        if(session('user')->htdn != 'nomal'){
-            TAIKHOAN::where('id', session('user')->id)->update(['login_status' => 0]);
+        if($user->htdn !== 'nomal'){
+            TAIKHOAN::where('id', $user->id)->update(['login_status' => 0]);
             Cookie::queue(Cookie::forget('acccount_social_id'));
         }
         
@@ -321,9 +341,11 @@ class UserController extends Controller
 
         $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
 
+        $addressDefault = $this->IndexController->getAddressDefault(session('user')->id);
+
         $array = [
             'page' => 'sec-tai-khoan',
-            'addressDefault' => $this->IndexController->getAddressDefault(session('user')->id),
+            'addressDefault' => $addressDefault,
             'lstTinhThanh' => $tinhThanh,
             'lstQuanHuyen' => $lstQuanHuyen,
         ];
@@ -448,70 +470,87 @@ class UserController extends Controller
         return redirect('thanhtoan')->with('toast_message', 'Đã thay đổi địa chỉ giao hàng');
     }
 
-    public function CreateUpdateAddress(Request $request)
+    public function AjaxCreateUpdateAddress(Request $request)
     {
-        $type = $request->address_type;
-
-        if($type == 'create'){
-            $data = [
-                'id_tk' => session('user')->id,
-                'hoten' => $request->adr_fullname_inp,
-                'diachi' => $request->address_inp,
-                'phuongxa' => $request->PhuongXa_name_inp,
-                'quanhuyen' => $request->QuanHuyen_name_inp,
-                'tinhthanh' => $request->TinhThanh_name_inp,
-                'sdt' => $request->adr_tel_inp,
-                'macdinh' => $request->set_default_address == null ? 0 : 1,
+        if($request->ajax()) {
+            $response = [
+                'message' => ''
             ];
 
-            if($data['macdinh'] == null || $data['macdinh'] == 0){
-                if(!TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->first()){
-                    $data['macdinh'] = 1;
+            $data = [
+                'hoten' => $request->hoten,
+                'diachi' => $request->diachi,
+                'phuongxa' => $request->phuongxa,
+                'quanhuyen' => $request->quanhuyen,
+                'tinhthanh' => $request->tinhthanh,
+                'sdt' => $request->sdt,
+                'macdinh' => $request->macdinh,
+            ];
+
+            $type = $request->type;
+    
+            if($type === 'create') {
+                $data['id_tk'] = session('user')->id;
+
+                // không đặt làm mặc định
+                if(!$data['macdinh']){
+                    // nếu người dùng chưa có địa chỉ mặc định nào thì tự động chọn làm mặc định
+                    if(!TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->first()){
+                        $data['macdinh'] = 1;
+                    }
                 }
+                // chọn địa chỉ làm mặc định
+                else {
+                    // cập nhật các địa chỉ khác trạng thái = 0
+                    TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh', 1)->update(['macdinh' => 0]);
+                }
+    
+                TAIKHOAN_DIACHI::create($data);
+
+                $response['message'] = 'Tạo địa chỉ thành công';
             } else {
-                TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh', 1)->update(['macdinh' => 0]);
-            }
-
-            TAIKHOAN_DIACHI::create($data);
-
-            return back()->with('toast_message', 'Tạo địa chỉ thành công');
-
-        } elseif($type == 'edit'){
-            $data = [
-                'hoten' => $request->adr_fullname_inp,
-                'diachi' => $request->address_inp,
-                'phuongxa' => $request->PhuongXa_name_inp,
-                'quanhuyen' => $request->QuanHuyen_name_inp,
-                'tinhthanh' => $request->TinhThanh_name_inp,
-                'sdt' => $request->adr_tel_inp,
-                'macdinh' => $request->set_default_address == null ? 0 : 1,
-            ];
-
-            if($data['macdinh'] == null || $data['macdinh'] == 0){
-                if(!TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->first() || (count(TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->get()) == 1 && TAIKHOAN_DIACHI::where('id', $request->tk_dc_id)->first()->macdinh == 1)){
-                    $data['macdinh'] = 1;
+                // không đặt làm mặc định
+                if(!$data['macdinh']){
+                    // tự động chọn mặc định khi chưa có địa chỉ mặc định
+                    $defaultAddress = TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->first();
+                    // không có địa chỉ mặc định
+                    if(!$defaultAddress) {
+                        $data['macdinh'] = 1;
+                    }
+                    // địa chỉ đang chỉnh sửa là mặc định thì sẽ vẫn là địa chỉ mặc định
+                    elseif ($defaultAddress->id == $request->tk_dc_id) {
+                        $data['macdinh'] = 1;
+                    }
                 }
-            }
-            else {
-                $address = TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->first();
-                if($address){
-                    $address->macdinh = 0;
-                    $address->save();
+                else {
+                    $address = TAIKHOAN_DIACHI::where('id_tk', session('user')->id)->where('macdinh' , 1)->first();
+                    if($address){
+                        $address->macdinh = 0;
+                        $address->save();
+                    }
                 }
+    
+                TAIKHOAN_DIACHI::where('id', $request->tk_dc_id)->update($data);
+    
+                $response['message'] = 'Chỉnh sửa địa chỉ thành công';
             }
 
-            TAIKHOAN_DIACHI::where('id', $request->tk_dc_id)->update($data);
-
-            return back()->with('toast_message', 'Chỉnh sửa địa chỉ thành công');
+            return $response;
         }
     }
 
-    public function SetDefaultAddress($id)
+    public function AjaxSetDefaultAddress(Request $request)
     {
-        TAIKHOAN_DIACHI::where('macdinh', 1)->update(['macdinh' => 0]);
-        TAIKHOAN_DIACHI::where('id', $id)->update(['macdinh' => 1]);
+        if($request->ajax()) {
+            TAIKHOAN_DIACHI::where('macdinh', 1)->update(['macdinh' => 0]);
+            TAIKHOAN_DIACHI::where('id', $request->id)->update(['macdinh' => 1]);
+    
+            $response = [
+                'message' => 'Đã thay đổi địa chỉ'
+            ];
 
-        return back()->with('toast_message', 'Đã thay đổi địa chỉ');
+            return $response;
+        }
     }
 
     public function ApplyVoucher(Request $request)
@@ -545,98 +584,108 @@ class UserController extends Controller
         }
     }
 
-    public function DeleteObject(Request $request)
+    public function AjaxDeleteObject(Request $request)
     {
-        switch($request->object) {
-            case 'address':
-                TAIKHOAN_DIACHI::destroy($request->id);
-                return back()->with('toast_message', 'Xóa địa chỉ thành công');
-                break;
-            case 'item-cart':
-                GIOHANG::destroy($request->id);
-                if(count(GIOHANG::all()) === 0) {
-                    GIOHANG::truncate();
-                }
+        if($request->ajax()) {
+            $response = [
+                'message' => ''
+            ];
 
-                // xóa voucher đang áp dụng khi giỏ hàng rỗng
-                if(!GIOHANG::where('id_tk', session('user')->id)->count() && session('voucher')){
-                    $request->session()->forget('voucher');
-                }
+            $id = $request->id;
+            $object = $request->object;
 
-                return back()->with('toast_message', 'Đã xóa sản phẩm');
-                break;
-            case 'all-cart':
-                GIOHANG::where('id_tk', session('user')->id)->delete();
-                if(count(GIOHANG::all()) === 0) {
-                    GIOHANG::truncate();
-                }
-                // xóa session voucher
-                if(session('voucher')){
-                    $request->session()->forget('voucher');
-                }
-                return back()->with('toast_message', 'Đã xóa giỏ hàng');
-                break;
-            case 'order':
-                // cập nhật trạng thái đơn hàng: Đã hủy
-                DONHANG::where('id', $request->id)->update(['trangthaidonhang' => 'Đã hủy']);
+            switch($object) {
+                case 'address':
+                    TAIKHOAN_DIACHI::destroy($id);
+                    $response['message'] = 'Xóa địa chỉ thành công';
+                    break;
+                case 'item-cart':
+                    GIOHANG::destroy($id);
 
-                $order = DONHANG::find($request->id);
-                $id_tk = $order->id_tk;
-
-                // hoàn lại số lượng kho
-                $this->refundOfInventory($order->id);
-
-                // khôi phục voucher đã áp dụng
-                if($order->id_vc){
-                    $id_vc = DONHANG::find($request->id)->id_vc;
-                    $this->restoreTheAppliedVoucher($id_vc, $id_tk);
-                }
-
-                return back()->with('toast_message', 'Đã hủy đơn hàng');
-                break;
-            case 'evaluate':
-                $id_dg = $request->id;
-
-                $evaluate = DANHGIASP::find($id_dg);
-
-                // xóa hình đánh giá trong thư mục và db
-                foreach(CTDG::where('id_dg', $id_dg)->get() as $key){
-                    unlink('images/evaluate/' . $key['hinhanh']);
-                    CTDG::destroy($key['id']);
-                }
-
-                // xóa phản hồi
-                PHANHOI::where('id_dg', $id_dg)->delete();
-
-                // xóa lượt thích
-                LUOTTHICH::where('id_dg', $id_dg)->delete();
-                
-                // kiểm tra các dòng thuộc cùng 1 đánh giá
-                $lst_id = $this->IndexController->getListIdByCapacity(DANHGIASP::find($id_dg)->id_sp);
-                
-                $lst_id_dg = [];
-
-                // danh sách đánh giá trong khoảng của id_sp và cùng thuộc 1 đánh giá
-                foreach(DANHGIASP::whereBetween('id_sp', [$lst_id[0], $lst_id[count($lst_id) - 1]])->get() as $key){
-                    if($evaluate->id_tk == $key['id_tk'] && $evaluate->noidung == $key['noidung'] && $evaluate->thoigian == $key['thoigian']){
-                        array_push($lst_id_dg, $key['id']);
+                    if(!GIOHANG::count()) {
+                        GIOHANG::truncate();
                     }
-                }
-
-                // xóa các dòng thuộc 1 đánh giá
-                if(!empty($lst_id_dg)){
-                    foreach($lst_id_dg as $key){
-                        DANHGIASP::destroy($key);
+    
+                    // xóa voucher đang áp dụng khi giỏ hàng rỗng
+                    if(!GIOHANG::where('id_tk', session('user')->id)->count() && session('voucher')){
+                        $request->session()->forget('voucher');
                     }
-                } else {
-                    DANHGIASP::destroy($id_dg);
-                }
-
-                return back()->with('toast_message', 'Đã xóa đánh giá');
-                break;
+    
+                    $response['message'] = 'Đã xóa sản phẩm';
+                    break;
+                case 'all-cart':
+                    GIOHANG::where('id_tk', session('user')->id)->delete();
+                    if(!GIOHANG::count()) {
+                        GIOHANG::truncate();
+                    }
+                    // xóa session voucher
+                    if(session('voucher')){
+                        $request->session()->forget('voucher');
+                    }
+                    $response['message'] =  'Đã xóa giỏ hàng';
+                    break;
+                case 'order':
+                    // cập nhật trạng thái đơn hàng: Đã hủy
+                    DONHANG::where('id', $id)->update(['trangthaidonhang' => 'Đã hủy']);
+    
+                    $order = DONHANG::find($id);
+                    $id_tk = $order->id_tk;
+    
+                    // hoàn lại số lượng kho
+                    $this->refundOfInventory($order->id);
+    
+                    // khôi phục voucher đã áp dụng
+                    if($order->id_vc){
+                        $id_vc = DONHANG::find($id)->id_vc;
+                        $this->restoreTheAppliedVoucher($id_vc, $id_tk);
+                    }
+    
+                    $response['message'] = 'Đã hủy đơn hàng';
+                    break;
+                case 'evaluate':
+                    $id_dg = $id;
+    
+                    $evaluate = DANHGIASP::find($id_dg);
+    
+                    // xóa hình đánh giá trong thư mục và db
+                    foreach(CTDG::where('id_dg', $id_dg)->get() as $key){
+                        unlink('images/evaluate/' . $key['hinhanh']);
+                        CTDG::destroy($key['id']);
+                    }
+    
+                    // xóa phản hồi
+                    PHANHOI::where('id_dg', $id_dg)->delete();
+    
+                    // xóa lượt thích
+                    LUOTTHICH::where('id_dg', $id_dg)->delete();
+                    
+                    // kiểm tra các dòng thuộc cùng 1 đánh giá
+                    $lst_id = $this->IndexController->getListIdSameCapacity(DANHGIASP::find($id_dg)->id_sp);
+                    
+                    $lst_id_dg = [];
+    
+                    // danh sách đánh giá trong khoảng của id_sp và cùng thuộc 1 đánh giá
+                    foreach(DANHGIASP::whereBetween('id_sp', [$lst_id[0], $lst_id[count($lst_id) - 1]])->get() as $key){
+                        if($evaluate->id_tk == $key['id_tk'] && $evaluate->noidung == $key['noidung'] && $evaluate->thoigian == $key['thoigian']){
+                            array_push($lst_id_dg, $key['id']);
+                        }
+                    }
+    
+                    // xóa các dòng thuộc 1 đánh giá
+                    if(!empty($lst_id_dg)){
+                        foreach($lst_id_dg as $key){
+                            DANHGIASP::destroy($key);
+                        }
+                    } else {
+                        DANHGIASP::destroy($id_dg);
+                    }
+    
+                    $response['message'] = 'Đã xóa đánh giá';
+                    break;
+            }
+    
+            return $response;
         }
-
-        return back();
     }
 
     // hoàn lại số lượng kho
@@ -758,23 +807,24 @@ class UserController extends Controller
 
     public function AjaxChangeAvatar(Request $request)
     {
-        $data = $request->base64data;
-        $image_arr_1 = explode(';', $data);
-        $image_arr_2 = explode(',', $image_arr_1[1]);
-
-        $data = base64_decode($image_arr_2[1]);
-
-        $imageName = session('user')->id.'.jpg';
-        $urlImage = 'images/user/'.$imageName;
-
-        file_put_contents($urlImage, $data);
-
-        TAIKHOAN::where('id', session('user')->id)->update(['anhdaidien' => $imageName]);
-
-        $this->IndexController->userSessionUpdate();
-
-        //return $urlImage;
-        return back()->with('toast_message', 'Cập nhật ảnh đại diện thành công');
+        if($request->ajax()) {
+            $data = $request->base64String;
+            $image_arr_1 = explode(';', $data);
+            $image_arr_2 = explode(',', $image_arr_1[1]);
+    
+            $data = base64_decode($image_arr_2[1]);
+    
+            $imageName = session('user')->id.'.jpg';
+            $urlImage = 'images/user/'.$imageName;
+    
+            file_put_contents($urlImage, $data);
+    
+            TAIKHOAN::where('id', session('user')->id)->update(['anhdaidien' => $imageName]);
+    
+            $this->IndexController->userSessionUpdate();
+    
+            return ['message' => 'Cập nhật ảnh đại diện thành công'];
+        }
     }
 
     public function AjaxChangeFullname(Request $request)
@@ -975,33 +1025,75 @@ class UserController extends Controller
                     DANHGIASP::create($data);
                 }
             }
-            // có ảnh đính kèm
-            if($request->evaluateImage){
-                // chưa có thư mục lưu hình
-                if(!is_dir('images/evaluate')){
-                    // tạo thư mục lưu hình
-                    mkdir('images/evaluate', 0777, true);
-                }
-                foreach($request->evaluateImage as $idx => $image){
-                    // định dạng hình
-                    $imageFormat = $this->IndexController->getImageFormat($image);
-                    if($imageFormat == 'png'){
-                        $base64 = str_replace('data:image/png;base64,', '', $image);
-                        $imageName = time().$idx.'.png';
-                    } else {
-                        $base64 = str_replace('data:image/jpeg;base64,', '', $image);
-                        $imageName = time().$idx.'.jpg';
-                    }
-                    // lưu hình
-                    $this->IndexController->saveImage('images/evaluate/'.$imageName, $base64);
 
+            // có ảnh đính kèm
+            if($request->evaluateImage) {
+                // lấy hình ảnh của đánh giá vừa thêm vào
+                $evaluateImageList = [];
+                $allImages = scandir(public_path('images/evaluate'));
+                $tempName = 'temp_';
+
+                foreach($allImages as $image) {
+                    if(str_contains($image, $tempName)) {
+                        array_push($evaluateImageList, $image);
+                    } 
+                }
+
+                // đổi lại tên hình
+                $directory = 'images/evaluate/';
+                foreach($evaluateImageList as $i => $image) {
+                    $format = $this->splitNameAndFormat($image)['format'];
+                    $newName = time().$i.$format;
+                    rename(
+                        $directory.$image,
+                        $directory.$newName
+                    );
+    
+                    // thêm vào db
                     CTDG::create([
                         'id_dg' => $id_dg,
-                        'hinhanh' => $imageName,
+                        'hinhanh' => $newName
                     ]);
                 }
             }
+
+            return ['message' => 'Đã đánh giá sản phẩm'];
         }
+    }
+
+    public function AjaxUploadSingleImageEvaluate(Request $request)
+    {
+        if($request->ajax()) {
+            $base64String = $request->base64String;
+
+            // định dạng hình
+            $format = $this->IndexController->getImageFormat($base64String);
+            
+            $base64 = str_replace('data:image/'.$format.';base64,', '', $base64String);
+            $imageName = 'temp_' . $request->index . '.' . $format; // vd: temp_0.png
+
+            // lưu hình
+            $this->IndexController->saveImage('images/evaluate/'.$imageName, $base64);
+
+            return true;
+        }
+    }
+
+    public function splitNameAndFormat($imageName)
+    {
+        $data = [
+            'name' => '',
+            'format' => '',
+        ];
+
+        $array = explode('.', $imageName);
+
+        $format = array_pop($array);
+
+        $data['format'] = '.' . $format;
+        $data['name'] = implode('', $array);
+
+        return $data;
     }
 
     public function AjaxEditEvaluate(Request $request)
@@ -1009,16 +1101,19 @@ class UserController extends Controller
         if($request->ajax()){
             // cập nhật đánh giá
             // kiểm tra gộp đánh giá
-            $evaluate = DANHGIASP::find($request->id_dg);
+            $id_dg = $request->id_dg;
+            $evaluate = DANHGIASP::find($id_dg);
 
-            $lst_id = $this->IndexController->getListIdByCapacity($evaluate->id_sp);
+            $lst_id = $this->IndexController->getListIdSameCapacity($evaluate->id_sp);
             
             $lst_id_dg = [];
 
             // danh sách đánh giá trong khoảng của id_sp
-            foreach(DANHGIASP::whereBetween('id_sp', [$lst_id[0], $lst_id[count($lst_id) - 1]])->get() as $key){
-                if($evaluate->id_tk == $key['id_tk'] && $evaluate->noidung == $key['noidung'] && $evaluate->thoigian == $key['thoigian']){
-                    array_push($lst_id_dg, $key['id']);
+            foreach(DANHGIASP::whereBetween('id_sp', [$lst_id[0], end($lst_id)])->get() as $key){
+                if($evaluate->id_tk == $key->id_tk &&
+                    $evaluate->noidung == $key->noidung &&
+                    $evaluate->thoigian == $key->thoigian) {
+                    array_push($lst_id_dg, $key->id);
                 }
             }
 
@@ -1046,32 +1141,43 @@ class UserController extends Controller
             }
 
             // xóa hình đánh giá trong thư mục và db
-            foreach(CTDG::where('id_dg', $request->id_dg)->get() as $key){
-                unlink('images/evaluate/' . $key['hinhanh']);
-                CTDG::destroy($key['id']);
+            foreach(CTDG::where('id_dg', $id_dg)->get() as $key){
+                unlink('images/evaluate/' . $key->hinhanh);
+                CTDG::destroy($key->id);
             }
 
             // cập nhật hình mới
             if(!empty($request->evaluateImage)){
-                foreach($request->evaluateImage as $idx => $image){
-                    // định dạng hình
-                    $imageFormat = $this->IndexController->getImageFormat($image);
-                    if($imageFormat == 'png'){
-                        $base64 = str_replace('data:image/png;base64,', '', $image);
-                        $imageName = time().$idx.'.png';
-                    } else {
-                        $base64 = str_replace('data:image/jpeg;base64,', '', $image);
-                        $imageName = time().$idx.'.jpg';
-                    }
-                    // lưu hình
-                    $this->IndexController->saveImage('images/evaluate/'.$imageName, $base64);
+                // lấy hình ảnh của đánh giá vừa thêm vào
+                $evaluateImageList = [];
+                $allImages = scandir(public_path('images/evaluate'));
+                $tempName = 'temp_';
+
+                foreach($allImages as $image) {
+                    if(str_contains($image, $tempName)) {
+                        array_push($evaluateImageList, $image);
+                    } 
+                }
+
+                // đổi lại tên hình
+                $directory = 'images/evaluate/';
+                foreach($evaluateImageList as $i => $image) {
+                    $format = $this->splitNameAndFormat($image)['format'];
+                    $newName = time().$i.$format;
+                    rename(
+                        $directory.$image,
+                        $directory.$newName
+                    );
     
+                    // thêm vào db
                     CTDG::create([
-                        'id_dg' => $request->id_dg,
-                        'hinhanh' => $imageName,
+                        'id_dg' => $id_dg,
+                        'hinhanh' => $newName
                     ]);
                 }
             }
+
+            return ['message' => 'Đã chỉnh sửa đánh giá'];
         }
     }
 
@@ -1120,31 +1226,34 @@ class UserController extends Controller
     public function AjaxGetTypeNotification(Request $request)
     {
         if($request->ajax()){
-            $type = $request->type;
             $data = [];
+            $type = $request->type;
+            $user = session('user');
             switch($type){
                 case 'all':
-                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->limit(10)->get();
+                    $data = THONGBAO::where('id_tk', $user->id)->orderBy('id', 'desc')->limit(10)->get();
                     break;
                 case 'not-seen':
-                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('trangthaithongbao', 0)->get();
+                    $data = THONGBAO::where('id_tk', $user->id)->orderBy('id', 'desc')->where('trangthaithongbao', 0)->get();
                     break;
                 case 'seen':
-                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('trangthaithongbao', 1)->get();
+                    $data = THONGBAO::where('id_tk', $user->id)->orderBy('id', 'desc')->where('trangthaithongbao', 1)->get();
                     break;
                 case 'order':
-                    $data = THONGBAO::where('id_tk', session('user')->id)
-                                    ->orderBy('id', 'desc')
-                                    ->Where('tieude', 'Đơn đã tiếp nhận')
-                                    ->orWhere('tieude', 'Đơn đã xác nhận')
-                                    ->orWhere('tieude', 'Giao hàng thành công')
-                                    ->get();
+                    $userNoti = THONGBAO::where('id_tk', $user->id)
+                                        ->orderBy('id', 'desc')->get();
+                    
+                    foreach($userNoti as $noti) {
+                        if($noti->tieude === 'Đơn đã tiếp nhận' || $noti->tieude === 'Đơn đã xác nhận' || $noti->tieude === 'Giao hàng thành công') {
+                            array_push($data, $noti);
+                        }
+                    }
                     break;
                 case 'voucher':
-                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('tieude', 'Mã giảm giá')->get();
+                    $data = THONGBAO::where('id_tk', $user->id)->orderBy('id', 'desc')->where('tieude', 'Mã giảm giá')->get();
                     break;
                 case 'reply':
-                    $data = THONGBAO::where('id_tk', session('user')->id)->orderBy('id', 'desc')->where('tieude', 'Phản hồi')->get();
+                    $data = THONGBAO::where('id_tk', $user->id)->orderBy('id', 'desc')->where('tieude', 'Phản hồi')->get();
                     break;
             }
 

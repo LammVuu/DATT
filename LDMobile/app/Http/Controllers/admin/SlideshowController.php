@@ -39,14 +39,10 @@ class SlideshowController extends Controller
     {
         if($request->ajax()){
             // định dạng hình
-            $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
-            if($imageFormat == 'png'){
-                $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
-                $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.png';
-            } else {
-                $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.jpg';
-            }
+            $format = $this->IndexController->getImageFormat($request->hinhanh);
+
+            $base64 = str_replace('data:image/'.$format.';base64,', '', $request->hinhanh);
+            $imageName = 'slide'.time().'.'.$format;
 
             // lưu hình
             $this->IndexController->saveImage('images/slideshow/'.$imageName, $base64);
@@ -78,14 +74,10 @@ class SlideshowController extends Controller
                 unlink('images/slideshow/' . $oldData->hinhanh);
 
                 // định dạng hình
-                $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
-                if($imageFormat == 'png'){
-                    $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
-                    $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.png';
-                } else {
-                    $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                    $imageName = 'slide'.(count(SLIDESHOW::all()) + 1).'.jpg';
-                }
+                $format = $this->IndexController->getImageFormat($request->hinhanh);
+
+                $base64 = str_replace('data:image/'.$format.';base64,', '', $request->hinhanh);
+                $imageName = 'slide'.time().'.'.$format;
 
                 // lưu hình
                 $this->IndexController->saveImage('images/slideshow/'.$imageName, $base64);

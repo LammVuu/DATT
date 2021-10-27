@@ -9,9 +9,9 @@
 
 <section class='pt-50 pb-50'>
     <div class='container'>
-        <div class='row'>
+        <div id="cart-container" class='row'>
             @if ($data['cart']['qty'] != 0)
-                <div class="fz-26 fw-600 mb-20">Giỏ hàng</div>
+                <div class="cart-title">Giỏ hàng</div>
                 <i class="mb-10">* Số lượng mua tối đa là 5</i>
                 <div class="col-lg-9 col-12">
                     <div class="header-cart">
@@ -28,7 +28,7 @@
                     {{-- danh sách sản phẩm --}}
                     <div id="lst-cart-item" class="box-shadow mb-50">
                         @foreach ($data['cart']['cart'] as $key)
-                            <div data-id="{{$key['sanpham']['id']}}" class="d-flex align-items-center p-10 border-bottom">
+                            <div data-id="{{$key['sanpham']['id']}}" cart-id="{{$key['id']}}" class="cart-item-wrapper">
                                 {{-- custom checkbox --}}
                                 <div class="w-5">
                                     <div data-id="{{$key['sanpham']['id']}}" class="select-item-cart cus-checkbox cus-checkbox-checked"></div>
@@ -37,46 +37,55 @@
                                 <div class="w-35 d-flex">
                                     <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="w-30">
                                     <div class="ml-5">
-                                        <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url'], 'mausac' => $key['sanpham']['mausac_url']])}}" class="black fw-600 mb-10">{{$key['sanpham']['tensp']}}</a>
-                                        <div class="fz-14">Dung lượng: {{$key['sanpham']['dungluong']}}</div>
+                                        <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url'], 'mausac' => $key['sanpham']['mausac_url']])}}" class="cart-phone-name">
+                                            {{$key['sanpham']['tensp']}}
+                                        </a>
                                         <div class="fz-14">Màu sắc: {{$key['sanpham']['mausac']}}</div>
                                     </div>
                                 </div>
                                 {{-- giá --}}
-                                <div class="w-25 d-flex align-items-center">
-                                    <div class="ml-10">
-                                        <div class="fw-600">{{ number_format($key['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
-                                        {{-- hết hạn khuyến mãi --}}
-                                        @if ($key['sanpham']['khuyenmai'] != 0)
-                                            <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>    
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($key['hethang'])
-                                    <div class="w-30">
-                                        <div data-id="{{$key['sanpham']['id']}}" class="out-of-stock">TẠM HẾT HÀNG</div>
+                                @if(!$key['sanpham']['trangthai'])
+                                    <div class="w-55">
+                                        <div data-id="{{$key['sanpham']['id']}}" class="out-of-stock">NGỪNG KINH DOANH</div>
                                     </div>
                                 @else
-                                    {{-- số lượng --}}
-                                    <div class="w-15 d-flex">
-                                        @if (!$key['hethang'])
-                                            <div class='cart-qty-input'>
-                                                <button type='button' data-id="{{$key['id']}}" data-component="cart" class='update-qty minus'><i class="fas fa-minus"></i></button>
-                                                <b data-id="{{$key['id']}}" class="qty-item">{{$key['sl']}}</b>
-                                                <button type='button' data-id="{{$key['id']}}" data-component="cart" class='update-qty plus'><i class="fas fa-plus"></i></button>
-                                            </div>
-                                        @endif
+                                    <div class="w-25 d-flex align-items-center">
+                                        <div class="ml-10">
+                                            <div class="fw-600">{{ number_format($key['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
+                                            {{-- hết hạn khuyến mãi --}}
+                                            @if ($key['sanpham']['khuyenmai'] != 0)
+                                                <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>    
+                                            @endif
+                                        </div>
                                     </div>
-                                    {{-- thành tiền --}}
-                                    <div class="w-15">
-                                        @if (!$key['hethang'])
-                                            <div data-id="{{$key['id']}}" class="provisional_item red fw-600">{{ number_format($key['thanhtien'], 0, '', '.') }}<sup>đ</sup></div>
-                                        @endif
-                                    </div>
+                                    @if($key['hethang'])
+                                        <div class="w-30">
+                                            <div data-id="{{$key['sanpham']['id']}}" class="out-of-stock">TẠM HẾT HÀNG</div>
+                                        </div>
+                                    @else
+                                        {{-- số lượng --}}
+                                        <div class="w-15 d-flex">
+                                            @if (!$key['hethang'])
+                                                <div class='cart-qty-input'>
+                                                    <button type='button' data-id="{{$key['id']}}" data-component="cart" class='update-qty minus'><i class="fas fa-minus"></i></button>
+                                                    <b data-id="{{$key['id']}}" class="qty-item">{{$key['sl']}}</b>
+                                                    <button type='button' data-id="{{$key['id']}}" data-component="cart" class='update-qty plus'><i class="fas fa-plus"></i></button>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        {{-- thành tiền --}}
+                                        <div class="w-15">
+                                            @if (!$key['hethang'])
+                                                <div data-id="{{$key['id']}}" class="provisional_item red fw-600">{{ number_format($key['thanhtien'], 0, '', '.') }}<sup>đ</sup></div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 @endif
                                 {{-- xóa --}}
                                 <div class="w-5">
-                                    <div type="button" data-id="{{$key['id']}}" data-type="item" class="remove-cart-item fz-18"><i class="fal fa-trash-alt"></i></div>
+                                    <div type="button"
+                                        data-id="{{$key['id']}}"
+                                        data-type="item" class="remove-cart-item fz-18"><i class="fal fa-trash-alt"></i></div>
                                 </div>
                             </div>    
                         @endforeach

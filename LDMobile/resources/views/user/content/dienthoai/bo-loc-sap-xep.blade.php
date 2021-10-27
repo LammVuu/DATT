@@ -1,5 +1,5 @@
 <div class="shop-bar box-shadow">
-    <b id="qty-product" class="fz-18">{{!parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ? $fs_title : '' }}</b>
+    <b id="qty-product" class="fz-18"></b>
     @if(!parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY))
     <div id="filter-sort-btn">
         <div class="d-flex">
@@ -13,7 +13,7 @@
             <div class="relative">
                 <span id='btn-show-sort'><i class="fal fa-sort mr-5"></i>Sắp xếp</span>
                 <div class="sort-badge" style="display: block"></div>
-                <div class="shop-sort-box border">
+                <div class="shop-sort-box">
                     <div class="d-flex justify-content-center">
                         <div class='d-flex flex-column'>
                             <div class="mb-3">

@@ -63,14 +63,11 @@ class SlideshowMSPController extends Controller
 
             foreach($request->lst_base64_slideshow as $i => $key){
                 // định dạng hình
-                $imageFormat = $this->IndexController->getImageFormat($key);
-                if($imageFormat == 'png'){
-                    $base64 = str_replace('data:image/png;base64,', '', $key);
-                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.png'));
-                } else {
-                    $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.jpg'));
-                }
+                $format = $this->IndexController->getImageFormat($key);
+
+                $base64 = str_replace('data:image/'.$format.';base64,', '', $key);
+                $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.'.$format));
+
                 // lưu hình
                 $this->IndexController->saveImage('images/phone/slideshow/'.$imageName, $base64);
 
@@ -113,14 +110,11 @@ class SlideshowMSPController extends Controller
             if($request->lst_base64_slideshow){
                 foreach($request->lst_base64_slideshow as $i => $key){
                     // định dạng hình
-                    $imageFormat = $this->IndexController->getImageFormat($key);
-                    if($imageFormat == 'png'){
-                        $base64 = str_replace('data:image/png;base64,', '', $key);
-                        $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.png'));
-                    } else {
-                        $base64 = str_replace('data:image/jpeg;base64,', '', $key);
-                        $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.jpg'));
-                    }
+                    $format = $this->IndexController->getImageFormat($key);
+
+                    $base64 = str_replace('data:image/'.$format.';base64,', '', $key);
+                    $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.time().$i.'.'.$format));
+                    
                     // lưu hình
                     $this->IndexController->saveImage('images/phone/slideshow/'.$imageName, $base64);
     
@@ -144,7 +138,7 @@ class SlideshowMSPController extends Controller
     {
         // xóa hình, xóa db
         foreach(SLIDESHOW_CTMSP::where('id_msp', $id)->get() as $key){
-            unlink('images/phone/slideshow/' . $key['hinhanh']);
+            unlink('images/phone/slideshow/' . $key->hinhanh);
         }
 
         SLIDESHOW_CTMSP::where('id_msp', $id)->delete();
@@ -153,8 +147,13 @@ class SlideshowMSPController extends Controller
     public function AjaxGetSlideshowMSP(Request $request)
     {
         if($request->ajax()){
+            $slideList = MAUSP::find($request->id)->slideshow_ctmsp;
+            foreach($slideList as $i => $slide) {
+                $slide->hinhanh .= '?'.time().$i;
+            }
+
             return [
-                'lst_slide' => MAUSP::find($request->id)->slideshow_ctmsp,
+                'lst_slide' => $slideList,
                 'lst_model' => MAUSP::all(),
             ];
         }
@@ -203,6 +202,88 @@ class SlideshowMSPController extends Controller
             }
 
             return $lst_result;
+        }
+    }
+
+    public function AjaxAddSingleFile(Request $request)
+    {
+        if($request->ajax()) {
+            $model = MAUSP::find($request->id_msp);
+            $base64String = $request->base64String;
+
+            // định dạng hình
+            $format = $this->IndexController->getImageFormat($base64String);
+
+            $base64 = str_replace('data:image/'.$format.';base64,', '', $base64String);
+            $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.mt_rand(0, 100000).'.'.$format));
+
+            // lưu hình
+            $this->IndexController->saveImage('images/phone/slideshow/'.$imageName, $base64);
+
+            $data = [
+                'id_msp' => $model->id,
+                'hinhanh' => $imageName,
+            ];
+
+            SLIDESHOW_CTMSP::create($data);
+
+            // file cuối cùng  thì trả dữ liệu để render vào view
+            if($request->lastItem === 'true') {
+                $models = MAUSP::all();
+                foreach($models as $val) {
+                    $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $val->id)->get());
+                    $val->slideQty = $slideQty;
+                }
+
+                return [
+                    'id' => $request->id_msp,
+                    'data' => $models
+                ];
+            } else {
+                return ['status' => 'success'];
+            }
+        }
+    }
+
+    public function AjaxUpdateSingleFile(Request $request)
+    {
+        if($request->ajax()) {
+            $id_msp = $request->id_msp;
+            $model = MAUSP::find($id_msp);
+            $base64String = $request->base64String;
+
+            // định dạng hình
+            $format = $this->IndexController->getImageFormat($base64String);
+
+            $base64 = str_replace('data:image/'.$format.';base64,', '', $base64String);
+            $imageName = strtolower(str_replace(' ', '_', $model->tenmau.' '.mt_rand(10000, 99999).'.'.$format));
+
+            // lưu hình
+            $this->IndexController->saveImage('images/phone/slideshow/'.$imageName, $base64);
+
+            $data = [
+                'id_msp' => $id_msp,
+                'hinhanh' => $imageName,
+            ];
+
+            SLIDESHOW_CTMSP::create($data);
+
+            if($request->lastItem === 'true') {
+                // xóa hình cũ
+                if($request->arrayDelete){
+                    foreach($request->arrayDelete as $nameDelete){
+                        unlink('images/phone/slideshow/' . $nameDelete);
+                        SLIDESHOW_CTMSP::where('id_msp', $id_msp)->where('hinhanh', $nameDelete)->delete();
+                    }
+                }
+
+                $slideQty = count(SLIDESHOW_CTMSP::where('id_msp', $id_msp)->get());
+                $model->slideQty = $slideQty;
+
+                return [$model];
+            } else {
+                return ['status' => 'success'];
+            }
         }
     }
 }

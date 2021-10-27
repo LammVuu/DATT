@@ -1,10 +1,11 @@
 {{-- logo --}}
-<div id='header-logo' aria-expanded="false"><img src="images/logo/LDMobile-logo.png" alt=""></div>
+<a href={{route('admin/dashboard')}} class='header-logo' aria-expanded="false">
+    <img src="images/logo/LDMobile-logo.png" alt="">
+</a>
 {{-- navigation --}}
 <div class="navigation">
     <!-- logo -->
     <a href={{route('admin/dashboard')}} class="d-flex align-items-center">
-        
         <div class="fz-22 ml-10 white">ADMIN</div>
     </a>
 

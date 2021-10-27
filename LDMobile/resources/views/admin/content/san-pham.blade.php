@@ -159,11 +159,7 @@
                             {{-- tên mẫu --}}
                             <div class="mb-3">
                                 <label for="sanpham_model" class="mb-5 fw-600">Mẫu sản phẩm</label>
-                                <select id="sanpham_model">
-                                    @foreach ($lst_model as $key)
-                                        <option value="{{$key['id']}}">{{$key['tenmau']}}</option>
-                                    @endforeach
-                                </select>
+                                <select id="sanpham_model"></select>
                             </div>
                             {{-- màu sắc --}}
                             <div class="mb-3">
@@ -175,22 +171,17 @@
                                 <div class="col-lg-6">
                                     <label for="sanpham_ram" class="mb-5 fw-600">Ram</label>
                                     <select id="sanpham_ram">
-                                        <option value="2 GB">2 GB</option>
-                                        <option value="3 GB">3 GB</option>
-                                        <option value="4 GB">4 GB</option>
-                                        <option value="6 GB">6 GB</option>
-                                        <option value="8 GB">8 GB</option>
-                                        <option value="12 GB">12 GB</option>
+                                        @foreach ($lst_ram as $ram)
+                                            <option value="{{$ram->ram}}">{{$ram->ram}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-lg-6">
                                     <label for="sanpham_capacity" class="mb-5 fw-600">Dung lượng</label>
                                     <select id="sanpham_capacity">
-                                        <option value="32 GB">32 GB</option>
-                                        <option value="64 GB">64 GB</option>
-                                        <option value="128 GB">128 GB</option>
-                                        <option value="256 GB">256 GB</option>
-                                        <option value="512 GB">512 GB</option>
+                                        @foreach ($lst_capacity as $capacity)
+                                            <option value="{{$capacity->dungluong}}">{{$capacity->dungluong}}</option>
+                                        @endforeach
                                         <option value="1 TB">1 TB</option>
                                     </select>
                                 </div>
@@ -199,7 +190,7 @@
                             <div class="row mb-3">
                                 <div class="col-lg-6">
                                     <label for="sanpham_price" class="mb-5 fw-600">Giá</label>
-                                    <input type="number" id="sanpham_price" placeholder="VD: 10000000">
+                                    <input type="number" id="sanpham_price" min="0" max="100000000" placeholder="VD: 10000000">
                                 </div>
                                 <div class="col-lg-6">
                                     <label for="sanpham_promotion" class="mb-5 fw-600">Khuyến mãi</label>
@@ -215,10 +206,6 @@
                             <div class="mb-3">
                                 <label for="sanpham_specifications" class="mb-5 fw-600">Thông số kỹ thuật</label>
                                 <select id="sanpham_specifications">
-                                    <option value="create" class="main-color-text">Tạo file mới</option>
-                                    @foreach ($lst_specifications as $key)
-                                        <option value="{{$key}}">{{$key}}</option>
-                                    @endforeach
                                 </select>
                             </div>
                             {{-- trạng thái --}}
@@ -232,34 +219,9 @@
                         </div>
                         {{-- hình ảnh --}}
                         <div class="col-lg-6">
-                            <div class="row mb-10">
-                                <label for="sanpham_image" class="mb-5 fw-600">Hình ảnh</label>
-                                <select id="sanpham_image_from">
-                                    <option value="model">Chọn hình từ mẫu sản phẩm</option>
-                                    <option value="new" class="main-color-text">Chọn hình mới</option>
-                                </select>
-                            </div>
-                            {{-- hình từ mẫu sản phẩm --}}
-                            <div class="row mb-3">
-                                <div class="image-from-model"></div>
-                            </div>
-                            {{-- chọn hình mới --}}
-                            <div class="new-image none-dp row mb-3">
-                                <img id="sanpham_review_image" src="images/600x600.png" alt="">
-                                <input type="file" id="sanpham_image" class="none-dp" accept="image/*">
-                                <input type="hidden" id="sanpham_image_base64">
-                                <div id="sanpham_choose_image" class="file-input-btn mt-5">Chọn hình</div>
-                            </div>
-                            
-                            {{-- các màu khác --}}
-                            <div id="another-color-label" class="fw-600 mb-5">Màu sắc khác</div>
-                            <div class='relative mt-10'>
-                                <div id='product-color-carousel' class="owl-carousel">
-                                </div>
-                                <div id="prev-next-btn" style='display: flex'>
-                                    <div id="prev-product-color" class='prev-owl-carousel btn-owl-left-style-2'><i class="far fa-chevron-left fz-26"></i></div>
-                                    <div id="next-product-color" class='next-owl-carousel btn-owl-right-style-2'><i class="far fa-chevron-right fz-26"></i></div>
-                                </div>
+                            <div class="mb-3">
+                                <div class="fw-600 mb-10">Chọn hình ảnh</div>
+                                <div class="image-list"></div>
                             </div>
                         </div>
                     </div>

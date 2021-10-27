@@ -3,6 +3,10 @@ $(window).on('load', function(){
 });
 
 $(function() {
+    if(window.innerWidth < 992) {
+        pcRequire()
+    }
+
     // auto cuộn
     setTimeout(() => {
         // cuộn lên đầu trang
@@ -30,9 +34,13 @@ $(function() {
     const EDIT_MESSAGE = 'Chỉnh sửa thành công';
     const DELETE_MESSAGE = 'Xóa thành công';
     const errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại'
+    const maxSizeImageMessage = 'Hình ảnh có dung lượng tối đa là 5 MB'
     const TOAST_SUCCESS_TYPE = 1
     const TOAST_DELETE_TYPE = 2
     const X_CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content')
+    const MAX_SIZE_IMAGE = 5 // 5 MB
+    const BYTE = 1024
+    const POST_SIZE_MAX = 8 // 8 MB
 
     let loadMoreFlag = false;
     let timer = null;
@@ -190,7 +198,33 @@ $(function() {
                                                            Function
     =======================================================================================================================*/
 
+    function pcRequire() {
+        const html =
+            `<div class="pc-require-background">
+                <div class="pc-require-wrapper">
+                    <img src="images/pc-require.png" alt="pc-require" class="pc-require-image">
+                    <div class="pc-require-text"></div>
+                </div>
+            </div>`
+
+        $('body').prepend(html)
+
+        $('html body').css('overflow', 'hidden')
+    }
+
     function showAlertTop(content){
+        const alertTop =
+            `<div class="alert-top">
+                <div class="close-alert-top-icon"><i class="far fa-times-circle"></i></div>
+                <div class="alert-top-title"></div>
+                <div class="alert-top-content"></div>
+                <div class="alert-top-footer">
+                    <div class="close-alert-top">OK</div>
+                </div>
+            </div>`
+
+        $('body').prepend(alertTop)
+
         setTimeout(() => {
             $('.alert-top').css({
                 '-ms-transform': 'translateY(0)',
@@ -200,15 +234,14 @@ $(function() {
             $('.backdrop').fadeIn();
             
         }, 200);
+
         $('.alert-top-content').html(content);
     }
     
     function closeAlertTop(){
         setTimeout(() => {
-            $('.alert-top-content').text('');
+            $('.alert-top').remove();
             $('.backdrop').removeAttr('style');
-            $('.alert-top').removeAttr('style');
-            $('.close-alert-top').replaceWith($('<div class="close-alert-top">OK</div>'));
         }, 500);
         $('.alert-top').css({
             '-ms-transform': 'translateY(-500px)',
@@ -375,18 +408,6 @@ $(function() {
             reader.readAsDataURL(blob);
             reader.onloadend = () => { resolve(reader.result); };
         });
-
-        //     var xhr = new XMLHttpRequest();
-        //     xhr.onload = function () {
-        //         var reader = new FileReader();
-        //         reader.onloadend = function () {
-        //             callback(reader.result);
-        //         }
-        //         reader.readAsDataURL(xhr.response);
-        //     };
-        //     xhr.open('GET', url);
-        //     xhr.responseType = 'blob';
-        //     xhr.send();
     }
 
     // kiểm tra email
@@ -566,7 +587,7 @@ $(function() {
                             </div>
                         </td>
                     </tr>`
-                }).join('')
+                })
                 break
             case 'sanpham':
                 $.each(data, (i, val) => {
@@ -612,7 +633,7 @@ $(function() {
                             </div>
                         </td>
                     </tr>`
-                }).join('')
+                })
                 break
             case 'imei':
                 $.each(data, (i, val) => {
@@ -642,7 +663,7 @@ $(function() {
                                 <div data-id="${val.id}" class="trangthai pt-10 pb-10">${val.trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt'}</div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'mausanpham':
                 $.each(data, (i, val) => {
@@ -680,7 +701,7 @@ $(function() {
                             </div>
                         </td>
                     </tr>`
-                }).join('')
+                })
                 break
             case 'khuyenmai':
                 $.each(data, (i, val) => {
@@ -717,7 +738,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'nhacungcap':
                 $.each(data, (i, val) => {
@@ -762,7 +783,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'slideshow-msp':
                 $.each(data, (i, val) => {
@@ -778,14 +799,14 @@ $(function() {
                                 <div class="d-flex justify-content-start">
                                     <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
                                     <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                    ${val.slideQty != 0 ?
+                                    ${val.slideQty !== 0 ?
                                     `<div data-id="${val.id}" data-name="${val.tenmau}" class="delete-btn">
                                         <i class="fas fa-trash"></i>
                                     </div>` : ''}
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'hinhanh':
                 $.each(data, (i, val) => {
@@ -801,14 +822,14 @@ $(function() {
                                 <div class="d-flex justify-content-start">
                                     <div data-id="${val.id}" class="info-btn"><i class="fas fa-info"></i></div>
                                     <div data-id="${val.id}" class="edit-btn"><i class="fas fa-pen"></i></div>
-                                    ${val.imageQty != 0 ?
+                                    ${val.imageQty !== 0 ?
                                     `<div data-id="${val.id}" data-name="${val.tenmau}" class="delete-btn">
                                         <i class="fas fa-trash"></i>
                                     </div>` : ''}
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'kho':
                 $.each(data, (i, val) => {
@@ -842,7 +863,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'chinhanh':
                 $.each(data, (i, val) => {
@@ -878,7 +899,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'tinhthanh':
                 $.each(data, (i, val) => {
@@ -897,7 +918,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'voucher':
                 $.each(data, (i, val) => {
@@ -932,7 +953,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'baohanh':
                 $.each(data, (i, val) => {
@@ -956,7 +977,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'slideshow':
                 $.each(data, (i, val) => {
@@ -981,7 +1002,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
             case 'banner':
                 $.each(data, (i, val) => {
@@ -1006,7 +1027,7 @@ $(function() {
                                 </div>
                             </td>
                         </tr>`
-                }).join('')
+                })
                 break
         }
 
@@ -1071,22 +1092,21 @@ $(function() {
                         }
                     })
                 }
-
             }
         })
     }
 
     function renderImage(slideList, url) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             $('.image-preview-div > .row').children().remove();
 
             let slide = slideList.map((val, i) => {
                 return (
-                    `<div id="image-${i + 1}" data-id="${i + 1}" data-name="${val.hinhanh}" class="col-lg-4 mb-20">
+                    `<div id="image-${i + 1}" data-id="${i + 1}" data-name="${val.hinhanh}" class="col-lg-4 col-6">
                         <div class="image-preview">
                             <div class="overlay-image-preview"></div>
                             <div data-id="${i + 1}" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>
-                            <img data-id="${i + 1}" class="image_preview_img" src="${url + val.hinhanh}" alt="">
+                            <img data-id="${i + 1}" class="image_preview_img" src="${url + val.hinhanh}" alt="${val.hinhanh}">
                         </div>
                     </div>`
                 )
@@ -1120,6 +1140,9 @@ $(function() {
 
     function highlightRow(id, color) {
         const row = $('tr[data-id="'+id+'"]'); 
+
+        if(!row) return
+
         setTimeout(() => {
             setTimeout(() => {
                 row.removeAttr('style');    
@@ -1325,7 +1348,7 @@ $(function() {
                                                             Mẫu sp
         =======================================================================================================================*/
         case 'mausanpham': {
-            if(navigation == 'reload' || navigation == 'back_forward'){
+            if(navigation === 'reload' || navigation === 'back_forward'){
                 loadMoreFlag = true;
             }
     
@@ -1394,7 +1417,7 @@ $(function() {
                     $('.loader').fadeIn();
     
                     // thêm mới
-                    if($(this).attr('data-type') == 'create'){
+                    if($(this).attr('data-type') === 'create'){
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': X_CSRF_TOKEN
@@ -2044,62 +2067,23 @@ $(function() {
     
             // modal tạo mới
             $('.create-btn').off('click').click(function(){
-                if(!$('#sanpham_model').children().length){
-                    showAlertTop('Bạn chưa có mẫu sản phẩm. Vui lòng tạo mới mẫu sản phẩm trước.');
-                    return;
-                }
-    
-                // ẩn các mẫu sp ngừng kinh doanh
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': X_CSRF_TOKEN
-                    },
-                    url: 'admin/sanpham/ajax-get-model-status-false',
-                    type: 'POST',
-                    data: {'data': ''},
-                    success: function(data){
-                        if(data.length != 0){
-                            $.each(data, (i, val) => {
-                                $(`#sanpham_model option[value="${val}"]`).hide();
-                            })
-                        }
-    
-                        // gán dữ liệu cho modal
-                        $('#modal-title').text('Tạo mới sản phẩm');
-    
-                        // trạng thái = 1
-                        $('#sanpham_status').hide();
-                        $('label[for="sanpham_status"]').hide();
-    
-                        // thiết lập nút gửi là thêm mới
-                        $('#action-btn').attr('data-type', 'create');
-                        $('#action-btn').text('Thêm');
-    
-                        $('#product-color-carousel').parent().hide();
-    
-                        // label màu sắc khác
-                        $('#another-color-label').hide();
-    
-                        // hiển thị modal
-                        $('#modal').modal('show');
-                    },
-                    error: function() {
-                        showAlertTop(errorMessage)
-                    }
-                });
+                // gán dữ liệu cho modal
+                $('#modal-title').text('Tạo mới sản phẩm');
+
+                bindSanPham(false, false, 'create')
             });
     
             // modal xem chi tiết
             $(document).on('click', '.info-btn', function(){
                 var id = $(this).attr('data-id');
-                $('#modal-title').text('Chi tiết sản phẩm');
+                $('#modal-title').text(`Chi tiết sản phẩm #${id}`);
                 bindSanPham(id, true);
             });
     
             // modal chỉnh sửa
             $(document).on('click', '.edit-btn', function(){
-                var id = $(this).data('id');
-                $('#modal-title').text('Chỉnh sửa sản phẩm');
+                var id = $(this).attr('data-id');
+                $('#modal-title').text(`Chỉnh sửa sản phẩm #${id}`);
                 bindSanPham(id);
             });
     
@@ -2118,26 +2102,21 @@ $(function() {
             // thêm|sửa
             $('#action-btn').click(function(){
                 // bẫy lỗi
-                var valiColor = validateColor($('#sanpham_color'));
-                var valiPrice = validatePrice($('#sanpham_price'));
-                var valiImage = validateProductImage();
+                let valiColor = validateColor($('#sanpham_color'));
+                let valiPrice = validatePrice($('#sanpham_price'));
+                let valiImage = validateProductImage();
     
                 // bẫy lỗi xong kiểm tra loại
                 if(valiColor & valiPrice & valiImage){
-                    var tensp = $('#sanpham_model').find(':selected').text();
-                    var id_msp = $('#sanpham_model').val();
-                    var mausac = $('#sanpham_color').val();
-                    var ram = $('#sanpham_ram').val();
-                    var dungluong = $('#sanpham_capacity').val();
-                    var gia = $('#sanpham_price').val();
-                    var id_km = $('#sanpham_promotion').val();
-                    var trangthai = $('#sanpham_status').val();
-                    if($('#sanpham_image_from').val() == 'model'){
-                        var hinhanhName = $('.single-image-from-model-selected').attr('data-name');
-                    } else {
-                        var hinhanhBase64 = $('#sanpham_image_base64').val();
-                    }
-                    
+                    let tensp = $('#sanpham_model').find(':selected').text();
+                    let id_msp = $('#sanpham_model').val();
+                    let mausac = $('#sanpham_color').val();
+                    let ram = $('#sanpham_ram').val();
+                    let dungluong = $('#sanpham_capacity').val();
+                    let gia = $('#sanpham_price').val();
+                    let id_km = $('#sanpham_promotion').val();
+                    let trangthai = $('#sanpham_status').val();
+                    let hinhanh = $('.single-image-selected').attr('data-name').split('?')[0]
                     var cauhinhName = $('#sanpham_specifications').val();
                     var cauhinh = {
                         "thong_so_ky_thuat": {
@@ -2347,26 +2326,21 @@ $(function() {
                     $('.loader').fadeIn();
     
                     var data = {
-                        'tensp': tensp,
-                        'id_msp': id_msp,
-                        'mausp': $('#sanpham_model').find(':selected').text(),
-                        'image_from': $('#sanpham_image_from').val(),
-                        'hinhanh': $('#sanpham_image_from').val() == 'model' ? hinhanhName : hinhanhBase64,
-                        'mausac': mausac,
-                        'ram': ram,
-                        'dungluong': dungluong,
-                        'gia': gia,
-                        'id_km': id_km,
-                        'khuyenmai': $('#sanpham_promotion').find(':selected').text(),
-                        'cauhinhName': cauhinhName,
-                        'cauhinh': cauhinh,
-                        'trangthai': trangthai,
+                        tensp,
+                        id_msp,
+                        hinhanh,
+                        mausac,
+                        ram,
+                        dungluong,
+                        gia,
+                        id_km,
+                        cauhinhName,
+                        cauhinh,
+                        trangthai,
                     };
     
-                    //console.log(data);return;
-    
                     // thêm mới
-                    if($(this).attr('data-type') == 'create'){
+                    if($(this).attr('data-type') === 'create'){
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': X_CSRF_TOKEN
@@ -2377,7 +2351,7 @@ $(function() {
                             success:function(data){
                                 $('.loader').fadeOut();
                                 // sản phẩm đã tồn tại
-                                if(data == 'exists'){
+                                if(data === 'exists'){
                                     showAlertTop('Sản phẩm này đã tồn tại');
                                     return;
                                 }
@@ -2463,103 +2437,25 @@ $(function() {
                 restore(id, name);            
             });
     
-            /*==================================================
-                                Hình ảnh
-            ====================================================*/
-    
-            // show dialog chọn hình ảnh
-            $('#sanpham_choose_image').click(function(){
-                $('#sanpham_image').click();
-            });
-    
-            // chọn hình ảnh
-            $('#sanpham_image').change(function(){
-                // hủy chọn hình
-                if($(this).val() == ''){
-                    return;
-                }
-    
-                removeRequried($('#sanpham_review_image'));
-    
-                // kiểm tra file hình
-                var fileName = this.files[0].name.split('.');
-                var extend = fileName[fileName.length - 1];
-    
-                if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
-                    const imgURL = URL.createObjectURL(this.files[0])
-    
-                    // xem trước hình ảnh
-                    $('#sanpham_review_image').attr('src', imgURL)
-    
-                    // image -> base64
-                    getBase64FromUrl(imgURL)
-                        .then(dataUrl => $('#sanpham_image_base64').val(dataUrl))
-                }
-                // không phải hình ảnh
-                else{
-                    $('#sanpham_review_image').attr('src', 'images/600x600.png');
-                    $(this).val('');
-                    showAlertTop('Bạn chỉ có thể upload hình ảnh');
-                }
-            });
-    
             // chọn hình từ mẫu sản phẩm
-            $(document).on('click', '.single-image-from-model', function(e){
-                removeRequried($('.image-from-model'));
-                $('.single-image-from-model').removeClass('single-image-from-model-selected');
-                $(e.currentTarget).addClass('single-image-from-model-selected');
-            });
-    
-            /*==================================================
-                                owl-carousel
-            ====================================================*/
-    
-            var owl = $('#product-color-carousel');
-            owl.owlCarousel({
-                stagePadding: 5,
-                nav: false,
-                rewind: true,
-                dots: false,
-                responsiveClass:true,
-                responsive: {
-                    0: {
-                        items: 4
-                    },
-                    600: {
-                        items: 4
-                    },
-                    1000: {
-                        items: 4
-                    }
+            $(document).on('click', '.single-image', function(){
+                const buttonType = $('#action-btn').attr('data-type')
+
+                if(buttonType !== 'readonly') {
+                    removeRequried($('.image-list'));
+                    $('.single-image').removeClass('single-image-selected');
+                    $(this).addClass('single-image-selected');
                 }
             });
     
-            // nút prev, next
-            $('#prev-product-color').on('click', function(){
-                owl.trigger('prev.owl.carousel', [300]);
-            });
-            $('#next-product-color').on('click', function(){
-                owl.trigger('next.owl.carousel');
-            });
-    
-            /*===================================================*/
-    
-            // chọn mẫu sản phẩm và gán khuyến mãi, gán tên sp, load hình ảnh
-            $('#sanpham_model').change(function(){
-                getModelPromotion();
-                getModelImage();
+            // chọn mẫu sản phẩm, thay đổi màu sắc
+            $('#sanpham_model').change(function() {
+                getModelImage()
             });
     
             // chọn file cấu hình
             $('#sanpham_specifications').change(function(){
                 $(this).val() != 'create' ? $('#create-specifications-div').hide('blind') : $('#create-specifications-div').show('blind');
-            });
-    
-            // thay đổi màu sắc
-            $(document).on('click', '.product-color', function(){
-                var id = $(this).data('id');
-                var bool = $(this).data('type') == 'readonly' ? true : false;
-                bindSanPham(id, bool);
             });
     
             $('#sanpham_color').keyup(function(){
@@ -2570,34 +2466,21 @@ $(function() {
             });
     
             // reset modal
-            $('#modal').on('shown.bs.modal', function(){
-                // chọn sẵn khuyến mãi theo mẫu sản phẩm
-                getModelPromotion();
-                getModelImage();
-                
-                // gán tên sản phẩm
-                var modelName = $('#sanpham_model').find(':selected').text();
-                $('#sanpham_name').val(modelName);
-            })
             $('#modal').on('hidden.bs.modal', function(){
                 $('#sanpham-form').trigger('reset');
                 $('input, textarea').attr('readonly', false);
                 $('select').attr('disabled', false);
-                removeRequried($('#sanpham_review_image'));
-                removeRequried($('#sanpham_color'));
-                removeRequried($('#sanpham_price'));
-                removeRequried($('.image-from-model'));
-                $('#sanpham_review_image').attr('src', 'images/600x600.png');
-                $('#sanpham_choose_image').show();
+                $('.required').removeClass('required')
+                $('.required-text').remove()
                 $('#create-specifications-div').show('blind');
-                $('#sanpham_specifications option[value="create"]').show();
+                $('#sanpham_specifications').children().remove()
+                $('#sanpham_model').children().remove();
+                $('.image-list').children().remove();
+                // main button
                 $('#action-btn').show();
-                $('#sanpham_model').children().show();
-                $('.image-from-model').show();
-                $('#sanpham_image_from').show();
-                $('.image-from-model').children().remove();
-                $('.new-image').hide();
-                $('#another-color-label').show();
+                $('#action-btn').removeAttr('data-type')
+                $('#action-btn').removeAttr('data-id')
+                $('#action-btn').removeAttr('style')
             });
     
             // tìm kiếm
@@ -2719,7 +2602,7 @@ $(function() {
             // thay đổi chọn hình ảnh
             $('#sanpham_image_from').change(function(){
                 // hình từ mẫu sản phẩm
-                if($(this).val() == 'model'){
+                if($(this).val() === 'model'){
                     removeRequried($('.image-from-model'));
                     removeRequried($('#sanpham_review_image'));
                     $('.image-from-model').show();
@@ -2733,8 +2616,151 @@ $(function() {
                     $('.new-image').show();
                 }
             });
+
+            // lấy danh sách mẫu sản phẩm
+            function getModelList(skipFalseStatus = false) {
+                return new Promise(resolve => {
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
+                        url: '/admin/sanpham/ajax-get-model-list',
+                        type: 'POST',
+                        data: {skip: skipFalseStatus},
+                        success: function(data) {
+                            if(data.length === 0) {
+                                showToast('Bạn chưa có mẫu sản phẩm. Vui lòng tạo mới mẫu sản phẩm trước.')
+                                return
+                            }
     
-            function bindSanPham(id, bool = false) {
+                            let options = ''
+                            $.each(data, (i, val) => {
+                                options += `<option value=${val.id}>${val.tenmau}</option>`
+                            })
+    
+                            $('#sanpham_model').append(options)
+
+                            resolve(data[0].id)
+                        },
+                        error: function() {
+                            showToast('Không thể lấy danh sách mẫu sản phẩm. Vui lòng thử lại')
+                        }
+                    })
+                })
+            }
+
+            // lấy danh sách file cấu hình
+            function getSpecificationsList() {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        headers: { 'X-CSRF-TOKEN': X_CSRF_TOKEN },
+                        url: '/admin/sanpham/ajax-get-specifications-list',
+                        type: 'POST',
+                        success: function(data) {
+                            const specificationsList = $('#sanpham_specifications')
+    
+                            const newfileOption = '<option value="create" class="main-color-text">Tạo file mới</option>'
+                            specificationsList.append(newfileOption)
+    
+                            // render specifications options
+                            let options = ''
+                            $.each(data, (i, val) => {
+                                options += `<option value="${val}">${val}</option>`
+                            })
+    
+                            specificationsList.append(options)
+
+                            resolve()
+                        },
+                        error: function() {
+                            reject()
+                        }
+                    })
+                })
+            }
+    
+            // lấy hình ảnh mẫu sp
+            function getModelImage(selectedImage = null){
+                return new Promise((resolve, reject) => {
+                    removeRequried($('.image-from-model'));
+    
+                    const id_msp = $('#sanpham_model option:selected').val()
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': X_CSRF_TOKEN
+                        },
+                        url: 'admin/sanpham/ajax-get-model-image',
+                        type: 'POST',
+                        data: {id_msp},
+                        success: function(data){
+                            const parent = $('.image-list')
+                            parent.children().remove()
+
+                            if(!data.length){
+                                parent.css('grid-template-columns', '1fr')
+    
+                                parent.append('<div class="fw-600 text-center">Mẫu sản phẩm chưa có hình ảnh. Vui lòng tạo mới hình ảnh</div>')
+                            } else {
+                                parent.css('grid-template-columns', '1fr 1fr')
+    
+                                let html = '';
+                                let imageName = ''
+                                $.each(data, (i, val) => {
+                                    imageName = val.hinhanh.split('?')[0]
+                                    if(imageName === selectedImage) {
+                                        html +=
+                                            `<div data-name="${val.hinhanh}" class="single-image single-image-selected">
+                                                <img src="images/phone/${val.hinhanh}" alt="">
+                                            </div>`
+                                    } else {
+                                        html +=
+                                            `<div data-name="${val.hinhanh}" class="single-image">
+                                                <img src="images/phone/${val.hinhanh}" alt="">
+                                            </div>`
+                                    }
+                                });
+        
+                                parent.append(html);
+                            }
+
+                            resolve()
+                        },
+                        error: function() {
+                            reject()
+                        }
+                    });
+                })
+            }
+
+            function createForm() {
+                getModelImage()
+                getSpecificationsList()
+
+                // trạng thái = 1
+                $('#sanpham_status').hide();
+                $('#sanpham_status option[value="1"]').prop('selected', true)
+                $('label[for="sanpham_status"]').hide();
+
+                $('#action-btn').attr('data-type', 'create');
+                $('#action-btn').text('Thêm');
+
+                $('#modal').modal('show');
+            }
+    
+            async function bindSanPham(id, bool = false, buttonType = 'edit') {
+                // lấy danh sách mẫu sp
+                const isSkip = buttonType === 'edit' ? false : true
+
+                await getModelList(isSkip)
+                    .catch(message => {
+                        showToast(message)
+                        return
+                    })
+
+                // create
+                if(buttonType === 'create') {
+                    createForm()
+                    return
+                }
+                
                 // lấy dòng theo id gán vào modal
                 $.ajax({
                     headers: {
@@ -2742,24 +2768,28 @@ $(function() {
                     },
                     url: '/admin/sanpham/ajax-get-sanpham',
                     type: 'POST',
-                    data: {'id': id},
-                    success:function(data){
+                    data: {id},
+                    cache: false,
+                    success: function(data) {
                         var product = data.product;
                         var specifications = data.specifications;
+
+                        // hiển thị modal
+                        $('#modal').modal('show');
     
                         // thiết lập quyền
                         $('input, textarea').attr('readonly', bool);
                         $('select').attr('disabled', bool);
-    
+
                         // gán dữ liệu cho modal
-                        $('#sanpham_name').val(product.tensp);
                         $('#sanpham_model').val(product.id_msp);
                         $('#sanpham_color').val(product.mausac);
                         $('#sanpham_ram').val(product.ram);
                         $('#sanpham_capacity').val(product.dungluong);
                         $('#sanpham_price').val(product.gia);
                         $('#sanpham_promotion').val(product.id_km);
-                        $('#sanpham_specifications').val(product.cauhinh);
+
+                        // ẩn / hiện trạng thái
                         if(product.trangthaimausp || bool){
                             $('#sanpham_status').show();
                             $('label[for="sanpham_status"]').show();
@@ -2769,47 +2799,25 @@ $(function() {
                         }
                         
                         $(`#sanpham_status option[value="${product.trangthai}"]`).prop('selected', true);
-                        $('#sanpham_status_model').val(product.trangthaimausp);
-                        $('#sanpham_review_image').attr('src', `images/phone/${product.hinhanh}`);
-                        $('.image-from-model').hide();
-                        $('.new-image').show();
-                        $('#sanpham_image_from option[value="new"]').prop('selected', true);
-    
-                        // xem chi tiết
-                        if(bool){
-                            $('#sanpham_choose_image').hide();
-                            $('#sanpham_image_from').hide();
-                            $('#action-btn').hide();$('#action-btn').hide();
-                        }
-                        // chỉnh sửa
-                        else {
-                            $('#sanpham_choose_image').show();
-                            $('#sanpham_image_from').show();
-                            $('#action-btn').show()
-                        }
-    
-                        // các màu sắc khác
-                        if(data.lst_color.length != 1){
-                            var html = '';
-                            var type = bool == true ? 'readonly' : 'edit';
-    
-                            $.each(data.lst_color, (i, val) => {
-                                html +=
-                                    `<img data-id="${val.id}" data-type="${type}" class="product-color" src="images/phone/${val.hinhanh}">`
-                            }).join('')
-    
-                            owl.trigger('replace.owl.carousel', html).trigger('refresh.owl.carousel');
-    
-                            $('#product-color-carousel').parent().show();
-    
-                            data.lst_color.length <= 4 ? $('#prev-next-btn').hide() : $('#prev-next-btn').show();
-                            
-                            $('#another-color-label').show();
-                        } else {
-                            $('#product-color-carousel').parent().hide();
-                            $('#another-color-label').hide();
-                        }
-    
+
+                        // hình ảnh mẫu sp
+                        const selectedImage = product.hinhanh
+                        getModelImage(selectedImage)
+                            .then(() => {
+                                // cuộn tới màu sắc đang xem
+                                const imgItem = $(`.single-image.single-image-selected`)
+                                const parentPadding = 20
+                                const position = imgItem.position().top - parentPadding
+                                $('.image-list').animate({scrollTop: position})
+                            })
+                            .catch(() => showToast('Hình ảnh đã bị chỉnh sửa. Vui lòng chọn lại hình ảnh'))
+                        
+
+                        // danh sách file cấu hình
+                        getSpecificationsList()
+                            .then(() => $('#sanpham_specifications').val(product.cauhinh))
+                            .catch(() => showToast('Không thể lấy danh sách file cấu hình. Vui lòng làm mới lại trang'))
+        
                         // file thông số
                         $('#sanpham_specifications option[value="create"]').hide();
                         // màn hình
@@ -3010,14 +3018,17 @@ $(function() {
                         }
                         
                         $('#thoi_diem_ra_mat').val(thoidiemramat);
-    
-                        // thiết lập nút gửi là cập nhật
-                        $('#action-btn').attr('data-type', 'edit');
-                        $('#action-btn').text('Cập nhật');
-                        $('#action-btn').attr('data-id', id);
-    
-                        // hiển thị modal
-                        $('#modal').modal('show');
+
+                        // ẩn hiện nút action
+                        if(bool) {
+                            $('#action-btn').attr('data-type', 'readonly')
+                            $('#action-btn').hide()
+                        } else {
+                            $('#action-btn').attr('data-type', 'edit');
+                            $('#action-btn').text('Cập nhật');
+                            $('#action-btn').attr('data-id', id);
+                            $('#action-btn').show()
+                        }
                     },
                     error: function() {
                         showAlertTop(errorMessage)
@@ -3081,90 +3092,22 @@ $(function() {
     
             // bẫy lỗi hình ảnh
             function validateProductImage() {
-                if($('#sanpham_image_from option:selected').val() == 'model'){
-                    image = $('.image-from-model');
-                    if(image.hasClass('required')){
-                        $('.modal-body').animate({scrollTop: image.position().top});
-                        return false;
-                    }
-    
-                    // chưa chọn
-                    if(!$('.single-image-from-model-selected').length){
-                        image.addClass('required');
-                        image.after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
-                        $('.modal-body').animate({scrollTop: image.position().top});
-                        return false;
-                    }
-    
-                    return true;
-                } else {
-                    if($('#sanpham_review_image').hasClass('required')){
-                        $('.modal-body').animate({scrollTop: $('#sanpham_image').position().top});
-                        return false;
-                    }
-        
-                    // chưa chọn
-                    if($('#sanpham_image').val() == '' && $('#sanpham_review_image').attr('src') == 'images/600x600.png'){
-                        $('#sanpham_review_image').addClass('required');
-                        $('#sanpham_review_image').after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
-                        $('.modal-body').animate({scrollTop: $('#sanpham_image').position().top});
-                        return false;
-                    }
-        
-                    return true;
+                const imageList = $('.image-list')
+
+                if(imageList.hasClass('required')) {
+                    return
                 }
-            }
-    
-            function getModelPromotion(){
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': X_CSRF_TOKEN
-                    },
-                    url: 'admin/sanpham/ajax-get-promotionID-by-modelID',
-                    type: 'POST',
-                    data: {'id': $('#sanpham_model option:selected').val()},
-                    success:function(data){
-                        if(data.id_km != null){
-                            $(`#sanpham_promotion option[value="${data.id_km}"]`).prop('selected', true);
-                        } else {
-                            $('#sanpham_promotion option[value=""]').prop('selected', true);
-                        }
-                    }
-                });
-            }
-    
-            function getModelImage(){
-                removeRequried($('.image-from-model'));
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': X_CSRF_TOKEN
-                    },
-                    url: 'admin/sanpham/ajax-get-model-image',
-                    type: 'POST',
-                    data: {'id_msp': $('#sanpham_model option:selected').val()},
-                    success:function(data){
-                        $('.image-from-model').children().remove();
-                        if(!data.length){
-                            var elmnt = $('<div class="fw-600 text-center pt-50">Mẫu sản phẩm chưa có hình ảnh</div>');
-                            elmnt.appendTo($('.image-from-model'));
-                        } else {
-                            var row = $('<div class="row"></div>');
-                            let html = '';
-                            $.each(data, (i, val) => {
-                                html +=
-                                    `<div class="col-6 mb-20">
-                                        <div data-name="${val.hinhanh}" class="single-image-from-model">
-                                            <img src="images/phone/${val.hinhanh}" alt="">
-                                        </div>
-                                    </div>`
-                            }).join('');
-    
-                            row.append(html)
-    
-                            $('.image-from-model').append(row);
-                        }
-                    }
-                });
+
+                const selectedItem = $('.single-image-selected')
+
+                if(!selectedItem.length) {
+                    imageList.addClass('required')
+                    imageList.after('<span class="required-text">Vui lòng chọn hình ảnh</span>');
+                    $('.modal-body').animate({scrollTop: imageList.position().top});
+                    return false;
+                }
+                
+                return true
             }
     
             function restore(id, name) {
@@ -3444,6 +3387,12 @@ $(function() {
                 var extend = fileName[fileName.length - 1];
     
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                    // Byte => KB => MB
+                    const size = (this.files[0].size / BYTE) / BYTE
+                    if(size > MAX_SIZE_IMAGE) {
+                        showAlertTop(maxSizeImageMessage)
+                        return
+                    }
                     // xem trước hình ảnh
                     $('#ncc_review_image').attr('src', URL.createObjectURL(this.files[0]))
     
@@ -3789,8 +3738,8 @@ $(function() {
     
                 // tổng số hình hiện tại
                 var qty = $('.image-preview-div > .row').children().length;
-    
                 let imageElement = ''
+                let size = 0
     
                 for(var i = 0; i < length; i++){
                     if(qty >= 30){
@@ -3804,9 +3753,15 @@ $(function() {
     
                     // kiểm tra có phải là hình ảnh không
                     if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                        // tối đa 5 MB
+                        size = (this.files[i].size / BYTE) / BYTE
+                        if(size > 5) {
+                            showAlertTop(maxSizeImageMessage)
+                            break
+                        }
                         // tạo hình
                         imageElement += 
-                            `<div id="image-${idx}" data-id="${idx}" class="col-lg-4 mb-20">
+                            `<div id="image-${idx}" data-id="${idx}" class="col-lg-4 col-6">
                                 <div class="image-preview">
                                     <div class="overlay-image-preview"></div>
                                     <div data-id="${idx}" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>
@@ -3823,24 +3778,25 @@ $(function() {
                     qty++;
                 }
     
-                $('.image-preview-div > .row').append(imageElement);
+                $('.image-preview-div > .row').append(imageElement)
                 $('#qty-image').text(`(${qty})`);
             });
     
             // xóa hình
             $(document).on('click', '.delete-image-preview', function(){
-                var id = $(this).data('id');
-                var image = $('#image-' + id);
-    
-                if(image.attr('data-name')){
-                    arrayDelete.push(image.attr('data-name'));
+                let id = $(this).data('id');
+                let image  = $(`#image-${id}`)
+                let imageName = image.attr('data-name')
+
+                if(imageName !== undefined){
+                    arrayDelete.push(imageName.split('?')[0]);
                 }
     
                 image.remove();
     
                 var qty = $('.image-preview-div > .row').children().length;
     
-                if(qty == 0){
+                if(qty === 0){
                     $('#qty-image').hide();
                     $('#image_inp').val('');
                 } else {
@@ -3941,82 +3897,186 @@ $(function() {
                 // bẫy lỗi xong kiểm tra loại
                 if(valiImage){
                     $('.loader').fadeIn();
+
+                    const id_msp = $('#model').val()
+                    // tổng dung lượng file upload: MB
+                    let totalSize = 0
                     
                     const type = button.attr('data-type')
                     let arrayBase64 = []
     
                     await pushBase64ToArray(type)
-                            .then(base64 => arrayBase64 = base64)
-    
-                    // thêm mới
-                    if(type === 'create'){
-                        var data = {
-                            'id_msp': $('#model').val(),
-                            'lst_base64_slideshow': arrayBase64,
-                        };
-    
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': X_CSRF_TOKEN
-                            },
-                            url: 'admin/slideshow-msp',
-                            type: 'POST',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-    
-                                // render vào view
-                                $('#lst_data').children().remove();
-                                const html = renderNewRow(page, data.data)
-                                $('#lst_data').append(html);
-    
-                                // toast + highlight row
-                                toastAndHighlight(CREATE_MESSAGE, data.id)
-    
-                                const tr = $(`tr[data-id="${data.id}"]`); 
-                                $('html, body').animate({scrollTop: tr.position().top});
-                            },
-                            error: function() {
-                                $('.loader').fadeOut();
-                                showAlertTop(errorMessage)
-                            }
-                        });
+                            .then(base64 => {
+                                arrayBase64 = base64
+                                // byte => KB => MB
+                                totalSize = (new Blob([base64.join('')]).size / BYTE) / BYTE + 1
+                            })
+
+                    // upload files quá kích thước cho phép
+                    if(totalSize > POST_SIZE_MAX) {
+                        // upload từng file một
+                        if(type === 'create') {
+                            const length = arrayBase64.length - 1
+                            $.each(arrayBase64, (i, val) => {
+                                if(i === length) {
+                                    addSingleFile(id_msp, val, true)
+                                        .then(data => {
+                                            $('.loader').fadeOut();
+                                            $('#modal').modal('hide');
+
+                                            // render vào view
+                                            $('#lst_data').children().remove();
+                                            const html = renderNewRow(page, data.data)
+                                            $('#lst_data').append(html);
+
+                                            // toast + highlight row
+                                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                                            return
+                                        })
+                                        .catch(() => showToast(errorMessage))
+                                } else {
+                                    addSingleFile(id_msp, val)
+                                        .catch(() => showToast(errorMessage))
+                                }
+                            })
+                        } else {
+                            const length = arrayBase64.length - 1
+                            $.each(arrayBase64, (i, val) => {
+                                if(i === length) {
+                                    updateSingleFile(id_msp, val, arrayDelete, true)
+                                        .then(data => {
+                                            $('.loader').fadeOut();
+                                            $('#modal').modal('hide');
+
+                                            // thay thế
+                                            const newRow = renderNewRow(page, data)
+                                            $(`tr[data-id="${id_msp}"]`).replaceWith(newRow);
+
+                                            // toast + highlight row
+                                            toastAndHighlight(EDIT_MESSAGE, id_msp)
+                                            return
+                                        })
+                                        .catch(() => showToast(errorMessage))
+                                } else {
+                                    updateSingleFile(id_msp, val)
+                                        .catch(() => showToast(errorMessage))
+                                }
+                            })
+                        }
+                    } else {
+                        // thêm mới
+                        if(type === 'create'){
+                            var data = {
+                                id_msp,
+                                'lst_base64_slideshow': arrayBase64,
+                            };
+        
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                                },
+                                url: 'admin/slideshow-msp',
+                                type: 'POST',
+                                data: data,
+                                success:function(data){
+                                    $('.loader').fadeOut();
+                                    $('#modal').modal('hide');
+        
+                                    // render vào view
+                                    $('#lst_data').children().remove();
+                                    const html = renderNewRow(page, data.data)
+                                    $('#lst_data').append(html);
+        
+                                    // toast + highlight row
+                                    toastAndHighlight(CREATE_MESSAGE, data.id)
+                                },
+                                error: function() {
+                                    $('.loader').fadeOut();
+                                    showAlertTop(errorMessage)
+                                }
+                            });
+                        }
+                        // chỉnh sửa
+                        else {
+                            var id = button.attr('data-id');
+        
+                            var data = {
+                                'lst_base64_slideshow': arrayBase64,
+                                'lst_delete': arrayDelete,
+                            };
+                            
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                                },
+                                url: 'admin/slideshow-msp/' + id,
+                                type: 'PUT',
+                                data: data,
+                                success:function(data){
+                                    $('.loader').fadeOut();
+                                    $('#modal').modal('hide');
+        
+                                    // thay thế
+                                    const newRow = renderNewRow(page, data)
+                                    $(`tr[data-id="${id}"]`).replaceWith(newRow);
+        
+                                    // toast + highlight row
+                                    toastAndHighlight(EDIT_MESSAGE, id)
+                                },
+                                error: function() {
+                                    $('.loader').fadeOut();
+                                    showAlertTop(errorMessage)
+                                }
+                            });
+                        }
                     }
-                    // chỉnh sửa
-                    else {
-                        var id = button.attr('data-id');
     
-                        var data = {
-                            'lst_base64_slideshow': arrayBase64,
-                            'lst_delete': arrayDelete,
-                        };
-                        
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': X_CSRF_TOKEN
-                            },
-                            url: 'admin/slideshow-msp/' + id,
-                            type: 'PUT',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-    
-                                // thay thế
-                                const newRow = renderNewRow(page, data)
-                                $(`tr[data-id="${id}"]`).replaceWith(newRow);
-    
-                                // toast + highlight row
-                                toastAndHighlight(EDIT_MESSAGE, id)
-                            },
-                            error: function() {
-                                $('.loader').fadeOut();
-                                showAlertTop(errorMessage)
-                            }
-                        });
-                    }
                 }
+            }
+
+            function addSingleFile(id_msp, base64String, lastItem = false) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
+                        url: 'admin/slideshow-msp/ajax-add-single-file',
+                        type: 'POST',
+                        data: {
+                            id_msp,
+                            base64String,
+                            lastItem
+                        },
+                        success: function (data) {
+                            resolve(data)
+                        },
+                        error: function (error) {
+                            console.log(error)
+                            reject()
+                        }
+                    })
+                })
+            }
+
+            function updateSingleFile(id_msp, base64String, arrayDelete = [], lastItem = false) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
+                        url: 'admin/slideshow-msp/ajax-update-single-file',
+                        type: 'POST',
+                        data: {
+                            id_msp,
+                            base64String,
+                            arrayDelete,
+                            lastItem
+                        },
+                        success: function(data) {
+                            resolve(data)
+                        },
+                        error: function(error) {
+                            console.error(error)
+                            reject()
+                        }
+                    })
+                })
             }
 
             break
@@ -4188,10 +4248,11 @@ $(function() {
                 // tổng số hình hiện tại
                 var qty = $('.image-preview-div > .row').children().length;
                 let imageElement = ''
+                let size = 0
     
                 for(var i = 0; i < length; i++){
-                    if(qty >= 30){
-                        showAlertTop('Hình ảnh upload tối đa là 30');
+                    if(qty >= 20){
+                        showAlertTop('Hình ảnh upload tối đa là 20');
                         break;
                     }
     
@@ -4201,9 +4262,15 @@ $(function() {
     
                     // kiểm tra có phải là hình ảnh không
                     if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                        // tối đa 5 MB
+                        size = (this.files[i].size / BYTE) / BYTE
+                        if(size > 5) {
+                            showAlertTop(maxSizeImageMessage)
+                            break
+                        }
                         // tạo hình
                         imageElement += 
-                            `<div id="image-${idx}" data-id="${idx}" class="col-lg-4 mb-20">
+                            `<div id="image-${idx}" data-id="${idx}" class="col-lg-4 col-6">
                                 <div class="image-preview">
                                     <div class="overlay-image-preview"></div>
                                     <div data-id="${idx}" class="delete-image-preview"><i class="far fa-times-circle fz-40"></i></div>
@@ -4229,14 +4296,15 @@ $(function() {
                 var id = $(this).data('id');
                 var imageDelete = $('#image-' + id);
     
-                if(imageDelete.attr('data-name') != null){
-                    arrayDelete.push(imageDelete.attr('data-name'));
+                if(imageDelete.attr('data-name') !== undefined){
+                    const imageName = imageDelete.attr('data-name').split('?') [0]
+                    arrayDelete.push(imageName);
                 }
                 imageDelete.remove();
     
                 var qty = $('.image-preview-div > .row').children().length;
     
-                if(qty == 0){
+                if(qty === 0){
                     $('#qty-image').hide();
                     $('#image_inp').val('');
                 } else {
@@ -4273,6 +4341,7 @@ $(function() {
                     url: '/admin/hinhanh/ajax-get-hinhanh',
                     type: 'POST',
                     data: {'id': id},
+                    cache: false,
                     success:function(data){
                         // thiết lập quyền
                         $('input, textarea').attr('readonly', bool);
@@ -4336,82 +4405,186 @@ $(function() {
     
                 if(valiImage){
                     $('.loader').fadeIn();
+
+                    const id_msp = $('#model').val()
+                    // tổng dung lượng file upload: MB
+                    let totalSize = 0
     
                     const type = button.attr('data-type')
                     let arrayBase64 = []
     
                     await pushBase64ToArray(type)
-                            .then(base64 => arrayBase64 = base64)
-    
-                    // thêm mới
-                    if(type === 'create'){
-                        var data = {
-                            'id_msp': $('#model').val(),
-                            'lst_base64': arrayBase64,
-                        };
-                        
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': X_CSRF_TOKEN
-                            },
-                            url: 'admin/hinhanh',
-                            type: 'POST',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-    
-                                // render vào view
-                                $('#lst_data').children().remove();
-                                const html = renderNewRow(page, data.data)
-                                $('#lst_data').append(html);
-    
-                                // xóa option
-                                $('#model option[value="'+data.id+'"]').remove();
-    
-                                // toast + highlight row
-                                toastAndHighlight(CREATE_MESSAGE, data.id)
-                            },
-                            error: function() {
-                                $('.loader').fadeOut();
-                                showAlertTop(errorMessage)
-                            }
-                        });
-                    }
-                    // chỉnh sửa
-                    else {
-                        var id = $(button).attr('data-id');
-    
-                        var data = {
-                            'lst_base64': arrayBase64,
-                            'lst_delete': arrayDelete,
-                        };
-    
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': X_CSRF_TOKEN
-                            },
-                            url: 'admin/hinhanh/' + id,
-                            type: 'PUT',
-                            data: data,
-                            success:function(data){
-                                $('.loader').fadeOut();
-                                $('#modal').modal('hide');
-    
-                                // thay thế
-                                const newRow = renderNewRow(page, data)
-                                $(`tr[data-id="${id}"]`).replaceWith(newRow);
-    
-                                // toast + highlight row
-                                toastAndHighlight(EDIT_MESSAGE, id)
-                            },
-                            error: function() {
-                                $('.loader').fadeOut();
-                                showAlertTop(errorMessage)
-                            }
-                        });
+                        .then(base64 => {
+                            arrayBase64 = base64
+                            // byte => KB => MB
+                            totalSize = (new Blob([base64.join('')]).size / BYTE) / BYTE + 1
+                        })
+
+                    // upload files quá kích thước cho phép
+                    if(totalSize > POST_SIZE_MAX) {
+                        // upload từng file một
+                        const length = arrayBase64.length - 1
+                        if(type === 'create') {
+                            $.each(arrayBase64, (i, val) => {
+                                if(i === length) {
+                                    addSingleFile(id_msp, val, true)
+                                        .then(data => {
+                                            $('.loader').fadeOut();
+                                            $('#modal').modal('hide');
+                
+                                            // render vào view
+                                            $('#lst_data').children().remove();
+                                            const html = renderNewRow(page, data.data)
+                                            $('#lst_data').append(html);
+                
+                                            // toast + highlight row
+                                            toastAndHighlight(CREATE_MESSAGE, data.id)
+                                            return
+                                        })
+                                        .catch(() => showToast(errorMessage))
+                                } else {
+                                    addSingleFile(id_msp, val)
+                                        .catch(() => showToast(errorMessage))
+                                }
+                            })
+                        } else {
+                            $.each(arrayBase64, (i, val) => {
+                                if(i === length) {
+                                    updateSingleFile(id_msp, val, i, arrayDelete, true)
+                                        .then(data => {
+                                            $('.loader').fadeOut();
+                                            $('#modal').modal('hide');
+                
+                                            // thay thế
+                                            const newRow = renderNewRow(page, data)
+                                            $(`tr[data-id="${id_msp}"]`).replaceWith(newRow);
+                
+                                            // toast + highlight row
+                                            toastAndHighlight(EDIT_MESSAGE, id_msp)
+                                            return
+                                        })
+                                        .catch(() => showToast(errorMessage))
+                                } else {
+                                    updateSingleFile(id_msp, val, i)
+                                        .catch(() => showToast(errorMessage))
+                                }
+                            })
+                        }
+                    } else {
+                        // thêm mới
+                        if(type === 'create'){
+                            var data = {
+                                id_msp,
+                                'lst_base64': arrayBase64,
+                            };
+                            
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                                },
+                                url: 'admin/hinhanh',
+                                type: 'POST',
+                                data: data,
+                                success:function(data){
+                                    $('.loader').fadeOut();
+                                    $('#modal').modal('hide');
+        
+                                    // render vào view
+                                    $('#lst_data').children().remove();
+                                    const html = renderNewRow(page, data.data)
+                                    $('#lst_data').append(html);
+        
+                                    // toast + highlight row
+                                    toastAndHighlight(CREATE_MESSAGE, data.id)
+                                },
+                                error: function() {
+                                    $('.loader').fadeOut();
+                                    showAlertTop(errorMessage)
+                                }
+                            });
+                        }
+                        // chỉnh sửa
+                        else {
+                            var id = $(button).attr('data-id');
+        
+                            var data = {
+                                'lst_base64': arrayBase64,
+                                'lst_delete': arrayDelete,
+                            };
+        
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                                },
+                                url: 'admin/hinhanh/' + id,
+                                type: 'PUT',
+                                data: data,
+                                success:function(data){
+                                    $('.loader').fadeOut();
+                                    $('#modal').modal('hide');
+        
+                                    // thay thế
+                                    const newRow = renderNewRow(page, data)
+                                    $(`tr[data-id="${id}"]`).replaceWith(newRow);
+        
+                                    // toast + highlight row
+                                    toastAndHighlight(EDIT_MESSAGE, id)
+                                },
+                                error: function() {
+                                    $('.loader').fadeOut();
+                                    showAlertTop(errorMessage)
+                                }
+                            });
+                        }
                     }
                 }
+            }
+
+            function addSingleFile(id_msp, base64String, lastItem = false) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
+                        url: 'admin/hinhanh/ajax-add-single-file',
+                        type: 'POST',
+                        data: {
+                            id_msp,
+                            base64String,
+                            lastItem
+                        },
+                        success: function (data) {
+                            resolve(data)
+                        },
+                        error: function (error) {
+                            console.log(error)
+                            reject()
+                        }
+                    })
+                })
+            }
+
+            function updateSingleFile(id_msp, base64String, idx, arrayDelete = [], lastItem = false) {
+                return new Promise((resolve, reject) => {
+                    const index = idx + 1;
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
+                        url: 'admin/hinhanh/ajax-update-single-file',
+                        type: 'POST',
+                        data: {
+                            id_msp,
+                            base64String,
+                            index,
+                            arrayDelete,
+                            lastItem
+                        },
+                        success: function(data) {
+                            resolve(data)
+                        },
+                        error: function(error) {
+                            console.error(error)
+                            reject()
+                        }
+                    })
+                })
             }
 
             break
@@ -4859,7 +5032,7 @@ $(function() {
                             $('#list-product').children().remove();
         
                             // kho tại chi nhánh đã có sản phẩm
-                            if(data.length == 0) {
+                            if(data.length === 0) {
                                 var elmnt = $('<div class="p-10">Tất cả sản phẩm đã được thêm vào kho.</div>');
                                 elmnt.appendTo($('#product'));
                                 $('#action-btn').hide();
@@ -4868,7 +5041,8 @@ $(function() {
                             }
                             resolve()
     
-                        }, error: function() { reject() }
+                        },
+                        error: function() { reject() }
                     });
                 })
             }
@@ -6585,6 +6759,13 @@ $(function() {
 
                 // kiểm tra có phải là hình ảnh không
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                    // Byte => KB => MB
+                    const size = (this.files[0].size / BYTE) / BYTE
+                    if(size > MAX_SIZE_IMAGE) {
+                        showAlertTop(maxSizeImageMessage)
+                        return
+                    }
+
                     const imgURL = URL.createObjectURL(this.files[0])
                     $('#image-preview').attr('src', imgURL);
                     // url image => base64
@@ -6837,6 +7018,13 @@ $(function() {
 
                 // kiểm tra có phải là hình ảnh không
                 if(extend == 'jpg' || extend == 'jpeg' || extend == 'png'){
+                    // Byte => KB => MB
+                    const size = (this.files[0].size / BYTE) / BYTE
+                    if(size > MAX_SIZE_IMAGE) {
+                        showAlertTop(maxSizeImageMessage)
+                        return
+                    }
+
                     const imgURL = URL.createObjectURL(this.files[0])
                     $('#image-preview').attr('src', imgURL);
                     // url image => base64

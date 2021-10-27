@@ -13,16 +13,6 @@
 
     <div class='backdrop'></div>
     
-    {{-- alert top --}}
-    <div class="alert-top">
-        <div class="close-alert-top-icon"><i class="far fa-times-circle"></i></div>
-        <div class="alert-top-title"></div>
-        <div class="alert-top-content"></div>
-        <div class="alert-top-footer">
-            <div class="close-alert-top">OK</div>
-        </div>
-    </div>
-    
     <!-- content -->
     <div class="content">
         <!-- title of page -->

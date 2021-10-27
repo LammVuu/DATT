@@ -120,6 +120,8 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
     Route::post("ajax-get-branch-with-qty-in-stock", [IndexController::class, "AjaxGetBranchWithQtyInStock"]);
 
+    route::get("ajax-get-total-qty-pro-by-cap", [IndexController::class, "AjaxGetTotalQtyProByCap"]);
+
     Route::middleware("CheckLogin")->group(function(){
         /*=======================================================================================================
                                                         Page
@@ -151,13 +153,13 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
         Route::post("change-address-delivery", [UserController::class, "ChangeAddressDelivery"])->name("user/change-address-delivery");
         
-        Route::post("create-update-address", [UserController::class, "CreateUpdateAddress"])->name("user/create-update-address");
+        Route::post("ajax-create-update-address", [UserController::class, "AjaxCreateUpdateAddress"]);
 
-        Route::get("set-default-address/{id}", [UserController::class, "SetDefaultAddress"])->name("user/set-default-address");
+        Route::post("ajax-set-default-address", [UserController::class, "AjaxSetDefaultAddress"]);
 
-        Route::post("delete-object", [UserController::class, "DeleteObject"])->name("user/delete-object");
+        Route::post("ajax-delete-object", [UserController::class, "AjaxDeleteObject"]);
 
-        Route::post("ajax-change-avatar", [UserController::class, "AjaxChangeAvatar"])->name("user/ajax-change-avatar");
+        Route::post("ajax-change-avatar", [UserController::class, "AjaxChangeAvatar"]);
 
         Route::post("checkout", [CartController::class, "Checkout"])->name("user/checkout");
 
@@ -193,11 +195,11 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
         Route::post("ajax-create-evaluate", [UserController::class, "AjaxCreateEvaluate"]);
 
+        Route::post("ajax-upload-single-image-evaluate", [UserController::class, "AjaxUploadSingleImageEvaluate"]);
+
         Route::post("ajax-edit-evaluate", [UserController::class, "AjaxEditEvaluate"]);
 
         Route::post("ajax-reply", [UserController::class, "AjaxReply"]);
-
-        Route::post("ajax-get-all-another-evaluate", [IndexController::class, "AjaxGetAllAnotherEvaluate"]);
 
         Route::post("ajax-get-all-reply", [IndexController::class, "AjaxGetAllReply"]);
 
@@ -277,15 +279,15 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Admi
                                                         Sản phẩm
     =========================================================================================================*/
 
-    Route::post("sanpham/ajax-get-sanpham", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetSanPham"]);
+    Route::post("sanpham/ajax-get-specifications-list", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetSpecificationsList"]);
 
-    Route::post("sanpham/ajax-get-promotionID-by-modelID", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetPromotionIDByModelID"]);
+    Route::post("sanpham/ajax-get-sanpham", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetSanPham"]);
 
     Route::post("sanpham/ajax-restore", [App\Http\Controllers\admin\SanPhamController::class, "AjaxRestore"]);
 
     Route::post("sanpham/ajax-search", [App\Http\Controllers\admin\SanPhamController::class, "AjaxSearch"]);
 
-    Route::post("sanpham/ajax-get-model-status-false", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetModelStatusFalse"]);
+    Route::post("sanpham/ajax-get-model-list", [App\Http\Controllers\admin\SanPhamController::class, "AjaxGetModelList"]);
 
     Route::post("sanpham/ajax-filtersort", [App\Http\Controllers\admin\SanPhamController::class, "AjaxFilterSort"]);
 
@@ -311,6 +313,10 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Admi
 
     Route::post("slideshow-msp/ajax-search", [App\Http\Controllers\admin\SlideshowMSPController::class, "AjaxSearch"]);
 
+    Route::post("slideshow-msp/ajax-add-single-file", [App\Http\Controllers\admin\SlideshowMSPController::class, "AjaxAddSingleFile"]);
+
+    Route::post("slideshow-msp/ajax-update-single-file", [App\Http\Controllers\admin\SlideshowMSPController::class, "AjaxUpdateSingleFile"]);
+
     /*=======================================================================================================
                                                         Hình ảnh
     =========================================================================================================*/
@@ -320,6 +326,10 @@ Route::group(["prefix" => "admin", "namespace" => "admin", "middleware" => "Admi
     Route::post("hinhanh/ajax-get-hinhanh", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxGetHinhAnh"]);
 
     Route::post("hinhanh/ajax-search", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxSearch"]);
+
+    Route::post("hinhanh/ajax-add-single-file", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxAddSingleFile"]);
+
+    Route::post("hinhanh/ajax-update-single-file", [App\Http\Controllers\admin\HinhAnhController::class, "AjaxUpdateSingleFile"]);
 
     /*=======================================================================================================
                                                         Kho

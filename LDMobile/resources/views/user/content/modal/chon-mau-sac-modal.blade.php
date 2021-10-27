@@ -16,7 +16,7 @@
                     {{-- chọn màu --}}
                     <div class="fw-600">Chọn màu</div>
                     <div class="mb-30">
-                        <div id="phone-color" class="d-flex flex-wrap p-5"></div>
+                        <div id="phone-color"></div>
                     </div>
 
                     <i id="max-qty-note" class="mb-10">* Số lượng mua tối đa là 5</i>

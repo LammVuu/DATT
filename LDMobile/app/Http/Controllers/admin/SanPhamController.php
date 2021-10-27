@@ -52,14 +52,6 @@ class SanPhamController extends Controller
             $lst_product[$i]->trangthaimausp = MAUSP::find($key->id_msp)->trangthai;
         }
 
-        // danh sách file cấu hình
-        $lst_specifications = scandir('json');
-        foreach($lst_specifications as $i => $key){
-            if($key == '.' || $key == '..'){
-                unset($lst_specifications[$i]);
-            }
-        }
-
         // danh sách ram hiện có
         $lst_ram = SANPHAM::select('ram')->distinct()->get();
 
@@ -70,7 +62,6 @@ class SanPhamController extends Controller
             'lst_product' => $lst_product,
             'lst_model' => MAUSP::select('id', 'tenmau')->get(),
             'lst_promotion' => KHUYENMAI::select('id', 'chietkhau')->get(),
-            'lst_specifications' => $lst_specifications,
             'lst_ram' => $lst_ram,
             'lst_capacity' => $lst_capacity,
         ];
@@ -81,34 +72,10 @@ class SanPhamController extends Controller
     public function store(Request $request)
     {
         if($request->ajax()){
-            // chọn hình từ mẫu sản phẩm
-            if($request->image_from == 'model'){
-                $imageName = $request->hinhanh;
-            } else {
-                // định dạng hình
-                $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
-                if($imageFormat == 'png'){
-                    $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
-                    $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.png'));
-                } else {
-                    $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                    $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.jpg'));
-                }
-                // lưu hình
-                $this->IndexController->saveImage('images/phone/'.$imageName, $base64);
-
-                // thêm hình mới vào bảng HINHANH
-                HINHANH::create([
-                    'id_msp' => $request->id_msp,
-                    'hinhanh' => $imageName,
-                ]);
-            }
-            
-
             $data = [
                 'tensp' => $request->tensp,
                 'id_msp' => $request->id_msp,
-                'hinhanh' => $imageName,
+                'hinhanh' => $request->hinhanh,
                 'mausac' => $request->mausac,
                 'ram' => $request->ram,
                 'dungluong' => $request->dungluong,
@@ -121,7 +88,7 @@ class SanPhamController extends Controller
             if($request->cauhinhName != 'create'){
                 $data['cauhinh'] = $request->cauhinhName;
             }
-            // tạo mới file thông số
+            // tạo tên file thông số
             else {
                 $capacity = strtolower(str_replace(' ', '', $request->dungluong));
                 $data['cauhinh'] = strtolower(str_replace(' ', '_', $request->tensp).'_'.$capacity) . '.json';
@@ -130,6 +97,7 @@ class SanPhamController extends Controller
             // sản phẩm đã tồn tại
             $exists = SANPHAM::where('tensp', $data['tensp'])
                             ->where('id_msp', $data['id_msp'])
+                            ->where('hinhanh', $data['hinhanh'])
                             ->where('mausac', $data['mausac'])
                             ->where('ram', $data['ram'])
                             ->where('dungluong', $data['dungluong'])
@@ -142,13 +110,16 @@ class SanPhamController extends Controller
                 return 'exists';
             }
 
-            if($request->cauhinhName == 'create'){
+            if($request->cauhinhName === 'create'){
                 $url = 'json/' . $data['cauhinh'];
                 $json = json_encode($request->cauhinh);
                 file_put_contents($url, $json);
             }
 
+            // thêm vào db
             $create = SANPHAM::create($data);
+
+            // trả dữ liệu về view
             if($create->id_km){
                 $promotion = KHUYENMAI::find($create->id_km)->chietkhau*100 .'%';
             } else {
@@ -169,6 +140,7 @@ class SanPhamController extends Controller
             $data = [
                 'tensp' => $request->tensp,
                 'id_msp' => $request->id_msp,
+                'hinhanh' => $request->hinhanh,
                 'mausac' => $request->mausac,
                 'ram' => $request->ram,
                 'dungluong' => $request->dungluong,
@@ -178,49 +150,15 @@ class SanPhamController extends Controller
                 'trangthai' => $request->trangthai,
             ];
 
-            $oldData = SANPHAM::find($id);
-
             // cập nhật file thông số
             $url = 'json/' . $data['cauhinh'];
             $json = json_encode($request->cauhinh);
             file_put_contents($url, $json);
 
-            // cập nhật hình
-            if($request->image_from == 'model'){
-                $data['hinhanh'] = $request->hinhanh;
-            } else {
-                // hình mới
-                if($request->hinhanh && str_contains($request->hinhanh, 'data:image')){
-                    // xóa hình cũ
-                    unlink('images/phone/' . $oldData->hinhanh);
-                    HINHANH::where('hinhanh', $oldData->hinhanh)->delete();
-
-                    // định dạng hình
-                    $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
-                    if($imageFormat == 'png'){
-                        $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
-                        $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.png'));
-                    } else {
-                        $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                        $imageName = strtolower(str_replace(' ', '_', $request->tensp.' '.$this->IndexController->unaccent($request->mausac).'.jpg'));
-                    }
-                    // lưu hình
-                    $this->IndexController->saveImage('images/phone/'.$imageName, $base64);
-
-                    // thêm hình mới vào bảng HINHANH
-                    HINHANH::create([
-                        'id_msp' => $request->id_msp,
-                        'hinhanh' => $imageName,
-                    ]);
-
-                    $data['hinhanh'] = $imageName;
-                } else {
-                    $data['hinhanh'] = $oldData->hinhanh;
-                }
-            }
-
+            // cập nhật db
             SANPHAM::where('id', $id)->update($data);
 
+            // trả dữ liệu về view
             $newRow = SANPHAM::find($id);
             if($newRow->id_km){
                 $promotion = KHUYENMAI::find($newRow->id_km)->chietkhau*100 .'%';
@@ -238,11 +176,25 @@ class SanPhamController extends Controller
         SANPHAM::where('id', $id)->update(['trangthai' => 0]);
     }
 
+    public function AjaxGetSpecificationsList(Request $request)
+    {
+        if($request->ajax()) {
+            // danh sách file cấu hình
+            $lst_specifications = scandir('json');
+            foreach($lst_specifications as $i => $key){
+                if($key == '.' || $key == '..'){
+                    unset($lst_specifications[$i]);
+                }
+            }
+    
+            return $lst_specifications;
+        }
+    }
+
     public function AjaxGetSanPham(Request $request)
     {
         if($request->ajax()){
             $product = SANPHAM::find($request->id);
-            $product->hinhanh .= '?'.time();
             $specifications = $this->IndexController->getSpecifications($request->id);
             $product->trangthaimausp = MAUSP::find($product->id_msp)->trangthai;
 
@@ -262,13 +214,6 @@ class SanPhamController extends Controller
                 'lst_color' => $lst_color,
                 'specifications' => $specifications,
             ];
-        }
-    }
-
-    public function AjaxGetPromotionIDByModelID(Request $request)
-    {
-        if($request->ajax()){
-            return SANPHAM::where('id_msp', $request->id)->first();
         }
     }
 
@@ -322,13 +267,21 @@ class SanPhamController extends Controller
         }
     }
 
-    public function AjaxGetModelStatusFalse(Request $request)
+    public function AjaxGetModelList(Request $request)
     {
         if($request->ajax()){
             $lst_result = [];
-            foreach(MAUSP::all() as $key){
-                if($key->trangthai == 0){
-                    array_push($lst_result, $key->id);
+
+            // lấy tất cả mẫu sp
+            if($request->skip === 'false') {
+                return MAUSP::all();
+            }
+            // lấy mẫu sp còn kinh doanh
+            else {
+                foreach(MAUSP::all() as $model){
+                    if($model->trangthai === 1){
+                        array_push($lst_result, $model);
+                    }
                 }
             }
 
@@ -688,7 +641,12 @@ class SanPhamController extends Controller
     public function AjaxGetModelImage(Request $request)
     {
         if($request->ajax()){
-            return HINHANH::where('id_msp', $request->id_msp)->get();
+            $allImages = HINHANH::where('id_msp', $request->id_msp)->get();
+            foreach($allImages as $i => $image) {
+                $image->hinhanh .= '?'.time().$i;
+            }
+
+            return $allImages;
         }
     }
 }

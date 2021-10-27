@@ -34,14 +34,10 @@ class BannerController extends Controller
     {
         if($request->ajax()){
             // định dạng hình
-            $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
-            if($imageFormat == 'png'){
-                $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
-                $imageName = 'banner'.(count(BANNER::all()) + 1).'.png';
-            } else {
-                $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                $imageName = 'banner'.(count(BANNER::all()) + 1).'.jpg';
-            }
+            $format = $this->IndexController->getImageFormat($request->hinhanh);
+            
+            $base64 = str_replace('data:image/'.$format.';base64,', '', $request->hinhanh);
+            $imageName = 'banner'.time().'.'.$format;
             
             // lưu Hình
             $this->IndexController->saveImage('images/banner/'.$imageName, $base64);
@@ -73,14 +69,10 @@ class BannerController extends Controller
                 unlink('images/banner/' . $oldData->hinhanh);
 
                 // định dạng hình
-                $imageFormat = $this->IndexController->getImageFormat($request->hinhanh);
-                if($imageFormat == 'png'){
-                    $base64 = str_replace('data:image/png;base64,', '', $request->hinhanh);
-                    $imageName = 'banner'.(count(BANNER::all()) + 1).'.png';
-                } else {
-                    $base64 = str_replace('data:image/jpeg;base64,', '', $request->hinhanh);
-                    $imageName = 'banner'.(count(BANNER::all()) + 1).'.jpg';
-                }
+                $format = $this->IndexController->getImageFormat($request->hinhanh);
+
+                $base64 = str_replace('data:image/'.$format.';base64,', '', $request->hinhanh);
+                $imageName = 'banner'.time().'.'.$format;
                 
                 // lưu Hình
                 $this->IndexController->saveImage('images/banner/'.$imageName, $base64);
@@ -110,7 +102,10 @@ class BannerController extends Controller
     public function AjaxGetBanner(Request $request)
     {
         if($request->ajax()){
-            return BANNER::find($request->id);
+            $banner = BANNER::find($request->id);
+            $banner->hinhanh .= '?'.time();
+            
+            return $banner;
         }
     }
 }

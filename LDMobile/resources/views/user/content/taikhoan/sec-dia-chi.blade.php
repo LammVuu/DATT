@@ -8,41 +8,39 @@
             <i class="far fa-plus mr-10"></i>Thêm địa chỉ mới
         </div>
 
-        @if (count($data['lst_address']) != 0)
+        @if ($data['lst_address']['status'])
             {{-- địa chỉ mặc định --}}
-            @foreach ($data['lst_address'] as $key)
-                @if($key['macdinh'] == 1)
-                    <div id="address-{{$key['id']}}" data-default="true" class="white-bg p-20 border-success mb-30">
-                        <div class="d-flex justify-content-between pb-10">
-                            <div class="d-flex">
-                                <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
-                                <div class="d-flex align-items-center success-color fw-600 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div type="button" data-id="{{$key['id']}}" class="btn-edit-address main-color-text"><i class="fas fa-pen mr-5"></i>Chỉnh sửa</div>
-                            </div>
-                        </div>
-            
-                        <div class="d-flex mb-5">
-                            <div class="gray-1">Địa chỉ:</div>
-                            <div class="ml-5 black">
-                                {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
-                            </div>
-                        </div>
-            
-                        <div class="d-flex">
-                            <div class="gray-1">Điện thoại:</div>
-                            <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
-                        </div>
+            <?php $default = $data['lst_address']['default'] ?>
+
+            <div id="address-{{$default['id']}}" data-default="true" class="address-wrapper-default">
+                <div class="d-flex justify-content-between pb-10">
+                    <div class="d-flex">
+                        <b id="adr-fullname-{{$default['id']}}" class="text-uppercase">{{ $default['hoten'] }}</b>
+                        <div class="d-flex align-items-center success-color fw-600 ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
                     </div>
-                    @break
-                @endif
-            @endforeach
+                    <div class="d-flex align-items-center">
+                        <div type="button" data-id="{{$default['id']}}" class="btn-edit-address main-color-text"><i class="fas fa-pen mr-5"></i>Chỉnh sửa</div>
+                    </div>
+                </div>
+    
+                <div class="d-flex mb-5">
+                    <div class="gray-1">Địa chỉ:</div>
+                    <div class="ml-5 black">
+                        {{$default['diachi'].', '.$default['phuongxa'].', '.$default['quanhuyen'].', '.$default['tinhthanh']}}
+                    </div>
+                </div>
+    
+                <div class="d-flex">
+                    <div class="gray-1">Điện thoại:</div>
+                    <div id="adr-tel-{{$default['id']}}" class="ml-5 black">{{$default['sdt']}}</div>
+                </div>
+            </div>
 
             {{-- địa chỉ khác --}}
-            @foreach ($data['lst_address'] as $key)
+            <?php $another = $data['lst_address']['another'] ?>
+            @foreach ($another as $key)
                 @if($key['macdinh'] == 0)
-                    <div id="address-{{$key['id']}}" data-default="false" class="white-bg p-20 box-shadow mb-30">
+                    <div id="address-{{$key['id']}}" data-default="false" class="address-wrapper">
                         <div class="d-flex justify-content-between pb-10">
                             <div class="d-flex">
                                 <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>

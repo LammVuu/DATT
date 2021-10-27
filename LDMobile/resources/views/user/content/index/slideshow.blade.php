@@ -1,7 +1,7 @@
 <section class='user-bg-color pt-20 pb-20'>
     <div class='container'>
         <div class='row'>
-            <div class='col-lg-8 col-md-12 col-sm-12'>
+            <div class='col-lg-8 col-12'>
                 <div id="carouselExampleIndicators" class="relative carousel carousel-dark slide" data-bs-ride="carousel">
                     <div class="carousel-inner box-shadow">
                         <div class="carousel-item active">

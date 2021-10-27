@@ -29,44 +29,40 @@
                 <div class="col-lg-8 col-12">
                     <div class="row">
                         {{-- địa chỉ mặc định --}}
-                        @foreach ($data['lst_address'] as $key)
-                            @if($key['macdinh'] == 1)
-                                <div class="col-12">
-                                    <div id="address-{{$key['id']}}" data-default="true" class="white-bg p-20 border-success mb-30">
-                                        <div class="d-flex justify-content-between pb-10">
-                                            <div class="d-flex">
-                                                <b id="adr-fullname-{{$key['id']}}" class="text-uppercase">{{ $key['hoten'] }}</b>
-                                                <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
-                                            </div>
-                                        </div>
-                
-                                        <div class="d-flex mb-5">
-                                            <div class="gray-1">Địa chỉ:</div>
-                                            <div class="ml-5 black">
-                                                {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
-                                            </div>
-                                        </div>
-                
-                                        <div class="d-flex mb-20">
-                                            <div class="gray-1">Điện thoại:</div>
-                                            <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
-                                        </div>
-                                        {{-- button --}}
-                                        <div class="d-flex">
-                                            <form id="change-address-delivery-form" action="{{route('user/change-address-delivery')}}" method="POST">
-                                                @csrf
-                                                <input type="hidden" id="address_id" name="address_id">
-                                            </form>
-                                            <div data-id="{{$key['id']}}" class="choose-address-delivery main-btn p-10">Giao đến địa chỉ này</div>
-                                            <div data-id="{{$key['id']}}" class="btn-edit-address cancel-btn p-10 ml-10">Sửa</div>
-                                        </div>
+                        <?php $default = $data['lst_address']['default'] ?>
+                        <div class="col-12">
+                            <div id="address-{{$default['id']}}" data-default="true" class="white-bg p-20 border-success mb-30">
+                                <div class="d-flex justify-content-between pb-10">
+                                    <div class="d-flex">
+                                        <b id="adr-fullname-{{$default['id']}}" class="text-uppercase">{{ $default['hoten'] }}</b>
+                                        <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
                                     </div>
                                 </div>
-                                @break
-                            @endif
-                        @endforeach
+        
+                                <div class="d-flex mb-5">
+                                    <div class="gray-1">Địa chỉ:</div>
+                                    <div class="ml-5 black">
+                                        {{$default['diachi'].', '.$default['phuongxa'].', '.$default['quanhuyen'].', '.$default['tinhthanh']}}
+                                    </div>
+                                </div>
+        
+                                <div class="d-flex mb-20">
+                                    <div class="gray-1">Điện thoại:</div>
+                                    <div id="adr-tel-{{$default['id']}}" class="ml-5 black">{{$default['sdt']}}</div>
+                                </div>
+                                {{-- button --}}
+                                <div class="d-flex">
+                                    <form id="change-address-delivery-form" action="{{route('user/change-address-delivery')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" id="address_id" name="address_id">
+                                    </form>
+                                    <div data-id="{{$default['id']}}" class="choose-address-delivery main-btn p-10">Giao đến địa chỉ này</div>
+                                    <div data-id="{{$default['id']}}" class="btn-edit-address cancel-btn p-10 ml-10">Sửa</div>
+                                </div>
+                            </div>
+                        </div>
                         {{-- địa chỉ khác --}}
-                        @foreach ($data['lst_address'] as $key)
+                        @foreach ($data['lst_address']['another'] as $key)
                             @if($key['macdinh'] == 0)
                                 <div class="col-12">
                                     <div id="address-{{$key['id']}}" data-default="false" class="white-bg p-20 border mb-30">

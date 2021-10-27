@@ -70,29 +70,29 @@ class UserComposer
     public function getListOrder($id_tk)
     {
         $data = [
-            'order' => [],
-            'detail' => [],
-            'processing' => 0,
+            'processing' => [],
+            'complete' => [],
+            'processingQty' => 0
         ];
 
-        if(count(TAIKHOAN::find($id_tk)->donhang) == 0){
+        if(DONHANG::where('id_tk', $id_tk)->get()->count() === 0){
             return $data;
         }
 
-        $i = 0;
-
-        // lấy đơn hàng của người dùng
-        foreach(DONHANG::where('id_tk', $id_tk)->orderBy('id', 'desc')->get() as $key){
-            // đơn hàng
-            $data['order'][$i] = $key;
-            
-            // chi tiết đơn hàng
-            $data['detail'][$key['id']] = $this->IndexController->getOrderDetail($key['id']);
-            $i++;
+        // lấy đơn hàng của người dùng, sắp sếp ngày mua mới nhất
+        $allOrderOfUser = DONHANG::where('id_tk', $id_tk)->orderBy('id', 'desc')->get();
+        foreach($allOrderOfUser as $userOrder){
+            $order = [
+                'order' => $userOrder,
+                'detail' => $this->IndexController->getOrderDetail($userOrder->id)
+            ];
 
             // đơn hàng đang xử lý
-            if($key['trangthaidonhang'] != 'Thành công' && $key['trangthaidonhang'] != 'Đã hủy'){
-                $data['processing']++;
+            if($userOrder['trangthaidonhang'] !== 'Thành công' && $userOrder['trangthaidonhang'] !== 'Đã hủy') {
+            array_push($data['processing'], $order);
+                $data['processingQty']++;
+            } else {
+                array_push($data['complete'], $order);
             }
         }
 
@@ -102,7 +102,27 @@ class UserComposer
     // lấy địa chỉ của tài khoản
     public function getAddress($id_tk)
     {
-        return count(TAIKHOAN::find($id_tk)->taikhoan_diachi) == 0 ? [] : TAIKHOAN::find($id_tk)->taikhoan_diachi;
+        $addressList = [
+            'status' => false,
+            'default' => [],
+            'another' => []
+        ];
+
+        $allAddress = TAIKHOAN::find($id_tk)->taikhoan_diachi;
+
+        if($allAddress->count()) {
+            $addressList['status'] = true;
+
+            foreach($allAddress as $address) {
+                if($address->macdinh === 1) {
+                    $addressList['default'] = $address;
+                } else {
+                    array_push($addressList['another'], $address);
+                }
+            }
+        }
+
+        return $addressList;
     }
 
     // lấy sp yêu thích của tài khoản
@@ -114,12 +134,16 @@ class UserComposer
         
         $lst_product = [];
 
-        $i = 0;
-
         foreach(TAIKHOAN::find($id_tk)->sp_yeuthich as $key){
-            $lst_product[$i]['id'] = $key->pivot->id;
-            $lst_product[$i]['sanpham'] = $this->IndexController->getProductById($key->pivot->id_sp);
-            $i++;
+            $id = $key->pivot->id;
+
+            $id_sp_list = $this->IndexController->getListIdSameCapacity($key->pivot->id_sp);
+            $product = $this->IndexController->getProductById($key->pivot->id_sp);
+            
+            array_push($lst_product, [
+                'id' => $id,
+                'sanpham' => $product
+            ]);
         }
 
         return $lst_product;
