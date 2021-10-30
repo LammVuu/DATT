@@ -64,6 +64,8 @@ Route::group(['namespace' => 'API','middleware' => ['throttle:500,1', 'auth:api'
     Route::get('province-store', 'CartController@getProvinceStore');
     Route::get('address-store/{id}', 'CartController@getAddressStore');
     Route::post('check-product/{id}','CartController@checkProductInStore');
+    Route::post('check-product-in-queue/{id}','CartController@checkProductInQueue');
+    Route::post('update-in-queue','CartController@updateQueue');
     Route::put('my-address/{id}','CartController@updateMyAddress');
     Route::post('my-address','CartController@createMyAddress');
     Route::get('my-address/{id}','CartController@getMyAddress');

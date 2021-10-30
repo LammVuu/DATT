@@ -20,6 +20,7 @@ use App\Models\CHINHANH;
 use App\Models\VOUCHER;
 use App\Models\TINHTHANH;
 use App\Models\TAIKHOAN_DIACHI;
+use App\Models\HANGDOI;
 use App\Classes\Helper;
 use App\Models\DONHANG_DIACHI;
 use session;
@@ -847,4 +848,84 @@ class CartController extends Controller
             ])
         ]);
     }
+    public function updateQueue(Request $request){
+        if($request->action){
+            if($request->action == "add"){
+                $newQueue = new HANGDOI();
+                $newQueue->id_tk = $request->id_tk;
+                $newQueue->trangthai = 1;
+                $newQueue->nentang = "app";
+                $newQueue->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => '',
+                    'data' => null
+                ]);
+            }else if($request->action == "delete"){
+                $queues = HANGDOI::where('id_tk', $request->id_tk)->get();
+                if($queues){
+                    $queue = HANGDOI::find($queues[0]->id);
+                    $queue->delete();
+                    return response()->json([
+                        'status' => true,
+                        'message' => '',
+                        'data' => null
+                    ]);
+                }
+               
+            }
+        }
+    }
+    public function checkProductInQueue($id){
+        $queues = HANGDOI::all();
+        $myCart = GIOHANG::where('id_tk', $id)->get();
+        $totalPro = array();
+        $listIDs = array();
+        foreach($myCart as $mCart){ 
+            $total = 0;
+            foreach($queues as $queue){
+                $otherCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
+                foreach($otherCart as $oCart){ 
+                    if($mCart->id_sp == $oCart->id_sp){
+                        $total += $oCart->sl;
+                    }
+                }
+             }
+            if($total > 0){
+                array_push($totalPro,  (object)["id" => $mCart->id_sp, "total" => $total + $mCart->sl]);
+            }
+        }
+        $check = false;
+        foreach($totalPro as $product){
+            $wares = KHO::where('id_sp', $product->id)->get();
+            $total = 0;
+            foreach($wares as $ware){ 
+                $total += $ware->slton;
+            }
+            if($product->total >= $total){
+                array_push($listIDs, $product->id);
+                $check = true;
+            }
+        }
+        if($check == true){
+            return response()->json([
+                'status' => false,
+                'message' => '',
+                'data' => $listIDs
+            ]);
+        }else{
+            return response()->json([
+                'status' => true,
+                'message' => '',
+                'data' => null
+            ]);
+        }
+       
+    }
+    //thanh toán -> *ktra xem có ai đang thanh toán cùng sản phẩm với mình không -> **ktra soluong ton cua người đang tt + sl hien tai < kho -> dc thanh toan
+    //* lấy tất cả sp trog gio hang của mình
+    //* duyet tất cả user trong hàng đợi
+        //* lấy tất cả sp trog giỏ hàng của từng user đang thanh toán
+            //* so sanh voi id_sp trong gio hang cua minh
+                //* cùng nhau -> cộng số lượng
 }
