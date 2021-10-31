@@ -136,7 +136,7 @@
                     </div>
 
                     {{-- thanh toán --}}
-                    <div type="button" id="checkout-page" href="{{route('user/thanh-toan')}}" class="checkout-btn">Tiến hành thanh toán</div>
+                    <div type="button" id="checkout-page" href="{{route('user/thanh-toan')}}" class="checkout-btn">Tiến hành đặt hàng</div>
                 </div>
             @else
                 <div class="col-lg-12">

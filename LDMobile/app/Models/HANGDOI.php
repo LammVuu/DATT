@@ -15,6 +15,7 @@ class HANGDOI extends Model
 
     protected $fillable = [
         'id_tk',
+        'nentang',
         'trangthai'
     ];
 

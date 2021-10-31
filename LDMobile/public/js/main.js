@@ -3218,9 +3218,6 @@ $(function(){
             let checkoutList = []
             let outOfStockList = []
     
-            // số lần gửi lại request
-            let request = 0;
-    
             provisionalAndTotalOrder()
             voucherCheck()
             
@@ -3376,22 +3373,13 @@ $(function(){
                                 location.href = '/thanhtoan';
                                 break
                             case 'waiting':
-                                // request tối đa
-                                if(request === 2){
-                                    $('.loader').fadeOut();
-                                    removeQueue(id_tk)
-                                        .then(() => {
-                                            showAlertTop('Sản phẩm đang được thanh toán bởi người dùng khác, xin vui lòng chờ đến lượt');
-                                            request = 0;
-                                        })
-                                        .catch(() => showAlertTop(errorMessage))
-                                        
-                                } else {
-                                    request++;
-                                    setTimeout(() => {
-                                        return checkoutQueue(checkoutList);
-                                    }, 3000);
-                                }
+                                $('.loader').fadeOut()
+                                removeQueue(id_tk)
+                                    .then(() => {
+                                        showAlertTop('Sản phẩm đang được thanh toán bởi người dùng khác, xin vui lòng chờ đến lượt');
+                                        request = 0;
+                                    })
+                                    .catch(() => showAlertTop(errorMessage))
                                 break
                             case 'out of stock':
                                 removeQueue(id_tk)
@@ -3419,6 +3407,15 @@ $(function(){
                                     sessionStorage.setItem('alert-top-message', message)
                                     location.reload()
                                 })
+                                break
+                            case 'another platform':
+                                $('.loader').fadeOut()
+                                showAlertTop('Đơn hàng đang được thanh toán trên ứng dụng di động')
+                                break
+                            case 'have been paid':
+                                const message = 'Sản phẩm bạn chọn đã được thanh toán trên ứng dụng di động'
+                                sessionStorage.setItem('alert-top-message', message)
+                                location.reload()
                                 break
                         }
                     },

@@ -16,6 +16,7 @@ class CreateHangdoiTable extends Migration
         Schema::create('hangdoi', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('id_tk');
+            $table->string('nentang', 5);
             $table->boolean('trangthai');
         });
     }

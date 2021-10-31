@@ -1264,6 +1264,7 @@ class IndexController extends Controller
     public function AjaxCheckoutQueue(Request $request){
         if($request->ajax()){
             $id_tk = $request->id_tk;
+            $checkoutList = $request->checkoutList;
 
             $exists = HANGDOI::where('id_tk', $id_tk)->first();
 
@@ -1271,16 +1272,44 @@ class IndexController extends Controller
             if(!$exists) {
                 $newQueue = HANGDOI::create([
                     'id_tk' => $id_tk,
+                    'nentang' => 'web',
                     'trangthai' => 1
                 ]);
             }
+            // nếu đã có hàng đợi và đó là của nền tảng khác
+            elseif($exists->nentang === 'app') {
+                return ['status' => 'another platform'];
+            }
+            
+            // nếu đơn hàng đã được thanh toán trên app di động
+            $userCart = GIOHANG::where('id_tk', $id_tk)->get();
+            // giỏ hàng rỗng
+            if(count($userCart) === 0) {
+                return ['status' => 'have been paid'];
+            }
+
+            // nếu id_sp được chọn không còn nằm trong giỏ hàng => đã được thanh toán bên app
+            $isPaid = false;
+            foreach($checkoutList as $id_sp) {
+                $cart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first();
+
+                if(!$cart) {
+                    $isPaid = true;
+                    break;
+                }
+            }
+
+            if($isPaid) {
+                return ['status' => 'have been paid'];
+            }
+
             // nếu hàng đợi của người dùng trạng thái = 0 thì cập nhật lại = 1
-            elseif(!$exists->trangthai) {
+            if(!$exists->trangthai) {
                 $exists->trangthai = 1;
                 $exists->save();
             }
 
-            $isQueue = $this->isNeedToQueue($id_tk, $request->checkoutList);
+            $isQueue = $this->isNeedToQueue($id_tk, $checkoutList);
             
             // có yêu cầu hàng đợi
             if($isQueue === true){
