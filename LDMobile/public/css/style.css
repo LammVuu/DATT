@@ -3044,12 +3044,12 @@ a.head-item:hover{
   border-radius: 5px;
   box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.16);
   animation-name: showAddCartSuccess;
-  animation-duration: .5s;
+  animation-duration: .75s;
 }
 
 @keyframes showAddCartSuccess {
   from {
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     transform: translateY(0);

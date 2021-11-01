@@ -1446,6 +1446,7 @@ $(function(){
                 $('#delete-content').text('Bạn muốn hủy đơn hàng này?');
                 $('#delete-btn').attr('data-id', $(this).data('id'));
                 $('#delete-btn').attr('data-object', 'order');
+                $('.cancel-btn').text('Đóng')
                 $('#delete-btn').text('Hủy');
                 $('#delete-modal').modal('show');
             });
@@ -3375,10 +3376,8 @@ $(function(){
                             case 'waiting':
                                 $('.loader').fadeOut()
                                 removeQueue(id_tk)
-                                    .then(() => {
-                                        showAlertTop('Sản phẩm đang được thanh toán bởi người dùng khác, xin vui lòng chờ đến lượt');
-                                        request = 0;
-                                    })
+                                    .then(() =>
+                                        showAlertTop('Sản phẩm đang được thanh toán bởi người dùng khác, xin vui lòng chờ đến lượt'))
                                     .catch(() => showAlertTop(errorMessage))
                                 break
                             case 'out of stock':

@@ -52,6 +52,7 @@ class CartController extends Controller
     }
 
     public function ThanhToan(Request $request){
+        // print_r(Session::get('_previous'));die; 
         // bắt buộc request phải từ trang giỏ hàng
         if(Session::get('_previous')){
             $url = Session::get('_previous')['url'];

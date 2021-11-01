@@ -1260,17 +1260,47 @@ class IndexController extends Controller
         return $isQueue;
     }
 
+    // kiểm tra đơn hàng đã được thanh toán bên app
+    public function haveBeenPaid($id_tk, $checkoutList) {
+        $userCart = GIOHANG::where('id_tk', $id_tk)->get();
+        // giỏ hàng rỗng
+        if(count($userCart) === 0) {
+            return true;
+        }
+
+        // nếu id_sp được chọn không còn nằm trong giỏ hàng => đã được thanh toán bên app
+        $isPaid = false;
+        foreach($checkoutList as $id_sp) {
+            $cart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first();
+
+            if(!$cart) {
+                $isPaid = true;
+                break;
+            }
+        }
+
+        return $isPaid;
+    }
+
     // hàng đợi thanh toán
     public function AjaxCheckoutQueue(Request $request){
         if($request->ajax()){
             $id_tk = $request->id_tk;
             $checkoutList = $request->checkoutList;
 
+            // nếu đơn hàng đã được thanh toán trên app di động
+            $isPaid = $this->haveBeenPaid($id_tk, $checkoutList);
+
+            if($isPaid) {
+                return ['status' => 'have been paid'];
+            }
+
+            // hàng đợi của người dùng
             $exists = HANGDOI::where('id_tk', $id_tk)->first();
 
-            // thêm vào hàng đợi
+            // thêm vào hàng đợi nếu chưa có
             if(!$exists) {
-                $newQueue = HANGDOI::create([
+                HANGDOI::create([
                     'id_tk' => $id_tk,
                     'nentang' => 'web',
                     'trangthai' => 1
@@ -1280,31 +1310,8 @@ class IndexController extends Controller
             elseif($exists->nentang === 'app') {
                 return ['status' => 'another platform'];
             }
-            
-            // nếu đơn hàng đã được thanh toán trên app di động
-            $userCart = GIOHANG::where('id_tk', $id_tk)->get();
-            // giỏ hàng rỗng
-            if(count($userCart) === 0) {
-                return ['status' => 'have been paid'];
-            }
-
-            // nếu id_sp được chọn không còn nằm trong giỏ hàng => đã được thanh toán bên app
-            $isPaid = false;
-            foreach($checkoutList as $id_sp) {
-                $cart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first();
-
-                if(!$cart) {
-                    $isPaid = true;
-                    break;
-                }
-            }
-
-            if($isPaid) {
-                return ['status' => 'have been paid'];
-            }
-
             // nếu hàng đợi của người dùng trạng thái = 0 thì cập nhật lại = 1
-            if(!$exists->trangthai) {
+            elseif(!$exists->trangthai) {
                 $exists->trangthai = 1;
                 $exists->save();
             }
