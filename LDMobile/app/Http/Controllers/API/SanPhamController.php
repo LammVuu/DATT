@@ -101,7 +101,10 @@ class SanPhamController extends Controller
             $listId = array();
             $product->tensp = $product->tensp." ".$product->dungluong;
             $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
-            $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($product->id_km)->chietkhau))
+            {
+               $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            } else $product->giamgia = 0;
             $temp = SANPHAM::where('id_msp', $product->id_msp)->where('dungluong', $product->dungluong)->get();
             foreach($temp as $pro){
                 array_push($listId,  $pro->id);
@@ -148,7 +151,10 @@ class SanPhamController extends Controller
         foreach($listProduct as $product){
             $product->tensp = $product->tensp." ".$product->dungluong;
             $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
-            $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            if(!empty(KHUYENMAI::find($product->id_km)->chietkhau))
+            {
+               $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
+            } else $product->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $product->id)->get();
             $totalVote = 0;
             $totalJudge = 0;
@@ -453,8 +459,8 @@ class SanPhamController extends Controller
         }
         foreach($listResult as $pro){
             $pro->hinhanh = Helper::$URL."phone/".$pro->hinhanh;
-            if(!empty(KHUYENMAI::find($pro->giamgia)->chietkhau)){
-                $pro->giamgia = KHUYENMAI::find($pro->giamgia)->chietkhau;
+            if(!empty(KHUYENMAI::find($pro->id_km)->chietkhau)){
+                $pro->giamgia = KHUYENMAI::find($pro->id_km)->chietkhau;
             }else $pro->giamgia = 0;
             $allJudge = DANHGIASP::where("id_sp", $pro->id)->get();
             $totalVote = 0;
@@ -650,7 +656,13 @@ class SanPhamController extends Controller
             $listProduct = SANPHAM::where('ram', $request->ram)->where('dungluong', $request->dungluong)->where('trangthai', 1)->where(function($query) use ($priceMax){
                 $query->where('gia','<=',$priceMax);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
-        }else if(!empty($priceMax)&&!empty($request->ram)){
+        }else if(!empty($priceMin)&&!empty($priceMax)){
+            $listProduct = SANPHAM::where(function($query) use ($priceMax, $priceMin){
+                $query->where('gia','<=',$priceMax);
+                $query->where('gia','>=',$priceMin);
+            })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
+        }
+        else if(!empty($priceMax)&&!empty($request->ram)){
             $listProduct = SANPHAM::where('ram', $request->ram)->where('trangthai', 1)->where(function($query) use ($priceMax){
                 $query->where('gia','<=',$priceMax);
             })->skip(($page - 1) * $itemsPerPage)->take($itemsPerPage)->groupBy('id_msp')->get();
@@ -694,7 +706,7 @@ class SanPhamController extends Controller
         foreach($listProduct as $product){
             $product->tensp = $product->tensp." ".$product->dungluong;
             $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
-            if(!empty(KHUYENMAI::find($product->giamgia)->chietkhau)){
+            if(!empty(KHUYENMAI::find($product->id_km)->chietkhau)){
                 $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
            } else $product->giamgia = 0;
             
@@ -733,7 +745,7 @@ class SanPhamController extends Controller
         if(!empty($pro)){
             $product = SANPHAM::find($pro[0]->id);
             $product->hinhanh = Helper::$URL."phone/".$product->hinhanh;
-            if(!empty(KHUYENMAI::find($product->giamgia)->chietkhau)){
+            if(!empty(KHUYENMAI::find($product->id_km)->chietkhau)){
                 $product->giamgia = KHUYENMAI::find($product->id_km)->chietkhau;
              }else $product->giamgia = 0;
            return response()->json([
@@ -761,7 +773,7 @@ class SanPhamController extends Controller
                 $attachemnt->hinhanh = Helper::$URL."evaluate/". $attachemnt->hinhanh;
             }
             $comment->dsHinhAnh = $listAttachment;
-            $listReply = PHANHOI::where('id_dg',$comment->id)->orderBy('id',"desc")->take(5)->get();
+            $listReply = PHANHOI::where('id_dg', $comment->id)->orderBy('id',"desc")->take(5)->get();
             $totalReply = count(PHANHOI::where('id_dg',$comment->id)->get());
             foreach($listReply as $reply){
                 $user = TAIKHOAN::find($reply->id_tk);

@@ -851,16 +851,35 @@ class CartController extends Controller
     public function updateQueue(Request $request){
         if($request->action){
             if($request->action == "add"){
-                $newQueue = new HANGDOI();
-                $newQueue->id_tk = $request->id_tk;
-                $newQueue->trangthai = 1;
-                $newQueue->nentang = "app";
-                $newQueue->save();
-                return response()->json([
-                    'status' => true,
-                    'message' => '',
-                    'data' => null
-                ]);
+                $oldQueues = HANGDOI::where('id_tk', $request->id_tk)->get();
+                $size = count($oldQueues);
+                if($size > 0){
+                    if($oldQueues[0]->trangthai == 0){
+                        $oldQueue = HANGDOI::find($oldQueues[0]->id);
+                        $oldQueue->trangthai = 1;
+                        $oldQueue->nentang = "app";
+                        $oldQueue->update();
+                        return response()->json([
+                            'status' => true,
+                            'message' => '',
+                            'data' => null
+                        ]);
+                    }else{
+                        return response()->json([
+                            'status' => false,
+                            'message' => '',
+                            'data' => null
+                        ]);
+                    }
+                }else{
+                    return response()->json([
+                        'status' => true,
+                        'message' => '',
+                        'data' => null
+                    ]);
+                }
+                
+                
             }else if($request->action == "delete"){
                 $queues = HANGDOI::where('id_tk', $request->id_tk)->get();
                 if($queues){
@@ -875,25 +894,54 @@ class CartController extends Controller
                
             }
         }
+        //cung user -> dang thanh toan
+        //khac user -> con hang? het hang?
     }
-    public function checkProductInQueue($id){
-        $queues = HANGDOI::all();
+    public function checkID($sizeIDs, $idCheck){
+        foreach($sizeIDs as $id){
+            if($id == $idCheck){
+                return true;
+            }
+        }
+        return false;
+    }
+    public function checkProductInQueue($id, Request $request){
+        $queues = HANGDOI::where('trangthai', 1)->get();
         $myCart = GIOHANG::where('id_tk', $id)->get();
         $totalPro = array();
         $listIDs = array();
+        $listIDsException = json_decode($request->listIDsException, true);
+        $sizeIDs = count($listIDsException);
         foreach($myCart as $mCart){ 
             $total = 0;
-            foreach($queues as $queue){
-                $otherCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
-                foreach($otherCart as $oCart){ 
-                    if($mCart->id_sp == $oCart->id_sp){
-                        $total += $oCart->sl;
+            if($sizeIDs > 0){
+                if(!$this->checkID($listIDsException, $mCart->id_sp)){
+                    foreach($queues as $queue){
+                        $otherCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
+                        foreach($otherCart as $oCart){ 
+                            if($mCart->id_sp == $oCart->id_sp){
+                                $total += $oCart->sl;
+                            }
+                        }
+                     }
+                    if($total > 0){
+                        array_push($totalPro,  (object)["id" => $mCart->id_sp, "total" => $total + $mCart->sl]);
                     }
                 }
-             }
-            if($total > 0){
-                array_push($totalPro,  (object)["id" => $mCart->id_sp, "total" => $total + $mCart->sl]);
+            }else{
+                foreach($queues as $queue){
+                    $otherCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
+                    foreach($otherCart as $oCart){ 
+                        if($mCart->id_sp == $oCart->id_sp){
+                            $total += $oCart->sl;
+                        }
+                    }
+                 }
+                if($total > 0){
+                    array_push($totalPro,  (object)["id" => $mCart->id_sp, "total" => $total + $mCart->sl]);
+                }
             }
+            
         }
         $check = false;
         foreach($totalPro as $product){
@@ -914,6 +962,16 @@ class CartController extends Controller
                 'data' => $listIDs
             ]);
         }else{
+            $queue = HANGDOI::where('id_tk', $id)->get();
+            $size = count($queue);
+            if($size == 0){
+                $newQueue = new HANGDOI();
+                $newQueue->id_tk = $id;
+                $newQueue->trangthai = 1;
+                $newQueue->nentang = "app";
+                $newQueue->save();
+            }
+            
             return response()->json([
                 'status' => true,
                 'message' => '',
@@ -928,4 +986,6 @@ class CartController extends Controller
         //* lấy tất cả sp trog giỏ hàng của từng user đang thanh toán
             //* so sanh voi id_sp trong gio hang cua minh
                 //* cùng nhau -> cộng số lượng
+    //checkbox: bỏ chọn 1 số sp trong giỏ hàng?
+        //checkbox = FALSE: ĐC QUYÊN THANH TOÁN
 }
