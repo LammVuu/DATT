@@ -23,6 +23,7 @@ use App\Models\TAIKHOAN_DIACHI;
 use App\Models\HANGDOI;
 use App\Classes\Helper;
 use App\Models\DONHANG_DIACHI;
+use App\Models\CTHD;
 use session;
 use Carbon\Carbon;
 class CartController extends Controller
@@ -883,6 +884,7 @@ class CartController extends Controller
             }else if($request->action == "delete"){
                 $queues = HANGDOI::where('id_tk', $request->id_tk)->get();
                 if($queues){
+                    $cthd = CTHD::where('id_hd', $queues[0]->id)->delete();
                     $queue = HANGDOI::find($queues[0]->id);
                     $queue->delete();
                     return response()->json([
@@ -916,27 +918,19 @@ class CartController extends Controller
             $total = 0;
             if($sizeIDs > 0){
                 if(!$this->checkID($listIDsException, $mCart->id_sp)){
-                    foreach($queues as $queue){
-                        $otherCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
-                        foreach($otherCart as $oCart){ 
-                            if($mCart->id_sp == $oCart->id_sp){
-                                $total += $oCart->sl;
-                            }
-                        }
-                     }
+                    $otherCart = CTHD::where('id_sp', $mCart->id_sp)->get();
+                    foreach($otherCart as $oCart){ 
+                            $total += $oCart->sl;
+                    }
                     if($total > 0){
                         array_push($totalPro,  (object)["id" => $mCart->id_sp, "total" => $total + $mCart->sl]);
                     }
                 }
             }else{
-                foreach($queues as $queue){
-                    $otherCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
-                    foreach($otherCart as $oCart){ 
-                        if($mCart->id_sp == $oCart->id_sp){
-                            $total += $oCart->sl;
-                        }
-                    }
-                 }
+                $otherCart = CTHD::where('id_sp', $mCart->id_sp)->get();
+                foreach($otherCart as $oCart){ 
+                    $total += $oCart->sl;
+                }
                 if($total > 0){
                     array_push($totalPro,  (object)["id" => $mCart->id_sp, "total" => $total + $mCart->sl]);
                 }
@@ -968,8 +962,29 @@ class CartController extends Controller
                 $newQueue = new HANGDOI();
                 $newQueue->id_tk = $id;
                 $newQueue->trangthai = 1;
+                $newQueue->timestamp = time();
                 $newQueue->nentang = "app";
                 $newQueue->save();
+                if($sizeIDs > 0){
+                    foreach($myCart as $cart){
+                        if(!$this->checkID($listIDsException, $cart->id_sp)){
+                            $detailQueue = new CTHD();
+                            $detailQueue->id_hd = $newQueue->id;
+                            $detailQueue->id_sp = $cart->id_sp;
+                            $detailQueue->sl = $cart->sl;
+                            $detailQueue->save();
+                        }
+                    }
+                }else {
+                    foreach($myCart as $cart){
+                        $detailQueue = new CTHD();
+                        $detailQueue->id_hd = $newQueue->id;
+                        $detailQueue->id_sp = $cart->id_sp;
+                        $detailQueue->sl = $cart->sl;
+                        $detailQueue->save();
+                    } 
+                }
+               
             }
             
             return response()->json([
