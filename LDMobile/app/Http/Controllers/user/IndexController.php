@@ -42,6 +42,7 @@ use App\Models\VOUCHER;
 use App\Models\LUOTTRUYCAP;
 use App\Models\DONHANG_DIACHI;
 use App\Models\HANGDOI;
+use App\Models\CTHD;
 
 class IndexController extends Controller
 {
@@ -1177,7 +1178,9 @@ class IndexController extends Controller
 
     // có yêu cầu hàng đợi không
     public function isNeedToQueue($id_tk, $checkoutList){
-        $isQueue = false;
+        $result = [
+            'status' => 'continue'
+        ];
 
         // danh sách các sản phẩm slton trong kho không đủ để thanh toán
         $notEnoughQuantity = [];
@@ -1193,7 +1196,8 @@ class IndexController extends Controller
 
                 // nếu sp hết hàng
                 if($qtyInStock === 0){
-                    return 'out of stock';
+                    $result['status'] = 'out of stock';
+                    return $result;
                 }
                 // nếu sl của sp trong giỏ hàng >= slton trong kho => không đủ hàng
                 elseif($qtyInCart > $qtyInStock){
@@ -1209,37 +1213,75 @@ class IndexController extends Controller
 
         // có sản phẩm không thể thanh toán
         if(!empty($notEnoughQuantity)) {
-            return $notEnoughQuantity;
+            $result['status'] = 'not enough quantity';
+            $result['productList'] = $notEnoughQuantity;
+
+            return $result;
         }
 
         // 2. lấy lần lượt các giỏ hàng của những người dùng khác đã xếp hàng trước
         // lọc và lấy ra sản phẩm giống với sản phẩm của người dùng hiện tại
+
         $queues = HANGDOI::orderBy('id')->get();
 
         // nếu người dùng là người đầu tiên trong hàng đợi thì đi tới thanh toán
         if(count($queues) === 1) {
-            return $isQueue;
+            return $result;
         }
 
+        // mảng id_sp và sl trong giỏ hàng của tất cả người dùng đang trong thanh toán
         $idAndQtyOfUsers = [];
 
         foreach($queues as $queue) {
-            $userCart = GIOHANG::where('id_tk', $queue->id_tk)->get();
-            foreach($userCart as $cart) {
-                if(in_array($cart->id_sp, $checkoutList)) {
+            /**
+             * kiểm tra hàng đợi của người dùng
+             * nếu trạng thái = 0, xét thêm nếu thời gian tồn tại của hàng đợi quá 30s
+             * thì xóa hàng đợi
+             * 
+             * trường hợp trạng thái = 1 mà người dùng bị rớt mạng không thể thanh toán
+             * hệ thống kiểm tra thời gian tồn tại của hàng đợi quá 10 phút thì xóa hàng đợi
+             */
+            if(!$queue->trangthai) {
+                // thời gian của hàng đợi
+                $queueTime = $queue->timestamp;
+                // thời gian đã tồn tại
+                $timeOfexistence = time() - $queueTime;
+                // từ 30s trở lên
+                if($timeOfexistence >= 30) {
+                    $this->removeQueue($queue->id);
+                    continue;
+                }
+            } else {
+                // thời gian của hàng đợi
+                $queueTime = $queue->timestamp;
+                // thời gian đã tồn tại
+                $timeOfexistence = time() - $queueTime;
+                // 10 phút = 600s
+                if($timeOfexistence >= 600) {
+                    $this->removeQueue($queue->id);
+                    continue;
+                }
+            }
+
+            // chi tiết hàng đợi của từng người dùng gồm các sản phẩm mà người dùng đó chọn thanh toán
+            $QueueDetail = CTHD::where('id_hd', $queue->id)->get();
+
+            foreach($QueueDetail as $detail) {
+                // lấy ra sp giống vs sản phẩm đang xét
+                if(in_array($detail->id_sp, $checkoutList)) {
                     // thêm dòng mới vào danh sách kết quả
                     if(empty($idAndQtyOfUsers) ||
-                        array_search($cart->id_sp, array_column($idAndQtyOfUsers, 'id_sp')) === false) {
+                        array_search($detail->id_sp, array_column($idAndQtyOfUsers, 'id_sp')) === false) {
                         $row = [
-                            'id_sp' => $cart->id_sp,
-                            'sl' => $cart->sl
+                            'id_sp' => $detail->id_sp,
+                            'sl' => $detail->sl
                         ];
                         array_push($idAndQtyOfUsers, $row);
                     }
                     // cập nhật sl của dòng đã tồn tại
                     else {
-                        $key = array_search($cart->id_sp, array_column($idAndQtyOfUsers, 'id_sp'));
-                        $idAndQtyOfUsers[$key]['sl'] += $cart->sl;
+                        $key = array_search($detail->id_sp, array_column($idAndQtyOfUsers, 'id_sp'));
+                        $idAndQtyOfUsers[$key]['sl'] += $detail->sl;
                     }
                 }
             }
@@ -1252,12 +1294,12 @@ class IndexController extends Controller
 
             // nếu tổng sl của 1 sp trong tất cả giỏ hàng của người dùng > slton kho thì yêu cầu hàng đợi
             if($row['sl'] > $qtyInStock) {
-                $isQueue = true;
+                $result['status'] = 'waiting';
                 break;
             }
         }
 
-        return $isQueue;
+        return $result;
     }
 
     // kiểm tra đơn hàng đã được thanh toán bên app
@@ -1300,11 +1342,24 @@ class IndexController extends Controller
 
             // thêm vào hàng đợi nếu chưa có
             if(!$exists) {
-                HANGDOI::create([
+                $exists = HANGDOI::create([
                     'id_tk' => $id_tk,
                     'nentang' => 'web',
+                    'timestamp' => time(),
                     'trangthai' => 1
                 ]);
+
+                // tạo CTHD
+                foreach($checkoutList as $id_sp) {
+                    // sl của sp trong giỏ hàng
+                    $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
+
+                    CTHD::create([
+                        'id_hd' => $exists->id,
+                        'id_sp' => $id_sp,
+                        'sl' => $qtyInCart
+                    ]);
+                }
             }
             // nếu đã có hàng đợi và đó là của nền tảng khác
             elseif($exists->nentang === 'app') {
@@ -1317,36 +1372,9 @@ class IndexController extends Controller
             }
 
             $isQueue = $this->isNeedToQueue($id_tk, $checkoutList);
+            $isQueue['queue'] = $exists;
             
-            // có yêu cầu hàng đợi
-            if($isQueue === true){
-                // sắp xếp theo id
-                $queue = HANGDOI::orderBy('id')->get();
-
-                // nếu hàng đợi đầu tiên trạng thái = 0 thì xóa hàng đợi đó
-                if(!$queue[0]['trangthai']){
-                    HANGDOI::where('id', $queue[0]['id'])->delete();
-                    $queue = HANGDOI::orderBy('id')->get();
-                }
-    
-                foreach($queue as $i => $queue){
-                    // thanh toán theo thứ tự FIFO
-                    if($i == 0 && $queue->id_tk == $id_tk){
-                        return ['status' => 'continue'];
-                    } else {
-                        return ['status' => 'waiting'];
-                    }
-                }
-            } elseif ($isQueue === false) {
-                return ['status' => 'continue'];
-            } else if($isQueue === 'out of stock') {
-                return ['status' => 'out of stock'];
-            } else {
-                return [
-                    'status' => 'not enough quantity',
-                    'productList' => $isQueue
-                ];
-            }
+            return $isQueue;
         }
     }
     
@@ -1355,37 +1383,46 @@ class IndexController extends Controller
         if($request->ajax()){
             $id_tk = $request->id_tk;
 
-            HANGDOI::where('id_tk', $id_tk)->delete();
+            $queue = HANGDOI::where('id_tk', $id_tk)->first();
 
-            // làm mới id tăng tự động
-            if(!HANGDOI::count()){
-                HANGDOI::truncate();
-            }
+            $this->removeQueue($queue->id);
+        }
+    }
+
+    public function removeQueue($id_hd) {
+        // xóa CTHD
+        CTHD::where('id_hd', $id_hd)->delete();
+
+        // xóa hàng đợi
+        HANGDOI::destroy($id_hd);
+
+        // làm mới id tăng tự động
+        if(!HANGDOI::count()){
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            HANGDOI::truncate();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         }
     }
 
     // cập nhật trạng thái hàng đợi
     public function AjaxUpdateQueueStatus(Request $request){
         if($request->ajax()){
-            HANGDOI::where('id_tk', $request->id_tk)->update(['trangthai' => 0]);
-
-            Session::forget('_previous');
+            HANGDOI::where('id_tk', $request->id_tk)
+                    ->update([
+                        'timestamp' => time(),
+                        'trangthai' => 0,
+                    ]);
         }
     }
 
     // khôi phục hàng đợi khi làm mới trang
-    public function AjaxRecoverQueue(Request $request){
+    public function AjaxRecoverQueueStatus(Request $request){
         if($request->ajax()){
-            HANGDOI::where('id_tk', $request->id_tk)->update(['trangthai' => 1]);
-
-            $host = $_SERVER['SERVER_NAME'];
-            $url = $host . '/' . $request->page;
-            
-            $session = [
-                'url' => $url,
-            ];
-
-            session(['_previous' => $session]);
+            HANGDOI::where('id_tk', $request->id_tk)
+                    ->update([
+                        'timestamp' => time(),
+                        'trangthai' => 1
+                    ]);
         }
     }
 

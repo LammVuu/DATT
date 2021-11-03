@@ -179,50 +179,30 @@ $(function(){
                                 Hàng đợi
     ================================================================*/
 
-    // cờ hàng đợi
-    var checkoutQueueFlag = sessionStorage.getItem('checkoutQueueFlag');
-    // mảng các trang cho phép lưu hàng đợi
-    var lst_allowPage = ['thanhtoan', 'diachigiaohang'];
-
-    // xóa hàng đợi
-    if(checkoutQueueFlag && lst_allowPage.indexOf(page) === -1){
-        removeQueue($('#session-user').data('id'))
-            .then(() => {
-                sessionStorage.removeItem('checkoutQueueFlag');
-                sessionStorage.removeItem('minute');
-                sessionStorage.removeItem('second');
-            })
-            .catch(() => {
-                showAlertTop(errorMessage)
-            })
-    }
-
-    //==================================================================
-
     // cập nhật & khôi phục hàng đợi
     if(page === 'thanhtoan' || page === 'diachigiaohang'){
-        $(window).on('unload', function(){
-            if(removeQueueFlag){
+        const id_tk = $('#session-user').data('id')
+        
+        window.addEventListener('beforeunload', function() {
+            if(removeQueueFlag) {
                 $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': X_CSRF_TOKEN
-                    },
+                    headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
                     url: 'ajax-update-queue-status',
                     type: 'POST',
-                    data: {'id_tk': $('#session-user').data('id')}
+                    data: {id_tk}
                 });
             }
-        });
+        })
 
-        if(navigation === 'reload'){
+        if(navigation === 'reload') {
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': X_CSRF_TOKEN
                 },
-                url: 'ajax-recover-queue',
+                url: 'ajax-recover-queue-status',
                 type: 'POST',
                 data: {
-                    'id_tk': $('#session-user').data('id'),
+                    id_tk,
                     page
                 },
                 success: function(){
@@ -230,6 +210,8 @@ $(function(){
                 }
             })
         }
+    } else {
+        isRemoveQueue()
     }
 
     // slide logo các hãng
@@ -3369,9 +3351,9 @@ $(function(){
     
                         switch(data.status) {
                             case 'continue':
-                                sessionStorage.removeItem('checkoutList')
+                                sessionStorage.setItem('checkoutSession', true)
                                 sessionStorage.setItem('checkoutList', JSON.stringify(checkoutList))
-                                location.href = '/thanhtoan';
+                                window.location.href = '/thanhtoan';
                                 break
                             case 'waiting':
                                 $('.loader').fadeOut()
@@ -3431,13 +3413,19 @@ $(function(){
                                                         Thanh toán
         ==============================================================================================================*/
         case 'thanhtoan': {
+            sessionStorage.setItem('checkoutQueueFlag', true);
+
             if(navigation === "back_forward"){
                 location.reload();
                 return;
             }
-    
-            sessionStorage.removeItem('checkoutQueueFlag');
-            sessionStorage.setItem('checkoutQueueFlag', true);
+
+            // phiên thanh toán hết hạn
+            if(!sessionStorage.getItem('checkoutSession')) {
+                sessionStorage.setItem('toast-message', 'Phiên thanh toán đã hết hạn')
+                window.location.href = '/giohang'
+                return
+            }
     
             // render giỏ hàng
             const idList = JSON.parse(sessionStorage.getItem('checkoutList'))
@@ -3445,7 +3433,6 @@ $(function(){
                 .then(data => renderCart(data))
                 .then(() => voucherCheck())
                 .catch(() => showToast('Đã xảy ra lỗi khi hiển thị giỏ hàng'))
-    
             
             // thời gian thanh toán
             let minute = 10
@@ -4145,6 +4132,28 @@ $(function(){
                     console.log(error)
                 }
             })
+        }
+    }
+
+    async function isRemoveQueue() {
+        const id_tk = $('#session-user').data('id')
+
+        // cờ hàng đợi
+        const checkoutQueueFlag = sessionStorage.getItem('checkoutQueueFlag');
+
+        // xóa hàng đợi
+        if(checkoutQueueFlag){
+            removeQueue(id_tk)
+                .then(() => {
+                    sessionStorage.removeItem('checkoutQueueFlag');
+                    sessionStorage.removeItem('checkoutList')
+                    sessionStorage.removeItem('checkoutSession')
+                    sessionStorage.removeItem('minute');
+                    sessionStorage.removeItem('second');
+                })
+                .catch(() => {
+                    showAlertTop(errorMessage)
+                })
         }
     }
 
@@ -5886,7 +5895,7 @@ $(function(){
                     </tr>
                     <tr>
                         <td>
-                            <a href="giohang"><i class="fal fa-chevron-left mr-5"></i>Chỉnh sửa giỏ hàng</a>
+                            <a href="/giohang"><i class="fal fa-chevron-left mr-5"></i>Chỉnh sửa giỏ hàng</a>
                         </td>
                     </tr>
                     ${productListElement}

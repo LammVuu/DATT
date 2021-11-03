@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HANGDOI extends Model
+class CTHD extends Model
 {
     use HasFactory;
 
-    protected $table = 'hangdoi';
-
-    protected $primaryKey = 'id';
+    protected $table = 'cthd';
 
     protected $fillable = [
-        'id_tk',
-        'nentang',
-        'timestamp',
-        'trangthai'
+        'id_hd',
+        'id_sp',
+        'sl'
     ];
 
     public $timestamps = false;

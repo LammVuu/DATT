@@ -205,7 +205,7 @@ Route::group(["prefix" => "", "namespace" => "user", "middleware" => ["IsAdmin",
 
         Route::post("ajax-update-queue-status", [IndexController::class, "AjaxUpdateQueueStatus"]);
         
-        Route::post("ajax-recover-queue", [IndexController::class, "AjaxRecoverQueue"]);
+        Route::post("ajax-recover-queue-status", [IndexController::class, "AjaxRecoverQueueStatus"]);
 
         Route::post("ajax-delete-expired-voucher", [UserController::class, "AjaxDeleteExpiredVoucher"]);
 

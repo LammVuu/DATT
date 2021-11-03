@@ -40,77 +40,18 @@ class CartController extends Controller
                                                     Page
     ========================================================================================================*/
     public function GioHang(Request $request){
-        if(!Session::get('_previous')){
+        if(!$request->session()->get('_previous')){
             $url = [
                 'url' => $request->fullUrl(),
             ];
 
-            session(['_previous' => $url]);
+            $request->session()->put('_previous', $url);
         }
 
         return view($this->user."gio-hang");
     }
 
     public function ThanhToan(Request $request){
-        // print_r(Session::get('_previous'));die; 
-        // bắt buộc request phải từ trang giỏ hàng
-        if(Session::get('_previous')){
-            $url = Session::get('_previous')['url'];
-            $arrUrl = explode('/', $url);
-            $page = $arrUrl[count($arrUrl) - 1];
-
-            // mảng các trang cho phép truy cập | redirect
-            $lst_allowPage = [
-                'thanhtoan',
-                'giohang',
-                'diachigiaohang',
-                'create-update-address',
-                'apply-voucher'
-            ];
-
-            // các trang không nằm trong mảng cho phép
-            if(!in_array($page, $lst_allowPage)){
-                return redirect('/giohang');
-            }
-        } else {
-            return redirect('/');
-        }
-
-        // // giỏ hàng của người dùng
-        // $cart = $this->IndexController->getCart(session('user')->id);
-
-        // // có sản phẩm không thể thanh toán hay không
-        // $checkoutFlag = true;
-
-        // foreach($cart['cart'] as $key){
-        //     $id_sp = $key['sanpham']['id'];
-        //     // sl của sp trong giỏ hàng
-        //     $qtyCart = $key['sl'];
-        //     // slton của sản phẩm trong kho
-        //     $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
-        //     // nếu sp hết hàng
-        //     if(!$qtyInStock){
-        //         // xóa hàng đợi
-        //         HANGDOI::where('id_tk', session('user')->id)->delete();
-        //         return redirect()->route('user/thongbao')->with('message', $this->nofiticationContent);
-        //     }
-        //     // nếu sl của sp trong giỏ hàng > slton trong kho => không đủ hàng
-        //     elseif($qtyCart > $qtyInStock){
-        //         $checkoutFlag = false;
-        //         // cập nhật sl của sp trong giỏ hàng = slton hiện tại
-        //         GIOHANG::where('id', $key['id'])->update(['sl' => $qtyInStock]);
-        //     }
-        // }
-
-        // if(!$checkoutFlag){
-        //     // xóa hàng đợi
-        //     HANGDOI::where('id_tk', session('user')->id)->delete();
-            
-        //     // quay về trang giỏ hàng và thông báo
-        //     $message = 'Số lượng tồn kho của một số sản phẩm không đủ để thanh toán.';
-        //     return redirect('/giohang')->with('alert_top', $message);
-        // }
-
         $json_file = file_get_contents('TinhThanh.json');
         $tinhThanh = json_decode($json_file, true);
 
@@ -121,8 +62,11 @@ class CartController extends Controller
 
         $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
 
+        // địa chỉ mặc định
+        $defaultAddress = $this->IndexController->getAddressDefault(session('user')->id);
+
         $data = [
-            'defaultAdr' => $this->IndexController->getAddressDefault(session('user')->id),
+            'defaultAdr' => $defaultAddress,
             'lstTinhThanh' => $tinhThanh,
             'lstQuanHuyen' => $lstQuanHuyen,
             'lstArea' => TINHTHANH::all(),
