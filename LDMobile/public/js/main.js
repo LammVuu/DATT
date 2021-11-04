@@ -201,12 +201,19 @@ $(function(){
                 },
                 url: 'ajax-recover-queue-status',
                 type: 'POST',
-                data: {
-                    id_tk,
-                    page
-                },
-                success: function(){
-                    console.log('recover queue');
+                data: {id_tk},
+                success: function(data){
+                    if(data.status === 'another platform') {
+                        // hủy cờ hàng đợi trong session
+                        sessionStorage.removeItem('checkoutQueueFlag')
+                        // thông báo alert top
+                        sessionStorage.setItem('alert-top-message', 'Đơn hàng đang được thanh toán trên ứng dụng di động')
+
+                        window.location.href = '/giohang'
+                        return
+                    } else {
+                        console.log('recover queue');
+                    }
                 }
             })
         }
@@ -3357,6 +3364,7 @@ $(function(){
                                 break
                             case 'waiting':
                                 $('.loader').fadeOut()
+                                // xóa hàng đợi
                                 removeQueue(id_tk)
                                     .then(() =>
                                         showAlertTop('Sản phẩm đang được thanh toán bởi người dùng khác, xin vui lòng chờ đến lượt'))
@@ -3420,18 +3428,23 @@ $(function(){
                 return;
             }
 
-            // phiên thanh toán hết hạn
+            /**
+             * người dùng gõ link truy cập thẳng tới trang thanh toán
+             * sẽ bị chặn lại vào yêu cầu phải từ trang giỏ hàng truy cập đến
+             */
             if(!sessionStorage.getItem('checkoutSession')) {
                 sessionStorage.setItem('toast-message', 'Phiên thanh toán đã hết hạn')
                 window.location.href = '/giohang'
                 return
             }
+
+            voucherCheck()
     
             // render giỏ hàng
             const idList = JSON.parse(sessionStorage.getItem('checkoutList'))
+
             getCartByIdProduct(idList)
                 .then(data => renderCart(data))
-                .then(() => voucherCheck())
                 .catch(() => showToast('Đã xảy ra lỗi khi hiển thị giỏ hàng'))
             
             // thời gian thanh toán
@@ -3449,10 +3462,7 @@ $(function(){
             }
     
             checkoutTimeout(minute, second)
-                .then(() => {
-                    var id_tk = $('#session-user').data('id');
-                    return removeQueue(id_tk)
-                })
+                // hết thời gian thanh toán
                 .then(() => {
                     sessionStorage.setItem('alert-top-message', 'Đã hết thời gian thanh toán.');
                     location.href = '/giohang';
@@ -3606,17 +3616,9 @@ $(function(){
     
                 // nếu không còn sản phẩm trong giỏ hàng thanh toán
                 if(idList.length === 0) {
-                    // xóa session
-                    sessionStorage.removeItem('checkoutList')
-    
-                    // xóa hàng đợi và redirect về giỏ hàng
-                    const id_tk = $('#session-user').attr('data-id')
-                    removeQueue(id_tk)
-                        .then(() => {
-                            sessionStorage.setItem('alert-top-message', 'Không có sản phẩm nào để thanh toán');
-                            location.href = '/giohang'
-                        })
-    
+                    // redirect về giỏ hàng  
+                    sessionStorage.setItem('alert-top-message', 'Không có sản phẩm nào để thanh toán');
+                    window.location.href = '/giohang'
                     return
                 } else {
                     sessionStorage.setItem('checkoutList', JSON.stringify(idList))
@@ -3656,11 +3658,7 @@ $(function(){
             async function confirmCheckout() {
                 const isCheck = await voucherCheck()
                 
-                if(!isCheck) {
-                    let message = 'Mã giảm giá đã hết hạn';
-                    sessionStorage.setItem('alert-top-message', message);
-                    location.reload();
-                } else {
+                if(isCheck) {
                     // hình thức nhận hàng
                     var receciveMethod = $('input[name="receive-method"]:checked').val();
     
@@ -3716,6 +3714,7 @@ $(function(){
             }
     
             function checkout(){
+                sessionStorage.removeItem('checkoutQueueFlag')
                 let total = 0
                 // tổng tiền khi có áp dụng voucher
                 if($('#total').attr('data-new-total')) {
@@ -3768,9 +3767,7 @@ $(function(){
             }
             // chọn địa chỉ giao hàng
             $('.choose-address-delivery').click(function(){
-                if(page == 'diachigiaohang' || page == 'thanhtoan'){
-                    removeQueueFlag = false;
-                }
+                removeQueueFlag = false;
     
                 $('#address_id').val($(this).data('id'));
                 $('#change-address-delivery-form').submit();
@@ -3785,10 +3782,7 @@ $(function(){
             }
             
             checkoutTimeout(minute, second)
-                .then(() => {
-                    var id_tk = $('#session-user').data('id');
-                    return removeQueue(id_tk)
-                })
+                // hết thời gian thanh toán
                 .then(() => {
                     sessionStorage.setItem('alert-top-message', 'Đã hết thời gian thanh toán.');
                     location.href = '/giohang';
@@ -4135,21 +4129,27 @@ $(function(){
         }
     }
 
-    async function isRemoveQueue() {
+    function isRemoveQueue() {
         const id_tk = $('#session-user').data('id')
 
+        if(!id_tk) {
+            sessionStorage.removeItem('checkoutQueueFlag')
+            return
+        }
+
         // cờ hàng đợi
-        const checkoutQueueFlag = sessionStorage.getItem('checkoutQueueFlag');
+        const checkoutQueueFlag = sessionStorage.getItem('checkoutQueueFlag')
 
         // xóa hàng đợi
         if(checkoutQueueFlag){
             removeQueue(id_tk)
                 .then(() => {
-                    sessionStorage.removeItem('checkoutQueueFlag');
+                    // xóa những session đã lưu tại trang thanh toán
+                    sessionStorage.removeItem('checkoutQueueFlag')
                     sessionStorage.removeItem('checkoutList')
                     sessionStorage.removeItem('checkoutSession')
-                    sessionStorage.removeItem('minute');
-                    sessionStorage.removeItem('second');
+                    sessionStorage.removeItem('minute')
+                    sessionStorage.removeItem('second')
                 })
                 .catch(() => {
                     showAlertTop(errorMessage)
@@ -4218,7 +4218,7 @@ $(function(){
             } else {
                 setTimeout(() => {
                     $('.loader').fadeIn()
-
+                    
                     getMoreProduct(page, 10, loadMoreRow)
                         .then(data => {
                             var row = loadMoreRow + 10;
@@ -4239,7 +4239,7 @@ $(function(){
                             $('.loader').fadeOut()
                             showToast(errorMessage)
                         })
-                }, 700)
+                }, 500)
             }            
         }
 
@@ -4878,11 +4878,6 @@ $(function(){
 
     function applyVoucher(id){
         return new Promise((resolve, reject) => {
-            // ngăn xóa hàng đợi
-            if(page === 'thanhtoan'){
-                removeQueueFlag = false;
-            }
-
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': X_CSRF_TOKEN
@@ -6351,9 +6346,8 @@ $(function(){
 
                 $('.choose-voucher-div').children().remove();
                 $('.choose-voucher-div').append(html);
-
-                $('#voucher-modal').modal('show')
             })
+            .then(() => $('#voucher-modal').modal('show'))
             .catch(() => showToast('Không thể tải mã giảm giá, vui lòng làm mới lại trang'))
     })
 

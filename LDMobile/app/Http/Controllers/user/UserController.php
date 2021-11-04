@@ -299,12 +299,7 @@ class UserController extends Controller
         // nếu đang thanh toán thì xóa hàng đợi
         $isQueue = HANGDOI::where('id_tk', $user->id)->first();
         if($isQueue) {
-            $isQueue->delete();
-
-            // làm mới id tăng tự động
-            if(!HANGDOI::count()){
-                HANGDOI::truncate();
-            }
+            $this->IndexController->removeQueue($isQueue->id);
         }
 
         Auth::logout();

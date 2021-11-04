@@ -17,7 +17,7 @@ class CreateHangdoiTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('id_tk');
             $table->string('nentang', 5);
-            $table->bigInteger('timestamp', 20)->nullable();
+            $table->bigInteger('timestamp')->nullable();
             $table->boolean('trangthai');
         });
     }

@@ -1182,7 +1182,7 @@ class IndexController extends Controller
             'status' => 'continue'
         ];
 
-        // danh sách các sản phẩm slton trong kho không đủ để thanh toán
+        // danh sách các sản phẩm mà slton trong kho không đủ để thanh toán
         $notEnoughQuantity = [];
 
         // 1. xét trong giỏ hàng của người dùng hiện tại
@@ -1219,7 +1219,7 @@ class IndexController extends Controller
             return $result;
         }
 
-        // 2. lấy lần lượt các giỏ hàng của những người dùng khác đã xếp hàng trước
+        // 2. lấy lần lượt các CTHD của những người dùng khác đã xếp hàng trước
         // lọc và lấy ra sản phẩm giống với sản phẩm của người dùng hiện tại
 
         $queues = HANGDOI::orderBy('id')->get();
@@ -1229,7 +1229,7 @@ class IndexController extends Controller
             return $result;
         }
 
-        // mảng id_sp và sl trong giỏ hàng của tất cả người dùng đang trong thanh toán
+        // mảng id_sp và sl trong CTHD của tất cả người dùng đang trong thanh toán
         $idAndQtyOfUsers = [];
 
         foreach($queues as $queue) {
@@ -1350,16 +1350,7 @@ class IndexController extends Controller
                 ]);
 
                 // tạo CTHD
-                foreach($checkoutList as $id_sp) {
-                    // sl của sp trong giỏ hàng
-                    $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
-
-                    CTHD::create([
-                        'id_hd' => $exists->id,
-                        'id_sp' => $id_sp,
-                        'sl' => $qtyInCart
-                    ]);
-                }
+                $this->createQueueDetail($exists->id, $id_tk, $checkoutList);
             }
             // nếu đã có hàng đợi và đó là của nền tảng khác
             elseif($exists->nentang === 'app') {
@@ -1367,14 +1358,35 @@ class IndexController extends Controller
             }
             // nếu hàng đợi của người dùng trạng thái = 0 thì cập nhật lại = 1
             elseif(!$exists->trangthai) {
+                $exists->timestamp = time();
                 $exists->trangthai = 1;
                 $exists->save();
+
+                // xóa CTHD cũ
+                CTHD::where('id_hd', $exists->id)->delete();
+
+                // tạo CTHD mới
+                $this->createQueueDetail($exists->id, $id_tk, $checkoutList);
             }
 
             $isQueue = $this->isNeedToQueue($id_tk, $checkoutList);
             $isQueue['queue'] = $exists;
             
             return $isQueue;
+        }
+    }
+
+    // tạo CTHD
+    public function createQueueDetail($id_hd, $id_tk, $checkoutList) {
+        foreach($checkoutList as $id_sp) {
+            // sl của sp trong giỏ hàng
+            $qtyInCart = GIOHANG::where('id_tk', $id_tk)->where('id_sp', $id_sp)->first()->sl;
+
+            CTHD::create([
+                'id_hd' => $id_hd,
+                'id_sp' => $id_sp,
+                'sl' => $qtyInCart
+            ]);
         }
     }
     
@@ -1418,11 +1430,18 @@ class IndexController extends Controller
     // khôi phục hàng đợi khi làm mới trang
     public function AjaxRecoverQueueStatus(Request $request){
         if($request->ajax()){
-            HANGDOI::where('id_tk', $request->id_tk)
-                    ->update([
-                        'timestamp' => time(),
-                        'trangthai' => 1
-                    ]);
+            $queue = HANGDOI::where('id_tk', $request->id_tk)->first();
+
+            // người dùng đã chuyển sang app thanh toán
+            if($queue->nentang === 'app') {
+                return ['status' => 'another platform'];
+            }
+
+            $queue->timestamp = time();
+            $queue->trangthai = 1;
+            $queue->save();
+
+            return ['status' => 'success'];
         }
     }
 

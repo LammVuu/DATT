@@ -2,7 +2,7 @@
     <div class="container">
         <div class="index-featured-header">
             <div class="index-featured-title">
-                <div class="mr-10">ĐIỆN THOẠI NỔI BẬT NHẤT</div>
+                <div class="mr-10">SẢN PHẨM MỚI NHẤT</div>
                 <div class="relative">
                     <div class="fire-animation"><i class="fad fa-fire-alt"></i></div>
                 </div>

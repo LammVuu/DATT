@@ -100,6 +100,7 @@ class CartController extends Controller
 
     public function Checkout(Request $request)
     {
+        $user = $request->session()->get('user');
         // $requestData = [
         //     'paymentMethod' => $request->paymentMethod,
         //     'receciveMethod' => $request->receivingMethod,
@@ -114,11 +115,11 @@ class CartController extends Controller
         // danh sách id_sp thanh toán
         $idList = explode(',', $request->id_sp_list);
         
-        /*kiểm tra slton kho của sản phẩm. nếu 1 trong những sp trong giỏ hàng hết hàng
+        /*kiểm tra slton kho của sản phẩm. nếu 1 trong những sp hết hàng
         thì trả về lỗi. ngược lại tiến hành thanh toán*/
         $checkout = true;
         foreach($idList as $id_sp){
-            $qtyInCart = GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $id_sp)->first()->sl;
+            $qtyInCart = GIOHANG::where('id_tk', $user->id)->where('id_sp', $id_sp)->first()->sl;
             // slton kho của sp
             $qtyInStock = KHO::where('id_sp', $id_sp)->sum('slton');
 
@@ -129,8 +130,10 @@ class CartController extends Controller
 
         // đã có sản phẩm hết hàng hoặc slton không đủ và trả về lỗi
         if(!$checkout){
-            // xóa hàng đợi
-            HANGDOI::where('id_tk', session('user')->id)->delete();
+            // xóa CTHD và hàng đợi
+            $queue = HANGDOI::where('id_tk', $user->id)->first();
+            $this->IndexController->removeQueue($queue->id);
+
             return redirect()->route('user/thongbao')->with('message', $this->nofiticationContent);
         }
         // tiến hành thanh toán
@@ -165,7 +168,7 @@ class CartController extends Controller
 
             $order = [
                 'thoigian' => date('d/m/Y H:i:s'),
-                'id_tk' => session('user')->id,
+                'id_tk' => $user->id,
                 'id_dh_dc' => $orderAddress ? $orderAddress->id : null,
                 'id_cn' => $request->receciveMethod == 'Nhận tại cửa hàng' ? $request->id_cn : null,
                 'pttt' => $request->paymentMethod == 'cash' ? 'Thanh toán khi nhận hàng' : 'Thanh toán ZaloPay',
@@ -181,9 +184,10 @@ class CartController extends Controller
                 // tạo đơn hàng
                 $create = DONHANG::create($order);
 
+                // tạo chi tiết đơn hàng
                 foreach($idList as $id_sp){
                     $product = $this->IndexController->getProductById($id_sp);
-                    $qtyInCart = GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $id_sp)->first()->sl;
+                    $qtyInCart = GIOHANG::where('id_tk', $user->id)->where('id_sp', $id_sp)->first()->sl;
 
                     $detail = [
                         'id_dh' => $create->id,
@@ -263,7 +267,7 @@ class CartController extends Controller
 
                 // gửi thông báo
                 THONGBAO::create([
-                    'id_tk' => session('user')->id,
+                    'id_tk' => $user->id,
                     'tieude' => 'Đơn đã tiếp nhận',
                     'noidung' => "Đã tiếp nhận đơn hàng <b>#$create->id</b> của bạn.",
                     'thoigian' => date('d/m/Y H:i'),
@@ -272,12 +276,12 @@ class CartController extends Controller
 
                 // xóa sản phẩm đã thanh toán trong giỏ hàng
                 foreach($idList as $id_sp) {
-                    GIOHANG::where('id_tk', session('user')->id)->where('id_sp', $id_sp)->delete();
+                    GIOHANG::where('id_tk', $user->id)->where('id_sp', $id_sp)->delete();
                 }
 
                 // xóa voucher đã áp dụng
                 if($request->id_vc){
-                    $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', session('user')->id)->where('id_vc', $request->id_vc)->first();
+                    $userVoucher = TAIKHOAN_VOUCHER::where('id_tk', $user->id)->where('id_vc', $request->id_vc)->first();
                     $qty = $userVoucher->sl;
                     if($qty == 1){
                         $userVoucher->delete();
@@ -290,8 +294,9 @@ class CartController extends Controller
                 // xóa voucher trong session
                 Session::forget('voucher');
 
-                // xóa hàng đợi
-                HANGDOI::where('id_tk', session('user')->id)->delete();
+                // xóa CTHD và hàng đợi
+                $queue = HANGDOI::where('id_tk', $user->id)->first();
+                $this->IndexController->removeQueue($queue->id);
 
                 return redirect()->route('user/thanhcong', ['id' => $create->id]);
             }
@@ -309,7 +314,7 @@ class CartController extends Controller
                 $transID =  rand(0,1000000);
                 $order = [
                     "app_id" => $config["app_id"],
-                    "app_user" => session('user')->id,
+                    "app_user" => $user->id,
                     "app_trans_id" => date("ymd") . "_" . $transID, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
                     "app_time" => round(microtime(true) * 1000), // miliseconds
                     "amount" => $order['tongtien'],
