@@ -1368,6 +1368,21 @@ class IndexController extends Controller
                 // tạo CTHD mới
                 $this->createQueueDetail($exists->id, $id_tk, $checkoutList);
             }
+            /**
+             * trường hợp khi tắt trang/ trình duyệt lỗi
+             * sẽ không cập nhật trạng thái = 0 được
+             * khi đó sẽ cập nhật lại timestamp 
+             * */ 
+            elseif($exists->trangthai) {
+                $exists->timestamp = time();
+                $exists->save();
+
+                // xóa CTHD cũ
+                CTHD::where('id_hd', $exists->id)->delete();
+
+                // tạo CTHD mới
+                $this->createQueueDetail($exists->id, $id_tk, $checkoutList);
+            }
 
             $isQueue = $this->isNeedToQueue($id_tk, $checkoutList);
             $isQueue['queue'] = $exists;
