@@ -778,7 +778,7 @@ class SanPhamController extends Controller
             foreach($listReply as $reply){
                 $user = TAIKHOAN::find($reply->id_tk);
                 if($user->htdn =="normal"){
-                    $reply->anhdaidien = $user->anhdaidien;
+                    $reply->anhdaidien = Helper::$URL.'user/'.$user->anhdaidien;
                 }else $reply->anhdaidien = $user->anhdaidien;
                 $reply->hoten = $user->hoten;
             }
