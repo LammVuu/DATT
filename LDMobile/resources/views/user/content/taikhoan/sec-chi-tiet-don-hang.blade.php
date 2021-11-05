@@ -136,7 +136,7 @@
                                     </div>
                                     
                                     <div class="w-30 p-10">
-                                        @include("user.content.components.voucher.nomal-small-voucher")
+                                        @include("user.content.components.voucher.normal-small-voucher")
                                     </div>
                                 </div>
                             </td>

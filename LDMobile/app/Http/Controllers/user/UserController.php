@@ -102,7 +102,7 @@ class UserController extends Controller
             'hoten' => $request->su_fullname,
             'anhdaidien' => 'avatar-default.png',
             'loaitk' => 0,
-            'htdn' => 'nomal',
+            'htdn' => 'normal',
             'thoigian' => date('d/m/Y'),
             'trangthai' => 1,
         ];
@@ -303,7 +303,7 @@ class UserController extends Controller
         }
 
         Auth::logout();
-        if($user->htdn !== 'nomal'){
+        if($user->htdn !== 'normal'){
             TAIKHOAN::where('id', $user->id)->update(['login_status' => 0]);
             Cookie::queue(Cookie::forget('acccount_social_id'));
         }
@@ -1205,7 +1205,7 @@ class UserController extends Controller
                     'type' => 'reply',
                     'data' => [
                         'userReply' => $userReply,
-                        'avtURL' => $userReply->htdn == 'nomal' ? 'images/user/'.$userReply->anhdaidien : $userReply->anhdaidien,
+                        'avtURL' => $userReply->htdn == 'normal' ? 'images/user/'.$userReply->anhdaidien : $userReply->anhdaidien,
                         'link' => route('user/chi-tiet', ['name' => $product['tensp_url'], 'danhgia' => $request->id_dg])
                     ]
                 ];

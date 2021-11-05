@@ -12,17 +12,17 @@ $user = session('user');
                 <div class="col-lg-4">
                     {{-- avatar --}}
                     <div class='account-avatar-div'>
-                        @if ($user->htdn == 'nomal')
+                        @if ($user->htdn == 'normal')
                         <div class='overlay-avatar'>
                             <input id='change-avt-inp' data-modal='avt' type="file" class="none-dp" accept="image/*">
                             <div id='btn-change-avt' class='account-change-img pointer-cs'>Thay đổi</div>
                         </div>
                         @endif
-                        <img id='avt-img' src="{{ $user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="avatar" class='account-avt-img'>
+                        <img id='avt-img' src="{{ $user->htdn == 'normal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="avatar" class='account-avt-img'>
                     </div>
                     {{-- họ tên --}}
                     <div class="mb-20">
-                        @if ($user->htdn == 'nomal')
+                        @if ($user->htdn == 'normal')
                             <div class="d-flex align-items-center justify-content-center">
                                 <div id="user_fullname" class="text-center fz-24 black">{{$user->hoten}}</div>
                                 <div type="button" id='btn-change-info' class="ml-10"><i class="fas fa-user-edit"></i></div>
@@ -78,7 +78,7 @@ $user = session('user');
                         @endif
                     </div>
                     {{-- đổi mật khẩu --}}
-                    @if ($user->htdn == 'nomal')
+                    @if ($user->htdn == 'normal')
                         <div id='btn-change-pw' type="button" data-bs-toggle="modal" data-bs-target="#change-pw-modal" class="d-flex align-items-center main-color-text"><i class="fas fa-key mr-10"></i>Thay đổi mật khẩu</div>
                     @else
                         <div>Tài khoản liên kết: <b>{{$user->htdn}} <i class="fas fa-check-circle success-color ml-5"></i></b></div>

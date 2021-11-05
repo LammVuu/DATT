@@ -2255,7 +2255,7 @@ class IndexController extends Controller
             //'password' => $temp->password,
             //'email' => $temp->email,
             'hoten' => $temp->hoten,
-            'anhdaidien' => $temp->htdn == 'nomal' ? 'images/user/'.$temp->anhdaidien : $temp->anhdaidien,
+            'anhdaidien' => $temp->htdn == 'normal' ? 'images/user/'.$temp->anhdaidien : $temp->anhdaidien,
             //'loaitk' => $temp->loaitk,
             //'htdn' => $temp->htdn,
             //'trangthai' => $temp->trangthai,
