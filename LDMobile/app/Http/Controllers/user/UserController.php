@@ -1211,7 +1211,7 @@ class UserController extends Controller
                 ];
                 //PUSH NOTI TO APP 
                 if(!empty($user->device_token))
-                (new PushNotificationController)->sendPush($user->device_token, "Phản hồi", $userReply->hoten." đã trả lời đánh giá của bạn ");
+                (new PushNotificationController)->sendPush($user->device_token, "Phản hồi", "Bạn có một phản hồi từ <b>".$userReply->hoten."</b> ở sản phẩm <b>".$product['tensp']." ".$product['dungluong']." - ".$product['mausac']."</b>.");
 
                 event(new sendNotification($notification));
             }

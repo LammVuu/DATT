@@ -7,9 +7,10 @@ class Helper{
 
     }
 
-    public static $URL = "http://192.168.1.172:8000/images/";
-    public static $URL_JSON = "http://192.168.1.172:8000/json/";
-
+    // public static $URL = "http://192.168.43.176:8000/images/";
+    // public static $URL_JSON = "http://192.168.43.176:8000/json/";
+    public static $URL = "https://ldmobile.cdth18d.asia/images/";
+    public static $URL_JSON = "https://ldmobile.cdth18d.asia/json/";
     public static function imageUpload(Request $request)
     {
         if($request->hasFile('image')){

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 use App\Models\SANPHAM;
 use App\Models\MAUSP;
@@ -24,9 +25,13 @@ use App\Models\SP_YEUTHICH;
 use App\Models\KHO;
 use Carbon\Carbon;
 use App\Classes\Helper;
+use App\Events\sendNotification;
 class SanPhamController extends Controller
 {
     //
+    public function __construct(){
+        $this->IndexController = new IndexController;
+    }
     public function getSupplier(){
         $supplier = NHACUNGCAP::all();
         $count =count($supplier);
@@ -923,13 +928,27 @@ class SanPhamController extends Controller
             $user = TAIKHOAN::find(request('id_tk'));
             $notification = new THONGBAO();
             $notification->id_tk =$comment->id_tk;
-            $notification->tieude = "Đánh giá";
-            $notification->noidung = $user->hoten." đã trả lời đánh giá của bạn ";
+            $notification->tieude = "Phản hồi";
+            $notification->noidung = "Bạn có một phản hồi từ <b>".$user->hoten."</b> ở sản phẩm <b>".$sanpham->tensp." ".$sanpham->dungluong." - ".$sanpham->mausac."</b>.";
             $notification->trangthaithongbao = 0;
             $notification->save();
             $userComment = TAIKHOAN::find($comment->id_tk);
+            $product = $this->IndexController->getProductById($comment->id_sp);
+            $notification = [
+                'user' => $userComment,
+                'type' => 'reply',
+                'data' => [
+                    'userReply' => $user,
+                    'avtURL' => $user->htdn == 'normal' ? 'images/user/'.$user->anhdaidien : $user->anhdaidien,
+                    'link' => route('user/chi-tiet', ['name' => $product['tensp_url'], 'danhgia' => request('id_dg')])
+                ]
+            ];
+            //web
+            event(new sendNotification($notification));
+
+            //app
             if(!empty($userComment->device_token))
-            (new PushNotificationController)->sendPush($userComment->device_token, "Phản hồi", $user->hoten." đã trả lời đánh giá của bạn ");
+            (new PushNotificationController)->sendPush($userComment->device_token, "Phản hồi", "Bạn có một phản hồi từ <b>".$user->hoten."</b> ở sản phẩm <b>".$sanpham->tensp." ".$sanpham->dungluong." - ".$sanpham->mausac."</b>.");
         }
         if($reply->save()){
             return response()->json([

@@ -986,7 +986,7 @@ class CartController extends Controller
                 }
                
             }
-            
+         
             return response()->json([
                 'status' => true,
                 'message' => '',
