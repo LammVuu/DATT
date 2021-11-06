@@ -1,0 +1,22 @@
+Chuẩn bị data demo
+
+thêm trước mẫu sản phẩm: Iphone 13 -> k nhập kho
+
+Iphone 11 - Đen: Hết hàng -> slton = 0
+Iphone 11 - Xanh lá: Ngừng kinh doanh -> trạng thái  = 0
+Iphone 11 - Tím: slton = 2 => web, app mỗi nền tảng thêm vào giỏ hàng 1 cái
+thêm 1 đánh giá ở Iphone 11 64 GB
+1 tài khoản khác có Iphone 11 - Tím trong giỏ hàng => hàng đợi
+
+Mở teamview
+
+Trường hợp hàng đợi
+- 2 tài khoản khác nhau:
+	- Web - web
+	- Web - app:    app thanh toán trước
+			web thanh toán trước
+- Cùng 1 tài khoản: 
+	- Web - web
+	- Web - app
+
+	
