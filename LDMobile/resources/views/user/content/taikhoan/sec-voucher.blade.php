@@ -16,7 +16,7 @@
                     @if($key->trangthai)
                         {{-- mã giảm giá --}}
                         <div class='col-lg-6 col-12 mb-20'>
-                            @include("user.content.components.voucher.nomal-big-voucher")
+                            @include("user.content.components.voucher.normal-big-voucher")
                         </div>
                     {{-- mã giảm giá hết hsd --}}
                     @else

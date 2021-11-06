@@ -6267,7 +6267,7 @@ $(function() {
                         <div class="col-lg-6">
                             <div class="d-flex justify-content-end">
                                 <div class="account-badge">
-                                    <img src="${order.taikhoan.htdn == 'nomal' ? `images/user/${order.taikhoan.anhdaidien}` : order.taikhoan.anhdaidien}" width="40px" class="circle-img">
+                                    <img src="${order.taikhoan.htdn == 'normal' ? `images/user/${order.taikhoan.anhdaidien}` : order.taikhoan.anhdaidien}" width="40px" class="circle-img">
                                     <div class="ml-10 mr-10 black">${order.taikhoan.hoten}</div>
                                 </div>
                             </div>

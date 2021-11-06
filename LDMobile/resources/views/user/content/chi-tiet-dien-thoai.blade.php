@@ -569,7 +569,7 @@
                                                 {{-- trả lời --}}
                                                 <div data-id="{{$key['id']}}" class="reply-div">
                                                     <div class="d-flex">
-                                                        <img src="{{session('user')->htdn == 'nomal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
+                                                        <img src="{{session('user')->htdn == 'normal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
                                                         <div class="d-flex flex-column ml-10">
                                                             <textarea data-id="{{$key['id']}}" name="reply-content" id="reply-content-{{$key['id']}}" 
                                                             cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"
@@ -683,7 +683,7 @@
                                             {{-- trả lời --}}
                                             <div data-id="{{$key['id']}}" class="reply-div">
                                                 <div class="d-flex">
-                                                    <img src="{{session('user')->htdn == 'nomal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
+                                                    <img src="{{session('user')->htdn == 'normal' ? $url_user.session('user')->anhdaidien : session('user')->anhdaidien}}" alt="" width="40px" height="40px" class="circle-img">
                                                     <div class="d-flex flex-column ml-10">
                                                         <textarea data-id="{{$key['id']}}" name="reply-content" id="reply-content-{{$key['id']}}" 
                                                         cols="100" rows="1" placeholder="Nhập câu trả lời (Tối đa 250 ký tự)"

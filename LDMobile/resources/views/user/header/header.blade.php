@@ -53,7 +53,7 @@
                             <div class='head-item mr-20'>
                                 <div class='d-flex'>
                                     <?php $user = session('user'); ?>
-                                    <img id="avt-header" src="{{ $user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
+                                    <img id="avt-header" src="{{ $user->htdn == 'normal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
                                     
                                     <div class='d-flex flex-column justify-content-end'>
                                         <i class='white fz-14'>Xin Chào!</i>
@@ -111,7 +111,7 @@
                     <div class="relative">
                         <div class="d-flex justify-content-center">
                             <div class="offcanvas-account">
-                                <img src="{{$user->htdn == 'nomal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="user avatar" class="offcanvas-avatar">
+                                <img src="{{$user->htdn == 'normal' ? $url_user.$user->anhdaidien : $user->anhdaidien}}" alt="user avatar" class="offcanvas-avatar">
                                 <div class="offcanvas-account-name">
                                     <div id="offcanvas-name" class="fw-600 mr-5">{{$user->hoten}}</div>
                                     <i class="fas fa-caret-down"></i>
