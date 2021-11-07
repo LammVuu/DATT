@@ -39,16 +39,15 @@ class CartController extends Controller
     /*======================================================================================================
                                                     Page
     ========================================================================================================*/
-    public function GioHang(Request $request){
-        if(!$request->session()->get('_previous')){
-            $url = [
-                'url' => $request->fullUrl(),
-            ];
+    public function GioHang(){
+        $user = session('user');
+        $cart = $this->IndexController->getCart($user->id);
 
-            $request->session()->put('_previous', $url);
-        }
+        $data = [
+            'cart' => $cart,
+        ];
 
-        return view($this->user."gio-hang");
+        return view($this->user."gio-hang")->with($data);
     }
 
     public function ThanhToan(Request $request){

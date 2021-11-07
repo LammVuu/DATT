@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\user\IndexController;
 use Illuminate\Http\Request;
 
-use App\Models\Voucher;
+use App\Models\VOUCHER;
 use App\Models\TAIKHOAN_VOUCHER;
 
 class VoucherController extends Controller

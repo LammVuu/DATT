@@ -208,7 +208,7 @@ class DashboardController extends Controller
                     }
 
                     foreach($data as $i => $key){
-                        $imageQty = count(HINHANH::where('id_msp', $key->id)->get());
+                        $imageQty = HINHANH::where('id_msp', $key->id)->count();
                         $data[$i]->imageQty = $imageQty;
                     }
 

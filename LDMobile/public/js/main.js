@@ -4,7 +4,7 @@ $(window).on('load', function(){
 
 $(function(){
     if(iOS()){
-        showIOSMessage('Website trên hệ điều hành iOS đang trong quá trình phát triển. Xin lỗi vì sự bất tiện này');
+        showIOSScreen();
         return
     }
 
@@ -277,7 +277,7 @@ $(function(){
         setTimeout(() => {
             $('.backdrop').fadeOut();
             $('.head-search-result').css('display', 'none');
-        }, 200);
+        }, 400);
     });
 
     let enterKey = false;
@@ -660,6 +660,12 @@ $(function(){
                         codeVerify(codeInput);
                     }
                 });
+
+                $('#verify-code-inp').keypress(function(e) {
+                    if(e.keyCode == '13') {
+                        $('#signup-step-2').trigger('click')
+                    }
+                })
     
                 $('#verify-code-inp').keyup(function(){
                     if($(this).hasClass('required')){
@@ -681,6 +687,12 @@ $(function(){
                         $('#signup-form').submit();
                     }
                 });
+
+                $('#su_re_pw').keypress(function(e) {
+                    if(e.keyCode == '13') {
+                        $('#signup-step-3').trigger('click')
+                    }
+                })
     
                 $('#su_pw').keyup(function(){
                     if($(this).hasClass('required')){
@@ -1341,7 +1353,7 @@ $(function(){
                                 elmnt.show('fade');
                                 $('#lst_noti').after(elmnt);
                                 $('.single-noti').remove();
-                            }, 800);
+                            }, 500);
         
                             $('.single-noti').hide('drop');
         
@@ -1409,7 +1421,7 @@ $(function(){
                                 noFavoriteProductElement.show('fade');
                                 $('#lst_favorite').after(noFavoriteProductElement);
                                 $('.single-favorite').remove();
-                            }, 800);
+                            }, 500);
     
                             $('.single-favorite').hide('drop');
     
@@ -2671,7 +2683,7 @@ $(function(){
                     $('.close-see-review-image').attr('evaluate', id_dg);
     
                     // ảnh lớn
-                    $('#review-image-main').attr('src', $(`img[data-id="${id_img}"]`).attr('src'));
+                    $('#review-image-main').attr('src', $(`.img-evaluate[data-id="${id_img}"]`).attr('src'));
     
                     // ảnh nhỏ
                     $('#another-review-image').children().remove();
@@ -3204,12 +3216,19 @@ $(function(){
                 location.reload();
                 return;
             }
+
+            // đánh dấu sẵn checkbox chọn tất cả
+            const totalItem = $('#lst-cart-item').children().length
+            const totalChecked = $('.cus-checkbox-checked').length
+
+            if(totalItem === totalChecked) {
+                $('.cart-header [data-id="all"]').addClass('cus-checkbox-checked')
+            }
             
             let checkoutList = []
             let outOfStockList = []
     
             provisionalAndTotalOrder()
-            voucherCheck()
             
             // chọn hoặc bỏ sản phẩm thanh toán
             $('.select-item-cart').off('click').on('click', function() {
@@ -3269,12 +3288,13 @@ $(function(){
                 })
     
                 checkoutList = newCheckoutList
+                $('#skip-product-modal').modal('hide')
                 checkoutQueue(checkoutList)
             })
     
             async function makePayments() {
                 const isCheck = await voucherCheck()
-    
+                
                 if(isCheck) {
                     getProductIdListToCheckout()
                         .then(response => {
@@ -3308,6 +3328,8 @@ $(function(){
                                 checkoutQueue(checkoutList)
                             }
                         })
+                } else {
+                    location.reload()
                 }
             }
     
@@ -3437,8 +3459,6 @@ $(function(){
                 window.location.href = '/giohang'
                 return
             }
-
-            voucherCheck()
     
             // render giỏ hàng
             const idList = JSON.parse(sessionStorage.getItem('checkoutList'))
@@ -3622,7 +3642,7 @@ $(function(){
                     return
                 } else {
                     sessionStorage.setItem('checkoutList', JSON.stringify(idList))
-                    sessionStorage.setItem('toast-message', 'Đã xóa sản phẩm khỏi giỏ hàng thanh toán')
+                    sessionStorage.setItem('toast-message', 'Đã bỏ chọn sản phẩm')
                 }
                 
                 location.reload()
@@ -3710,6 +3730,8 @@ $(function(){
     
                         checkout();
                     }
+                } else {
+                    location.reload()
                 }
             }
     
@@ -4079,16 +4101,15 @@ $(function(){
                                                         Function
     ==============================================================================================================*/
 
-    function showIOSMessage(text){
-        $('.backdrop').css('z-index', '1999');
-        $('.backdrop').fadeIn();
-        var message = $(`<div class="ios-message">${text}</div>`);
+    function showIOSScreen(){
+        var screen =
+            `<div class="ios-screen">
+                <img src="images/ios-updating.png" class="ios-image">
+                ${'Website trên hệ điều hành iOS đang trong quá trình phát triển. Xin lỗi vì sự bất tiện này'}
+            </div>`
 
-        $('body').prepend(message);
-
-        setTimeout(() => {
-            message.css('transform', 'translateY(0)')
-        }, 200)
+        $('body').prepend(screen);
+        $('body').css('overflow', 'hidden')
     }
 
     function iOS() {
@@ -4559,6 +4580,8 @@ $(function(){
                         } else {
                             $('.head-qty-cart').text(qty)
                         }
+
+                        $('#cart-header-qty').text(`Chọn tất cả (${qty}) sản phẩm`)
 
                         if(!$('#lst-cart-item').children().length) {
                             const parent = $('#cart-container')
@@ -5165,57 +5188,58 @@ $(function(){
 
     async function voucherCheck() {
         let bool = true
+
         const isApplied = await isAppliedVoucher()
-            .then(data => data)
+            .then(boolean => boolean)
             .catch(() => {
-                showToast('Đã có lỗi xảy ra, vui lòng làm mới lại trang')
+                showAlertTop(errorMessage)
+                return
             })
-        
+
         if(isApplied) {
             if(page === 'giohang') {
-                await isExpiredVoucher()
-                    .then(data => {
-                        if(data == true) {
-                            let message = 'Mã giảm giá đã hết hạn';
-                            sessionStorage.setItem('alert-top-message', message);
-                            location.reload();
-                            bool = false
-                        }
-                    })
-                    .catch(() => showAlertTop(errorMessage))
-            } else if(page === 'thanhtoan') {
-                await Promise.all([isSatisfiedVoucher(), isExpiredVoucher()])
-                    .then(response => {
-                        const isSatisfied = response[0]
-                        const isExpired = response[1]
-    
-                        // không thỏa điều kiện
-                        if(!isSatisfied) {
-                            $.ajax({
-                                headers: {
-                                    'X-CSRF-TOKEN': X_CSRF_TOKEN
-                                },
-                                url: 'ajax-remove-voucher',
-                                success: function (message) {
-                                    sessionStorage.setItem('toast-message', message)
-                                    location.reload()
-                                }
-                            });
-                            bool = false
-                        }
-    
-                        // hết HSD
+                bool = await isExpiredVoucher()
+                    .then(isExpired => {
                         if(isExpired) {
-                            let message = 'Mã giảm giá đã hết hạn';
-                            sessionStorage.setItem('alert-top-message', message);
-                            location.reload();
-                            bool = false
+                            sessionStorage.setItem('alert-top-message', 'Mã giảm giá đã hết hạn');
+                            return false
+                        }
+
+                        return true
+                    })
+            } else if(page === 'thanhtoan') {
+                // kiểm tra thỏa điều kiện
+                const isSatisfied = await isSatisfiedVoucher()
+                    .then(boolean => {
+                        // không thỏa điều kiện
+                        if(!boolean) {
+                            return removeVoucher()
+                                .then(() => {
+                                    sessionStorage.setItem('alert-top-message', 'Đã hủy mã giảm giá do chưa thỏa điều kiện')
+                                    return false
+                                })
+                        } else {
+                            return true
                         }
                     })
-                    .catch(error => {
-                        console.error(error)
-                        showToast(errorMessage)
-                    })
+
+                // Không thỏa
+                if(!isSatisfied) {
+                    bool = false
+                }
+                // kiểm tra tiếp hết HSD
+                else {
+                    bool = await isExpiredVoucher()
+                        .then(boolean => {
+                            // hết HSD
+                            if(boolean) {
+                                sessionStorage.setItem('alert-top-message', 'Mã giảm giá đã hết hạn');
+                                return false
+                            }
+    
+                            return true
+                        })
+                }
             }
         }
 
@@ -5280,6 +5304,24 @@ $(function(){
                     reject()
                 }
             })
+        })
+    }
+
+    // hủy voucher
+    function removeVoucher() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': X_CSRF_TOKEN
+                },
+                url: 'ajax-remove-voucher',
+                success: function () {
+                    resolve()
+                },
+                error: function() {
+                    reject()
+                }
+            });
         })
     }
 
@@ -5553,12 +5595,8 @@ $(function(){
                     const condition = data.voucher.dieukien;
                     // nếu tạm tính < điều kiện voucher thì hủy voucher
                     if(provisional < condition){
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': X_CSRF_TOKEN
-                            },
-                            url: 'ajax-remove-voucher',
-                            success: function (message) {
+                        removeVoucher()
+                            .then(() => {
                                 $('#cart-voucher').children().remove()
                                 const chooseVoucherBtn =
                                     `<span id="choose-voucher-button" class="pointer-cs main-color-text">
@@ -5567,9 +5605,8 @@ $(function(){
                                 $('#cart-voucher').append(chooseVoucherBtn)
                                 $('#voucher').parent().remove()
 
-                                showToast(message)
-                            }
-                        });
+                                showToast('Đã hủy mã giảm giá do chưa thỏa điều kiện')
+                            })
                     }
 
                     const discount = data.voucher.chietkhau;
@@ -6583,6 +6620,13 @@ $(function(){
         const notification = data.notification
 
         if(notification.user.id == id_tk){
+            // yêu cầu đăng xuất
+            if(notification.type === 'logout') {
+                sessionStorage.setItem('alert-top-message', 'Bạn đã đăng nhập tại nơi khác')
+                window.location.href = '/logout?login_status=1'
+                return
+            }
+
             // cập nhật số lượng thông báo
             var notiQty = parseInt($($('.not-seen-qty')[0]).text());
             notiQty++;

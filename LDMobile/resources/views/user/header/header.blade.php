@@ -37,8 +37,8 @@
                             <div class="relative">
                                 <a href="{{route('user/gio-hang')}}" class='head-cart ml-20'>
                                     <i class="fas fa-shopping-cart fz-32"></i>
-                                    @if (session('user') && $data['cart']['qty'] != 0)
-                                        <span class='head-qty-cart'>{{ $data['cart']['qty'] }}</span>
+                                    @if (session('user') && $data['cartQty'] != 0)
+                                        <span class='head-qty-cart'>{{ $data['cartQty'] }}</span>
                                     @else
                                         <span class='head-qty-cart none-dp'>0</span>
                                     @endif
@@ -53,7 +53,7 @@
                             <div class='head-item mr-20'>
                                 <div class='d-flex'>
                                     <?php $user = session('user'); ?>
-                                    <img id="avt-header" src="{{ $user->htdn == 'normal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" width="60px" class="circle-img mr-10">
+                                    <img id="avt-header" src="{{ $user->htdn == 'normal' ? $url_user.$user->anhdaidien : $user->anhdaidien }}" alt="avatar" class="header-avatar">
                                     
                                     <div class='d-flex flex-column justify-content-end'>
                                         <i class='white fz-14'>Xin Chào!</i>
@@ -61,19 +61,23 @@
                                             <div>{{ session('user')->hoten }}</div>
                                             <i class="fas fa-caret-down ml-5"></i>
                                             <div class='head-account-dropdown'>
+                                                {{-- xem tài khoản --}}
                                                 <a href="{{route('user/tai-khoan')}}" class='head-account-option'><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
+                                                {{-- xem thông báo --}}
                                                 <a href="{{route('user/tai-khoan-thong-bao')}}" class='head-account-option'>
                                                     <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
-                                                    @if ($data['lst_noti']['not-seen'] != 0)
-                                                        <div class='not-seen-qty number-badge ml-10'>{{$data['lst_noti']['not-seen']}}</div>
+                                                    @if ($data['notSeen'] != 0)
+                                                        <div class='not-seen-qty number-badge ml-10'>{{$data['notSeen']}}</div>
                                                     @endif
                                                 </a>
+                                                {{-- xem đơn hàng --}}
                                                 <a href="{{route('user/tai-khoan-don-hang')}}" class='head-account-option'>
                                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                                    @if ($data['lst_order']['processingQty'] != 0)
-                                                        <span class='processing-qty number-badge ml-10'>{{$data['lst_order']['processingQty']}}</span>
+                                                    @if ($data['processing'] != 0)
+                                                        <span class='processing-qty number-badge ml-10'>{{$data['processing']}}</span>
                                                     @endif
                                                 </a>
+                                                {{-- đăng xuất --}}
                                                 <a href="{{route('user/logout')}}" class='head-account-option'><i class="far fa-power-off mr-10"></i>Đăng xuất</a>
                                             </div>
                                         </div>
@@ -122,14 +126,14 @@
                                 <a href="{{route('user/tai-khoan')}}" class="offcanvas-account-single-option"><i class="fas fa-user mr-10"></i>Xem Tài khoản</a>
                                 <a href="{{route('user/tai-khoan-thong-bao')}}" class="offcanvas-account-single-option">
                                     <span><i class="fas fa-bell mr-10"></i>Thông báo</span>
-                                    @if ($data['lst_noti']['not-seen'] != 0)
-                                        <div class='not-seen-qty number-badge ml-10'>{{$data['lst_noti']['not-seen']}}</div>
+                                    @if ($data['notSeen'] != 0)
+                                        <div class='not-seen-qty number-badge ml-10'>{{$data['notSeen']}}</div>
                                     @endif
                                 </a>
                                 <a href="{{route('user/tai-khoan-don-hang')}}" class="offcanvas-account-single-option">
                                     <span><i class="fas fa-box mr-10"></i>Đơn hàng của tôi</span>
-                                    @if ($data['lst_order']['processingQty'] != 0)
-                                        <span class='processing-qty number-badge ml-10'>{{$data['lst_order']['processingQty']}}</span>
+                                    @if ($data['processing'] != 0)
+                                        <span class='processing-qty number-badge ml-10'>{{$data['processing']}}</span>
                                     @endif
                                 </a>
                                 <a href="{{route('user/logout')}}" class="offcanvas-account-single-option"><i class="far fa-power-off mr-10"></i>Đăng xuất</a>

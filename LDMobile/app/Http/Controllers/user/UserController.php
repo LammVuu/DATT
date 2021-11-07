@@ -124,6 +124,25 @@ class UserController extends Controller
             Session::regenerate();
 
             $user = TAIKHOAN::where('sdt', $data['sdt'])->first();
+
+            /**
+             * nếu tài khoản đã đăng nhập trước đó ở 1 trình duyệt khác
+             * thì đăng xuất tài khoản ở trình duyệt đó
+             */
+            if($user->login_status == 1) {
+                $notification = [
+                    'user' => $user,
+                    'type' => 'logout',
+                ];
+
+                event(new sendNotification($notification));
+            }
+            // đăng nhập bình thường
+            else {
+                $user->login_status = 1;
+                $user->save();
+            }
+
             session(['user' => $user]);
 
             // quay về url trước đó
@@ -171,6 +190,19 @@ class UserController extends Controller
             if($exists){
                 // đã đăng nhập bằng facebook
                 if($exists->htdn == 'facebook'){
+                    /**
+                     * nếu tài khoản đã đăng nhập trước đó ở 1 trình duyệt khác
+                     * thì đăng xuất tài khoản ở trình duyệt đó
+                     */
+                    if($exists->login_status == 1) {
+                        $notification = [
+                            'user' => $exists,
+                            'type' => 'logout',
+                        ];
+
+                        event(new sendNotification($notification));
+                    }
+
                     $exists->update([
                         'anhdaidien' => $user->avatar_original . "&access_token={$user->token}",
                         'user_social_token' => $user->token,
@@ -239,6 +271,19 @@ class UserController extends Controller
        
             if($exists){
                 if($exists->htdn == 'google'){
+                    /**
+                     * nếu tài khoản đã đăng nhập trước đó ở 1 trình duyệt khác
+                     * thì đăng xuất tài khoản ở trình duyệt đó
+                     */
+                    if($exists->login_status == 1) {
+                        $notification = [
+                            'user' => $exists,
+                            'type' => 'logout',
+                        ];
+
+                        event(new sendNotification($notification));
+                    }
+                    
                     $exists->update(['login_status' => 1]);
 
                     Auth::login($exists, true);
@@ -288,7 +333,7 @@ class UserController extends Controller
         }
     }
 
-    public function LogOut(Response $response)
+    public function LogOut(Request $request)
     {
         $user = session('user');
         // đang không đăng nhập
@@ -303,8 +348,13 @@ class UserController extends Controller
         }
 
         Auth::logout();
-        if($user->htdn !== 'normal'){
+
+        // cập nhật login_status = 0 nếu k có request ?login_status=1
+        if(!$request->login_status) {
             TAIKHOAN::where('id', $user->id)->update(['login_status' => 0]);
+        }
+
+        if($user->htdn !== 'normal'){
             Cookie::queue(Cookie::forget('acccount_social_id'));
         }
         
@@ -349,16 +399,43 @@ class UserController extends Controller
 
     public function ThongBao()
     {
+        // danh sách thông báo
+        $user = session('user');
+        $lst_noti = THONGBAO::where('id_tk', $user->id)->orderBy('id', 'desc')->limit(10)->get();
+
         $array = [
             'page' => 'sec-thong-bao',
+            'lst_noti' => $lst_noti
         ];
         return view($this->user."tai-khoan")->with($array);
     }
 
     public function DonHang()
     {
+        $processing = [];
+        $complete = [];
+
+        $user = session('user');
+
+        $allOrderOfUser = DONHANG::where('id_tk', $user->id)->orderBy('id', 'desc')->get();
+        foreach($allOrderOfUser as $userOrder){
+            $order = [
+                'order' => $userOrder,
+                'detail' => $this->IndexController->getOrderDetail($userOrder->id)
+            ];
+
+            // đơn hàng đang xử lý
+            if($userOrder['trangthaidonhang'] !== 'Thành công' && $userOrder['trangthaidonhang'] !== 'Đã hủy') {
+                array_push($processing, $order);
+            } else {
+                array_push($complete, $order);
+            }
+        }
+
         $array = [
             'page' => 'sec-don-hang',
+            'processing' => $processing,
+            'complete' => $complete
         ];
 
         return view ($this->user."tai-khoan")->with($array);
@@ -366,6 +443,28 @@ class UserController extends Controller
 
     public function DiaChi()
     {
+        $addressList = [
+            'status' => false,
+            'default' => [],
+            'another' => []
+        ];
+
+        $user = session('user');
+
+        $allAddress = TAIKHOAN::find($user->id)->taikhoan_diachi;
+
+        if($allAddress->count()) {
+            $addressList['status'] = true;
+
+            foreach($allAddress as $address) {
+                if($address->macdinh === 1) {
+                    $addressList['default'] = $address;
+                } else {
+                    array_push($addressList['another'], $address);
+                }
+            }
+        }
+
         $json_file = file_get_contents('TinhThanh.json');
         $tinhThanh = json_decode($json_file, true);
 
@@ -378,6 +477,7 @@ class UserController extends Controller
         
         $array = [
             'page' => 'sec-dia-chi',
+            'addressList' => $addressList,
             'lstTinhThanh' => $tinhThanh,
             'lstQuanHuyen' => $lstQuanHuyen,
         ];
@@ -396,8 +496,25 @@ class UserController extends Controller
 
     public function YeuThich()
     {
+        $favoriteList = [];
+
+        $user = session('user');
+
+        foreach(TAIKHOAN::find($user->id)->sp_yeuthich as $key){
+            $id = $key->pivot->id;
+
+            $id_sp_list = $this->IndexController->getListIdSameCapacity($key->pivot->id_sp);
+            $product = $this->IndexController->getProductById($key->pivot->id_sp);
+            
+            array_push($favoriteList, [
+                'id' => $id,
+                'sanpham' => $product
+            ]);
+        }
+
         $array = [
             'page' => 'sec-yeu-thich',
+            'favoriteList' => $favoriteList
         ];
 
         return view ($this->user."tai-khoan")->with($array);
@@ -405,8 +522,29 @@ class UserController extends Controller
 
     public function Voucher()
     {
+        $user = session('user');
+
+        $voucherList = TAIKHOAN_VOUCHER::where('id_tk', $user->id)->get();
+
+        foreach($voucherList as $i => $key){
+            $voucher = VOUCHER::find($key->id_vc);
+            $voucherList[$i]->voucher = $voucher;
+
+            // ngày kết thúc
+            $end = strtotime(str_replace('/', '-', $voucher->ngayketthuc));
+            // ngày hiện tại
+            $current = strtotime(date('d-m-Y'));
+
+            if($end < $current){
+                $voucherList[$i]->trangthai = false;
+            } else {
+                $voucherList[$i]->trangthai = true;
+            }
+        }
+
         $array = [
             'page' => 'sec-voucher',
+            'voucherList' => $voucherList,
         ];
 
         return view ($this->user."tai-khoan")->with($array);
@@ -1265,7 +1403,6 @@ class UserController extends Controller
     public function AjaxRemoveVoucher(Request $request){
         if($request->ajax()){
             Session::forget('voucher');
-            return 'Đã hủy mã giảm giá do chưa thỏa điều kiện';
         }
     }
 

@@ -1873,6 +1873,7 @@ hr{
   display: flex;
   align-items: center;
   justify-content: center;
+
 }
 .stop-business-badge {
   font-size: 14px;
@@ -1883,6 +1884,13 @@ hr{
 
 .stop-business-badge::before {
   content: 'NGỪNG KINH DOANH'
+}
+
+.header-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 /*========================================================================================================================
@@ -1950,7 +1958,7 @@ hr{
 }
 @media screen and (max-width: 768px) and (min-width: 576px) {
   .alert-top{
-    --percent-y: 20%;
+    --percent-y: 15%;
   }
 }
 @media screen and (max-width: 576px){
@@ -2003,21 +2011,26 @@ hr{
                                                     iOS message
 ==========================================================================================================================*/
 
-.ios-message{
+.ios-screen{
   position: fixed;
-  left: 10%; top: 40%; right: 10%; bottom: 40%;
+  left: 0; top: 0; right: 0; bottom: 0;
   z-index: 2000;
   background-color: #fff;
-  border-radius: 20px;
-  padding: 20px;
+  padding: 0 40px;
   color: var(--text-color);
   font-weight: 600;
+  font-size: 18px;
   text-align: center;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  transform: translateY(40px);
-  transition: 1s;
+}
+
+.ios-image {
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /*========================================================================================================================
@@ -3084,7 +3097,7 @@ a.head-item:hover{
   width: 250px;
   border-radius: 5px;
   background-color: #fff;
-  font-weight: 300;
+  font-weight: normal;
   box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.16);
   display: none;
 }
@@ -3504,7 +3517,7 @@ a.head-item:hover{
 
 .account-head-title{
   background-color: #fff;
-  padding: 10px;
+  padding: 10px 10px 10px 20px;
   margin-bottom: 20px;
   border-radius: 10px;
   display: flex;
@@ -3604,6 +3617,14 @@ a.head-item:hover{
 .account-btn-option{
   cursor: pointer;
   position: relative;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.account-btn-option:hover {
+  background-color: #eee;
 }
 
 .account-option-div{
@@ -5397,7 +5418,7 @@ a.head-item:hover{
   margin-bottom: 20px;
 }
 
-.header-cart{
+.cart-header{
   background-color: white;
   padding: 10px;
   margin-bottom: 20px;

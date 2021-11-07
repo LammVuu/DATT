@@ -137,7 +137,7 @@ class IndexController extends Controller
         $phoneName = $this->getPhoneNameByString($name);
         
         if(!$phoneName){
-            return redirect()->route('user/dien-thoai');
+            return redirect()->route('user/dien-thoai')->with('toast_message', 'Sản phẩm không hợp lệ');
         }
 
         // điện thoại theo tên
@@ -308,7 +308,7 @@ class IndexController extends Controller
                                                    same brand
         ==============================================================================================*/
 
-        $lst_proSameBrand = $this->getRandomProductBySupplierId($model->id_ncc);
+        $lst_proSameBrand = $this->getRandomProductBySupplierId($id, $model->id_ncc);
 
         /*==============================================================================================
                                                 similar product
@@ -641,13 +641,13 @@ class IndexController extends Controller
 
         $allProducts = $this->getAllProductByCapacity();
         foreach($allProducts as $product){
-            $id_sp_list = $this->getListIdSameCapacity($product['id']);
-
-            // vd: 19%
+            // vd: -19%
             $discountText = $product['khuyenmai'] ? (($product['khuyenmai'] * 100) . '%') : '';
 
+            
+
             $string = strtolower($this->unaccent($product['tensp'].$product['mausac'].$product['ram'].
-                $product['dungluong'].$product['gia'].$product['giakhuyenmai'].$discountText));
+                $product['dungluong'].$product['gia'].$product['giakhuyenmai'].'-'.$discountText));
                 
             if(str_contains($string, $keyword)){
                 array_push($productList, $product);
@@ -2281,7 +2281,7 @@ class IndexController extends Controller
     }
 
     // lấy ngẫu nhiên điện thoại cùng nhà cung cấp
-    public function getRandomProductBySupplierId($id_ncc, $qty = 5)
+    public function getRandomProductBySupplierId($id_sp, $id_ncc, $qty = 5)
     {
         $lst_product = [];
 
@@ -2292,7 +2292,7 @@ class IndexController extends Controller
             }
         }
 
-        // random sản phẩm theo id_msp
+        // hãng có sl sp ít hơn sl cần hiển thị
         if(count($lst_id_msp) < $qty) {
             for($i = 0; $i < count($lst_id_msp); $i++){
                 $phonesByCapacity = $this->getProductByCapacity($lst_id_msp[$i]);
@@ -2302,11 +2302,26 @@ class IndexController extends Controller
                     }
                 }
             }
-        } else {
-            for($i = 0; $i < $qty; $i++){
+        }
+        // lấy random sp không trùng nhau và không trùng với sp đang xem tại trang chi  tiết
+        else {
+            $distinctList = [];
+            // danh sách id_sp mẫu sp cùng dung lượng
+            $id_sp_list = $this->getListIdSameCapacity($id_sp);
+
+            while(count($lst_product) < $qty) {
                 $rand_id_msp = array_rand($lst_id_msp);
-                $phonesByCapacity = $this->getProductByCapacity($lst_id_msp[$rand_id_msp]);
-                $lst_product[$i] = $phonesByCapacity[mt_rand(0 , count($phonesByCapacity) - 1)];
+
+                if(!in_array($rand_id_msp, $distinctList)) {
+                    array_push($distinctList, $rand_id_msp);
+
+                    $phonesByCapacity = $this->getProductByCapacity($lst_id_msp[$rand_id_msp]);
+                    $phone = $phonesByCapacity[mt_rand(0 , count($phonesByCapacity) - 1)];
+
+                    if($this->isShow($phone) && !in_array($phone['id'], $id_sp_list)) {
+                        array_push($lst_product, $phone);
+                    }
+                }
             }
         }
 

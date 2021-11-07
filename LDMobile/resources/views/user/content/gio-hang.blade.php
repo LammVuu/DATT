@@ -10,15 +10,15 @@
 <section class='pt-50 pb-50'>
     <div class='container'>
         <div id="cart-container" class='row'>
-            @if ($data['cart']['qty'] != 0)
+            @if ($cart['qty'] != 0)
                 <div class="cart-title">Giỏ hàng</div>
-                <i class="mb-10">* Số lượng mua tối đa là 5</i>
+                <i class="mb-10">* Số lượng mua cho 1 sản phẩm tối đa là 5</i>
                 <div class="col-lg-9 col-12">
-                    <div class="header-cart">
+                    <div class="cart-header">
                         <div class="w-5">
-                            <div data-id="all" class="select-item-cart cus-checkbox cus-checkbox-checked"></div>
+                            <div data-id="all" class="select-item-cart cus-checkbox"></div>
                         </div>
-                        <div class="w-35">Chọn tất cả ({{$data['cart']['qty']}} sản phẩm)</div>
+                        <div id="cart-header-qty" class="w-35">Chọn tất cả ({{$cart['qty']}} sản phẩm)</div>
                         <div class="w-25">Giá</div>
                         <div class="w-15">Số lượng</div>
                         <div class="w-15">Thành tiền</div>
@@ -27,40 +27,49 @@
 
                     {{-- danh sách sản phẩm --}}
                     <div id="lst-cart-item" class="box-shadow mb-50">
-                        @foreach ($data['cart']['cart'] as $key)
-                            <div data-id="{{$key['sanpham']['id']}}" cart-id="{{$key['id']}}" class="cart-item-wrapper">
+                        @foreach ($cart['cart'] as $key)
+                            <?php $product = $key['sanpham']; ?>
+
+                            <div data-id="{{$product['id']}}" cart-id="{{$key['id']}}" class="cart-item-wrapper">
                                 {{-- custom checkbox --}}
                                 <div class="w-5">
-                                    <div data-id="{{$key['sanpham']['id']}}" class="select-item-cart cus-checkbox cus-checkbox-checked"></div>
+                                    {{-- chỉ checked sản phẩm có thể thanh toán --}}
+                                    @if (!$product['trangthai'] || $key['hethang'])
+                                        <div data-id="{{$product['id']}}"
+                                        class="select-item-cart cus-checkbox"></div>
+                                    @else
+                                        <div data-id="{{$product['id']}}"
+                                        class="select-item-cart cus-checkbox cus-checkbox-checked"></div>                                        
+                                    @endif
                                 </div>
                                 {{-- sản phẩm --}}
                                 <div class="w-35 d-flex">
-                                    <img src="{{$url_phone.$key['sanpham']['hinhanh']}}" alt="" class="w-30">
+                                    <img src="{{$url_phone.$product['hinhanh']}}" alt="" class="w-30">
                                     <div class="ml-5">
-                                        <a href="{{route('user/chi-tiet', ['name' => $key['sanpham']['tensp_url'], 'mausac' => $key['sanpham']['mausac_url']])}}" class="cart-phone-name">
-                                            {{$key['sanpham']['tensp']}}
+                                        <a href="{{route('user/chi-tiet', ['name' => $product['tensp_url'], 'mausac' => $product['mausac_url']])}}" class="cart-phone-name">
+                                            {{$product['tensp']}}
                                         </a>
-                                        <div class="fz-14">Màu sắc: {{$key['sanpham']['mausac']}}</div>
+                                        <div class="fz-14">Màu sắc: {{$product['mausac']}}</div>
                                     </div>
                                 </div>
                                 {{-- giá --}}
-                                @if(!$key['sanpham']['trangthai'])
+                                @if(!$product['trangthai'])
                                     <div class="w-55">
-                                        <div data-id="{{$key['sanpham']['id']}}" class="out-of-stock">NGỪNG KINH DOANH</div>
+                                        <div data-id="{{$product['id']}}" class="out-of-stock">NGỪNG KINH DOANH</div>
                                     </div>
                                 @else
                                     <div class="w-25 d-flex align-items-center">
                                         <div class="ml-10">
-                                            <div class="fw-600">{{ number_format($key['sanpham']['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
+                                            <div class="fw-600">{{ number_format($product['giakhuyenmai'], 0, '', '.') }}<sup>đ</sup></div>
                                             {{-- hết hạn khuyến mãi --}}
-                                            @if ($key['sanpham']['khuyenmai'] != 0)
-                                                <div class="fz-14 text-strike gray-1">{{ number_format($key['sanpham']['gia'], 0, '', '.') }}<sup>đ</sup></div>    
+                                            @if ($product['khuyenmai'] != 0)
+                                                <div class="fz-14 text-strike gray-1">{{ number_format($product['gia'], 0, '', '.') }}<sup>đ</sup></div>    
                                             @endif
                                         </div>
                                     </div>
                                     @if($key['hethang'])
                                         <div class="w-30">
-                                            <div data-id="{{$key['sanpham']['id']}}" class="out-of-stock">TẠM HẾT HÀNG</div>
+                                            <div data-id="{{$product['id']}}" class="out-of-stock">TẠM HẾT HÀNG</div>
                                         </div>
                                     @else
                                         {{-- số lượng --}}

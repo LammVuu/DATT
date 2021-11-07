@@ -29,7 +29,7 @@
                 <div class="col-lg-8 col-12">
                     <div class="row">
                         {{-- địa chỉ mặc định --}}
-                        <?php $default = $data['lst_address']['default'] ?>
+                        <?php $default = $addressList['default'] ?>
                         <div class="col-12">
                             <div id="address-{{$default['id']}}" data-default="true" class="white-bg p-20 border-success mb-30">
                                 <div class="d-flex justify-content-between pb-10">
@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         {{-- địa chỉ khác --}}
-                        @foreach ($data['lst_address']['another'] as $key)
+                        @foreach ($addressList['another'] as $key)
                             @if($key['macdinh'] == 0)
                                 <div class="col-12">
                                     <div id="address-{{$key['id']}}" data-default="false" class="white-bg p-20 border mb-30">

@@ -39,15 +39,15 @@
         </div>
 
         {{-- danh sách thông báo --}}
-        @if (count($data['lst_noti']['noti']) != 0)
+        @if (count($lst_noti) != 0)
             <div id="lst_noti">
-                @foreach ($data['lst_noti']['noti'] as $key)
-                    <div id={{ 'noti-' . $key['id'] }} class='single-noti {{$key['trangthaithongbao'] == 0 ? 'account-noti-wait' : 'account-noti-checked'}} mb-20'>
+                @foreach ($lst_noti as $noti)
+                    <div id={{ 'noti-' . $noti['id'] }} class='single-noti {{$noti->trangthaithongbao == 0 ? 'account-noti-wait' : 'account-noti-checked'}} mb-20'>
                         {{-- tiêu đề --}}
                         <div class="d-flex align-items-center justify-content-between p-10 border-bottom">
                             <div class="d-flex align-items-center">
                                 <div>
-                                    @switch($key->tieude)
+                                    @switch($noti->tieude)
                                         @case('Đơn đã tiếp nhận')
                                             <i class="fas fa-file-alt fz-28 info-color"></i>
                                             @break
@@ -64,20 +64,20 @@
                                             <i class="fas fa-reply fz-28 purple"></i>
                                     @endswitch
                                 </div>
-                                <div class="fw-600 fz-18 ml-10">{{$key->tieude}}</div>
+                                <div class="fw-600 fz-18 ml-10">{{$noti->tieude}}</div>
                             </div>
                             <div class="d-flex align-items-end">
-                                @if ($key->trangthaithongbao == 0)
-                                    <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$key->id}}'>Đánh dấu đã đọc</div>
+                                @if ($noti->trangthaithongbao == 0)
+                                    <div type="button" class="noti-btn-read main-color-text mr-10" data-id='{{$noti->id}}'>Đánh dấu đã đọc</div>
                                 @endif
-                                    <div type="button" class='noti-btn-delete red' data-id='{{$key->id}}'>xóa</div>
+                                    <div type="button" class='noti-btn-delete red' data-id='{{$noti->id}}'>xóa</div>
                             </div>
                         </div>
                         {{-- nội dung --}}
                         <div class="d-flex pt-20 pb-20 pl-10 pr-10">
-                            <div id={{ 'noti-content-' . $key->id }}>
-                                <div>{!! $key->noidung !!}</div>
-                                <div class="mt-10 fz-14">{{$key->thoigian}}</div>
+                            <div id={{ 'noti-content-' . $noti->id }}>
+                                <div>{!! $noti->noidung !!}</div>
+                                <div class="mt-10 fz-14">{{$noti->thoigian}}</div>
                             </div>
                         </div>
                     </div>

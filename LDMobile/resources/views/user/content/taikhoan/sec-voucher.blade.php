@@ -4,13 +4,17 @@
         @include("user.content.taikhoan.sec-thanh-chuc-nang")
     </div>
     <div class='col-md-9'>
-        @if (count($data['lst_voucher']) != 0)
+        @if (count($voucherList) != 0)
             <div class="account-head-title">
                 <div class="fw-600 fz-22">Mã giảm giá của tôi</div>
             </div>
             <div class="row">
-                @foreach ($data['lst_voucher'] as $key)
-                    <?php $sl = $key->sl; $voucher = $key->voucher; $id = $key->id ?>
+                @foreach ($voucherList as $key)
+                    <?php
+                        $sl = $key->sl;
+                        $voucher = $key->voucher;
+                        $id = $key->id 
+                    ?>
 
                     {{-- mã giảm giá còn hsd --}}
                     @if($key->trangthai)

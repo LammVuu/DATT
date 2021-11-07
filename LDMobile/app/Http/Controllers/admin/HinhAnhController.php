@@ -79,7 +79,7 @@ class HinhAnhController extends Controller
 
             $models = MAUSP::all();
             foreach($models as $model){
-                $imageQty = count(HINHANH::where('id_msp', $model->id)->get());
+                $imageQty = HINHANH::where('id_msp', $model->id)->count();
                 $model->imageQty = $imageQty;
             }   
 

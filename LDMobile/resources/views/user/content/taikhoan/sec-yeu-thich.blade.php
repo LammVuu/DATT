@@ -17,9 +17,9 @@
         </div>
 
         {{-- danh sách yêu thích --}}
-        @if (count($data['lst_favorite']) != 0)
+        @if (count($favoriteList) != 0)
             <div id="lst_favorite">
-                @foreach ($data['lst_favorite'] as $key)
+                @foreach ($favoriteList as $key)
                     <div id="favorite-{{$key['id']}}" class="single-favorite box-shadow mb-30">
                         <div class="d-flex justify-content-between">
                             {{-- điện thoại --}}

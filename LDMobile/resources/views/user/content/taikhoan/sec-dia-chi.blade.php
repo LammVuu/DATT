@@ -8,9 +8,9 @@
             <i class="far fa-plus mr-10"></i>Thêm địa chỉ mới
         </div>
 
-        @if ($data['lst_address']['status'])
+        @if ($addressList['status'])
             {{-- địa chỉ mặc định --}}
-            <?php $default = $data['lst_address']['default'] ?>
+            <?php $default = $addressList['default'] ?>
 
             <div id="address-{{$default['id']}}" data-default="true" class="address-wrapper-default">
                 <div class="d-flex justify-content-between pb-10">
@@ -37,7 +37,7 @@
             </div>
 
             {{-- địa chỉ khác --}}
-            <?php $another = $data['lst_address']['another'] ?>
+            <?php $another = $addressList['another'] ?>
             @foreach ($another as $key)
                 @if($key['macdinh'] == 0)
                     <div id="address-{{$key['id']}}" data-default="false" class="address-wrapper">

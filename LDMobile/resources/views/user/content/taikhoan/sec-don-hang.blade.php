@@ -1,16 +1,12 @@
-<?php
-    $lst_order = $data['lst_order']; 
-?>
-
 <div class='row'>
     <div class='col-md-3'>
         @section("acc-order-active") account-sidebar-active @stop
         @include("user.content.taikhoan.sec-thanh-chuc-nang")
     </div>
     <div class='col-md-9'>
-        @if ($lst_order['processing'] || $lst_order['complete'])
+        @if ($processing || $complete)
             {{-- đơn hàng đang xử lý --}}
-            @if ($lst_order['processing'])
+            @if ($processing)
                 <table class='table box-shadow mb-50'>
                     <thead>
                         <tr>
@@ -22,7 +18,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($lst_order['processing'] as $key)
+                        @foreach ($processing as $key)
                             <?php $order = $key['order']; $detail = $key['detail'] ?>
                             @include("user.content.components.donhang.don-hang")
                         @endforeach
@@ -31,7 +27,7 @@
             @endif
 
             {{-- đơn hàng đã xử lý --}}
-            @if ($lst_order['complete'])
+            @if ($complete)
                 <table class='table box-shadow'>
                     <thead>
                         <tr>
@@ -43,7 +39,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($lst_order['complete'] as $key)
+                        @foreach ($complete as $key)
                             <?php $order = $key['order']; $detail = $key['detail']; ?>
                             @include("user.content.components.donhang.don-hang")
                         @endforeach
