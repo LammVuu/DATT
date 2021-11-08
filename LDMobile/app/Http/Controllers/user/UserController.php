@@ -573,6 +573,28 @@ class UserController extends Controller
             return redirect('/');
         }
 
+        $addressList = [
+            'status' => false,
+            'default' => [],
+            'another' => []
+        ];
+
+        $user = session('user');
+
+        $allAddress = TAIKHOAN::find($user->id)->taikhoan_diachi;
+
+        if($allAddress->count()) {
+            $addressList['status'] = true;
+
+            foreach($allAddress as $address) {
+                if($address->macdinh === 1) {
+                    $addressList['default'] = $address;
+                } else {
+                    array_push($addressList['another'], $address);
+                }
+            }
+        }
+
         $json_file = file_get_contents('TinhThanh.json');
         $tinhThanh = json_decode($json_file, true);
 
@@ -584,6 +606,7 @@ class UserController extends Controller
         $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
 
         $data = [
+            'addressList' => $addressList,
             'lstTinhThanh' => $tinhThanh,
             'lstQuanHuyen' => $lstQuanHuyen,
         ];

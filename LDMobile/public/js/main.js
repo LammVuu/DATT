@@ -1595,10 +1595,7 @@ $(function(){
                         $('#btn-see-filter').text('');
                         loading.appendTo($('#btn-see-filter'));
     
-                        arrFilterSort = {
-                            'filter': {},
-                            'sort' : '',
-                        };
+                        arrFilterSort.filter = {};
     
                         arrTemp = [];
                         $('div[name="filter-item"]').removeClass('filter-selected');
@@ -1767,7 +1764,9 @@ $(function(){
                             },
                             url: '/ajax-filter-product',
                             type: 'POST',
-                            data: {arrFilterSort:arrFilterSort},
+                            data: {
+                                arrFilterSort
+                            },
                             success: function(data){
                                 callback(data)
                             }
@@ -4594,7 +4593,7 @@ $(function(){
                                             <div class="col-lg-4 col-md-8 col-10 mx-auto">
                                                 <div class="pt-100 pb-100 text-center">
                                                     <div class="fz-20 mb-40">Không có sản phẩm nào trong giỏ hàng.</div>
-                                                    <a href="dien-thoai" class="main-btn">Tiếp tục mua hàng</a>
+                                                    <a href="/dienthoai" class="main-btn">Tiếp tục mua hàng</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -4620,7 +4619,7 @@ $(function(){
                                         <div class="col-lg-4 col-md-8 col-10 mx-auto">
                                             <div class="pt-100 pb-100 text-center">
                                                 <div class="fz-20 mb-40">Không có sản phẩm nào trong giỏ hàng.</div>
-                                                <a href="dien-thoai" class="main-btn">Tiếp tục mua hàng</a>
+                                                <a href="/dienthoai" class="main-btn">Tiếp tục mua hàng</a>
                                             </div>
                                         </div>
                                     </div>
@@ -4658,8 +4657,10 @@ $(function(){
 
         var phoneno = /^\d{10}$/;
 
+        const name = nameInp.val().trim()
+
         // chưa nhập họ tên
-        if(nameInp.val() == ''){
+        if(name.length === 0){
             nameInp.addClass('required');
             var required = $('<span class="required-text">Vui lòng nhập họ và tên</span>');
             nameInp.after(required);

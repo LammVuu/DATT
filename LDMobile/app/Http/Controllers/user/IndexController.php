@@ -2067,9 +2067,11 @@ class IndexController extends Controller
     // sắp xếp danh sách sp theo khuyến mãi
     public function sortProductByPromotion($lst, $type = 'asc')
     {
+        $length = count($lst);
+        
         if($type == 'asc'){
-            for($i = 0; $i < count($lst) - 1; $i++){
-                for($j = $i+1; $j < count($lst); $j++){
+            for($i = 0; $i < $length - 1; $i++){
+                for($j = $i+1; $j < $length; $j++){
                     if($lst[$i]['khuyenmai'] > $lst[$j]['khuyenmai']){
                         $temp = $lst[$i];
                         $lst[$i] = $lst[$j];
@@ -2078,8 +2080,8 @@ class IndexController extends Controller
                 }
             }
         } else {
-            for($i = 0; $i < count($lst) - 1; $i++){
-                for($j = $i+1; $j < count($lst); $j++){
+            for($i = 0; $i < $length - 1; $i++){
+                for($j = $i+1; $j < $length; $j++){
                     if($lst[$i]['khuyenmai'] < $lst[$j]['khuyenmai']){
                         $temp = $lst[$i];
                         $lst[$i] = $lst[$j];
@@ -2096,9 +2098,11 @@ class IndexController extends Controller
     // sắp xếp theo giá giảm dần
     public function sortPrice($lst_product, $type = 'asc')
     {
-        if($type == 'asc'){
-            for($i = 0; $i < count($lst_product) - 1; $i++){
-                for($j = $i+1; $j < count($lst_product); $j++){
+        $length = count($lst_product);
+
+        if($type === 'asc'){
+            for($i = 0; $i < $length - 1; $i++){
+                for($j = $i+1; $j < $length; $j++){
                     if($lst_product[$i]['gia'] > $lst_product[$j]['gia']){
                         $temp = $lst_product[$i];
                         $lst_product[$i] = $lst_product[$j];
@@ -2107,8 +2111,8 @@ class IndexController extends Controller
                 }
             }
         } else {
-            for($i = 0; $i < count($lst_product) - 1; $i++){
-                for($j = $i+1; $j < count($lst_product); $j++){
+            for($i = 0; $i < $length - 1; $i++){
+                for($j = $i+1; $j < $length; $j++){
                     if($lst_product[$i]['gia'] < $lst_product[$j]['gia']){
                         $temp = $lst_product[$i];
                         $lst_product[$i] = $lst_product[$j];
@@ -2118,7 +2122,6 @@ class IndexController extends Controller
             }
         }
         
-
         return $lst_product;
     }
 
