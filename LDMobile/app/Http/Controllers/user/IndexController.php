@@ -4,6 +4,7 @@ namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Storage;
@@ -134,34 +135,14 @@ class IndexController extends Controller
     }
 
     public function ChiTiet($name){
-        $phoneName = $this->getPhoneNameByString($name);
+        $id = $this->getProductIdByName($name);
         
-        if(!$phoneName){
+        if(!$id){
             return redirect()->route('user/dien-thoai')->with('toast_message', 'Sản phẩm không hợp lệ');
         }
 
-        // điện thoại theo tên
-        if($phoneName['ram'] == ''){
-            $SANPHAM = SANPHAM::where('tensp', 'like', $phoneName['tensp'])
-                                ->where('dungluong', 'like', $phoneName['dungluong'])
-                                ->inRandomOrder()->first();
-        } else {
-            $SANPHAM = SANPHAM::where('tensp', 'like', $phoneName['tensp'])
-                                ->where('dungluong', 'like', $phoneName['dungluong'])
-                                ->where('ram', 'like', $phoneName['ram'])
-                                ->inRandomOrder()->first();
-        }
+        $SANPHAM = SANPHAM::find($id);
 
-        // sản phẩm không hợp lệ
-        if(!$SANPHAM) {
-            if(session('_previous')) {
-                return back()->with('toast_message', 'Sản phẩm không hợp lệ');
-            } else {
-                return redirect('/')->with('toast_message', 'Sản phẩm không hợp lệ');
-            }
-        }
-
-        $id = $SANPHAM->id;
         $id_msp = $SANPHAM->id_msp;
         $capacity = $SANPHAM->dungluong;
         $ram = $SANPHAM->ram;
@@ -430,27 +411,10 @@ class IndexController extends Controller
         $id_sp_list = [];
         // lấy danh sách id_sp so sánh
         foreach($lst_urlName as $url) {
-            $temp = $this->getPhoneNameByString($url);
+            $id = $this->getProductIdByName($url);
 
-            if($temp['ram'] == ''){
-                $exists = SANPHAM::where('tensp', $temp['tensp'])
-                                ->where('dungluong', $temp['dungluong']);
-
-                if($exists->first()) {
-                    $id = $exists->inRandomOrder()->first()->id;
-
-                    array_push($id_sp_list, $id);
-                }      
-            } else {
-                $exists = SANPHAM::where('tensp', $temp['tensp'])
-                                ->where('dungluong', $temp['dungluong'])
-                                ->where('ram', $temp['ram']);
-
-                if($exists->first()) {
-                    $id = $exists->inRandomOrder()->first()->id;
-
-                    array_push($id_sp_list, $id);
-                }
+            if($id) {
+                array_push($id_sp_list, $id);
             }
         }
 
@@ -534,67 +498,9 @@ class IndexController extends Controller
 
     public function AjaxBindAddress(Request $request){
         if($request->ajax()){
-            // id_tk_dc
-            $id = $request->id;
-            $address = TAIKHOAN_DIACHI::find($id);
+            $userAddress = TAIKHOAN_DIACHI::find($request->id);
 
-            $province = $address->tinhthanh;
-            $district = $address->quanhuyen;
-            $wards = $address->phuongxa;
-
-            $result = [];
-            $result['diachi'] = $address->diachi;
-
-            $lst_province = [];
-            $lst_district = [];
-            $lst_wards = [];
-
-            //tỉnh thành
-            $file = file_get_contents('TinhThanh.json');
-            $provinceFile = json_decode($file, true);
-            foreach($provinceFile as $key){
-                if($key['Name'] == $province){
-                    $lst_province = [
-                        'id' => $key['ID'],
-                        'name' => $province,
-                        'type' => 'TinhThanh'
-                    ];
-                    array_push($result, $lst_province);
-                    break;
-                }
-            }
-
-            // quận huyện
-            $file = file_get_contents('QuanHuyen.json');
-            $districtFile = json_decode($file, true)[$lst_province['id']];
-            foreach($districtFile as $key){
-                if($key['Name'] == $district){
-                    $lst_district = [
-                        'id' => $key['ID'],
-                        'name' => $district,
-                        'type' => 'QuanHuyen',
-                    ];
-                    array_push($result, $lst_district);
-                    break;
-                }
-            }
-                    
-            // phường xã
-            $file = file_get_contents('PhuongXa.json');
-            $wardsFile = json_decode($file, true)[$lst_district['id']];
-            foreach($wardsFile as $key){
-                if($key['Name'] == $wards){
-                    $lst_wards = [
-                        'id' => $key['ID'],
-                        'name' => $wards,
-                        'type' => 'PhuongXa',
-                    ];
-                    array_push($result, $lst_wards);
-                    break;
-                }
-            }
-
-            return $result;
+            return $userAddress;
         }
     }
 
@@ -2149,48 +2055,69 @@ class IndexController extends Controller
     }
 
     // lấy tên điện thoại từ chuỗi
-    public function getPhoneNameByString($str)
+    public function getProductIdByName($str)
     {
-        $lst = explode('-', $str);
-
-        if(count($lst) == 1){
-            return false;
-        }
+        $strList = explode('-', $str);
 
         $count = 0;
-        foreach($lst as $key){
-            if($key == 'GB' || $key == 'gb'){
+        $keywordList = ['GB', 'gb', 'TB', 'tb'];
+
+        foreach($strList as $key){
+            if(in_array($key, $keywordList)) {
                 $count++;
             }
         }
 
-        $lst_name = [
+        // không hợp lệ
+        if($count === 0) {
+            return false;
+        }
+
+        $data = [
             'tensp' => '',
             'ram' => '',
-            'dungluong' => '',
+            'dungluong' => $strList[count($strList) - 2].' '.end($strList),
         ];
 
-        if($count == 1){
-            $lst_name['dungluong'] = $lst[count($lst) - 2].' '.$lst[count($lst) - 1];
+        // không có ram
+        if($count === 1){
             for($i = 0; $i < 2; $i++){
-                unset($lst[count($lst) - 1]);
+                unset($strList[array_key_last($strList)]);
             }
-        } else {
-            $lst_name['ram'] = $lst[count($lst) - 4].' '.$lst[count($lst) - 3];
-            $lst_name['dungluong'] = $lst[count($lst) - 2].' '.$lst[count($lst) - 1];
+        }
+        // có ram
+        else {
+            $data['ram'] = $strList[count($strList) - 4].' '.$strList[count($strList) - 3];
+
             for($i = 0; $i < 4; $i++){
-                unset($lst[count($lst) - 1]);
+                unset($strList[array_key_last($strList)]);
             }
         }
 
         $name = '';
-        foreach($lst as $key){
+        foreach($strList as $key){
             $name .= $key.' ';
         }
 
-        $lst_name['tensp'] = trim($name);
+        $data['tensp'] = trim($name);
 
-        return $lst_name;
+        // lấy sản phẩm
+        $query = SANPHAM::where('tensp', 'like', $data['tensp'])
+                            ->where('dungluong', 'like', $data['dungluong']);
+
+        if($data['ram']) {
+            $query->where('ram', 'like', $data['ram']);
+        }
+
+        // sản phẩm không hợp lệ
+        if(!$query->first()) {
+            return false;
+        }
+
+        // lấy id_sp ngẫu nhiên
+        $id_sp = $query->inRandomOrder()->first()->id;
+
+        return $id_sp;
     }
 
     // lấy nhà cung cấp theo id_msp

@@ -3805,8 +3805,12 @@ $(function() {
             });
     
             $('#model').change(function(){
-                var id = $(this).val();
-                bindSlideshowMSP(id);
+                const action = $('#action-btn').attr('data-type')
+                
+                if(action === 'edit') {
+                    const id = $(this).val();
+                    bindSlideshowMSP(id);
+                }
             });
     
             // reset modal
@@ -4313,8 +4317,12 @@ $(function() {
             });
     
             $('#model').change(function(){
-                var id = $(this).val();
-                bindHinhAnh(id);
+                const action = $('#action-btn').attr('data-type')
+                
+                if(action === 'edit') {
+                    const id = $(this).val();
+                    bindHinhAnh(id);
+                }
             });
     
             // reset modal
@@ -4602,7 +4610,16 @@ $(function() {
                 var id_cn = $('#branch').val();
     
                 changeBranch(id_cn)
-                    .then(() => {
+                    .then((data) => {
+                        if(data.length === 0) {
+                            var elmnt = $('<span>Tất cả sản phẩm đã được thêm vào kho.</span>');
+                            elmnt.appendTo($('#product'));
+                            $('#action-btn').hide();
+                        } else {
+                            renderProductOption(data, id_cn)
+                            $('#action-btn').show()
+                        }
+
                         // gán dữ liệu cho modal
                         $('#modal-title').text('Thêm vào kho');
     
@@ -4649,7 +4666,7 @@ $(function() {
                         'slton': $('#qty_in_stock').val(),
                     };
                     // thêm mới
-                    if($(this).attr('data-type') == 'create'){
+                    if($(this).attr('data-type') === 'create'){
                         $.ajax({
                             headers: {
                                 'X-CSRF-TOKEN': X_CSRF_TOKEN
@@ -4729,13 +4746,42 @@ $(function() {
     
             // thay đổi chi nhánh thêm|sửa kho
             $('#branch').change(function(){
-                var id_cn = $(this).val();
-    
-                changeBranch(id_cn)
-                    .then(() => {
-                        $('#action-btn').show();
+                const id_cn = $(this).val();
+                const action = $('#action-btn').attr('data-type')
+
+                if(action === 'create') {
+                    changeBranch(id_cn)
+                        .then((data) => {
+                            if(data.length === 0) {
+                                var elmnt = $('<span>Tất cả sản phẩm đã được thêm vào kho.</span>');
+                                elmnt.appendTo($('#product'));
+                                $('#action-btn').hide();
+                            } else {
+                                renderProductOption(data, id_cn);
+                                $('#action-btn').show();
+                            }
+                        })
+                        .catch(() => showAlertTop(errorMessage))
+                } else {
+                    const id_sp = $('#product_id_inp').val()
+                    $('#action-btn').show();
+
+                    $.ajax({
+                        headers: {'X-CSRF-TOKEN': X_CSRF_TOKEN},
+                        url: 'admin/kho/ajax-get-kho',
+                        type: 'POST',
+                        data: {
+                            id_cn,
+                            id_sp
+                        },
+                        success: function(data) {
+                            return bindKho(data.id);
+                        },
+                        error: function() {
+                            showAlertTop(errorMessage)
+                        }
                     })
-                    .catch(() => showAlertTop(errorMessage))
+                }
             });
     
             // show options sản phẩm
@@ -4930,7 +4976,10 @@ $(function() {
                     success:function(data){
                         // thiết lập quyền
                         $('input, textarea').attr('readonly', bool);
-                        $('select').attr('disabled', !bool);
+                        $('select').attr('disabled', bool);
+
+                        $('#product').children().remove();
+                        $('#list-product').children().remove();
     
                         // gán dữ liệu cho modal
                         var id_cn = data.chinhanh.id;
@@ -4944,6 +4993,7 @@ $(function() {
                         $('#action-btn').attr('data-type', 'edit');
                         $('#action-btn').text('Cập nhật');
                         $('#action-btn').attr('data-id', id);
+                        $('#action-btn').show();
     
                         // hiển thị modal
                         $('#modal').modal('show');
@@ -5026,21 +5076,12 @@ $(function() {
                         },
                         url: 'admin/kho/ajax-get-product-isnot-in-stock',
                         type: 'POST',
-                        data: {'id_cn': id_cn},
+                        data: {id_cn},
                         success:function(data){
                             $('#product').children().remove();
                             $('#list-product').children().remove();
-        
-                            // kho tại chi nhánh đã có sản phẩm
-                            if(data.length === 0) {
-                                var elmnt = $('<div class="p-10">Tất cả sản phẩm đã được thêm vào kho.</div>');
-                                elmnt.appendTo($('#product'));
-                                $('#action-btn').hide();
-                            } else {
-                                renderProductOption(data, id_cn);    
-                            }
-                            resolve()
-    
+
+                            resolve(data)
                         },
                         error: function() { reject() }
                     });
@@ -7141,14 +7182,15 @@ $(function() {
             $('#search').keyup(function(){
                 clearTimeout(timer);
                 timer = setTimeout(() => {
-                    var keyword = $(this).val().toLocaleLowerCase();
+                    var keyword = $(this).val().toLowerCase();
+
                     $.ajax({
                         headers: {
                             'X-CSRF-TOKEN': X_CSRF_TOKEN
                         },
                         url: 'admin/imei/ajax-search',
                         type: 'POST',
-                        data: {'keyword': keyword},
+                        data: {keyword},
                         success: function(data){
                             const lst_data = $('#lst_data')
     
@@ -7167,6 +7209,7 @@ $(function() {
                         }
                     })
                 }, 500);
+
                 $('#lst_data').children().remove();
                 $('#loadmore').show();
             }); 

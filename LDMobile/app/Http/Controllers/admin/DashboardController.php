@@ -306,7 +306,11 @@ class DashboardController extends Controller
                         $i = 0;
                         foreach(IMEI::all() as $key){
                             $product = SANPHAM::find($key->id_sp);
-                            $str = strtolower($this->IndexController->unaccent($key->id.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$key->imei.($key->trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt')));
+
+                            $str = strtolower($this->IndexController->unaccent($key->id.$product->tensp.
+                                $product->mausac.$product->ram.$product->dungluong.
+                                    $key->imei.($key->trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt')));
+
                             if(str_contains($str, $keyword)){
                                 // bỏ qua số dòng đã cuộn
                                 if($i != $row){
@@ -314,7 +318,7 @@ class DashboardController extends Controller
                                     continue;
                                 } else {
                                     // lấy tiếp tục 10 bản ghi
-                                    if($count == 10){
+                                    if($count === 10){
                                         break;
                                     }
                                     array_push($data, $key);
@@ -324,13 +328,13 @@ class DashboardController extends Controller
                         }
                     }
     
-                    if(count($data) == 0){
+                    if(count($data) === 0){
                         return 'done';
                     }
     
-                    foreach($data as $i => $key){
+                    foreach($data as  $key){
                         $product = SANPHAM::find($key->id_sp);
-                        $data[$i]->product = $product;
+                        $key->product = $product;
                     }
 
                     break;

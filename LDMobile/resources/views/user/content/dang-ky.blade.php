@@ -21,11 +21,6 @@
                                 <h2 class="fw-600">Đăng ký</h2>
                             </div>
 
-                            {{-- họ tên --}}
-                            <div class="mb-3">
-                                <input type="text" id='su_fullname' name="su_fullname" placeholder="Họ và tên" required>    
-                            </div> 
-
                             {{-- SDT --}}
                             <div class="mb-3">
                                 <input type='text' id='su_tel' name="su_tel" maxlength="10" placeholder='Số điện thoại' required>
@@ -98,8 +93,15 @@
                         {{-- enter password --}}
                         <div id='enter-password' class="none-dp">
                             <div class="mb-30">
-                                <h3 class="fw-600">Tạo mật khẩu</h3>
+                                <h3 class="fw-600">Thông tin tài khoản</h3>
                             </div>
+
+                            {{-- họ tên --}}
+                            <div class="mb-3">
+                                <label for="su_fullname" class="fw-600 form-label">Họ và tên</label>
+                                <input type="text" id='su_fullname' name="su_fullname" placeholder="Họ và tên" required>    
+                            </div>
+
                             {{-- mật khẩu --}}
                             <div class="mb-3">
                                 <label for="su_pw" class="fw-600 form-label">Mật khẩu</label>

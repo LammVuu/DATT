@@ -376,23 +376,11 @@ class UserController extends Controller
     ==============================================================================================================*/
 
     public function TaiKhoan(){
-        $json_file = file_get_contents('TinhThanh.json');
-        $tinhThanh = json_decode($json_file, true);
-
-        $json_file = file_get_contents('QuanHuyen.json');
-        $quanHuyen = json_decode($json_file, true);
-
-        $tinhThanhID_0 = $tinhThanh[0]['ID'];
-
-        $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
-
         $addressDefault = $this->IndexController->getAddressDefault(session('user')->id);
 
         $array = [
             'page' => 'sec-tai-khoan',
             'addressDefault' => $addressDefault,
-            'lstTinhThanh' => $tinhThanh,
-            'lstQuanHuyen' => $lstQuanHuyen,
         ];
         return view($this->user."tai-khoan")->with($array);
     }
@@ -464,22 +452,10 @@ class UserController extends Controller
                 }
             }
         }
-
-        $json_file = file_get_contents('TinhThanh.json');
-        $tinhThanh = json_decode($json_file, true);
-
-        $json_file = file_get_contents('QuanHuyen.json');
-        $quanHuyen = json_decode($json_file, true);
-
-        $tinhThanhID_0 = $tinhThanh[0]['ID'];
-
-        $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
         
         $array = [
             'page' => 'sec-dia-chi',
             'addressList' => $addressList,
-            'lstTinhThanh' => $tinhThanh,
-            'lstQuanHuyen' => $lstQuanHuyen,
         ];
 
         return view($this->user."tai-khoan")->with($array);
@@ -595,20 +571,8 @@ class UserController extends Controller
             }
         }
 
-        $json_file = file_get_contents('TinhThanh.json');
-        $tinhThanh = json_decode($json_file, true);
-
-        $json_file = file_get_contents('QuanHuyen.json');
-        $quanHuyen = json_decode($json_file, true);
-
-        $tinhThanhID_0 = $tinhThanh[0]['ID'];
-
-        $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
-
         $data = [
             'addressList' => $addressList,
-            'lstTinhThanh' => $tinhThanh,
-            'lstQuanHuyen' => $lstQuanHuyen,
         ];
 
         return view($this->user."dia-chi-giao-hang")->with($data);
@@ -866,19 +830,19 @@ class UserController extends Controller
                 // tỉnh thành của người dùng
                 $userProvince = DONHANG_DIACHI::find($order->id_dh_dc)->tinhthanh;
 
-                // tỉnh thành thuộc bắc || nam
-                $file = file_get_contents('TinhThanh.json');
-                $lst_province = json_decode($file, true);
+                // api tỉnh/ thành
+                $provinceList = Http::get("https://provinces.open-api.vn/api/p/search/?q=$userProvince")->json();
                 $province = [];
-                foreach($lst_province as $key){
-                    if($key['Name'] == $userProvince){
-                        $province = $key;
+
+                foreach($provinceList as $val) {
+                    if($val['name'] === $userProvince) {
+                        $province = $val;
                         break;
                     }
                 }
 
                 // chi nhánh tại Hà Nội
-                if($province['ID'] < 48){
+                if($province['code'] < 48){
                     $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
                 }
                 // chi nhánh tại Hồ Chí Minh

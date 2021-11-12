@@ -14,17 +14,17 @@ use App\Models\IMEI;
 
 class KhoController extends Controller
 {
-    private const LDMobile = 7668;
-    private const APPLE = 8609;
-    private const SAMSUNG = 5286;
-    private const XIAOMI = 6094;
-    private const OPPO = 8112;
-    private const VIVO = 2218;
-
     public function __construct()
     {
         $this->admin='admin/content/';
         $this->IndexController = new IndexController;
+
+        $this->LDMobile = 7668;
+        $this->APPLE = 8609;
+        $this->SAMSUNG = 5286;
+        $this->XIAOMI = 6094;
+        $this->OPPO = 8112;
+        $this->VIVO = 2218;
     }
     public function index()
     {
@@ -65,15 +65,15 @@ class KhoController extends Controller
         }
 
         if($id_ncc == 1){
-            return self::LDMobile.self::APPLE.$rand;
+            return $this->LDMobile.$this->APPLE.$rand;
         } elseif($id_ncc == 2){
-            return self::LDMobile.self::OPPO.$rand;
+            return $this->LDMobile.$this->OPPO.$rand;
         } elseif($id_ncc == 3){
-            return self::LDMobile.self::SAMSUNG.$rand;
+            return $this->LDMobile.$this->SAMSUNG.$rand;
         } elseif($id_ncc == 4){
-            return self::LDMobile.self::VIVO.$rand;
+            return $this->LDMobile.$this->VIVO.$rand;
         } else {
-            return self::LDMobile.self::XIAOMI.$rand;
+            return $this->LDMobile.$this->XIAOMI.$rand;
         }
     }
 
@@ -134,11 +134,11 @@ class KhoController extends Controller
             $oldData = KHO::find($id);
 
             // số lượng tồn cũ
-            $qtyInStock = $oldData->slton;
+            $oldQty = $oldData->slton;
             // nếu số lượng tồn mới > số lượng tồn cũ => thêm mới imei
-            if($data['slton'] > $qtyInStock){
+            if($data['slton'] > $oldQty){
                 // số lượng imei cần thêm
-                $ImeiQty = $data['slton'] - $qtyInStock;
+                $ImeiQty = $data['slton'] - $oldQty;
                 $id_ncc = MAUSP::find(SANPHAM::find($data['id_sp'])->id_msp)->id_ncc;
                 for($i = 0; $i < $ImeiQty; $i++){
                     $imei = $this->createIMEI($id_ncc);
@@ -158,6 +158,16 @@ class KhoController extends Controller
                     ]);
                 }
             }
+            // xóa imei thừa
+            else {
+                if($oldQty > 0) {
+                    // số lượng imei sẽ xóa
+                    $deleteQty = $oldQty - $data['slton'];
+    
+                    IMEI::where('id_sp', $data['id_sp'])
+                            ->where('trangthai', 0)->limit($deleteQty)->delete();
+                }
+            }
 
             KHO::where('id', $id)->update($data);
 
@@ -175,24 +185,47 @@ class KhoController extends Controller
 
     public function destroy($id)
     {
+        // dòng muốn xóa
+        $warehouse = KHO::find($id);
+
+        $id_sp = $warehouse->id_sp;
+        $qtyInStock = $warehouse->slton;
+
+        // xóa imei theo slton
+        if($qtyInStock) {
+            IMEI::where('id_sp', $id_sp)
+                    ->where('trangthai', 0)
+                    ->limit($qtyInStock)
+                    ->delete();
+
+        }
+
         KHO::destroy($id);
     }
 
     public function AjaxGetKho(Request $request)
     {
         if($request->ajax()){
-            $warehouse = KHO::find($request->id);
+            $id = $request->id;
 
-            $warehouse->chinhanh = CHINHANH::find($warehouse->id_cn);
-            $warehouse->selected_product = SANPHAM::where('id', $warehouse->id_sp)->first();
+            if($id) {
+                $warehouse = KHO::find($request->id);
+    
+                $warehouse->chinhanh = CHINHANH::find($warehouse->id_cn);
+                $warehouse->selected_product = SANPHAM::where('id', $warehouse->id_sp)->first();
+    
+                $lst_product = [];
+                foreach(KHO::where('id_cn', $warehouse->id_cn)->get() as $key){
+                    array_push($lst_product, SANPHAM::where('id', $key['id_sp'])->first());
+                }
+                $warehouse->lst_product = $lst_product;
+    
+                return $warehouse;
+            } else {
+                $warehouse = KHO::where('id_cn', $request->id_cn)->where('id_sp', $request->id_sp)->first();
 
-            $lst_product = [];
-            foreach(KHO::where('id_cn', $warehouse->id_cn)->get() as $key){
-                array_push($lst_product, SANPHAM::where('id', $key['id_sp'])->first());
+                return $warehouse;
             }
-            $warehouse->lst_product = $lst_product;
-
-            return $warehouse;
         }
     }
 
@@ -202,6 +235,7 @@ class KhoController extends Controller
             // lấy sản phẩm không có trong kho tại chi nhánh
             $result = [];
             $lst_id = [];
+            $id_cn = $request->id_cn;
             $qtyBranch = count(CHINHANH::all());
 
             // danh sách id sản phẩm không có trong kho tại chi nhánh
@@ -212,21 +246,20 @@ class KhoController extends Controller
                 }
             }
 
-            // không có
+            // có kho không tồn tại sản phẩm
             if(!empty($lst_id)){
                 // kiểm tra kho tại chi nhánh đang chọn có sản phẩm không
                 foreach($lst_id as $id){
-                    if(!KHO::where('id_sp', $id)->where('id_cn', $request->id_cn)->first()){
+                    if(!KHO::where('id_sp', $id)->where('id_cn', $id_cn)->first()){
                         array_push($result, SANPHAM::find($id));
                     }
                 }
 
                 return $result;
             }
+
             // đã có sản phẩm trong kho
-            else {
-                return 'false';
-            }
+            return $result;
         }
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\user\IndexController;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,23 +52,11 @@ class CartController extends Controller
     }
 
     public function ThanhToan(Request $request){
-        $json_file = file_get_contents('TinhThanh.json');
-        $tinhThanh = json_decode($json_file, true);
-
-        $json_file = file_get_contents('QuanHuyen.json');
-        $quanHuyen = json_decode($json_file, true);
-
-        $tinhThanhID_0 = $tinhThanh[0]['ID'];
-
-        $lstQuanHuyen = $quanHuyen[$tinhThanhID_0];
-
         // địa chỉ mặc định
         $defaultAddress = $this->IndexController->getAddressDefault(session('user')->id);
 
         $data = [
             'defaultAdr' => $defaultAddress,
-            'lstTinhThanh' => $tinhThanh,
-            'lstQuanHuyen' => $lstQuanHuyen,
             'lstArea' => TINHTHANH::all(),
             'lstBranch' => CHINHANH::all(),
         ];
@@ -202,21 +191,21 @@ class CartController extends Controller
                     // giao hàng tận nơi
                     if($order['hinhthuc'] == 'Giao hàng tận nơi'){
                         // tỉnh thành của người dùng
-                        $userCity = DONHANG_DIACHI::find($orderAddress->id)->tinhthanh;
+                        $userProvince = DONHANG_DIACHI::find($orderAddress->id)->tinhthanh;
 
-                        // tỉnh thành thuộc bắc || nam
-                        $file = file_get_contents('TinhThanh.json');
-                        $lst_province = json_decode($file, true);
+                        // api tỉnh/ thành
+                        $provinceList = Http::get("https://provinces.open-api.vn/api/p/search/?q=$userProvince")->json();
                         $province = [];
-                        foreach($lst_province as $key){
-                            if($key['Name'] == $userCity){
-                                $province = $key;
+
+                        foreach($provinceList as $val) {
+                            if($val['name'] === $userProvince) {
+                                $province = $val;
                                 break;
                             }
                         }
 
                         // chi nhánh tại Hà Nội
-                        if($province['ID'] < 48){
+                        if($province['code'] < 48){
                             $branch = CHINHANH::where('id_tt', TINHTHANH::where('tentt', 'like', 'Hà Nội')->first()->id)->first();
                         }
                         // chi nhánh tại Hồ Chí Minh

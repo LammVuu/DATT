@@ -229,6 +229,11 @@
             {{-- thông số kỹ thuật --}}
             @if ($phone['modelStatus'])
                 <div class='col-lg-4 col-12'>
+                    <?php
+                        $specifications = $phone['cauhinh']['thong_so_ky_thuat'];
+                        $updating = 'Đang cập nhật';
+                    ?>
+
                     @include('user.content.components.chitiet.thong-so-ky-thuat')
                 </div>
             @endif
@@ -818,7 +823,7 @@
                             <td class='w-30 fw-600'>Thiết kế</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['thiet_ke']
+                                    $specifications['thiet_ke_trong_luong']['thiet_ke'] ? $specifications['thiet_ke_trong_luong']['thiet_ke'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -826,7 +831,7 @@
                             <td class='w-30 fw-600'>Chất liệu</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['chat_lieu']
+                                    $specifications['thiet_ke_trong_luong']['chat_lieu'] ? $specifications['thiet_ke_trong_luong']['chat_lieu'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -834,7 +839,7 @@
                             <td class='w-30 fw-600'>Kích thước</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['kich_thuoc']
+                                    $specifications['thiet_ke_trong_luong']['kich_thuoc'] ? $specifications['thiet_ke_trong_luong']['kich_thuoc'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -842,7 +847,7 @@
                             <td class='w-30 fw-600'>Khối lượng</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['thiet_ke_trong_luong']['khoi_luong']
+                                    $specifications['thiet_ke_trong_luong']['khoi_luong'] ? $specifications['thiet_ke_trong_luong']['khoi_luong'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -857,7 +862,7 @@
                             <td class='w-30 fw-600'>Công nghệ màn hình</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['cong_nghe_mh']
+                                    $specifications['man_hinh']['cong_nghe_mh'] ? $specifications['man_hinh']['cong_nghe_mh'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -865,7 +870,7 @@
                             <td class='w-30 fw-600'>Độ phân giải</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['do_phan_giai']
+                                    $specifications['man_hinh']['do_phan_giai'] ? $specifications['man_hinh']['do_phan_giai'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -873,7 +878,7 @@
                             <td class='w-30 fw-600'>Mặt kính cảm ứng</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['man_hinh']['kinh_cam_ung']
+                                    $specifications['man_hinh']['kinh_cam_ung'] ? $specifications['man_hinh']['kinh_cam_ung'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -888,32 +893,40 @@
                             <td class='w-30 fw-600'>Độ phân giải</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['do_phan_giai']
+                                    $specifications['camera_sau']['do_phan_giai'] ? $specifications['camera_sau']['do_phan_giai'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Quay phim</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['quay_phim'] as $key)
-                                    <div class="mb-5">{{ $key['chat_luong'] }}</div>
-                                @endforeach
+                                @if ($specifications['camera_sau']['quay_phim'][0]['chat_luong'])
+                                    @foreach ($specifications['camera_sau']['quay_phim'] as $key)
+                                        <div class="mb-5">{{ $key['chat_luong'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Đèn Flash</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['den_flash']
+                                    $specifications['camera_sau']['den_flash'] ? $specifications['camera_sau']['den_flash'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Tính năng</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['camera_sau']['tinh_nang'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['camera_sau']['tinh_nang'][0]['name'])
+                                    @foreach ($specifications['camera_sau']['tinh_nang'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
 
@@ -927,16 +940,20 @@
                             <td class='w-30 fw-600'>Độ phân giải</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['camera_truoc']['do_phan_giai']
+                                    $specifications['camera_truoc']['do_phan_giai'] ? $specifications['camera_truoc']['do_phan_giai'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Tính năng</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['camera_truoc']['tinh_nang'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['camera_truoc']['tinh_nang'][0]['name'])
+                                    @foreach ($specifications['camera_truoc']['tinh_nang'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
 
@@ -950,7 +967,7 @@
                             <td class='w-30 fw-600'>Hệ điều hành</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['HDH']
+                                    $specifications['HDH_CPU']['HDH'] ? $specifications['HDH_CPU']['HDH'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -958,7 +975,7 @@
                             <td class='w-30 fw-600'>Chip xử lý (CPU)</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['CPU']
+                                    $specifications['HDH_CPU']['CPU'] ? $specifications['HDH_CPU']['CPU'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -966,7 +983,7 @@
                             <td class='w-30 fw-600'>Tốc độ CPU</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['CPU_speed']
+                                    $specifications['HDH_CPU']['CPU_speed'] ? $specifications['HDH_CPU']['CPU_speed'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -974,7 +991,7 @@
                             <td class='w-30 fw-600'>Chip đồ họa (GPU)</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['HDH_CPU']['GPU']
+                                    $specifications['HDH_CPU']['GPU'] ? $specifications['HDH_CPU']['GPU'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -989,7 +1006,7 @@
                             <td class='w-30 fw-600'>RAM</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['RAM']
+                                    $specifications['luu_tru']['RAM'] ? $specifications['luu_tru']['RAM'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -997,7 +1014,7 @@
                             <td class='w-30 fw-600'>Bộ nhớ trong</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['bo_nho_trong']
+                                    $specifications['luu_tru']['bo_nho_trong'] ? $specifications['luu_tru']['bo_nho_trong'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -1005,7 +1022,7 @@
                             <td class='w-30 fw-600'>Bộ nhớ còn lại (khả dụng) khoảng</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['bo_nho_con_lai']
+                                    $specifications['luu_tru']['bo_nho_con_lai'] ? $specifications['luu_tru']['bo_nho_con_lai'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -1013,7 +1030,7 @@
                             <td class='w-30 fw-600'>Thẻ nhớ</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['luu_tru']['the_nho']
+                                    $specifications['luu_tru']['the_nho'] ? $specifications['luu_tru']['the_nho'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -1028,7 +1045,7 @@
                             <td class='w-30 fw-600'>Mạng di động</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['mang_mobile']
+                                    $specifications['ket_noi']['mang_mobile'] ? $specifications['ket_noi']['mang_mobile'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -1036,39 +1053,51 @@
                             <td class='w-30 fw-600'>SIM</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['SIM']
+                                    $specifications['ket_noi']['SIM'] ? $specifications['ket_noi']['SIM'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Wifi</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['wifi'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['ket_noi']['wifi'][0]['name'])
+                                    @foreach ($specifications['ket_noi']['wifi'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>GPS</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['GPS'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['ket_noi']['GPS'][0]['name'])
+                                    @foreach ($specifications['ket_noi']['GPS'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Bluetooth</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['bluetooth'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['ket_noi']['bluetooth'][0]['name'])
+                                    @foreach ($specifications['ket_noi']['bluetooth'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Cổng kết nối/sạc</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['cong_sac']
+                                    $specifications['ket_noi']['cong_sac'] ? $specifications['ket_noi']['cong_sac'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -1076,16 +1105,20 @@
                             <td class='w-30 fw-600'>Jack tai nghe</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['jack_tai_nghe']
+                                    $specifications['ket_noi']['jack_tai_nghe'] ? $specifications['ket_noi']['jack_tai_nghe'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Kêt nối khác</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['ket_noi']['ket_noi_khac'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if($specifications['ket_noi']['ket_noi_khac'][0]['name'])
+                                    @foreach ($specifications['ket_noi']['ket_noi_khac'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
 
@@ -1099,7 +1132,7 @@
                             <td class='w-30 fw-600'>Dung lượng pin</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['pin']['dung_luong']
+                                    $specifications['pin']['dung_luong'] ? $specifications['pin']['dung_luong'] : $updating
                                 }}
                             </td>
                         </tr>
@@ -1107,16 +1140,20 @@
                             <td class='w-30 fw-600'>Loại pin</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['pin']['loai']
+                                    $specifications['pin']['loai'] ? $specifications['pin']['loai'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Công nghệ pin</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['pin']['cong_nghe'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if($specifications['pin']['cong_nghe'][0]['name'])
+                                    @foreach ($specifications['pin']['cong_nghe'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
 
@@ -1129,41 +1166,57 @@
                         <tr>
                             <td class='w-30 fw-600'>Bảo mật nâng cao</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['bao_mat'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['tien_ich']['bao_mat'][0]['name'])
+                                    @foreach ($specifications['tien_ich']['bao_mat'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Tính năng đặc biệt</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['tinh_nang_khac'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['tien_ich']['tinh_nang_khac'][0]['name'])
+                                    @foreach ($specifications['tien_ich']['tinh_nang_khac'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Ghi âm</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['ghi_am']
+                                    $specifications['tien_ich']['ghi_am'] ? $specifications['tien_ich']['ghi_am'] : $updating
                                 }}
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Xem phim</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['xem_phim'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['tien_ich']['xem_phim'][0]['name'])
+                                    @foreach ($specifications['tien_ich']['xem_phim'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
                         <tr>
                             <td class='w-30 fw-600'>Nghe nhạc</td>
                             <td>
-                                @foreach ($phone['cauhinh']['thong_so_ky_thuat']['tien_ich']['nghe_nhac'] as $key)
-                                    <div class="mb-5">{{ $key['name'] }}</div>
-                                @endforeach
+                                @if ($specifications['tien_ich']['nghe_nhac'][0]['name'])
+                                    @foreach ($specifications['tien_ich']['nghe_nhac'] as $key)
+                                        <div class="mb-5">{{ $key['name'] }}</div>
+                                    @endforeach
+                                @else
+                                    {{$updating}}
+                                @endif
                             </td>
                         </tr>
 
@@ -1177,7 +1230,7 @@
                             <td class='w-30 fw-600'>Thời điểm ra mắt</td>
                             <td>
                                 {{
-                                    $phone['cauhinh']['thong_tin_khac']['thoi_diem_ra_mat']
+                                    $phone['cauhinh']['thong_tin_khac']['thoi_diem_ra_mat'] ? $phone['cauhinh']['thong_tin_khac']['thoi_diem_ra_mat'] : $updating
                                 }}
                             </td>
                         </tr>

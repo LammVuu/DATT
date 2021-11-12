@@ -20,12 +20,11 @@ class ImeiController extends Controller
     public function index()
     {
         $lst_imei = IMEI::limit(10)->get();
-        foreach($lst_imei as $i => $key){
+        
+        foreach($lst_imei as $key){
             $product = SANPHAM::find($key->id_sp);
             // sản phẩm
-            $lst_imei[$i]->product = $product;
-            // id_ncc
-            $lst_imei[$i]->id_ncc = MAUSP::find($product->id_msp)->id_ncc;
+            $key->product = $product;
         }
 
         $data = [
@@ -38,33 +37,40 @@ class ImeiController extends Controller
     public function AjaxSearch(Request $request)
     {
         if($request->ajax()){
-            $keyword = $this->IndexController->unaccent($request->keyword);
             $lst_result = [];
 
-            if($keyword == ''){
+            $keyword = $this->IndexController->unaccent($request->keyword);
+
+            if(!$keyword){
                 $lst_imei = IMEI::limit(10)->get();
+
                 foreach($lst_imei as $imei){
                     $imei->product = SANPHAM::find($imei->id_sp);
                 }
                 
-                $lst_imei;
+                return $lst_imei;
             }
 
             $count = 0;
 
             foreach(IMEI::all() as $imei){
                 // lấy 10 bản ghi
-                if($count == 10){
+                if($count === 10){
                     break;
                 }
+
                 $product = SANPHAM::find($imei->id_sp);
-                $string = strtolower($this->IndexController->unaccent($imei->id.$product->tensp.$product->mausac.$product->ram.$product->dungluong.$imei->imei.($imei->trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt')));
+
+                $string = strtolower($this->IndexController->unaccent($imei->id.$product->tensp.$product->mausac
+                    .$product->ram.$product->dungluong.$imei->imei.($imei->trangthai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt')));
+
                 if(str_contains($string, $keyword)){
                     $imei->product = $product;
                     array_push($lst_result, $imei);
                     $count++;
                 }
             }
+
             return $lst_result;
         }
     }

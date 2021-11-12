@@ -33,9 +33,8 @@
                             <div class='col-md-6 mb-3'>
                                 <div class="select">
                                     <div id='TinhThanh-selected' class="select-selected">
-                                        <div id='TinhThanh-name'>{{ $lstTinhThanh[0]['Name'] }}</div>
-                                        <input type="hidden" name="TinhThanh_name_inp" value="{{$lstTinhThanh[0]['Name']}}">
-                                        <i class="far fa-chevron-down fz-14"></i>
+                                        <div id='TinhThanh-name'>Chọn Tỉnh / Thành phố</div>
+                                        <div class="spinner-border select-spinner" role="status"></div>
                                     </div>
                                     <div id='TinhThanh-box' class="select-box">
                                         {{-- tìm kiếm --}}
@@ -45,11 +44,7 @@
                                         </div>
 
                                         {{-- option --}}
-                                        <div id='list-tinh-thanh' class="select-option">
-                                            @foreach($lstTinhThanh as $lst)
-                                                <div id='{{ $lst['ID'] }}' data-type='TinhThanh' data-name="{{$lst['Name']}}" class="option-tinhthanh select-single-option">{{ $lst['Name'] }}</div>
-                                            @endforeach
-                                        </div>
+                                        <div id='list-tinh-thanh' class="select-option"></div>
                                     </div>
                                 </div>
                             </div>
@@ -58,8 +53,7 @@
                                 <div class="select">
                                     <div id='QuanHuyen-selected' class="select-selected">
                                         <div id='QuanHuyen-name'>Chọn Quận / Huyện</div>
-                                        <input type="hidden" name="QuanHuyen_name_inp">
-                                        <i class="far fa-chevron-down fz-14"></i>
+                                        <div class="spinner-border select-spinner" role="status"></div>
                                     </div>
                                     <div id='QuanHuyen-box' class="select-box">
                                         {{-- tìm kiếm --}}
@@ -69,11 +63,7 @@
                                         </div>
 
                                         {{-- option --}}
-                                        <div id='list-quan-huyen' class="select-option">
-                                            @foreach($lstQuanHuyen as $lst)
-                                                <div id='{{ $lst['ID'] }}' data-type='QuanHuyen' data-name="{{$lst['Name']}}" class="option-quanhuyen select-single-option">{{ $lst['Name'] }}</div>
-                                            @endforeach
-                                        </div>
+                                        <div id='list-quan-huyen' class="select-option"></div>
                                     </div>
                                 </div>
                             </div>
@@ -82,7 +72,6 @@
                                 <div class="select">
                                     <div id='PhuongXa-selected' class="select-disable">
                                         <div id="PhuongXa-name">Chọn Phường / Xã</div>
-                                        <input type="hidden" name="PhuongXa_name_inp">
                                         <i class="far fa-chevron-down fz-14"></i>
                                     </div>
                                     <div id='PhuongXa-box' class="select-box">

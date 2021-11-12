@@ -12,6 +12,12 @@ $(function(){
     const childPage = window.location.pathname.split('/')[2];
     const navigation = performance.getEntriesByType("navigation")[0].type;
 
+    const X_CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content')
+    const BYTE = 1024
+    const MAX_SIZE_IMAGE = 5 // 5 MB
+    const maxSizeImagMessage = 'Dung lượng tối đa cho hình ảnh là 5 MB'
+    const errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại'
+
     let loadMoreFlag = false;
     let storageFlag = false;
     let loadMoreRow = 0;
@@ -19,12 +25,12 @@ $(function(){
     let checkoutTimer;
     let removeQueueFlag = true;
 
-    const X_CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content')
-    const BYTE = 1024
-    const MAX_SIZE_IMAGE = 5 // 5 MB
-    const maxSizeImagMessage = 'Dung lượng tối đa cho hình ảnh là 5 MB'
-    const errorMessage = 'Đã có lỗi xảy ra. Vui lòng thử lại'
+    let xhrProvince = null
+    let xhrDistrict = null
+    let xhrWard = null
 
+    // API URL
+    const ADDRESS_URL = 'https://provinces.open-api.vn/api/'
 
     /*==============================================================
                 Xóa kí tự "#_=_" khi đăng nhập facebook
@@ -515,14 +521,13 @@ $(function(){
     
             // gửi mã xác nhận
             function sendVerifyCode(){
-                var nameInp = $('#su_fullname');
                 var telInp = $('#su_tel');
     
                 // kiểm tra bẫy lỗi
-                var valiPhone = validateInformationSignUp(nameInp, telInp);
+                var valiTel = validatePhoneNumber(telInp);
     
                 // sdt không hợp lệ
-                if(!valiPhone || verifier == ''){
+                if(!valiTel || verifier == ''){
                     return;
                 }
     
@@ -542,7 +547,7 @@ $(function(){
                             }
     
                             var tel = telInp.val().toString();
-                            var telFormat = tel.replace(tel[0], '+84');
+                            var telFormat = tel.replace(tel[0], '+84'); // 0123456789 => +84123456789
                             var appVerifier = window.recaptchaVerifier;
                             verifier = '';
     
@@ -618,13 +623,6 @@ $(function(){
                     sendVerifyCode();
                 });
     
-                $('#su_fullname').keyup(function(){
-                    if($(this).hasClass('required')){
-                        $(this).removeClass('required');
-                        $(this).next().remove();
-                    }
-                });
-    
                 // kiểm tra nhập số diện thoại
                 $('#su_tel').keyup(function(){
                     valiPhonenumberTyping($(this));
@@ -679,12 +677,22 @@ $(function(){
                 =======================================================*/
     
                 $('#signup-step-3').click(function(){
+                    var nameInp = $('#su_fullname');
                     var passwordInp = $('#su_pw');
                     var rePasswordInp = $('#su_re_pw');
+                    
                     var valiPw = validatePassword(passwordInp, rePasswordInp);
+                    var valiName = validateFullName(nameInp)
     
-                    if(valiPw){
+                    if(valiName && valiPw){
                         $('#signup-form').submit();
+                    }
+                });
+
+                $('#su_fullname').keyup(function(){
+                    if($(this).hasClass('required')){
+                        $(this).removeClass('required');
+                        $(this).next().remove();
                     }
                 });
 
@@ -707,7 +715,9 @@ $(function(){
                         $(this).next().remove();
                     }
                 });
-            } else {
+            }
+            // quên mật khẩu 
+            else {
                 /*=====================================================
                                 Nhập thông tin                  
                 =======================================================*/
@@ -1123,7 +1133,7 @@ $(function(){
     
             // thay đổi tên người dùng
             $('#change-fullname-btn').click(function(){
-                var valiFullname = validateFullname($('input[name="new_fullname_inp"]'));
+                var valiFullname = validateFullName($('input[name="new_fullname_inp"]'));
     
                 if(valiFullname){
                     const newFullName = $('input[name="new_fullname_inp"]').val()
@@ -4355,34 +4365,164 @@ $(function(){
             })
         })
     }
+
+    function getUserAddress(id) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                headers: {'X-CSRF-TOKEN':X_CSRF_TOKEN},
+                url: 'ajax-bind-address',
+                type: 'POST',
+                data: {'id': id},
+                success: function(data){
+                    resolve(data)
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
+
+    // lấy tỉnh/ thành theo tên
+    function getProvinceByName(name) {
+        return new Promise((resolve, reject) => {
+            let temp = ''
+
+            if(name.includes('Tỉnh')) {
+                temp = name.replace('Tỉnh', '')
+            } else {
+                temp = name.replace('Thành phố', '')
+            }
+
+            const newName = temp.trim()
+
+            xhrProvince = $.ajax({
+                url: `https://provinces.open-api.vn/api/p/search/?q=${newName}`,
+                timeout: 10000,
+                success: function(province) {
+                    const result = province.filter(val => val.name === name)
+
+                    resolve(...result)
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
+
+    // lấy quận/ huyện theo tên
+    function getDistrictByName(name) {
+        return new Promise((resolve, reject) => {
+            let temp = ''
+
+            if(name.includes('Thành phố')) {
+                temp = name.replace('Thành phố', '')
+            } else if(name.includes('Quận')) {
+                temp = name.replace('Quận', '')
+            } else if(name.includes('Huyện')) {
+                temp = name.replace('Huyện', '')
+            } else if(name.includes('Thị xã')) {
+                temp = name.replace('Thị xã', '')
+            }
+
+            const newName = temp.trim()
+
+            xhrDistrict = $.ajax({
+                url: `https://provinces.open-api.vn/api/d/search/?q=${newName}`,
+                timeout: 10000,
+                success: function(district) {
+                    const result = district.filter(val => val.name === name)
+
+                    resolve(...result)
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
+
+    // lấy phường/ xã theo tên
+    function getWardByName(name) {
+        return new Promise((resolve, reject) => {
+            let temp = ''
+
+            if(name.includes('Phường')) {
+                temp = name.replace('Phường', '')
+            } else if(name.includes('Xã')) {
+                temp = name.replace('Xã', '')
+            } else if(name.includes('Thị trấn')) {
+                temp = name.replace('Thị trấn', '')
+            }
+
+            const newName = temp.trim()
+
+            xhrWard = $.ajax({
+                url: `https://provinces.open-api.vn/api/w/search/?q=${newName}`,
+                timeout: 10000,
+                success: function(ward) {
+                    const result = ward.filter(val => val.name === name)
+
+                    resolve(...result)
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
     
     function editAddressModal(id, defaultAdr = false){
         $('.loader').fadeIn();
 
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': X_CSRF_TOKEN
-            },
-            url: 'ajax-bind-address',
-            type: 'POST',
-            data: {'id': id},
-            cache: false,
-            success: function(data){
-                // set tỉnh thành
-                choosePlace(data[0].id, data[0].name, data[0].type)
-                    // set quận huyện
-                    .then(() => choosePlace(data[1].id, data[1].name, data[1].type))
-                    // set phường xã
-                    .then(() => choosePlace(data[2].id, data[2].name, data[2].type))
-                    .then(() => {
-                        // gán địa chỉ
-                        $('input[name="address_inp"]').val(data.diachi);
-                        // focus họ tên
-                        $('[name="adr_fullname_inp"]').focus()
-                    })
-                    .catch(() => showAlertTop(errorMessage))
+        getUserAddress(id)
+            .then(data => {
+                const address = data.diachi
                 
+                Promise.all([
+                    getProvinceByName(data.tinhthanh),
+                    getDistrictByName(data.quanhuyen),
+                    getWardByName(data.phuongxa)
+                ])
+                .then(data => {
+                    const [province, district, ward] = data
 
+                    console.log(province)
+
+                    $('#TinhThanh-name').text(province.name)
+                    $('#TinhThanh-name').attr('data-flag', 1)
+
+                    $('#QuanHuyen-name').text(district.name)
+                    $('#QuanHuyen-name').attr('data-flag', 1)
+
+                    $('#PhuongXa-name').text(ward.name)
+                    $('#PhuongXa-name').attr('data-flag', 1)
+
+                    // gán địa chỉ
+                    $('input[name="address_inp"]').val(address);
+                    // focus họ tên
+                    $('[name="adr_fullname_inp"]').focus()
+                    
+                    Promise.all([
+                        getProvince(),
+                        getDistrict(province.code),
+                        getWard(district.code)
+                    ])
+                    .then(data => {
+                        $('#PhuongXa-selected').removeClass('select-disable');
+                        $('#PhuongXa-selected').addClass('select-selected');
+                    })
+                    .catch(() => {
+                        sessionStorage.setItem('toast-message', 'Không thể lấy danh sách dữ liệu. Vui lòng thử lại')
+                        location.reload()
+                    })
+                })
+                .catch(() => {
+                    sessionStorage.setItem('toast-message', 'Không thể lấy danh sách dữ liệu. Vui lòng thử lại')
+                    location.reload()
+                })
+                
                 // tiêu đề modal
                 $('#address-modal-title').text('Chỉnh sửa địa chỉ');
         
@@ -4402,17 +4542,16 @@ $(function(){
                 $('input[name="tk_dc_id"]').val(id);
         
                 // gán họ tên, sdt
-                $('input[name="adr_fullname_inp"]').val($('#adr-fullname-' + id).text());
-                $('input[name="adr_tel_inp"]').val($('#adr-tel-' + id).text());
+                $('input[name="adr_fullname_inp"]').val(data.hoten);
+                $('input[name="adr_tel_inp"]').val(data.sdt);
 
                 $('#address-modal').modal('show');
                 $('.loader').fadeOut();
-            },
-            error: function() {
-                $('.loader').fadeOut();
-                showToat(errorMessage)
-            }
-        });
+            })
+            .catch(() => {
+                $('.loader').fadeOut()
+                showAlertTop('Không thể lấy dữ liệu. Vui lòng làm mới lại trang')
+            })
     }
 
     function searchPlace(val, selectBox){
@@ -4421,131 +4560,74 @@ $(function(){
             return;
         }
 
-        val = val.toLocaleLowerCase();
+        val = val.toLowerCase();
 
-        var count = selectBox.children().length;
-        
-        for(var i = 0; i < count; i++){
-            var element = selectBox.children()[i];
-            var name = $(element).data('type').split('/')[0].toLocaleLowerCase();
-            
+        const children = selectBox.children()
+
+        children.each(function() {
+            const name = $(this).attr('data-name').toLowerCase()
+
             if(!name.includes(val)){
-                $(element).hide();
+                $(this).hide();
             } else {
-                $(element).show();
+                $(this).show();
             }
-        }
+        })
     }
 
     function choosePlace(id, name, type){
-        return new Promise((resolve, reject) => {
-            if(type === 'TinhThanh'){
-                $('#TinhThanh-name').text(name);
-                $('input[name="TinhThanh_name_inp"]').val(name);
-                $('#TinhThanh-box').hide('blind', 250);
-    
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': X_CSRF_TOKEN
-                    },
-                    url: '/ajax-change-location',
-                    type: 'POST',
-                    cache: false,
-                    data: {
-                        type,
-                        id
-                    },
-                    success: function(data) {
-                        $('#list-quan-huyen').children().remove();
-                        $('#QuanHuyen-name').text('Chọn Quận / Huyện');
-                        $('#QuanHuyen-name').removeAttr('data-flag');
-    
-                        $('#list-phuong-xa').children().remove();
-                        $('#PhuongXa-name').text('Chọn Phường / Xã');
-                        $('#PhuongXa-name').removeAttr('data-flag');
-                        $('#PhuongXa-selected').addClass('select-disable').removeClass('select-selected');
-                        
-                        let quanHuyenOptions = ''
-                        $.each(data, (i, val) => {
-                            quanHuyenOptions +=
-                                `<div   
-                                    id="${val.ID}"
-                                    data-type="QuanHuyen"
-                                    data-name="${val.Name}"
-                                    class="option-quanhuyen select-single-option"
-                                >
-                                    ${val.Name}
-                                </div>`
-                        })
-                        $('#list-quan-huyen').append(quanHuyenOptions)
-                        $('#QuanHuyen-box').show('blind', 250);
+        if(type === 'TinhThanh'){
+            $('#TinhThanh-name').text(name);
+            $('#TinhThanh-box').hide('blind', 250)
 
-                        resolve()
-                    },
-                    error: function() {
-                        reject()
-                    }
-                });
-            } else if(type === 'QuanHuyen') {
-                $('#QuanHuyen-name').text(name);
-                $('input[name="QuanHuyen_name_inp"]').val(name);
-                $('#QuanHuyen-name').attr('data-flag', '1');
-    
-                removeRequried($('#QuanHuyen-name').parent());
-    
-                $('#QuanHuyen-box').hide('blind', 250);
-    
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': X_CSRF_TOKEN
-                    },
-                    url: '/ajax-change-location',
-                    type: 'POST',
-                    cache: false,
-                    data: {
-                        type,
-                        id
-                    },
-                    success:function(data){
-                        $('#PhuongXa-selected').removeClass('select-disable');
-                        $('#PhuongXa-selected').addClass('select-selected');
-                        $('#list-phuong-xa').children().remove();
-    
-                        $('#PhuongXa-name').text('Chọn Phường / Xã');
-                        $('#PhuongXa-name').removeAttr('data-flag');
+            $('#QuanHuyen-name').text('Chọn Quận / Huyện');
+            $('#QuanHuyen-name').removeAttr('data-flag');
 
-                        let phuongXaOptions = ''
-                        $.each(data, (i, val) => {
-                            phuongXaOptions +=
-                                `<div
-                                    id="${val.ID}"
-                                    data-type="PhuongXa"
-                                    data-name="${val.Name}"
-                                    class="option-phuongxa select-single-option"
-                                >
-                                    ${val.Name}
-                                </div>`
-                        })
-                        $('#list-phuong-xa').append(phuongXaOptions)
-                        $('#PhuongXa-box').show('blind', 250);
+            // spinner
+            $('#QuanHuyen-selected i').replaceWith('<div class="spinner-border select-spinner" role="status"></div>')
 
-                        resolve()
-                    },
-                    error: function() {
-                        reject()
-                    }
-                });
-            } else {
-                $('#PhuongXa-name').text(name);
-                $('input[name="PhuongXa_name_inp"]').val(name);
-                $('#PhuongXa-name').attr('data-flag', '1');
-                removeRequried($('#PhuongXa-name').parent());
-                $('#PhuongXa-box').toggle('blind', 250);
-                $('input[name="address_inp"]').focus();
+            $('#list-phuong-xa').children().remove();
+            $('#PhuongXa-name').text('Chọn Phường / Xã');
+            $('#PhuongXa-name').removeAttr('data-flag');
+            $('#PhuongXa-selected').addClass('select-disable').removeClass('select-selected');
 
-                resolve()
-            }
-        })
+            getDistrict(id)
+                .then(() => {
+                    $('#QuanHuyen-box').show('blind', 250);
+                    $('#QuanHuyen-selected .select-spinner').replaceWith('<i class="far fa-chevron-down fz-14"></i>')
+                })
+                .catch(() => showAlertTop(errorMessage))
+
+        } else if(type === 'QuanHuyen') {
+            removeRequried($('#QuanHuyen-name').parent());
+
+            $('#QuanHuyen-name').text(name);
+            $('#QuanHuyen-name').attr('data-flag', '1')
+            $('#QuanHuyen-box').hide('blind', 250);
+
+            $('#PhuongXa-name').text('Chọn Phường / Xã');
+            $('#PhuongXa-name').removeAttr('data-flag');
+
+            $('#PhuongXa-selected i').replaceWith('<div class="spinner-border select-spinner" role="status"></div>');
+
+            getWard(id)
+                .then(() => {
+                    $('#PhuongXa-selected').removeClass('select-disable');
+                    $('#PhuongXa-selected').addClass('select-selected');
+                    $('#PhuongXa-selected .select-spinner').replaceWith('<i class="far fa-chevron-down fz-14"></i>');
+
+                    $('#PhuongXa-box').show('blind', 250);
+                })
+                .catch(() => showAlertTop(errorMessage))
+        } else {
+            removeRequried($('#PhuongXa-name').parent());
+
+            $('#PhuongXa-name').text(name);
+            $('#PhuongXa-name').attr('data-flag', '1');
+            $('#PhuongXa-box').toggle('blind', 250);
+
+            $('input[name="address_inp"]').focus();
+        }
     }
 
     function deleteElement(id = null, object) {
@@ -4647,40 +4729,6 @@ $(function(){
                 showToast(errorMessage)
             }
         })
-    }
-
-    function validateInformationSignUp(nameInp, telInp){
-        // nếu đã kiểm tra rồi thì return
-        if(nameInp.hasClass('required') || telInp.hasClass('required')){
-            return;
-        }
-
-        var phoneno = /^\d{10}$/;
-
-        const name = nameInp.val().trim()
-
-        // chưa nhập họ tên
-        if(name.length === 0){
-            nameInp.addClass('required');
-            var required = $('<span class="required-text">Vui lòng nhập họ và tên</span>');
-            nameInp.after(required);
-            return false;
-        }
-
-        // chưa nhập sdt
-        if(telInp.val().length == 0){
-            telInp.addClass('required');
-            var required = $('<span class="required-text">Vui lòng nhập số diện thoại</span>');
-            telInp.after(required);
-            return false;
-        } else if(!telInp.val().match(phoneno)){ // không đúng định dạng
-            var required = $('<span class="required-text">Số diện thoại không hợp lệ</span>');
-            telInp.addClass('required');
-            telInp.after(required);
-            return false;
-        }
-
-        return true;
     }
 
     function valiPhonenumberTyping(telInp){
@@ -4920,14 +4968,16 @@ $(function(){
     }
 
     // kiểm tra họ tên
-    function validateFullname(fullName){
+    function validateFullName(fullName){
         // nếu đã kiểm tra rồi thì return
         if(fullName.hasClass('required')){
             return;
         }
 
+        const name = fullName.val().trim()
+
         // nếu chưa nhập họ tên
-        if(fullName.val().trim().length == 0){
+        if(name.length == 0){
             var required = $('<span class="required-text">Vui lòng nhập họ và tên</span>');
             fullName.addClass('required');
             fullName.after(required);
@@ -4965,25 +5015,28 @@ $(function(){
     }
 
     // kiểm tra đã chọn quận huyện, phường xã chưa
-    function validateDistrict_Wards(district, wards){
+    function validateDistrict_Wards(district, ward){
+        const districtParent = district.parent()
+        const wardParent = ward.parent()
+
         // nếu kiểm tra rồi thì return
-        if(district.parent().hasClass('required') || wards.parent().hasClass('required')){
+        if(districtParent.hasClass('required') || wardParent.hasClass('required')){
             return;
         }
 
         // chưa chọn quận huyện
-        if(district.attr('data-flag') == null){
-            district.parent().addClass('required');
+        if(!district.attr('data-flag')){
+            districtParent.addClass('required');
             required = $('<span class="required-text">Vui lòng chọn Quận / Huyện</span>');
-            district.parent().after(required);
+            districtParent.after(required);
             return false;
         }
 
         // chưa chọn phường xã
-        if(wards.attr('data-flag') == null){
-            wards.parent().addClass('required');
+        if(!ward.attr('data-flag')){
+            wardParent.addClass('required');
             required = $('<span class="required-text">Vui lòng chọn Phường / Xã</span>');
-            wards.parent().after(required);
+            wardParent.after(required);
             return false;
         }
 
@@ -5963,6 +6016,112 @@ $(function(){
         $('#collapse-cart').append(cart)
     }
 
+    // lấy danh sách tỉnh/ thành
+    function getProvince(accessFirstItem = false) {
+        return new Promise((resolve, reject) => {
+            xhrProvince = $.ajax({
+                url: `${ADDRESS_URL}?depth=1`,
+                timeout: 10000,
+                success: function(provinceList) {
+                    let firstItem = null
+
+                    $('#list-tinh-thanh').children().remove()
+            
+                    // render danh sách tỉnh/thành
+                    const list = provinceList.map(val => {
+                        return (
+                            `<div id="${val.code}" data-type='TinhThanh' data-name="${val.name}" class="option-tinhthanh select-single-option">${val.name}</div>`
+                        )
+                    }).join('')
+            
+                    $('#list-tinh-thanh').append(list)
+
+                    $('#TinhThanh-selected .select-spinner').replaceWith('<i class="far fa-chevron-down fz-14"></i>')
+
+                    if(accessFirstItem) {
+                        firstItem = provinceList[0]
+
+                        // gán dữ liệu
+                        $('#TinhThanh-name').text(firstItem.name)
+                        $('#TinhThanh_name_inp').val(firstItem.name)
+                        resolve(firstItem.code)
+                    } else {
+                        resolve()
+                    }
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
+
+    // lấy danh sách quận/ huyện
+    function getDistrict(id_province) {
+        return new Promise((resolve, reject) => {
+            xhrDistrict = $.ajax({
+                url: `${ADDRESS_URL}p/${id_province}?depth=2`,
+                timeout: 10000,
+                success: function(data) {
+                    const districtList = data.districts
+                    
+                    $('#list-quan-huyen').children().remove()
+    
+                    // render danh sách quận/huyện
+                    const list = districtList.map(val => {
+                        if(val.name !== 'Chưa rõ') {
+                            return (
+                                `<div id='${val.code}' data-type='QuanHuyen' data-name="${val.name}" class="option-quanhuyen select-single-option">${val.name}</div>`
+                            )
+                        }
+                    }).join('')
+            
+                    $('#list-quan-huyen').append(list)
+
+                    $('#QuanHuyen-selected .select-spinner').replaceWith('<i class="far fa-chevron-down fz-14"></i>')
+
+                    resolve()
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
+
+    // lấy danh sách phường/ xã
+    function getWard(id_district) {
+        return new Promise((resolve, reject) => {
+            xhrWard = $.ajax({
+                url: `${ADDRESS_URL}d/${id_district}?depth=2`,
+                timeout: 10000,
+                success: function(data) {
+                    const wardList = data.wards
+
+                    $('#list-phuong-xa').children().remove()
+
+                    // render danh sách phường/ xã
+                    const list = wardList.map(val => {
+                        return (
+                            `<div id="${val.code}" data-type="PhuongXa" data-name="${val.name}" class="option-phuongxa select-single-option">
+                                ${val.name}
+                            </div>`
+                        )
+                    }).join('')
+
+                    $('#list-phuong-xa').append(list)
+
+                    $('#PhuongXa-selected .select-spinner').replaceWith('<i class="far fa-chevron-down fz-14"></i>')
+
+                    resolve()
+                },
+                error: function() {
+                    reject()
+                }
+            })
+        })
+    }
+
     /*============================================================================================================
                                         Phần sử dụng chung cho nhiều trang
     ==============================================================================================================*/
@@ -5973,7 +6132,15 @@ $(function(){
 
     // modal thêm địa chỉ mới
     $('#new-address-show').click(function(){
-        if($(this).data('default') == true){
+        // lấy danh sách thành phố
+        getProvince(true)
+            .then(id_province => getDistrict(id_province))
+            .catch(() => {
+                sessionStorage.setItem('toast-message', 'Không thể lấy danh sách dữ liệu. Vui lòng thử lại')
+                location.reload()
+            })
+
+        if($(this).data('default')){
             $('#set_default_address').attr('checked', true);
         }
 
@@ -6004,7 +6171,7 @@ $(function(){
             removeQueueFlag = false;
         }
 
-        var valiFullname = validateFullname($('input[name="adr_fullname_inp"]'));
+        var valiFullname = validateFullName($('input[name="adr_fullname_inp"]'));
         var valiTel = validatePhoneNumber($('input[name="adr_tel_inp"]'));
         var valiQuanHuyenPhuongXa = validateDistrict_Wards($('#QuanHuyen-name'), $('#PhuongXa-name'));
         var valiAddressInp = validateAddressInput($('input[name="address_inp"]'));
@@ -6018,9 +6185,9 @@ $(function(){
                 type: $('input[name="address_type"]').val(),
                 hoten: $('input[name="adr_fullname_inp"]').val(),
                 diachi: $('input[name="address_inp"]').val(),
-                phuongxa: $('input[name="PhuongXa_name_inp"]').val(),
-                quanhuyen: $('input[name="QuanHuyen_name_inp"]').val(),
-                tinhthanh: $('input[name="TinhThanh_name_inp"]').val(),
+                phuongxa: $('#PhuongXa-name').text(),
+                quanhuyen: $('#QuanHuyen-name').text(),
+                tinhthanh: $('#TinhThanh-name').text(),
                 sdt: $('input[name="adr_tel_inp"]').val(),
                 macdinh: $('#set_default_address').is(':checked') ? 1 : 0,
                 tk_dc_id: $('input[name="tk_dc_id"]').val()
@@ -6139,7 +6306,7 @@ $(function(){
     });
 
     // thay đổi tỉnh/thành
-    $('.option-tinhthanh').off('click').click(function(){
+    $(document).on('click', '.option-tinhthanh', function(){
         var id = $(this).attr('id');
         var name = $(this).attr('data-name');
         var type = $(this).attr('data-type');
@@ -6175,16 +6342,30 @@ $(function(){
         $('[name="adr_fullname_inp"]').focus()
     })
     $('#address-modal').on('hidden.bs.modal', function() {
-        $('#address-form').trigger('reset')
+        if(xhrProvince) xhrProvince.abort()
+        if(xhrDistrict) xhrDistrict.abort()
+        if(xhrWard) xhrWard.abort()
+
+        $('input[name="adr_fullname_inp"]').val('')
+        $('input[name="adr_tel_inp"]').val('')
 
         // reset tỉnh/thành, quận/huyện, phường/xã, địa chỉ
-        $($('.option-tinhthanh')[0]).trigger('click')
-        setTimeout(() => {
-            $('#QuanHuyen-box').hide()
-            setTimeout(() => {
-                $('#PhuongXa-box').hide()
-            }, 500)
-        }, 500)
+        $('#list-tinh-thanh').children().remove()
+        $('#list-quan-huyen').children().remove()
+        $('#list-phuong-xa').children().remove()
+
+
+        $('#TinhThanh-name').text('Chọn Tỉnh / Thành phố')
+        $('#QuanHuyen-name').text('Chọn Quận / Huyện')
+        $('#PhuongXa-name').text('Chọn Phường / Xã')
+
+        $('#TinhThanh-selected i').replaceWith('<div class="spinner-border select-spinner" role="status"></div>')
+        $('#QuanHuyen-selected i').replaceWith('<div class="spinner-border select-spinner" role="status"></div>')
+
+        $('#PhuongXa-selected').addClass('select-disable');
+        $('#PhuongXa-selected').removeClass('select-selected');
+
+        $('.select-box').hide()
 
         $('.required').removeClass('required')
         $('.required-text').remove()
