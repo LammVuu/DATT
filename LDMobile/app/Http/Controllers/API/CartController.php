@@ -250,7 +250,14 @@ class CartController extends Controller
                     $url ="TinhThanh.json" ;
                     $datos = file_get_contents($url);
                     $data = json_decode($datos, true);
-                    $data = collect($data)->where("Name", $city->tinhthanh)->all();
+                    if($city->tinhthanh == "Thành phố Hồ Chí Minh")
+                    $data = collect($data)->where("Name", "Hồ Chí Minh")->all();
+                    else $data = collect($data)->where("Name", $city->tinhthanh)->all();
+                    if(reset($data)['ID'] < 48 ){
+                        $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
+                    }else{
+                        $id_city = TINHTHANH::where('tentt', "Hồ Chí Minh")->get();
+                    }
                     if(reset($data)['ID'] < 48 ){
                         $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
                     }else{
@@ -879,7 +886,6 @@ class CartController extends Controller
                         'data' => null
                     ]);
                 }
-                
                 
             }else if($request->action == "delete"){
                 $queues = HANGDOI::where('id_tk', $request->id_tk)->get();
