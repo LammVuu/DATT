@@ -4009,16 +4009,18 @@ $(function(){
         
             // tra cứu imei
             $('#btn-check-imei').click(function(){
-                var IMEI = $('#imei-inp').val();
+                var IMEI = $('#imei-inp').val().trim();
                 var required;
         
                 // nếu chưa nhập IMEI
-                if(IMEI == ''){
+                if(IMEI.length === 0){
                     required = $('<div class="required-text text-center">Số IMEI không được bỏ trống</div>');
                     $('#imei-inp').addClass('required');
                     $('#imei-inp').after(required);
                     return;
                 }
+
+                $('.loader').fadeIn()
     
                 $.ajax({
                     headers: {
@@ -4028,6 +4030,7 @@ $(function(){
                     type: 'POST',
                     data: {'imei': IMEI},
                     success:function(data){
+                        $('.loader').fadeOut()
                         // imei không hợp lệ
                         if(data.status === 'invalid imei'){
                             required = $('<div class="required-text text-center">Số IMEI không hợp lệ</div>');
@@ -4090,6 +4093,10 @@ $(function(){
     
                             $('#valid-imei').append(elmnt)
                         }
+                    },
+                    error: function() {
+                        $('.loader').fadeOut()
+                        showAlertTop(errorMessage)
                     }
                 });
             });

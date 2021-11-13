@@ -10,14 +10,14 @@
 <section class="pt-80 pb-100">
     <div class="container">
         {{-- check imei --}}
-        <div id='check-imei' class="col-md-4 col-sm-6 mx-auto">
-            <h3 class="text-center mb-10">Nhập số IMEI điện thoại</h3>
-            <div>
-                <input type="text" id="imei-inp" class="text-center">
-            </div>
-            <div class="d-flex justify-content-center mt-10">
-                <div id='btn-check-imei' class="pointer-cs main-btn p-10 w-40">Tra cứu</div>
-            </div>            
+        <div id='check-imei' class="col-lg-6 col-12 mx-auto">
+            <div class="imei-wrapper">
+                <h3 class="mb-20">Nhập số IMEI điện thoại</h3>
+                <div class="mb-3">
+                    <input type="text" id="imei-inp" class="text-center" maxlength="15" autofocus>
+                </div>
+                <div id='btn-check-imei' class="main-btn">Tra cứu</div>
+            </div>           
         </div>
 
         <div id="valid-imei"></div>
