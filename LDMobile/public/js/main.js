@@ -288,6 +288,7 @@ $(function(){
 
     let enterKey = false;
     let xhr = null;
+
     $('.head-search-input').keypress(function(e){
         if(e.keyCode == '13'){
             const keyword = removeAccents($(this).val().toLowerCase().trim())
@@ -299,7 +300,7 @@ $(function(){
         timer = setTimeout(() =>{
             var val = removeAccents($(this).val().toLowerCase().trim());
             if(val == ''){
-                $('.search-loading').hide();
+                $('.head-search-result').hide();
                 return;
             }
 
@@ -313,7 +314,7 @@ $(function(){
                     data: {'str': val},
                     success:function(data){
                         if(data.phoneList.length === 0){
-                            $('.search-loading').hide();
+                            $('.search-loading').hide()
                             return;
                         }
                         
@@ -398,25 +399,21 @@ $(function(){
         }
 
         $('.head-search-result').children().remove();
-        $('.search-loading').css({
-            'display': 'flex',
-            'justify-content': 'center',
-            'align-items': 'center',
-        });
+        $('.head-search-result').hide();
+        $('.search-loading').show()
 
         if(enterKey == true){
             $('.search-loading').hide();
+
             if(xhr){
                 xhr.abort();
             }
             return;
         }
+    
         if($(this).val() == ''){
             $('.search-loading').hide();
         }
-    });
-    $('.input-icon-right').off('click').on('click', function(){
-        submitSearch();
     });
 
     function submitSearch(keyword){
@@ -2290,6 +2287,11 @@ $(function(){
                 $('#next-similar').on('click', function(){
                     owl_similar.trigger('next.owl.carousel');
                 });
+
+                /**=====================================================
+                 *                      Đánh giá
+                 * =====================================================
+                 */
     
                 // hiển thị đánh giá sản phẩm
                 if($('#total_rating').length){
@@ -2395,7 +2397,7 @@ $(function(){
                     }
                 });
     
-                // chọn sản phẩm đánh giá
+                // xác nhận chọn sản phẩm đánh giá
                 $('#choose-phone-evaluate').click(function(){
                     // chưa chọn
                     if($('.phone-evaluate.phone-evaluate-selected').length == 0){
@@ -2409,9 +2411,9 @@ $(function(){
     
                     // các sản phẩm được chọn
                     var lst_id = [];
-                    for(var i = 0; i < $('.phone-evaluate.phone-evaluate-selected').length; i++){
-                        lst_id.push($($('.phone-evaluate.phone-evaluate-selected')[i]).data('id'));
-                    }
+                    $('.phone-evaluate.phone-evaluate-selected').each(function() {
+                        lst_id.push($(this).attr('data-id'));
+                    })
     
                     $.ajax({
                         headers: {
@@ -2424,24 +2426,44 @@ $(function(){
                             $('#phone-evaluate-div').children().remove();
     
                             let html = ''
-                            if(data.length == 1){
+                            if(data.length === 1){
                                 html += `
                                     <div class="d-flex align-items-center">
-                                        <img src="images/phone/${data[0]['hinhanh']}" alt="" width="35px">
-                                        <div>${data[0]['tensp']}-${data[0]['mausac']}</div>
+                                        <img src="images/phone/${data[0].hinhanh}" alt="" width="35px">
+                                        <div>${data[0].tensp}-${data[0].mausac}</div>
                                         <div id="phone-evaluate-show" type="button" class="main-color-text ml-10">Thay đổi</div>
                                     </div>
                                 `
     
                                 $('#phone-evaluate-div').append(html)
                             } else {
+                                const phoneChosen = data.map(val => {
+                                    return (
+                                        `<div class="phone-chosen-item">
+                                            <img src="images/phone/${val.hinhanh}" width="50px" height="50px" class="mr-5">
+                                            <div class="d-flex flex-column fz-14">
+                                                <b>${val.tensp}</b>
+                                                <div>${val.mausac}</div>
+                                            </div>
+                                        </div>`
+                                    )
+                                }).join('')
+                                
                                 html += `
-                                    <span class="d-flex">
-                                        <div class="d-flex border p-10">
-                                            <div class="mr-20">Đánh giá cho ${data.length} sản phẩm</div>
-                                            <div id="phone-evaluate-show" type="button" class="main-color-text">Thay đổi</div>
+                                    <div class="relative">
+                                        <div class="d-flex">
+                                            <div class="d-flex align-items-center border p-10">
+                                                <div class="mr-10">Đánh giá cho ${data.length} sản phẩm</div>
+                                                <i id="show-phone-chosen" class="fas fa-eye"></i>
+                                                <div id="phone-evaluate-show" type="button" class="main-color-text">Thay đổi</div>
+                                            </div>
                                         </div>
-                                    </span>
+
+                                        <div class="phone-chosen-wrapper">
+                                            ${phoneChosen}
+                                        </div>
+                                    </div>
+
                                 `
                                 $('#phone-evaluate-div').append(html)
                             }
@@ -2455,14 +2477,39 @@ $(function(){
                         }
                     });
                 });
+
+                let isShow = false
+                $(document).on('mouseenter', '#show-phone-chosen', function() {
+                    const position = $(this).position()
+                    const width = $('.phone-chosen-wrapper').width()
+                    const left = position.left - width + 15
+                    const top = position.top + 20
+
+                    $('.phone-chosen-wrapper').css({
+                        left,
+                        top,
+                        display: 'block'
+                    })
+                })
+                $(document).on('mouseleave', '#show-phone-chosen', function() {
+                    setTimeout(() => {
+                        if(isShow === false) {
+                            $('.phone-chosen-wrapper').removeAttr('style')
+                        }
+                    }, 250)
+                })
+
+                $(document).on('mouseenter', '.phone-chosen-wrapper', function() {
+                    isShow = true
+                    $('.phone-chosen-wrapper').css('display', 'block')
+                })
+                $(document).on('mouseleave', '.phone-chosen-wrapper', function() {
+                    isShow = false
+                    $('.phone-chosen-wrapper').removeAttr('style')
+                })
     
-                $('#phone-evaluate-div').bind('DOMSubtreeModified', function(){
-                    clearTimeout(timer);
-                    timer = setTimeout(() => {
-                        $('#phone-evaluate-div').click(function(){
-                            $('#phone-evaluate-modal').modal('show');
-                        });
-                    },100);
+                $(document).on('click', '#phone-evaluate-show', function(){
+                    $('#phone-evaluate-modal').modal('show');
                 });
     
                 // tự động select vào các điện thoại đang chọn

@@ -548,14 +548,15 @@ class IndexController extends Controller
         $allProducts = $this->getAllProductByCapacity();
         foreach($allProducts as $product){
             // vd: -19%
-            $discountText = $product['khuyenmai'] ? (($product['khuyenmai'] * 100) . '%') : '';
+            $discountText = $product['khuyenmai'] ? ('-'. ($product['khuyenmai'] * 100) . '%') : '';
 
-            
+            $string = $product['tensp'].$product['ram'].
+                $product['dungluong'].$product['gia'].$product['giakhuyenmai'].$discountText;
 
-            $string = strtolower($this->unaccent($product['tensp'].$product['mausac'].$product['ram'].
-                $product['dungluong'].$product['gia'].$product['giakhuyenmai'].'-'.$discountText));
+            $unaccent = $this->unaccent($string);
+            $lower = strtolower($unaccent);
                 
-            if(str_contains($string, $keyword)){
+            if(str_contains($lower, $keyword)){
                 array_push($productList, $product);
             }
         }

@@ -25,12 +25,16 @@
                                 <div class="head-input-grp">
                                     <input id="head-search-input" type="text" class='head-search-input' placeholder="Tìm kiếm">
                                     <span class='input-icon-right'><i class="fal fa-search"></i></span>
+                                    
+                                    {{-- danh sách kết quả --}}
+                                    <div class="head-search-result">
+                                    </div>
+                                    <div class="search-loading">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="spinner-border search-loading-icon" role="status"></div>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                {{-- danh sách kết quả --}}
-                                <div class="head-search-result">
-                                </div>
-                                <div class="search-loading"><div class="spinner-border search-loading-icon" role="status"></div></div>
                             </div>
             
                             {{-- giỏ hàng --}}
@@ -155,12 +159,16 @@
                     <div class="head-input-grp">
                         <input type="text" class='head-search-input border' placeholder="Tìm kiếm">
                         <span class='input-icon-right'><i class="fal fa-search"></i></span>
-                    </div>
 
-                    {{-- danh sách kết quả --}}
-                    <div class="head-search-result">
+                        {{-- danh sách kết quả --}}
+                        <div class="head-search-result">
+                        </div>
+                        <div class="search-loading border">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="spinner-border search-loading-icon" role="status"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="search-loading border"><div class="spinner-border search-loading-icon" role="status"></div></div>
                 </div>
                 
             

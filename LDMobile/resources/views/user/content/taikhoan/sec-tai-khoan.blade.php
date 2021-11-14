@@ -48,7 +48,7 @@ $user = session('user');
                             <div id="address-{{$addressDefault->id}}" data-default="true" class="white-bg p-20 border mb-30">
                                 <div class="d-flex justify-content-between flex-wrap pb-10">
                                     <div class="d-flex">
-                                        <b id="adr-fullname-{{$addressDefault->id}}" class="text-uppercase">{{ $addressDefault->hoten }}</b>
+                                        <b id="adr-fullname-{{$addressDefault->id}}" class="adr-full-name">{{ $addressDefault->hoten }}</b>
                                         @if ($addressDefault->macdinh == 1)
                                             <div class="d-flex align-items-center success-color ml-15"><i class="far fa-check-circle mr-5"></i>Đang sử dụng</div>
                                         @endif
@@ -58,17 +58,13 @@ $user = session('user');
                                     </div>
                                 </div>
             
-                                <div class="d-flex mb-5">
-                                    <div class="gray-1">Địa chỉ:</div>
-                                    <div class="ml-5 black">
+                                <div class="mb-5">
+                                    <span class="adr-content">
                                         {{$addressDefault->diachi.', '.$addressDefault->phuongxa.', '.$addressDefault->quanhuyen.', '.$addressDefault->tinhthanh}}
-                                    </div>
+                                    </span>
                                 </div>
             
-                                <div class="d-flex">
-                                    <div class="gray-1">Điện thoại:</div>
-                                    <div id="adr-tel-{{$addressDefault->id}}" class="ml-5 black">{{$addressDefault->sdt}}</div>
-                                </div>
+                                <div id="adr-tel-{{$addressDefault->id}}" class="adr-tel">{{$addressDefault->sdt}}</div>
                             </div>
                         @else
                             <div class="d-flex align-items-center justify-content-center white-bg p-20 border mb-30">

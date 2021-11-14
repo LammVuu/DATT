@@ -16,7 +16,7 @@
                         @if ($key['comingSoon'])
                             <div class="coming-soon">HÀNG SẮP VỀ</div>
                         @endif
-                        <img src="{{ $url_phone.$key['hinhanh'] }}">
+                        <img src="{{ $url_phone.$key['hinhanh'] }}" class="index-promotion-image">
                     </div>
                     
                     {{-- tên sản phẩm --}}

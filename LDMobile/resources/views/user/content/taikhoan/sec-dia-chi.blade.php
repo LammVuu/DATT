@@ -23,17 +23,13 @@
                     </div>
                 </div>
     
-                <div class="d-flex mb-5">
-                    <div class="gray-1">Địa chỉ:</div>
-                    <div class="ml-5 black">
+                <div class="mb-5">
+                    <div class="adr-content">
                         {{$default['diachi'].', '.$default['phuongxa'].', '.$default['quanhuyen'].', '.$default['tinhthanh']}}
                     </div>
                 </div>
     
-                <div class="d-flex">
-                    <div class="gray-1">Điện thoại:</div>
-                    <div id="adr-tel-{{$default['id']}}" class="ml-5 black">{{$default['sdt']}}</div>
-                </div>
+                <div id="adr-tel-{{$default['id']}}" class="adr-tel">{{$default['sdt']}}</div>
             </div>
 
             {{-- địa chỉ khác --}}
@@ -52,18 +48,14 @@
                             </div>
                         </div>
             
-                        <div class="d-flex mb-5">
-                            <div class="gray-1">Địa chỉ:</div>
-                            <div class="ml-5 black">
+                        <div class="mb-5">
+                            <div class="adr-content">
                                 {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
                             </div>
                         </div>
             
                         <div class="d-flex justify-content-between">
-                            <div class="d-flex">
-                                <div class="gray-1">Điện thoại:</div>
-                                <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
-                            </div>
+                            <div id="adr-tel-{{$key['id']}}" class="adr-tel">{{$key['sdt']}}</div>
                             <div type="button" data-id="{{$key['id']}}" class="btn-set-default-btn">Đặt làm mặc định</div>
                         </div>
                     </div>

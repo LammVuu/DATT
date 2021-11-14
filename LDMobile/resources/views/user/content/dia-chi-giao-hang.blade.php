@@ -39,17 +39,15 @@
                                     </div>
                                 </div>
         
-                                <div class="d-flex mb-5">
-                                    <div class="gray-1">Địa chỉ:</div>
-                                    <div class="ml-5 black">
+                                <div class="mb-5">
+                                    <div class="adr-content">
                                         {{$default['diachi'].', '.$default['phuongxa'].', '.$default['quanhuyen'].', '.$default['tinhthanh']}}
                                     </div>
                                 </div>
-        
-                                <div class="d-flex mb-20">
-                                    <div class="gray-1">Điện thoại:</div>
-                                    <div id="adr-tel-{{$default['id']}}" class="ml-5 black">{{$default['sdt']}}</div>
+                                <div class="mb-20">
+                                    <div id="adr-tel-{{$default['id']}}" class="adr-tel">{{$default['sdt']}}</div>
                                 </div>
+
                                 {{-- button --}}
                                 <div class="d-flex">
                                     <form id="change-address-delivery-form" action="{{route('user/change-address-delivery')}}" method="POST">
@@ -72,19 +70,15 @@
                                             </div>
                                         </div>
                 
-                                        <div class="d-flex mb-5">
-                                            <div class="gray-1">Địa chỉ:</div>
-                                            <div class="ml-5 black">
+                                        <div class="mb-5">
+                                            <div class="adr-content">
                                                 {{$key['diachi'].', '.$key['phuongxa'].', '.$key['quanhuyen'].', '.$key['tinhthanh']}}
                                             </div>
                                         </div>
-                
-                                        <div class="d-flex mb-20">
-                                            <div class="d-flex">
-                                                <div class="gray-1">Điện thoại:</div>
-                                                <div id="adr-tel-{{$key['id']}}" class="ml-5 black">{{$key['sdt']}}</div>
-                                            </div>
+                                        <div class="mb-20">
+                                            <div id="adr-tel-{{$key['id']}}" class="adr-tel">{{$key['sdt']}}</div>
                                         </div>
+
                                         {{-- button --}}
                                         <div class="d-flex">
                                             <div data-id="{{$key['id']}}" class="choose-address-delivery main-btn p-10 mr-10">Giao đến địa chỉ này</div>

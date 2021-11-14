@@ -55,7 +55,7 @@
 
 {{-- modal thêm|sửa --}}
 <div class="modal fade" id="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             {{-- modal header --}}
             <div class="modal-header">
@@ -81,7 +81,8 @@
                             <div class="image-preview-div">
                                 <div class="row"></div>
                             </div>
-                            <div id="choose_image" class="file-input-btn mt-5">Chọn hình</div>
+                            <div id="choose_image" class="file-input-btn mb-10">Chọn hình</div>
+                            <i>* Kích thước hình ảnh: 600x600 (px) - Tỉ lệ hình ảnh: 1:1</i>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-50">

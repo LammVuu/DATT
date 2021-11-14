@@ -1646,7 +1646,7 @@
 
 /* width */
 ::-webkit-scrollbar {
-  width: 7px;
+  width: 6px;
 } 
 
 /* Track */
@@ -3386,8 +3386,21 @@ a.head-item:hover{
   transition: .2s;
 }
 
-.index-promotion-phone:hover{
-  border: 4px solid orangered;
+.index-promotion-phone:hover img{
+  animation-name: promotionPhoneHover;
+  animation-duration: .4s;
+}
+
+@keyframes promotionPhoneHover {
+  0% {
+    transform: translateY(0)
+  }
+  50% {
+    transform: translateY(-10px)
+  }
+  100% {
+    transform: translateY(0)
+  }
 }
 
 @media screen and (max-width: 1200px){
@@ -3751,6 +3764,24 @@ a.head-item:hover{
   color: #fff;
   padding: 5px 20px;
   border-radius: 5px;
+}
+
+.adr-full-name {
+  text-transform: uppercase;
+}
+
+.adr-content::before {
+  content: 'Địa chỉ:';
+  color: gray;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.adr-tel::before {
+  content: 'Điện thoại:';
+  color: gray;
+  font-weight: 600;
+  margin-right: 5px;
 }
 
 /*========================================================================================================================
@@ -5284,6 +5315,29 @@ a.head-item:hover{
   gap: 5px;
 }
 
+#show-phone-chosen {
+  color: var(--main);
+  margin-right: 30px;
+}
+
+.phone-chosen-wrapper {
+  position: absolute;
+  left: 0; top: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.13);
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 200px;
+  display: none;
+}
+
+.phone-chosen-item {
+  padding: 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #dcdcdc;
+  display: flex;
+}
+
 /*========================================================================================================================
                                                       Login & Signup                                                           
 /*========================================================================================================================*/
@@ -6316,9 +6370,10 @@ a.head-item:hover{
 
 .image-preview-div{
   padding: 20px 20px 0 20px;
+  margin-bottom: 5px;
   border: 1px solid #dcdcdc;
   border-radius: 5px;
-  height: 300px;
+  height: 245px;
   overflow-y: auto;
   overflow-x: hidden;
 }
