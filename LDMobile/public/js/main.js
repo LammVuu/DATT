@@ -2547,37 +2547,34 @@ $(function(){
                     $('.evaluate-img-div').css({
                         'display': 'flex',
                     });
-    
-                    // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
-                    if(count > 3 || qty_img === 3){
-                        showAlertTop('Bạn chỉ được phép chọn 3 ảnh đính kèm');
-                    }
+
+                    const timestamp = new Date().getTime()
     
                     // tạo thẻ div, nút xóa, hình đánh giá
-                    for(var i = 0; i < count; i++){
+                    $.each(this.files, (i, image) => {
                         // kiểm tra file hình
-                        var fileName = this.files[i].name.split('.');
+                        var fileName = image.name.split('.');
                         var extend = fileName[fileName.length - 1];
                 
                         if(extend === 'jpg' || extend === 'jpeg' || extend === 'png'){
-                            const size = (this.files[i].size / BYTE) / BYTE // byte => MB
+                            // nếu số lượng hình > 3 thì hiển thị modal thông báo
+                            if(qty_img >= 3) {
+                                showAlertTop('Bạn chỉ được phép chọn 3 ảnh đính kèm');
+                                return false
+                            }
+
+                            const size = (image.size / BYTE) / BYTE // byte => MB
                             
                             // dung lượng file tối đa là 5MB
                             if(size > MAX_SIZE_IMAGE) {
                                 showAlertTop('Ảnh đính kèm có dung luọng tối đa là 5 MB')
-                                break
+                                return false
                             }
 
-                            // nếu số lượng hình > 3 thì hiển thị modal thông báo
-                            if(qty_img >= 3){
-                                showAlertTop('Bạn chỉ được phép chọn 3 ảnh đính kèm');
-                                break;
-                            }
-    
-                            const id = (qty_img + i) + 1;
+                            const id = timestamp + i
     
                             // hình đánh giá
-                            const imgURL = URL.createObjectURL(this.files[i])
+                            const imgURL = URL.createObjectURL(image)
                             const imageEvaluate = renderEvaluateImage('create', id, imgURL)
                             $('.evaluate-img-div').append(imageEvaluate)
     
@@ -2587,14 +2584,17 @@ $(function(){
                             if(qty_img == 0){
                                 $(this).val('');
                             }
-                            break;
+                            return false
                         }
-                    }
+                    })
     
                     $('.qty-img-inp').val(qty_img);
     
                     // hiển thị số lượng hình ảnh đang có
                     $('.qty-img').html(`(${qty_img})`);
+
+                    // làm mới input file
+                    $(this).val('')
                 });
     
                 // gửi đánh giá
@@ -3068,49 +3068,49 @@ $(function(){
                     $('.edit-evaluate-img-div').css({
                         'display': 'flex',
                     });
-    
-                    // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
-                    if(count > 3 || qty_img == 3){
-                        showAlertTop('Bạn chỉ được phép chọn 3 ảnh đính kèm');
-                    }
+
+                    const timestamp = new Date().getTime()
     
                     // tạo thẻ div, nút xóa, hình đánh giá
-                    for(var i = 0; i < count; i++){
+                    $.each(this.files, (i, image) => {
                         // kiểm tra file hình
-                        var fileName = this.files[i].name.split('.');
+                        var fileName = image.name.split('.');
                         var extend = fileName[fileName.length - 1];
     
                         if(extend === 'jpg' || extend === 'jpeg' || extend === 'png'){
-                            // Byte => MB
-                            const size = (this.files[i].size / BYTE) / BYTE
-                            if(size > MAX_SIZE_IMAGE) {
-                                showAlertTop(maxSizeImagMessage)
-                                break
-                            }
-                            // nếu số lượng hình > 3 thì hiển thị modal thông báo
+                            // nếu số lượng hình upload > 3 thì hiển thị modal thông báo
                             if(qty_img >= 3){
                                 showAlertTop('Bạn chỉ được phép chọn 3 ảnh đính kèm');
-                                break;
+                                return false
+                            }
+
+                            // Byte => MB
+                            const size = (image.size / BYTE) / BYTE
+                            if(size > MAX_SIZE_IMAGE) {
+                                showAlertTop(maxSizeImagMessage)
+                                return false
                             }
     
-                            var id = (qty_img + i) + 1;
+                            var id = timestamp + i
     
                             // hình đánh giá
-                            const imgURL = URL.createObjectURL(this.files[i])
+                            const imgURL = URL.createObjectURL(image)
                             var imageEvaluate = renderEvaluateImage('edit', id, imgURL)
                             $('.edit-evaluate-img-div').append(imageEvaluate);
     
                             qty_img++;
                         } else {
                             showAlertTop('Bạn chỉ có thể upload hình ảnh');
-                            break;
+                            return false
                         }
-                    }
+                    })
     
                     $('.edit-qty-img-inp').val(qty_img);
     
                     // hiển thị số lượng hình ảnh đang có
                     $('.edit-qty-img').html(`(${qty_img})`);
+
+                    $(this).val('')
                 });
     
                 // gửi đánh giá chỉnh sửa
