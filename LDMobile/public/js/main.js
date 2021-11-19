@@ -560,6 +560,7 @@ $(function(){
                                 var displayTel = tel.replace('+1','');
                                 $('#tel-confirm').text(displayTel);
                                 $('#enter-verify-code').removeClass('none-dp');
+                                $('#verify-code-inp').focus()
     
                             }).catch(function (error) { // gửi mã thất bại
                                 console.log(error);
@@ -597,6 +598,7 @@ $(function(){
                     // tạo mật khẩu
                     $('#enter-verify-code').addClass('none-dp');
                     $('#enter-password').removeClass('none-dp');
+                    $('#su_fullname').focus()
     
                 }).catch(function (error) { // code không hợp lệ
                     window.verifyingCode = false;
@@ -633,6 +635,7 @@ $(function(){
                 $('#back-to-enter-tel').click(function(){
                     // reset sdt
                     $('#su_tel').val('');
+                    $('#su_tel').focus()
                     // reset reCAPTCHA
                     grecaptcha.reset(window.recaptchaWidgetId);
     

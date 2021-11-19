@@ -4,48 +4,45 @@
         @include("user.content.taikhoan.sec-thanh-chuc-nang")
     </div>
     <div class='col-md-9'>
-        <div class='d-flex justify-content-between align-items-center box-shadow p-10 fz-22'>
-            <div class="d-flex">
-                <div>Chi tiết đơn hàng</div>
-                <div class='black fw-600 ml-10'>#{{$order['order']->id}}</div>    
+        <div class="mb-5">
+            <div class="account-head-title fz-22">
+                <div class="fw-600">Chi tiết đơn hàng #{{$order['order']->id}}</div>
+    
+                @if ($order['order']->trangthaidonhang != 'Đã hủy')
+                    <div class='account-deliver-success'>{{$order['order']->trangthaidonhang}}</div>
+                @else
+                    <div class='account-deliver-fail'>Đã hủy</div>
+                @endif
             </div>
-            @if ($order['order']->trangthaidonhang != 'Đã hủy')
-                <div class='account-deliver-success'>{{$order['order']->trangthaidonhang}}</div>
-            @else
-                <div class='account-deliver-fail'>Đã hủy</div>
-            @endif
-            
-            
-        </div>   
-        <div class="d-flex justify-content-end mt-5">
+        </div>
+
+        <div class="d-flex justify-content-end mb-30">
             <span>Ngày mua: <b>{{$order['order']->thoigian}}</b></span>
         </div>
 
         {{-- hủy đơn hàng --}}
-        @if ($order['order']->trangthaidonhang == 'Đã tiếp nhận')
-            <div class="d-flex justify-content-center mt-30 mb-30">
+        @if ($order['order']->trangthaidonhang === 'Đã tiếp nhận')
+            <div class="d-flex justify-content-center mb-50">
                 <div id="cancel-order-btn" data-id="{{$order['order']->id}}" class="checkout-btn w-50">hủy đơn hàng</div>
             </div>
         @endif
 
-        <div class='mt-50'>
+        <div class='mb-20'>
             <div class='row'>
-                @if ($order['order']->hinhthuc == 'Giao hàng tận nơi')
+                @if ($order['order']->hinhthuc === 'Giao hàng tận nơi')
                     <div class='col-lg-6 mb-20'>
                         <div class='fw-600 pb-10'>Địa chỉ người nhận</div>
                         <div id="HTNH-div">
                             <div class='box-shadow p-20'>
                                 <div class="d-flex flex-column fz-14">
                                     <b class='text-uppercase pb-5'>{{$order['order']->diachigiaohang->hoten}}</b>
-                                    <div class="d-flex mb-5">
-                                        <div class="gray-1 mr-5">Địa chỉ:</div>
-                                        <div class="black">
+                                    <div class="mb-5">
+                                        <div class="adr-content">
                                             {{$order['order']->diachigiaohang->diachi.', '.$order['order']->diachigiaohang->phuongxa.', '.$order['order']->diachigiaohang->quanhuyen.', '.$order['order']->diachigiaohang->tinhthanh}}
                                         </div>
                                     </div>
-                                    <div class="d-flex">
-                                        <div class="gray-1 mr-5">SĐT:</div>
-                                        <div class="black">{{$order['order']->diachigiaohang->sdt}}</div>
+                                    <div class="adr-tel">
+                                        {{$order['order']->diachigiaohang->sdt}}
                                     </div>
                                 </div>
                             </div>
@@ -57,15 +54,13 @@
                         <div id="HTNH-div">
                             <div class='box-shadow p-20'>
                                 <div class="d-flex flex-column fz-14">
-                                    <div class="d-flex mb-5">
-                                        <div class="gray-1 mr-5">Địa chỉ:</div>
-                                        <div class="black">
+                                    <div class="mb-5">
+                                        <div class="adr-content">
                                             {{$order['order']->chinhanh->diachi}}
                                         </div>
                                     </div>
-                                    <div class="d-flex">
-                                        <div class="gray-1 mr-5">SĐT:</div>
-                                        <div class="black">{{$order['order']->chinhanh->sdt}}</div>
+                                    <div class="adr-tel">
+                                        {{$order['order']->chinhanh->sdt}}
                                     </div>
                                 </div>
                             </div>
@@ -85,7 +80,7 @@
         </div>
 
         {{-- danh sách sản phẩm --}}
-        <div class='mt-30 box-shadow'>
+        <div class='box-shadow'>
             <table class='table'>
                 <thead>
                     <tr>

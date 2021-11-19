@@ -103,6 +103,7 @@ class UserController extends Controller
             'anhdaidien' => 'avatar-default.png',
             'loaitk' => 0,
             'htdn' => 'normal',
+            'login_status' => 0,
             'thoigian' => date('d/m/Y'),
             'trangthai' => 1,
         ];
@@ -874,7 +875,8 @@ class UserController extends Controller
             ]);
         } else {
             $qty = $userVoucher->sl;
-            $userVoucher->sl = ++$qty;
+            $qty++;
+            $userVoucher->sl = $qty;
             $userVoucher->save();
         }
     }
@@ -1012,27 +1014,31 @@ class UserController extends Controller
     public function AjaxLikeComment(Request $request)
     {
         if($request->ajax()){
+            $evaluate = DANHGIASP::where('id', $request->id_dg)->first();
+            $user = session('user');
             // chưa thích bình luận
-            if(!LUOTTHICH::where('id_tk', session('user')->id)->where('id_dg', $request->id_dg)->first()){
+            if(!LUOTTHICH::where('id_tk', $user->id)->where('id_dg', $request->id_dg)->first()) {
                 LUOTTHICH::create([
-                    'id_tk' => session('user')->id,
+                    'id_tk' => $user->id,
                     'id_dg' => $request->id_dg,
                 ]);
 
                 // cập nhật lượt thích bảng DANHGIASP
-                $qty = intval(DANHGIASP::where('id', $request->id_dg)->first()->soluotthich);
-                DANHGIASP::where('id', $request->id_dg)->update(['soluotthich' => ++$qty]);
+                $qty = intval($evaluate->soluotthich);
+                $qty++;
+                DANHGIASP::where('id', $request->id_dg)->update(['soluotthich' => $qty]);
 
                 return [
                     'status' => 'like success'
                 ];
             }
             // bỏ thích
-            LUOTTHICH::where('id_tk', session('user')->id)->where('id_dg', $request->id_dg)->delete();
+            LUOTTHICH::where('id_tk', $user->id)->where('id_dg', $request->id_dg)->delete();
 
             // cập nhật lượt thích bảng DANHGIASP
-            $qty = intval(DANHGIASP::where('id', $request->id_dg)->first()->soluotthich);
-            DANHGIASP::where('id', $request->id_dg)->update(['soluotthich' => --$qty]);
+            $qty = intval($evaluate->soluotthich);
+            $qty--;
+            DANHGIASP::where('id', $request->id_dg)->update(['soluotthich' => $qty]);
 
             return [
                 'status' => 'unlike success'
