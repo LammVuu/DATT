@@ -3668,10 +3668,44 @@ a.head-item:hover{
   color: #fff;
 }
 
-.noti-type{
+.noti-type-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+@media screen and (max-width: 1200px) {
+  .noti-type {
+    flex-shrink: 0;
+  }
+
+  .noti-type-wrapper {
+    padding: 10px 5px;
+    gap: 20px;
+    overflow-x: auto;
+  }
+
+  /* width */
+  .noti-type-wrapper::-webkit-scrollbar {
+    height: 2px;
+  } 
+
+  /* Track */
+  .noti-type-wrapper::-webkit-scrollbar-track {
+    background: #dcdcdc;
+  }
+  
+  /* Handle */
+  .noti-type-wrapper::-webkit-scrollbar-thumb {
+    background: #979797;
+    border-radius: 10px;
+  }
+}
+
+.noti-type {
   cursor: pointer;
   padding: 10px 20px;
-  margin-bottom: 10px;
   border-radius: 50px;
   background-color: #fff;
   display: flex;
@@ -5354,16 +5388,20 @@ a.head-item:hover{
 }
 
 .login-signup-box{
+  max-height: 95vh;
   padding: 50px; 
   border-radius: 10px;
   background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.16);
+  overflow: auto;
 }
 
 .login-with{
   position: relative;
   color: #9c9c9c;
-  margin: 20px 0 10px 0;
+  margin-bottom: 20px;
   text-align: center;
+  width: 100%;
 }
 
 .login-with::before{
@@ -5384,22 +5422,43 @@ a.head-item:hover{
   padding: 0 20px;
 }
 
-.btn-login-signup-with{
+a.btn-login-signup-with{
   padding: 10px 20px;
   border-radius: 5px;
-  font-weight: bold;
-  margin: 5px;
+  font-weight: 600;
+  margin-bottom: 10px;
   background-color: white;
-  color: black;
+  color: var(--text-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.10);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .btn-login-signup-with:hover{
-  color: black;
+  color: var(--text-color);
+}
+
+.btn-login-signup-with img {
+  --size: 30px;
+  max-width: var(--size);
+  max-height: var(--size);
+  margin-right: 20px;
+}
+
+.login-with-label {
+  width: 80px;
 }
 
 .signup-image{
   margin: 0 20px 20px 20px;
   background-color: #e3f5ff;
+}
+
+#verify-code-inp {
+  font-size: 20px;
+  text-align: center;
+  font-weight: 600;
 }
 
 /* hide reCAPTCHA */
