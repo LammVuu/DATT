@@ -921,7 +921,7 @@ class SanPhamController extends Controller
         $reply->id_tk = request('id_tk');
         $reply->id_dg = request('id_dg');
         $reply->noidung = request('noidung');
-        $reply->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i');
+        $reply->thoigian = Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y H:i:s');
         $comment = DANHGIASP::find(request('id_dg'));
         if(request('id_tk') != $comment->id_tk){
             $sanpham = SANPHAM::find($comment->id);

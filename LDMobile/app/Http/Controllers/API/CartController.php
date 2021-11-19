@@ -251,18 +251,25 @@ class CartController extends Controller
                     $datos = file_get_contents($url);
                     $data = json_decode($datos, true);
                     if($city->tinhthanh == "Thành phố Hồ Chí Minh")
-                    $data = collect($data)->where("Name", "Hồ Chí Minh")->all();
+                     $data = collect($data)->where("Name", "Hồ Chí Minh")->all();
+                    else if($city->tinhthanh == "Thành phố Hà Nội"){
+                         $data = collect($data)->where("Name", "Hà Nội")->all();
+                    }
+                    else if($city->tinhthanh == "Thành phố Hải Phòng"){
+                         $data = collect($data)->where("Name", "Hải Phòng")->all();
+                    }
+                    else if($city->tinhthanh == "Thành phố Đà Nẵng"){
+                         $data = collect($data)->where("Name", "Đà Nẵng")->all();
+                    }else if($city->tinhthanh == "Thành phố Cần Thơ"){
+                         $data = collect($data)->where("Name", "Cần Thơ")->all();
+                    }
                     else $data = collect($data)->where("Name", $city->tinhthanh)->all();
                     if(reset($data)['ID'] < 48 ){
                         $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
                     }else{
                         $id_city = TINHTHANH::where('tentt', "Hồ Chí Minh")->get();
                     }
-                    if(reset($data)['ID'] < 48 ){
-                        $id_city = TINHTHANH::where('tentt', "Hà Nội")->get();
-                    }else{
-                        $id_city = TINHTHANH::where('tentt', "Hồ Chí Minh")->get();
-                    }
+                  
                     $shop = CHINHANH::where('id_tt', $id_city[0]->id)->get();
                     $ware = KHO::where('id_cn', $shop[0]->id)->where('id_sp', $product['id_sp'])->get();
                     $wareHouse = KHO::find($ware[0]->id);
